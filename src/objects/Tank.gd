@@ -314,7 +314,7 @@ func _get_local_input() -> Dictionary:
 	
 	return input
 
-func _predict_network_input(previous_input: Dictionary) -> Dictionary:
+func _predict_remote_input(previous_input: Dictionary) -> Dictionary:
 	return previous_input.duplicate()
 
 func _network_process(delta: float, input: Dictionary, sync_manager) -> void:

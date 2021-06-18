@@ -250,7 +250,7 @@ func _call_get_local_input() -> Dictionary:
 				input[str(node.get_path())] = node_input
 	return input
 
-func _call_predict_network_input(previous_input: Dictionary) -> Dictionary:
+func _call_predict_remote_input(previous_input: Dictionary) -> Dictionary:
 	var input := {}
 	var nodes: Array = get_tree().get_nodes_in_group('network_sync')
 	for node in nodes:
@@ -258,10 +258,10 @@ func _call_predict_network_input(previous_input: Dictionary) -> Dictionary:
 			continue
 		
 		var node_path_str := str(node.get_path())
-		var has_predict_network_input: bool = node.has_method('_predict_network_input')
+		var has_predict_network_input: bool = node.has_method('_predict_remote_input')
 		if has_predict_network_input or previous_input.has(node_path_str):
 			var previous_input_for_node = previous_input.get(node_path_str, {})
-			var predicted_input_for_node = node._predict_network_input(previous_input_for_node) if has_predict_network_input else previous_input_for_node.duplicate()
+			var predicted_input_for_node = node._predict_remote_input(previous_input_for_node) if has_predict_network_input else previous_input_for_node.duplicate()
 			if predicted_input_for_node.size() > 0:
 				input[node_path_str] = predicted_input_for_node
 	
@@ -317,7 +317,7 @@ func _do_tick(delta: float) -> void:
 		if not input_frame.players.has(peer_id) or input_frame.players[peer_id].predicted:
 			var predicted_input := {}
 			if previous_frame:
-				predicted_input = _call_predict_network_input(previous_frame.get_player_input(peer_id))
+				predicted_input = _call_predict_remote_input(previous_frame.get_player_input(peer_id))
 			input_frame.players[peer_id] = InputForPlayer.new(predicted_input, true)
 	
 	_call_network_process(delta, input_frame)
