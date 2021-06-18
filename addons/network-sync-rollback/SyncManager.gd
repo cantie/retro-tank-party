@@ -275,7 +275,7 @@ func _call_network_process(delta: float, input_frame: InputBufferFrame) -> void:
 		var node = nodes[i]
 		if node.has_method('_network_process'):
 			var player_input = input_frame.get_player_input(node.get_network_master())
-			node._network_process(delta, player_input.get(str(node.get_path()), {}), self)
+			node._network_process(delta, player_input.get(str(node.get_path()), {}))
 
 func _call_save_state() -> Dictionary:
 	var state := {}

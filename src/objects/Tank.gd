@@ -317,7 +317,7 @@ func _get_local_input() -> Dictionary:
 func _predict_remote_input(previous_input: Dictionary) -> Dictionary:
 	return previous_input.duplicate()
 
-func _network_process(delta: float, input: Dictionary, sync_manager) -> void:
+func _network_process(delta: float, input: Dictionary) -> void:
 	var input_vector = input.get('input_vector', Vector2.ZERO)
 	
 	engine_sound.turning = false
