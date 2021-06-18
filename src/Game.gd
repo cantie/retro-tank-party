@@ -121,6 +121,8 @@ remotesync func game_start() -> void:
 		map.map_start(self)
 	emit_signal("game_started")
 	get_tree().set_pause(false)
+	if get_tree().is_network_server():
+		SyncManager.start()
 
 func game_stop() -> void:
 	if map.has_method('map_stop'):

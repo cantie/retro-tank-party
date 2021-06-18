@@ -10,6 +10,7 @@ func _ready() -> void:
 	OnlineMatch.connect("error", self, "_on_OnlineMatch_error")
 	OnlineMatch.connect("disconnected", self, "_on_OnlineMatch_disconnected")
 	OnlineMatch.connect("player_left", self, "_on_OnlineMatch_player_left")
+	SyncManager.connect("sync_error", self, "_on_SyncManager_sync_error")
 	
 	randomize()
 	
@@ -27,18 +28,24 @@ func scene_setup(operation: RemoteOperations.ClientOperation, info: Dictionary) 
 	
 	ui_layer.show_back_button()
 	
+	for peer_id in OnlineMatch.get_players_by_peer_id():
+		if peer_id != get_tree().get_network_unique_id():
+			SyncManager.add_peer(peer_id)
+	
 	operation.mark_done()
 
 func scene_start() -> void:
 	match_manager.match_start()
 
 func finish_match() -> void:
+	SyncManager.stop()
 	if get_tree().is_network_server():
 		match_manager.match_stop()
 		# @todo pass current config so we start from the same settings
 		RemoteOperations.change_scene("res://src/main/MatchSetup.tscn", match_info)
 
 func quit_match() -> void:
+	SyncManager.stop()
 	OnlineMatch.leave()
 	get_tree().change_scene("res://src/main/SessionSetup.tscn")
 
@@ -109,6 +116,8 @@ func _remove_from_team(peer_id) -> bool:
 	return true
 
 func _on_OnlineMatch_player_left(player) -> void:
+	SyncManager.remove_peer(player.peer_id)
+	
 	# Call deferred so we can still access the player on the players array
 	# in all the other signal handlers.
 	game.call_deferred("remove_player", player.peer_id)
@@ -117,3 +126,6 @@ func _on_OnlineMatch_player_left(player) -> void:
 		_on_OnlineMatch_error(player.username + " has left - not enough players!")
 	else:
 		ui_layer.show_message(player.username + " has left")
+
+func _on_SyncManager_sync_error(_msg) -> void:
+	_on_OnlineMatch_error('Synchronization lost')

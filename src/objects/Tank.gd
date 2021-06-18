@@ -294,78 +294,103 @@ func _hook_default_get_input_vector(event: InputVectorEvent) -> void:
 	
 	event.input_vector = input_vector
 
-func _physics_process(delta: float) -> void:
-	if player_controlled:
-		var input_vector = _get_input_vector()
-		
-		engine_sound.turning = false
-		if input_vector.y < 0:
-			engine_sound.turning = true
-		if input_vector.y > 0:
-			engine_sound.turning = true
-		
-		rotation += input_vector.y * turn_speed * delta
-		
-		if GameSettings.control_scheme == GameSettings.ControlScheme.MODERN:
-			# If our rotation is really close to the desired rotation, just
-			# snap to it.
-			if rad2deg(abs(desired_rotation - rotation)) < 3:
-				rotation = desired_rotation
-		
-		velocity = Vector2()
-		velocity.x = input_vector.x
-		velocity = velocity.rotated(rotation) * speed
-		move_and_slide(velocity)
-		
-		Globals.my_player_position = global_position
-		
-		if input_vector.x >= 0.1 or input_vector.x <= -0.1:
-			engine_sound.engine_state = engine_sound.EngineState.DRIVING
-		else:
-			engine_sound.engine_state = engine_sound.EngineState.IDLE
-		
-		if mouse_control:
-			turret_pivot.look_at(get_global_mouse_position())
-		else:
-			if Input.is_action_pressed("player1_aim_up") or Input.is_action_pressed("player1_aim_down") or Input.is_action_pressed("player1_aim_left") or Input.is_action_pressed("player1_aim_right"):
-				var joy_vector = Vector2()
-				joy_vector.x = Input.get_action_strength("player1_aim_right") - Input.get_action_strength("player1_aim_left")
-				joy_vector.y = Input.get_action_strength("player1_aim_down") - Input.get_action_strength("player1_aim_up")
-				turret_pivot.global_rotation = joy_vector.angle()
-			else:
-				turret_pivot.rotation = 0
-		
-		# Make info follow the tank
-		player_info_node.position = global_position + player_info_offset
-		
-		if shooting:
-			can_shoot = false
-			shoot_cooldown_timer.start()
-			shoot()
-			Globals.rumble.add_weak_rumble(shoot_rumble)
-		
-		if using_ability:
-			use_ability()
-		
-		if camera:
-			camera.global_position = global_position
-		
-		var sync_event = NetworkSyncEvent.new(self, {})
-		hooks.dispatch_event('send_remote_update', sync_event)
-		rpc("_receive_remote_update", sync_event.data)
-		
-		shooting = false
-		using_ability = false
+func _get_local_input() -> Dictionary:
+	var input := {}
+	
+	var input_vector = _get_input_vector()
+	if input_vector != Vector2.ZERO:
+		input['input_vector'] = input_vector
+	
+	#if mouse_control:
+	input['turret_rotation'] = (get_global_mouse_position() - turret_pivot.global_position).angle()
+#	else:
+#		if Input.is_action_pressed("player1_aim_up") or Input.is_action_pressed("player1_aim_down") or Input.is_action_pressed("player1_aim_left") or Input.is_action_pressed("player1_aim_right"):
+#			var joy_vector = Vector2()
+#			joy_vector.x = Input.get_action_strength("player1_aim_right") - Input.get_action_strength("player1_aim_left")
+#			joy_vector.y = Input.get_action_strength("player1_aim_down") - Input.get_action_strength("player1_aim_up")
+#			turret_pivot.global_rotation = joy_vector.angle()
+#		else:
+#			turret_pivot.rotation = 0
+	
+	return input
+
+func _predict_network_input(previous_input: Dictionary) -> Dictionary:
+	return previous_input.duplicate()
+
+func _network_process(delta: float, input: Dictionary, sync_manager) -> void:
+	var input_vector = input.get('input_vector', Vector2.ZERO)
+	
+	engine_sound.turning = false
+	if input_vector.y < 0:
+		engine_sound.turning = true
+	if input_vector.y > 0:
+		engine_sound.turning = true
+	
+	rotation += input_vector.y * turn_speed * delta
+	
+	# @todo This needs to go into _get_local_input()
+#	if GameSettings.control_scheme == GameSettings.ControlScheme.MODERN:
+#		# If our rotation is really close to the desired rotation, just
+#		# snap to it.
+#		if rad2deg(abs(desired_rotation - rotation)) < 3:
+#			rotation = desired_rotation
+
+	velocity = Vector2()
+	velocity.x = input_vector.x
+	velocity = velocity.rotated(rotation) * speed
+	move_and_slide(velocity)
+	
+	Globals.my_player_position = global_position
+	
+	if input_vector.x >= 0.1 or input_vector.x <= -0.1:
+		engine_sound.engine_state = engine_sound.EngineState.DRIVING
+	else:
+		engine_sound.engine_state = engine_sound.EngineState.IDLE
+	
+	if input.has('turret_rotation'):
+		turret_pivot.global_rotation = input['turret_rotation']
+	
+	# Make info follow the tank
+	player_info_node.position = global_position + player_info_offset
+	
+#	if shooting:
+#		can_shoot = false
+#		shoot_cooldown_timer.start()
+#		shoot()
+#		Globals.rumble.add_weak_rumble(shoot_rumble)
+#
+#	if using_ability:
+#		use_ability()
+	
+	if camera:
+		camera.global_position = global_position
+	
+	#var sync_event = NetworkSyncEvent.new(self, {})
+	#hooks.dispatch_event('send_remote_update', sync_event)
+	#rpc("_receive_remote_update", sync_event.data)
+	
+	shooting = false
+	using_ability = false
+
+func _save_state() -> Dictionary:
+	return {
+		position = position,
+		rotation = rotation,
+	}
+
+func _load_state(state: Dictionary) -> void:
+	position = state['position']
+	rotation = state['rotation']
 
 func _unhandled_input(event: InputEvent) -> void:
 	if event is InputEventMouseMotion:
 		mouse_control = true
 	if event is InputEventJoypadButton or event is InputEventJoypadMotion:
 		mouse_control = false
-	if event.is_action_pressed("player1_shoot") and can_shoot:
-		shooting = true
-	if event.is_action_pressed("player1_use_ability"):
-		using_ability = true
+	#if event.is_action_pressed("player1_shoot") and can_shoot:
+	#	shooting = true
+	#if event.is_action_pressed("player1_use_ability"):
+	#	using_ability = true
 
 puppet func _receive_remote_update(data: Dictionary) -> void:
 	var sync_event = NetworkSyncEvent.new(self, data)
