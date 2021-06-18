@@ -28,6 +28,7 @@ func scene_setup(operation: RemoteOperations.ClientOperation, info: Dictionary) 
 	
 	ui_layer.show_back_button()
 	
+	SyncManager.clear_peers()
 	for peer_id in OnlineMatch.get_players_by_peer_id():
 		if peer_id != get_tree().get_network_unique_id():
 			SyncManager.add_peer(peer_id)
