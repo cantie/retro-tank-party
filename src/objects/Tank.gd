@@ -251,8 +251,6 @@ func _get_local_input() -> Dictionary:
 	hooks.dispatch_event("gather_input", event)
 	return event.input
 
-
-
 func _hook_default_gather_input(event: GatherInputEvent) -> void:
 	var input = event.input
 	

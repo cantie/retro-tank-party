@@ -1,6 +1,7 @@
 TODO
 ====
 
- - Properly support both control schemes
+ - Re-implement shooting and abilities
+ - Try out matches and scoring
  - Figure out why a buffer of 20 frames is too small for 100ms of latency (we should be fine up to 320!)
 
