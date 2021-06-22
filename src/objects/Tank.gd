@@ -33,11 +33,13 @@ var health := 100
 var dead := false
 var invincible := false
 
-var shooting := false
 var can_shoot := true
 var shoot_rumble := 0.025
-var using_ability := false
-var mouse_control := true
+
+# Flags set via _unhandled_input() that are used in gathering input.
+var _input_shoot := false
+var _input_use_ability := false
+var _input_mouse_control := true
 
 var hooks := EventDispatcher.new()
 
@@ -92,17 +94,26 @@ class DieEvent extends TankEvent:
 	func _init(_tank, _killer_id: int).(_tank) -> void:
 		killer_id = _killer_id
 
-class InputVectorEvent extends TankEvent:
-	var input_vector: Vector2
+class GatherInputEvent extends TankEvent:
+	var input: Dictionary
 	
-	func _init(_tank, _input_vector: Vector2).(_tank) -> void:
-		input_vector = _input_vector
+	func _init(_tank, _input: Dictionary).(_tank) -> void:
+		input = _input
 
 class NetworkSyncEvent extends TankEvent:
 	var data: Dictionary
 	
 	func _init(_tank, _data: Dictionary).(_tank) -> void:
 		data = _data
+
+enum PlayerInput {
+	CONTROL_SCHEME,
+	INPUT_VECTOR,
+	MOVEMENT_VECTOR,
+	SNAP_TO_ROTATION,
+	SHOOTING,
+	USING_ABILITY,
+}
 
 func _ready():
 	hooks.subscribe("pickup_ability", self, "_hook_default_pickup_ability", 0)
@@ -112,7 +123,7 @@ func _ready():
 	hooks.subscribe("take_damage", self, "_hook_default_take_damage", 0)
 	hooks.subscribe("restore_health", self, "_hook_default_restore_health", 0)
 	hooks.subscribe("die", self, "_hook_default_die", 0)
-	hooks.subscribe("get_input_vector", self, "_hook_default_get_input_vector", 0)
+	hooks.subscribe("gather_input", self, "_hook_default_gather_input", 0)
 	hooks.subscribe("send_remote_update", self, "_hook_default_send_remote_update", 0)
 	hooks.subscribe("receive_remote_update", self, "_hook_default_receive_remote_update", 0)
 	
@@ -235,71 +246,32 @@ func _on_ability_finished(old_ability) -> void:
 	elif old_ability == last_ability:
 		last_ability = null
 
-func _get_input_vector() -> Vector2:
-	var event = InputVectorEvent.new(self, Vector2.ZERO)
-	hooks.dispatch_event("get_input_vector", event)
-	return event.input_vector
-
-func _hook_default_get_input_vector(event: InputVectorEvent) -> void:
-	var input_vector: Vector2
-	
-	if GameSettings.control_scheme == GameSettings.ControlScheme.RETRO:
-		if Input.is_action_pressed("player1_turn_left"):
-			input_vector.y -= min(Input.get_action_strength("player1_turn_left") + 0.5, 1.0)
-		if Input.is_action_pressed("player1_turn_right"):
-			input_vector.y = min(Input.get_action_strength("player1_turn_right") + 0.5, 1.0)
-		if Input.is_action_pressed("player1_backward"):
-			input_vector.x -= min(Input.get_action_strength("player1_backward") + 0.5, 1.0)
-		if Input.is_action_pressed("player1_forward"):
-			input_vector.x += min(Input.get_action_strength("player1_forward") + 0.5, 1.0)
-	else:
-		var current_vector = Vector2.RIGHT.rotated(rotation)
-		var desired_vector = Vector2(
-			Input.get_action_strength("player1_turn_right") - Input.get_action_strength("player1_turn_left"),
-			Input.get_action_strength("player1_backward") - Input.get_action_strength("player1_forward")).clamped(1.0)
-		if desired_vector == Vector2.ZERO:
-			event.input_vector = Vector2.ZERO
-			return
-		if desired_vector.length() > 0.85:
-			desired_vector = desired_vector.normalized()
-		
-		# If going backwards is a shorter rotation, move backwards.
-		if abs(current_vector.angle_to(desired_vector)) > PI / 2.0:
-			# Flip the vector for the angle calculations.
-			current_vector = current_vector.rotated(PI)
-			
-			# Set us moving backwards ...
-			input_vector.x = -desired_vector.length()
-		else:
-			# ... or forwards
-			input_vector.x = desired_vector.length()
-		
-		# Normalize the angle to the desired vector
-		var angle_to = current_vector.angle_to(desired_vector)
-		if abs(angle_to) > PI / 2.0:
-			angle_to = TAU - angle_to
-		
-		# Rotate in the direction closest to the desired angle. Give a little
-		# leeway so that we aren't bouncing between left and right.
-		var angle_to_degrees = rad2deg(angle_to)
-		if angle_to_degrees < -2.0:
-			input_vector.y = -1.0
-		elif angle_to_degrees > 2.0:
-			input_vector.y = 1.0
-		else:
-			input_vector.y = 0
-		
-		# Store the desired rotation, so we can snap to it.
-		desired_rotation = desired_vector.angle()
-	
-	event.input_vector = input_vector
-
 func _get_local_input() -> Dictionary:
-	var input := {}
+	var event = GatherInputEvent.new(self, {})
+	hooks.dispatch_event("gather_input", event)
+	return event.input
+
+
+
+func _hook_default_gather_input(event: GatherInputEvent) -> void:
+	var input = event.input
 	
-	var input_vector = _get_input_vector()
+	if GameSettings.control_scheme != GameSettings.ControlScheme.MODERN:
+		input[PlayerInput.CONTROL_SCHEME] = GameSettings.control_scheme
+	
+	var input_vector: Vector2
+	if Input.is_action_pressed("player1_turn_left"):
+		input_vector.x -= min(Input.get_action_strength("player1_turn_left") + 0.5, 1.0)
+	if Input.is_action_pressed("player1_turn_right"):
+		input_vector.x += min(Input.get_action_strength("player1_turn_right") + 0.5, 1.0)
+	if Input.is_action_pressed("player1_forward"):
+		input_vector.y -= min(Input.get_action_strength("player1_forward") + 0.5, 1.0)
+	if Input.is_action_pressed("player1_backward"):
+		input_vector.y += min(Input.get_action_strength("player1_backward") + 0.5, 1.0)
+	
 	if input_vector != Vector2.ZERO:
-		input['input_vector'] = input_vector
+		input[PlayerInput.INPUT_VECTOR] = input_vector
+		_calculate_movement_vector(input)
 	
 	#if mouse_control:
 	input['turret_rotation'] = (get_global_mouse_position() - turret_pivot.global_position).angle()
@@ -311,38 +283,75 @@ func _get_local_input() -> Dictionary:
 #			turret_pivot.global_rotation = joy_vector.angle()
 #		else:
 #			turret_pivot.rotation = 0
+
+func _calculate_movement_vector(input: Dictionary) -> void:
+	if input.get(PlayerInput.CONTROL_SCHEME, GameSettings.ControlScheme.MODERN) == GameSettings.ControlScheme.RETRO:
+		var input_vector = input[PlayerInput.INPUT_VECTOR]
+		# Movement is relative to a tank facing to the right, so Y turns to the
+		# left/right, and X moves forward backward.
+		input[PlayerInput.MOVEMENT_VECTOR] = Vector2(-input_vector.y, input_vector.x)
+		return
 	
-	return input
+	var movement_vector: Vector2
+	var current_vector = Vector2.RIGHT.rotated(rotation)
+	
+	var desired_vector = input[PlayerInput.INPUT_VECTOR]
+	if desired_vector.length() > 0.85:
+		desired_vector = desired_vector.normalized()
+	
+	# If going backwards is a shorter rotation, move backwards.
+	if abs(current_vector.angle_to(desired_vector)) > PI / 2.0:
+		# Flip the vector for the angle calculations.
+		current_vector = current_vector.rotated(PI)
+		
+		# Set us moving backwards ...
+		movement_vector.x = -desired_vector.length()
+	else:
+		# ... or forwards
+		movement_vector.x = desired_vector.length()
+	
+	# Normalize the angle to the desired vector
+	var angle_to = current_vector.angle_to(desired_vector)
+	if abs(angle_to) > PI / 2.0:
+		angle_to = TAU - angle_to
+	
+	if abs(angle_to) < 0.1:
+		# If the difference is small enough, then snap to angle.
+		input[PlayerInput.SNAP_TO_ROTATION] = rotation + angle_to
+	else:
+		# Rotate in the direction of the angle to the desired vector.
+		movement_vector.y = clamp(angle_to / (turn_speed * get_physics_process_delta_time()), -1.0, 1.0)
+	
+	input[PlayerInput.MOVEMENT_VECTOR] = movement_vector
 
 func _predict_remote_input(previous_input: Dictionary) -> Dictionary:
-	return previous_input.duplicate()
+	var input = previous_input.duplicate()
+	if input.get(PlayerInput.INPUT_VECTOR, Vector2.ZERO) != Vector2.ZERO:
+		_calculate_movement_vector(input)
+	return input
 
 func _network_process(delta: float, input: Dictionary) -> void:
-	var input_vector = input.get('input_vector', Vector2.ZERO)
+	var movement_vector = input.get(PlayerInput.MOVEMENT_VECTOR, Vector2.ZERO)
 	
 	engine_sound.turning = false
-	if input_vector.y < 0:
+	if movement_vector.y < 0:
 		engine_sound.turning = true
-	if input_vector.y > 0:
+	if movement_vector.y > 0:
 		engine_sound.turning = true
 	
-	rotation += input_vector.y * turn_speed * delta
-	
-	# @todo This needs to go into _get_local_input()
-#	if GameSettings.control_scheme == GameSettings.ControlScheme.MODERN:
-#		# If our rotation is really close to the desired rotation, just
-#		# snap to it.
-#		if rad2deg(abs(desired_rotation - rotation)) < 3:
-#			rotation = desired_rotation
+	if input.has(PlayerInput.SNAP_TO_ROTATION):
+		rotation = input[PlayerInput.SNAP_TO_ROTATION]
+	else:
+		rotation += movement_vector.y * turn_speed * delta
 
 	velocity = Vector2()
-	velocity.x = input_vector.x
+	velocity.x = movement_vector.x
 	velocity = velocity.rotated(rotation) * speed
 	move_and_slide(velocity)
 	
 	Globals.my_player_position = global_position
 	
-	if input_vector.x >= 0.1 or input_vector.x <= -0.1:
+	if movement_vector.x >= 0.1 or movement_vector.x <= -0.1:
 		engine_sound.engine_state = engine_sound.EngineState.DRIVING
 	else:
 		engine_sound.engine_state = engine_sound.EngineState.IDLE
@@ -369,8 +378,8 @@ func _network_process(delta: float, input: Dictionary) -> void:
 	#hooks.dispatch_event('send_remote_update', sync_event)
 	#rpc("_receive_remote_update", sync_event.data)
 	
-	shooting = false
-	using_ability = false
+	_input_shoot = false
+	_input_use_ability = false
 
 func _save_state() -> Dictionary:
 	return {
@@ -384,13 +393,13 @@ func _load_state(state: Dictionary) -> void:
 
 func _unhandled_input(event: InputEvent) -> void:
 	if event is InputEventMouseMotion:
-		mouse_control = true
+		_input_mouse_control = true
 	if event is InputEventJoypadButton or event is InputEventJoypadMotion:
-		mouse_control = false
-	#if event.is_action_pressed("player1_shoot") and can_shoot:
-	#	shooting = true
-	#if event.is_action_pressed("player1_use_ability"):
-	#	using_ability = true
+		_input_mouse_control = false
+	if event.is_action_pressed("player1_shoot"):
+		_input_shoot = true
+	if event.is_action_pressed("player1_use_ability"):
+		_input_use_ability = true
 
 puppet func _receive_remote_update(data: Dictionary) -> void:
 	var sync_event = NetworkSyncEvent.new(self, data)
@@ -402,9 +411,9 @@ func _hook_default_send_remote_update(event: NetworkSyncEvent) -> void:
 	data['position'] = position
 	data['turret_rotation'] = turret_pivot.rotation
 	data['visible'] = visible
-	data['shooting'] = shooting
+	#data['shooting'] = shooting
 	data['weapon_type_path'] = weapon_type.resource_path
-	data['using_ability'] = using_ability
+	#data['using_ability'] = using_ability
 	data['ability_type_path'] = ability_type.resource_path if ability_type else null
 
 func _hook_default_receive_remote_update(event: NetworkSyncEvent) -> void:
