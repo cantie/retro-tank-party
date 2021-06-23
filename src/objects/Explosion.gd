@@ -5,17 +5,20 @@ onready var sounds = $Sounds
 var animation_finished := false
 var sound_finished := false
 
-func setup(_position: Vector2, _scale: float, _anim: String) -> void:
-	position = _position
-	scale = Vector2(_scale, _scale)
-	play(_anim)
+func _network_spawn(data: Dictionary) -> void:
+	position = data['position']
+	scale = Vector2(data['scale'], data['scale'])
 	
-	yield(get_tree().create_timer(randf() * 0.150), "timeout")
+	var anim = data['type']
+	play(anim)
 	
-	if _anim == 'smoke':
+	# @todo Can we do something like this with rollback?
+	#yield(get_tree().create_timer(randf() * 0.150), "timeout")
+	
+	if anim == 'smoke':
 		sounds.play('Miss')
 	else:
-		if _scale > 1.0:
+		if data['scale'] > 1.0:
 			sounds.play('Big')
 		else:
 			sounds.play('Hit')

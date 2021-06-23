@@ -1,5 +1,7 @@
 extends Node
 
+const SpawnManager = preload("res://addons/network-sync-rollback/SpawnManager.gd")
+
 class Peer extends Reference:
 	var peer_id: int
 	
@@ -109,10 +111,10 @@ var rollback_ticks: int = 0 setget _set_readonly_variable
 var started := false setget _set_readonly_variable
 
 var _ping_timer: Timer
+var _spawn_manager
 var _input_buffer_start_tick: int
 var _state_buffer_start_tick: int
 var _logged_remote_state: Dictionary
-var _spawn_pools := {}
 
 signal sync_started ()
 signal sync_stopped ()
@@ -126,11 +128,16 @@ signal peer_pinged_back (peer)
 
 func _ready() -> void:
 	_ping_timer = Timer.new()
+	_ping_timer.name = "PingTimer"
 	_ping_timer.wait_time = ping_frequency
 	_ping_timer.autostart = true
 	_ping_timer.one_shot = false
 	_ping_timer.connect("timeout", self, "_on_ping_timer_timeout")
 	add_child(_ping_timer)
+	
+	_spawn_manager = SpawnManager.new()
+	_spawn_manager.name = "SpawnManager"
+	add_child(_spawn_manager)
 
 func _set_readonly_variable(_value) -> void:
 	pass
@@ -282,7 +289,7 @@ func _call_save_state() -> Dictionary:
 	var state := {}
 	var nodes: Array = get_tree().get_nodes_in_group('network_sync')
 	for node in nodes:
-		if node.has_method('_save_state') and not node.is_queued_for_deletion():
+		if node.has_method('_save_state') and node.is_inside_tree() and not node.is_queued_for_deletion():
 			var node_path = str(node.get_path())
 			if node_path != "":
 				state[node_path] = node._save_state()
@@ -565,13 +572,5 @@ func _check_remote_state(peer_id: int, remote_state: StateBufferFrame, local_sta
 	if local_state.data.hash() != remote_state.data.hash():
 		emit_signal("remote_state_mismatch", local_state.tick, peer_id, local_state.data, remote_state.data)
 
-func get_spawn_pool(pool_name: String) -> NetworkSpawnPool:
-	if _spawn_pools.has(pool_name):
-		return _spawn_pools[pool_name] as NetworkSpawnPool
-	
-	var pool := NetworkSpawnPool.new()
-	pool.name = pool_name
-	add_child(pool)
-	_spawn_pools[pool.name] = pool
-	
-	return pool
+func spawn(name: String, parent: Node, scene: PackedScene, data: Dictionary = {}) -> Node:
+	return _spawn_manager.spawn(name, parent, scene, data)

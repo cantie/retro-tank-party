@@ -11,20 +11,37 @@ var vector := Vector2()
 
 var damage := 10
 
-func setup_bullet(_tank, weapon_type) -> void:
-	tank = _tank
-	player_id = tank.get_network_master()
-	player_index = tank.player_index
-	position = tank.bullet_start_position.global_position
-	rotation = tank.turret_pivot.global_rotation
+func _network_spawn_preprocess(data: Dictionary) -> Dictionary:
+	var _tank = data['tank']
+	return {
+		tank = _tank.get_path(),
+		player_id = _tank.get_network_master(),
+		player_index = _tank.player_index,
+		position = _tank.bullet_start_position.global_position,
+		rotation = _tank.turret_pivot.global_rotation,
+		damage = data['weapon_type'].damage,
+	}
+
+func _network_spawn(data: Dictionary) -> void:
+	tank = get_node(data['tank'])
+	player_id = data['player_id']
+	player_index = data['player_index']
+	position = data['position']
+	rotation = data['rotation']
 	vector = Vector2.RIGHT.rotated(rotation)
-	damage = weapon_type.damage
+	damage = data['damage']
 	lifetime_timer.start()
 
+func setup_bullet(_tank, weapon_type) -> void:
+	# @todo Remove this method!
+	pass
+
 func explode(type: String):
-	var explosion = Explosion.instance()
-	get_parent().add_child(explosion)
-	explosion.setup(global_position, 0.5, type)
+	SyncManager.spawn("Explosion", get_parent(), Explosion, {
+		position = global_position,
+		scale = 0.5,
+		type = type,
+	})
 
 func can_hit(body: PhysicsBody2D) -> bool:
 	return body != tank
