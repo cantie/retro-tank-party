@@ -29,7 +29,7 @@ func attach_ability() -> void:
 	map_rect = game.map.get_map_rect()
 	detector = game.create_free_space_detector()
 	detector.connect("free_space_found", self, "_on_free_space_found")
-	tank.hooks.subscribe("gather_input", self, "_hook_tank_gather_input")
+	tank.hooks.subscribe("gather_input", self, "_hook_tank_gather_input", 10)
 
 func detach_ability() -> void:
 	detector.queue_free()

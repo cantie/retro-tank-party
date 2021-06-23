@@ -33,7 +33,7 @@ func stop():
 func _on_SyncManager_sync_stopped() -> void:
 	stop()
 
-func _network_process(_delta: float, _input: Dictionary, sync_manager) -> void:
+func _network_process(_delta: float, _input: Dictionary) -> void:
 	if not _running:
 		return
 	if ticks_left <= 0:
@@ -46,7 +46,7 @@ func _network_process(_delta: float, _input: Dictionary, sync_manager) -> void:
 			_running = false
 		else:
 			ticks_left = wait_ticks
-		if timeout_with_incomplete_input or sync_manager.is_current_player_input_complete():
+		if timeout_with_incomplete_input or SyncManager.is_current_player_input_complete():
 			emit_signal("timeout")
 
 func _save_state() -> Dictionary:

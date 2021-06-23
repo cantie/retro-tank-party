@@ -271,16 +271,19 @@ func _hook_default_gather_input(event: GatherInputEvent) -> void:
 		input[PlayerInput.INPUT_VECTOR] = input_vector
 		_calculate_movement_vector(input)
 	
-	#if mouse_control:
-	input['turret_rotation'] = (get_global_mouse_position() - turret_pivot.global_position).angle()
-#	else:
-#		if Input.is_action_pressed("player1_aim_up") or Input.is_action_pressed("player1_aim_down") or Input.is_action_pressed("player1_aim_left") or Input.is_action_pressed("player1_aim_right"):
-#			var joy_vector = Vector2()
-#			joy_vector.x = Input.get_action_strength("player1_aim_right") - Input.get_action_strength("player1_aim_left")
-#			joy_vector.y = Input.get_action_strength("player1_aim_down") - Input.get_action_strength("player1_aim_up")
-#			turret_pivot.global_rotation = joy_vector.angle()
-#		else:
-#			turret_pivot.rotation = 0
+	if _input_mouse_control:
+		input['turret_rotation'] = (get_global_mouse_position() - turret_pivot.global_position).angle()
+	else:
+		if Input.is_action_pressed("player1_aim_up") or Input.is_action_pressed("player1_aim_down") or Input.is_action_pressed("player1_aim_left") or Input.is_action_pressed("player1_aim_right"):
+			var joy_vector = Vector2()
+			joy_vector.x = Input.get_action_strength("player1_aim_right") - Input.get_action_strength("player1_aim_left")
+			joy_vector.y = Input.get_action_strength("player1_aim_down") - Input.get_action_strength("player1_aim_up")
+			input['turret_rotation'] = joy_vector.angle()
+	
+	if _input_shoot:
+		input[PlayerInput.SHOOTING] = true
+	if _input_use_ability:
+		input[PlayerInput.USING_ABILITY] = true
 
 func _calculate_movement_vector(input: Dictionary) -> void:
 	if input.get(PlayerInput.CONTROL_SCHEME, GameSettings.ControlScheme.MODERN) == GameSettings.ControlScheme.RETRO:
@@ -356,16 +359,18 @@ func _network_process(delta: float, input: Dictionary) -> void:
 	
 	if input.has('turret_rotation'):
 		turret_pivot.global_rotation = input['turret_rotation']
+	else:
+		turret_pivot.rotation = 0.0
 	
 	# Make info follow the tank
 	player_info_node.position = global_position + player_info_offset
 	
-#	if shooting:
-#		can_shoot = false
-#		shoot_cooldown_timer.start()
-#		shoot()
-#		Globals.rumble.add_weak_rumble(shoot_rumble)
-#
+	if input.get(PlayerInput.SHOOTING, false) and can_shoot:
+		can_shoot = false
+		shoot_cooldown_timer.start()
+		shoot()
+		Globals.rumble.add_weak_rumble(shoot_rumble)
+
 #	if using_ability:
 #		use_ability()
 	

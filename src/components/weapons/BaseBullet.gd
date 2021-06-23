@@ -40,4 +40,5 @@ func _on_Bullet_body_entered(body: PhysicsBody2D) -> void:
 		explode("smoke")
 
 func _on_LifetimeTimer_timeout() -> void:
-	pass # Replace with function body.
+	# Overriden by child classes (namely "res://src/objects/Bullet.gd")
+	pass

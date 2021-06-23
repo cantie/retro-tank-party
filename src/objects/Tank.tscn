@@ -1,6 +1,7 @@
-[gd_scene load_steps=10 format=2]
+[gd_scene load_steps=11 format=2]
 
 [ext_resource path="res://src/objects/tank/BaseTank.tscn" type="PackedScene" id=1]
+[ext_resource path="res://addons/network-sync-rollback/NetworkTimer.gd" type="Script" id=2]
 [ext_resource path="res://src/objects/tank/PlayerInfo.tscn" type="PackedScene" id=3]
 [ext_resource path="res://src/objects/Tank.gd" type="Script" id=4]
 [ext_resource path="res://assets/sounds/Bass Drum__003.wav" type="AudioStream" id=5]
@@ -34,9 +35,10 @@ script = ExtResource( 4 )
 [node name="PlayerInfo" parent="." index="3" instance=ExtResource( 3 )]
 position = Vector2( 0, -85 )
 
-[node name="ShootCooldownTimer" type="Timer" parent="." index="4"]
-wait_time = 0.25
+[node name="ShootCooldownTimer" type="Node" parent="." index="4"]
+script = ExtResource( 2 )
 one_shot = true
+wait_ticks = 15
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="." index="5"]
 anims/Flash = SubResource( 1 )
