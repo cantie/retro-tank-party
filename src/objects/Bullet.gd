@@ -11,15 +11,15 @@ const BULLET_COLORS = {
 	4: Rect2(560, 348, 16, 28),
 }
 
-func setup_bullet(tank, weapon_type) -> void:
-	.setup_bullet(tank, weapon_type)
+func _network_spawn(data: Dictionary) -> void:
+	._network_spawn(data)
 	bullet_sprite.region_rect = BULLET_COLORS[player_index]
 
 func explode(type: String) -> void:
 	.explode(type)
 	queue_free()
 
-func _process(delta: float) -> void:
+func _network_process(delta: float, _input: Dictionary) -> void:
 	position += vector * speed * delta
 
 func _on_LifetimeTimer_timeout() -> void:

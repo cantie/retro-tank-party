@@ -32,6 +32,16 @@ func _network_spawn(data: Dictionary) -> void:
 	damage = data['damage']
 	lifetime_timer.start()
 
+func _save_state() -> Dictionary:
+	return {
+		position = position,
+		rotation = rotation,
+	}
+
+func _load_state(state: Dictionary) -> void:
+	position = state['position']
+	rotation = state['rotation']
+
 func setup_bullet(_tank, weapon_type) -> void:
 	# @todo Remove this method!
 	pass

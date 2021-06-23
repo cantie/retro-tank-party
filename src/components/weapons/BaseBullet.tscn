@@ -3,7 +3,9 @@
 [ext_resource path="res://src/components/weapons/BaseBullet.gd" type="Script" id=1]
 [ext_resource path="res://addons/network-sync-rollback/NetworkTimer.gd" type="Script" id=2]
 
-[node name="Bullet" type="Area2D"]
+[node name="Bullet" type="Area2D" groups=[
+"network_sync",
+]]
 collision_layer = 4
 collision_mask = 2
 script = ExtResource( 1 )
