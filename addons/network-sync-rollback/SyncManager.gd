@@ -96,7 +96,7 @@ var state_buffer := []
 var max_buffer_size := 60
 var ticks_to_calculate_advantage := 60
 var input_delay := 2 setget set_input_delay
-var rollback_debug_ticks := 0
+var rollback_debug_ticks := 5
 var log_state := true
 
 # In seconds, because we don't want it to be dependent on the network tick.
@@ -112,6 +112,7 @@ var _ping_timer: Timer
 var _input_buffer_start_tick: int
 var _state_buffer_start_tick: int
 var _logged_remote_state: Dictionary
+var _spawn_pools := {}
 
 signal sync_started ()
 signal sync_stopped ()
@@ -281,8 +282,10 @@ func _call_save_state() -> Dictionary:
 	var state := {}
 	var nodes: Array = get_tree().get_nodes_in_group('network_sync')
 	for node in nodes:
-		if node.has_method('_save_state'):
-			state[str(node.get_path())] = node._save_state()
+		if node.has_method('_save_state') and not node.is_queued_for_deletion():
+			var node_path = str(node.get_path())
+			if node_path != "":
+				state[node_path] = node._save_state()
 	return state
 
 func _call_load_state(state: Dictionary) -> void:
@@ -562,3 +565,13 @@ func _check_remote_state(peer_id: int, remote_state: StateBufferFrame, local_sta
 	if local_state.data.hash() != remote_state.data.hash():
 		emit_signal("remote_state_mismatch", local_state.tick, peer_id, local_state.data, remote_state.data)
 
+func get_spawn_pool(pool_name: String) -> NetworkSpawnPool:
+	if _spawn_pools.has(pool_name):
+		return _spawn_pools[pool_name] as NetworkSpawnPool
+	
+	var pool := NetworkSpawnPool.new()
+	pool.name = pool_name
+	add_child(pool)
+	_spawn_pools[pool.name] = pool
+	
+	return pool

@@ -111,6 +111,7 @@ enum PlayerInput {
 	INPUT_VECTOR,
 	MOVEMENT_VECTOR,
 	SNAP_TO_ROTATION,
+	TURRET_ROTATION,
 	SHOOTING,
 	USING_ABILITY,
 }
@@ -173,6 +174,7 @@ func set_weapon_type(_weapon_type: WeaponType) -> void:
 		
 		if weapon:
 			weapon.detach_weapon()
+			weapon.teardown_weapon()
 		
 		weapon = weapon_type.weapon_script.new()
 		weapon.setup_weapon(self, weapon_type)
@@ -272,13 +274,13 @@ func _hook_default_gather_input(event: GatherInputEvent) -> void:
 		_calculate_movement_vector(input)
 	
 	if _input_mouse_control:
-		input['turret_rotation'] = (get_global_mouse_position() - turret_pivot.global_position).angle()
+		input[PlayerInput.TURRET_ROTATION] = (get_global_mouse_position() - turret_pivot.global_position).angle()
 	else:
 		if Input.is_action_pressed("player1_aim_up") or Input.is_action_pressed("player1_aim_down") or Input.is_action_pressed("player1_aim_left") or Input.is_action_pressed("player1_aim_right"):
 			var joy_vector = Vector2()
 			joy_vector.x = Input.get_action_strength("player1_aim_right") - Input.get_action_strength("player1_aim_left")
 			joy_vector.y = Input.get_action_strength("player1_aim_down") - Input.get_action_strength("player1_aim_up")
-			input['turret_rotation'] = joy_vector.angle()
+			input[PlayerInput.TURRET_ROTATION] = joy_vector.angle()
 	
 	if _input_shoot:
 		input[PlayerInput.SHOOTING] = true
@@ -357,8 +359,8 @@ func _network_process(delta: float, input: Dictionary) -> void:
 	else:
 		engine_sound.engine_state = engine_sound.EngineState.IDLE
 	
-	if input.has('turret_rotation'):
-		turret_pivot.global_rotation = input['turret_rotation']
+	if input.has(PlayerInput.TURRET_ROTATION):
+		turret_pivot.global_rotation = input[PlayerInput.TURRET_ROTATION]
 	else:
 		turret_pivot.rotation = 0.0
 	
@@ -380,7 +382,8 @@ func _network_process(delta: float, input: Dictionary) -> void:
 	#var sync_event = NetworkSyncEvent.new(self, {})
 	#hooks.dispatch_event('send_remote_update', sync_event)
 	#rpc("_receive_remote_update", sync_event.data)
-	
+
+func _physics_process(delta: float) -> void:
 	_input_shoot = false
 	_input_use_ability = false
 
@@ -388,11 +391,13 @@ func _save_state() -> Dictionary:
 	return {
 		position = position,
 		rotation = rotation,
+		can_shoot = can_shoot,
 	}
 
 func _load_state(state: Dictionary) -> void:
 	position = state['position']
 	rotation = state['rotation']
+	can_shoot = state['can_shoot']
 
 func _unhandled_input(event: InputEvent) -> void:
 	if event is InputEventMouseMotion:
