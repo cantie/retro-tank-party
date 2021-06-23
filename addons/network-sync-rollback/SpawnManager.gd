@@ -2,6 +2,7 @@ extends Node
 
 var spawn_records := {}
 var spawned_nodes := {}
+var counter := {}
 
 func _ready() -> void:
 	add_to_group('network_sync')
@@ -11,10 +12,18 @@ func _on_SyncManager_sync_stopped() -> void:
 	spawn_records.clear()
 	spawned_nodes.clear()
 
-func spawn(name: String, parent: Node, scene: PackedScene, data: Dictionary) -> Node:
+func _rename_node(name: String) -> String:
+	if not counter.has(name):
+		counter[name] = 0
+	counter[name] += 1
+	return name + str(counter[name])
+
+func spawn(name: String, parent: Node, scene: PackedScene, data: Dictionary, rename: bool = true) -> Node:
 	var spawned_node = scene.instance()
+	if rename:
+		name = _rename_node(name)
 	spawned_node.name = name
-	parent.add_child(spawned_node, true)
+	parent.add_child(spawned_node)
 	
 	if spawned_node.has_method('_network_spawn_preprocess'):
 		data = spawned_node._network_spawn_preprocess(data)
@@ -35,7 +44,7 @@ func spawn(name: String, parent: Node, scene: PackedScene, data: Dictionary) -> 
 	
 	return spawned_node
 
-func _save_state() -> Dictionary:
+func _clean_spawned_nodes() -> void:
 	for node_path in spawned_nodes:
 		var node = spawned_nodes[node_path]
 		if not is_instance_valid(node):
@@ -46,11 +55,20 @@ func _save_state() -> Dictionary:
 				node.get_parent().remove_child(node)
 			spawned_nodes.erase(node_path)
 			spawn_records.erase(node_path)
+
+func _save_state() -> Dictionary:
+	_clean_spawned_nodes()
 	
-	return spawn_records.duplicate()
+	return {
+		spawn_records = spawn_records.duplicate(),
+		counter = counter,
+	}
 
 func _load_state(state: Dictionary) -> void:
-	spawn_records = state.duplicate()
+	_clean_spawned_nodes()
+	
+	spawn_records = state['spawn_records'].duplicate()
+	counter = state['counter'].duplicate()
 	
 	# Remove nodes that aren't in the state we are loading.
 	for node_path in spawned_nodes:
@@ -73,7 +91,7 @@ func _load_state(state: Dictionary) -> void:
 			
 			var spawned_node = scene.instance()
 			spawned_node.name = spawn_record['name']
-			parent.add_child(spawned_node, true)
+			parent.add_child(spawned_node)
 			
 			if spawned_node.has_method('_network_spawn'):
 				spawned_node._network_spawn(spawn_record['data'])
