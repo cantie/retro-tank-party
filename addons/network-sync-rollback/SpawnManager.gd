@@ -42,36 +42,35 @@ func spawn(name: String, parent: Node, scene: PackedScene, data: Dictionary, ren
 	spawn_records[node_path] = spawn_record
 	spawned_nodes[node_path] = spawned_node
 	
+	#print ("[%s] spawned: %s" % [SyncManager.current_tick, spawned_node.name])
+	
 	return spawned_node
 
-func _clean_spawned_nodes() -> void:
-	for node_path in spawned_nodes:
+func _save_state() -> Dictionary:
+	for node_path in spawned_nodes.keys():
 		var node = spawned_nodes[node_path]
 		if not is_instance_valid(node):
 			spawned_nodes.erase(node_path)
 			spawn_records.erase(node_path)
+			#print ("[SAVE] de-spawned invalid: %s" % node_path)
 		elif node.is_queued_for_deletion():
+			#print ("[SAVE] de-spawned deleted: %s" % node_path)
 			if node.get_parent():
 				node.get_parent().remove_child(node)
 			spawned_nodes.erase(node_path)
 			spawn_records.erase(node_path)
-
-func _save_state() -> Dictionary:
-	_clean_spawned_nodes()
 	
 	return {
 		spawn_records = spawn_records.duplicate(),
-		counter = counter,
+		counter = counter.duplicate(),
 	}
 
 func _load_state(state: Dictionary) -> void:
-	_clean_spawned_nodes()
-	
 	spawn_records = state['spawn_records'].duplicate()
 	counter = state['counter'].duplicate()
 	
 	# Remove nodes that aren't in the state we are loading.
-	for node_path in spawned_nodes:
+	for node_path in spawned_nodes.keys():
 		if not spawn_records.has(node_path):
 			var node = spawned_nodes[node_path]
 			if node.has_method('_network_despawn'):
@@ -80,9 +79,10 @@ func _load_state(state: Dictionary) -> void:
 				node.get_parent().remove_child(node)
 			node.queue_free()
 			spawned_nodes.erase(node_path)
+			#print ("[LOAD] de-spawned: %s" % node.name)
 	
 	# Spawn nodes that don't already exist.
-	for node_path in spawn_records:
+	for node_path in spawn_records.keys():
 		if not spawned_nodes.has(node_path):
 			var spawn_record = spawn_records[node_path]
 			
@@ -97,3 +97,4 @@ func _load_state(state: Dictionary) -> void:
 				spawned_node._network_spawn(spawn_record['data'])
 			
 			spawned_nodes[node_path] = spawned_node
+			#print ("[LOAD] re-spawned: %s" % spawned_node.name)
