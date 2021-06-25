@@ -1,5 +1,6 @@
-extends AnimatedSprite
+extends Node2D
 
+onready var animation_player = $AnimationPlayer
 onready var sounds = $Sounds
 
 var animation_finished := false
@@ -10,7 +11,7 @@ func _network_spawn(data: Dictionary) -> void:
 	scale = Vector2(data['scale'], data['scale'])
 	
 	var anim = data['type']
-	play(anim)
+	animation_player.play(anim)
 	
 	# @todo Can we do something like this with rollback?
 	#yield(get_tree().create_timer(randf() * 0.150), "timeout")
@@ -23,13 +24,14 @@ func _network_spawn(data: Dictionary) -> void:
 		else:
 			sounds.play('Hit')
 
-func _on_Explosion_animation_finished() -> void:
+func _on_AnimationPlayer_animation_finished(anim_name: String) -> void:
 	visible = false
 	animation_finished = true
-	if sound_finished:
-		queue_free()
+	#if sound_finished:
+	queue_free()
 
-func _on_Sounds_finished() -> void:
-	sound_finished = true
-	if animation_finished:
-		queue_free()
+#func _on_Sounds_finished() -> void:
+#	sound_finished = true
+#	if animation_finished:
+#		queue_free()
+
