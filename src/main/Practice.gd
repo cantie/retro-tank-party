@@ -38,6 +38,7 @@ func _on_UILayer_back_button() -> void:
 	if ui_layer.current_screen_name == 'DebugScreen':
 		ui_layer.hide_screen()
 	else:
+		SyncManager.stop()
 		get_tree().change_scene("res://src/main/Title.tscn")
 
 func _on_Game_game_error(message) -> void:
