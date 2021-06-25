@@ -318,7 +318,7 @@ func _save_current_state() -> void:
 	if log_state and not get_tree().is_network_server() and is_player_input_complete(current_tick):
 		rpc_id(1, "_log_saved_state", current_tick, state_data)
 
-func _do_tick(delta: float) -> void:
+func _do_tick(delta: float, is_rollback: bool = false) -> void:
 	var input_frame := _get_input_frame(current_tick)
 	var previous_frame := _get_input_frame(current_tick - 1)
 	
@@ -332,6 +332,10 @@ func _do_tick(delta: float) -> void:
 	
 	_call_network_process(delta, input_frame)
 	_save_current_state()
+	
+	if is_rollback:
+		# @todo This is theoretically where we want message_queue->flush()
+		PhysicsServer.simulate()
 
 func _get_or_create_input_frame(tick: int) -> InputBufferFrame:
 	var input_frame: InputBufferFrame
@@ -440,7 +444,7 @@ func _physics_process(delta: float) -> void:
 		# Iterate forward until we're at the same spot we left off.
 		while rollback_ticks > 0:
 			current_tick += 1
-			_do_tick(delta)
+			_do_tick(delta, true)
 			rollback_ticks -= 1
 		assert(current_tick == original_tick, "Rollback didn't return to the original tick")
 	

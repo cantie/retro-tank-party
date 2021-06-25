@@ -3,6 +3,9 @@ TODO
 
  - Re-implement shooting
    o Why aren't explosions happening when colliding with obstacles? (Physics engine?)
+     - What prevent areas from entering the same body over and over again?
+	 - A bullet and its explosion should not be saved in the SpawnManager state on the same frame
+	 - Maybe state should be saved before running _network_process() not after? Or, does this not make a difference (because it loops)?
    o Figure out how to handle sound (remove all the "destroy after sound" junk)
    o Update Spread and Tracer if necessary
    o Fix Railgun

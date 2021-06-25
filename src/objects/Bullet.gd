@@ -20,6 +20,7 @@ func explode(type: String) -> void:
 	queue_free()
 
 func _network_process(delta: float, _input: Dictionary) -> void:
+	._network_process(delta, _input)
 	position += vector * speed * delta
 
 func _on_LifetimeTimer_timeout() -> void:

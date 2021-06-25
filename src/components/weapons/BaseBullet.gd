@@ -32,6 +32,9 @@ func _network_spawn(data: Dictionary) -> void:
 	damage = data['damage']
 	lifetime_timer.start()
 
+func _network_process(_delta: float, _input: Dictionary) -> void:
+	check_collision()
+
 func _save_state() -> Dictionary:
 	return {
 		position = position,
@@ -56,9 +59,15 @@ func explode(type: String):
 func can_hit(body: PhysicsBody2D) -> bool:
 	return body != tank
 
-func _on_Bullet_body_entered(body: PhysicsBody2D) -> void:
+func check_collision() -> void:
+	for body in get_overlapping_bodies():
+		_on_bullet_collision(body)
+
+func _on_bullet_collision(body: PhysicsBody2D) -> void:
 	if not can_hit(body):
 		return
+	
+	print ("spawning an explosion")
 	
 	if body.has_method("take_damage"):
 		body.take_damage(damage, player_id, vector.normalized())
