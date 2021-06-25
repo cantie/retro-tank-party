@@ -528,6 +528,7 @@ func _hook_default_die(event: DieEvent) -> void:
 	if not dead:
 		dead = true
 		
+		# @todo Replace with SpawnManager
 		var explosion = Explosion.instance()
 		get_parent().add_child(explosion)
 		explosion.setup(global_position, 1.5, "fire")
