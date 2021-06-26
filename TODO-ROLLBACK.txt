@@ -1,6 +1,8 @@
 TODO
 ====
 
+ - SyncManager: make sure ping timer runs even when game is paused
+ - Add peers to SyncManager in MatchSetup or SessionSetup, so ping timer can start earlier
  - Re-implement shooting
    o Why aren't explosions happening when colliding with obstacles? (Physics engine?)
      - What prevent areas from entering the same body over and over again?
@@ -13,4 +15,5 @@ TODO
  - Try out matches and scoring
  - Figure out why a buffer of 20 frames is too small for 100ms of latency (we should be fine up to 320!)
  - Figure out how to handle sound!
+ - Implement spectators
 
