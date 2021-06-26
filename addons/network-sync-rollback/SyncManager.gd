@@ -438,6 +438,11 @@ func _physics_process(delta: float) -> void:
 			return
 		
 		_call_load_state(state_buffer[-rollback_ticks - 1].data)
+		# After loading all the positions from the end of the tick before the
+		# tick we are going to re-run, we need to manually run a physics tick,
+		# in order to clear the old collsion data, and set things up as they
+		# were before running this tick last time.
+		PhysicsServer.simulate()
 		state_buffer.resize(state_buffer.size() - rollback_ticks)
 		current_tick -= rollback_ticks
 		

@@ -44,6 +44,8 @@ func _save_state() -> Dictionary:
 func _load_state(state: Dictionary) -> void:
 	position = state['position']
 	rotation = state['rotation']
+	# @todo Why isn't this triggered automatically?
+	Physics2DServer.area_set_transform(get_rid(), global_transform)
 
 func setup_bullet(_tank, weapon_type) -> void:
 	# @todo Remove this method!
