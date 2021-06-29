@@ -334,8 +334,7 @@ func _do_tick(delta: float, is_rollback: bool = false) -> void:
 	_save_current_state()
 	
 	if is_rollback:
-		# @todo This is theoretically where we want message_queue->flush()
-		PhysicsServer.simulate()
+		Physics.simulate()
 
 func _get_or_create_input_frame(tick: int) -> InputBufferFrame:
 	var input_frame: InputBufferFrame
@@ -438,13 +437,14 @@ func _physics_process(delta: float) -> void:
 			return
 		
 		_call_load_state(state_buffer[-rollback_ticks - 1].data)
+		state_buffer.resize(state_buffer.size() - rollback_ticks)
+		current_tick -= rollback_ticks
+		
 		# After loading all the positions from the end of the tick before the
 		# tick we are going to re-run, we need to manually run a physics tick,
 		# in order to clear the old collsion data, and set things up as they
 		# were before running this tick last time.
-		PhysicsServer.simulate()
-		state_buffer.resize(state_buffer.size() - rollback_ticks)
-		current_tick -= rollback_ticks
+		Physics.simulate()
 		
 		# Iterate forward until we're at the same spot we left off.
 		while rollback_ticks > 0:
