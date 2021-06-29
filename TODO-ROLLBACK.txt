@@ -1,17 +1,16 @@
 TODO
 ====
 
- - SyncManager: make sure ping timer runs even when game is paused
- - Add peers to SyncManager in MatchSetup or SessionSetup, so ping timer can start earlier
+ - Make ping times more apparent
+   o SyncManager: make sure ping timer runs even when game is paused
+   o Add peers to SyncManager in MatchSetup or SessionSetup, so ping timer can start earlier
+   o Show ping timer somewhere more prominent before the match starts (ReadyScreen?)
  - Re-implement shooting
-   o Why aren't explosions happening when colliding with obstacles? (Physics engine?)
-     - Maybe transferms aren't actually being updated in the physics server? (maybe our flush_transform doesn't have the nodes on it's list of changed xforms)
-     - What prevent areas from entering the same body over and over again?
-     - A bullet and its explosion should not be saved in the SpawnManager state on the same frame
-     - Maybe state should be saved before running _network_process() not after? Or, does this not make a difference (because it loops)?
-   o Figure out how to handle sound (remove all the "destroy after sound" junk)
+   o A bullet and its explosion should not be saved in the SpawnManager state on the same frame
+     * Is this still happening?
    o Update Spread and Tracer if necessary
    o Fix Railgun
+ - Implement spawning/de-spawning of the tanks themselves
  - Re-implement abilities
  - Try out matches and scoring
  - Figure out why a buffer of 20 frames is too small for 100ms of latency (we should be fine up to 320!)
