@@ -127,6 +127,8 @@ signal peer_removed (peer_id)
 signal peer_pinged_back (peer)
 
 func _ready() -> void:
+	get_tree().connect("network_peer_disconnected", self, "remove_peer")
+	
 	_ping_timer = Timer.new()
 	_ping_timer.name = "PingTimer"
 	_ping_timer.wait_time = ping_frequency
@@ -179,14 +181,17 @@ func clear_peers() -> void:
 func _on_ping_timer_timeout() -> void:
 	var system_time = OS.get_system_time_msecs()
 	for peer_id in peers:
+		assert(peer_id != get_tree().get_network_unique_id(), "Cannot ping ourselves")
 		var msg = {
 			local_time = system_time,
 		}
 		rpc_id(peer_id, "_remote_ping", msg)
 
 remote func _remote_ping(msg: Dictionary) -> void:
+	var peer_id = get_tree().get_rpc_sender_id()
+	assert(peer_id != get_tree().get_network_unique_id(), "Cannot ping back ourselves")
 	msg['remote_time'] = OS.get_system_time_msecs()
-	rpc_id(get_tree().get_rpc_sender_id(), "_remote_ping_back", msg)
+	rpc_id(peer_id, "_remote_ping_back", msg)
 
 remote func _remote_ping_back(msg: Dictionary) -> void:
 	var system_time = OS.get_system_time_msecs()
@@ -419,6 +424,9 @@ func _get_input_message_for_peer(peer: Peer) -> Dictionary:
 		msg[input_frame.tick] = input_frame.players[local_peer_id].input
 		index += 1
 	
+	#var keys = msg.keys()
+	#print ("Sending ticks %s - %s" % [keys[0], keys[-1]])
+	
 	return msg
 
 func _physics_process(delta: float) -> void:
@@ -494,6 +502,7 @@ func _physics_process(delta: float) -> void:
 	input_frame.players[get_tree().get_network_unique_id()] = InputForPlayer.new(local_input, false)
 	
 	for peer_id in peers:
+		assert(peer_id != get_tree().get_network_unique_id(), "Cannot send input to ourselves")
 		var peer = peers[peer_id]
 		var msg = {
 			InputMessageKey.TICK: input_tick,

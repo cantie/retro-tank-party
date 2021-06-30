@@ -27,13 +27,6 @@ func _show_screen(info: Dictionary = {}) -> void:
 	if players.size() > 0 or clear:
 		clear_players()
 	
-	SyncManager.clear_peers()
-	for session_id in players:
-		var player = players[session_id]
-		add_player(session_id, player.username, player.peer_id == 1)
-		if player.peer_id != get_tree().get_network_unique_id():
-			SyncManager.add_peer(player.peer_id)
-	
 	if match_id:
 		match_id_container.visible = true
 		match_id_label.text = match_id
@@ -96,8 +89,6 @@ func _on_MatchCopyButton_pressed() -> void:
 
 func _on_OnlineMatch_player_joined(player) -> void:
 	add_player(player.session_id, player.username, player.peer_id == 1)
-	if player.peer_id != get_tree().get_network_unique_id():
-		SyncManager.add_peer(player.peer_id)
 
 func _on_OnlineMatch_player_left(player) -> void:
 	remove_player(player.session_id)
@@ -107,6 +98,8 @@ func _on_OnlineMatch_player_status_changed(player, status) -> void:
 		# Don't go backwards from 'READY!'
 		if get_status(player.session_id) != 'READY!':
 			set_status(player.session_id, 'Connected.')
+		if player.peer_id != get_tree().get_network_unique_id():
+			SyncManager.add_peer(player.peer_id)
 	elif status == OnlineMatch.PlayerStatus.CONNECTING:
 		set_status(player.session_id, 'Connecting...')
 
