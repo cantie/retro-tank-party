@@ -17,6 +17,7 @@ func _ready() -> void:
 	OnlineMatch.connect("player_status_changed", self, "_on_OnlineMatch_player_status_changed")
 	OnlineMatch.connect("match_ready", self, "_on_OnlineMatch_match_ready")
 	OnlineMatch.connect("match_not_ready", self, "_on_OnlineMatch_match_not_ready")
+	SyncManager.connect("peer_pinged_back", self, "_on_SyncManager_peer_pinged_back")
 
 func _show_screen(info: Dictionary = {}) -> void:
 	var players: Dictionary = info.get("players", {})
@@ -26,8 +27,12 @@ func _show_screen(info: Dictionary = {}) -> void:
 	if players.size() > 0 or clear:
 		clear_players()
 	
+	SyncManager.clear_peers()
 	for session_id in players:
-		add_player(session_id, players[session_id]['username'], players[session_id]['peer_id'] == 1)
+		var player = players[session_id]
+		add_player(session_id, player.username, player.peer_id == 1)
+		if player.peer_id != get_tree().get_network_unique_id():
+			SyncManager.add_peer(player.peer_id)
 	
 	if match_id:
 		match_id_container.visible = true
@@ -91,6 +96,8 @@ func _on_MatchCopyButton_pressed() -> void:
 
 func _on_OnlineMatch_player_joined(player) -> void:
 	add_player(player.session_id, player.username, player.peer_id == 1)
+	if player.peer_id != get_tree().get_network_unique_id():
+		SyncManager.add_peer(player.peer_id)
 
 func _on_OnlineMatch_player_left(player) -> void:
 	remove_player(player.session_id)
@@ -108,3 +115,16 @@ func _on_OnlineMatch_match_ready(_players: Dictionary) -> void:
 
 func _on_OnlineMatch_match_not_ready() -> void:
 	set_ready_button_enabled(false)
+
+#####
+# SyncManager callbacks
+#####
+
+func _on_SyncManager_peer_pinged_back(peer: SyncManager.Peer) -> void:
+	var player := OnlineMatch.get_player_by_peer_id(peer.peer_id)
+	if not player:
+		return
+	
+	var status_node = status_container.get_node(player.session_id)
+	if status_node:
+		status_node.set_ping_time(peer.rtt)

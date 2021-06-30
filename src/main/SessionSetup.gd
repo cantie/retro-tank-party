@@ -8,6 +8,8 @@ var players_ready := {}
 func _ready() -> void:
 	# Make extra sure that we aren't in an existing match when this scene starts.
 	OnlineMatch.leave()
+	SyncManager.stop()
+	SyncManager.clear_peers()
 	
 	OnlineMatch.connect("error", self, "_on_OnlineMatch_error")
 	OnlineMatch.connect("disconnected", self, "_on_OnlineMatch_disconnected")

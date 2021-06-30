@@ -251,7 +251,7 @@ func get_session_id(peer_id: int):
 			return session_id
 	return null
 
-func get_player_by_peer_id(peer_id: int):
+func get_player_by_peer_id(peer_id: int) -> Player:
 	var session_id = get_session_id(peer_id)
 	if session_id:
 		return players[session_id]

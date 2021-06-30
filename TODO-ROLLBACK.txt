@@ -1,10 +1,6 @@
 TODO
 ====
 
- - Make ping times more apparent
-   o SyncManager: make sure ping timer runs even when game is paused
-   o Add peers to SyncManager in MatchSetup or SessionSetup, so ping timer can start earlier
-   o Show ping timer somewhere more prominent before the match starts (ReadyScreen?)
  - Re-implement shooting
    o A bullet and its explosion should not be saved in the SpawnManager state on the same frame
      * Is this still happening?
