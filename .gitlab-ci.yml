@@ -143,6 +143,27 @@ web:
     - steam
     - /^steam-.*$/
 
+web-review:
+  stage: deploy
+  dependencies:
+    - web
+  needs:
+    - web
+  script:
+    - rm -rf review
+    - cp -r build/web review
+  artifacts:
+    paths:
+      - review
+  environment:
+    name: "review/$CI_COMMIT_REF_NAME"
+    url: "https://$CI_PROJECT_NAMESPACE.gitlab.io/-/$CI_PROJECT_NAME/-/jobs/$CI_JOB_ID/artifacts/review/index.html"
+  except:
+    - devel
+    - master
+    - steam
+    - /^steam-.*$/
+
 pages:
   stage: deploy
   dependencies:
