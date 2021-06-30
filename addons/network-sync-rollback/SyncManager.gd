@@ -322,6 +322,8 @@ func _do_tick(delta: float, is_rollback: bool = false) -> void:
 	var input_frame := _get_input_frame(current_tick)
 	var previous_frame := _get_input_frame(current_tick - 1)
 	
+	assert(input_frame != null, "Input frame for current_tick is null")
+	
 	# Predict any missing input.
 	for peer_id in peers:
 		if not input_frame.players.has(peer_id) or input_frame.players[peer_id].predicted:
@@ -352,8 +354,11 @@ func _get_or_create_input_frame(tick: int) -> InputBufferFrame:
 		if input_frame == null:
 			return _handle_fatal_error("Requested input frame (%s) not found in buffer" % tick)
 	
-	# Clean-up old input buffer frames.
-	while input_buffer.size() > max_buffer_size:
+	# Clean-up old input buffer frames. Unlike state frames, we can have many
+	# frames from the future if we are running behind. We don't want having too
+	# many future frames to end up discarding input for the current frame, so we
+	# only count input frames before the current frame towards the buffer size.
+	while (current_tick - _input_buffer_start_tick) > max_buffer_size:
 		_input_buffer_start_tick += 1
 		var retired_input_frame = input_buffer.pop_front()
 		if not retired_input_frame.is_complete(peers):
@@ -553,6 +558,9 @@ remote func _receive_input_tick(msg: Dictionary) -> void:
 	peer.remote_lag = (peer.last_remote_tick_received + 1) - peer.next_local_tick_requested
 
 master func _log_saved_state(tick: int, remote_data: Dictionary) -> void:
+	if not started:
+		return
+	
 	var peer_id = get_tree().get_rpc_sender_id()
 	if not _logged_remote_state.has(peer_id):
 		_logged_remote_state[peer_id] = []
