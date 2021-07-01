@@ -1,16 +1,30 @@
 TODO
 ====
 
- - Profile our rollbacks so we can see how close we are to the frame budget
+MILESTONE 0:
+
  - Re-implement shooting
    o A bullet and its explosion should not be saved in the SpawnManager state on the same frame
      * Is this still happening?
    o Update Spread and Tracer if necessary
    o Fix Railgun
  - Implement spawning/de-spawning of the tanks themselves
- - Re-implement abilities
  - Try out matches and scoring
+ - Get the game playable by real people!!
+
+MILESTONE 2:
+
+ - Profile our rollbacks so we can see how close we are to the frame budget
+ - Re-implement abilities
  - Figure out why a buffer of 20 frames is too small for 100ms of latency (we should be fine up to 320!)
+
+INTERMISSION:
+
+ - Decide whether this is a viable way forward or not
+
+MILESTONE 3:
+
+ - Figure out how to handle physics
  - Figure out how to handle sound!
  - Implement spectators
 
