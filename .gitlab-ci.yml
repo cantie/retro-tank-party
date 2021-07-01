@@ -40,6 +40,8 @@ windows:
   except:
     - steam
     - /^steam-.*$/
+  # Disable:
+  when: manual
 
 windows-signed:
   stage: sign
@@ -81,6 +83,8 @@ linux:
   except:
     - steam
     - /^steam-.*$/
+  # Disable:
+  when: manual
 
 macosx:
   <<: *export_before_script
@@ -105,6 +109,8 @@ macosx:
   except:
     - steam
     - /^steam-.*$/
+  # Disable:
+  when: manual
 
 macosx-signed:
   stage: sign
@@ -133,6 +139,11 @@ web:
   <<: *export_before_script
   stage: export
   script:
+    # Get the custom template built with rollback changes.
+    - wget "https://www.dropbox.com/s/vop8xxkvdk79igq/godot.javascript.opt.zip?dl=1" -O ./build/templates/templates.zip
+    - ./scripts/update-export-setting.py export_presets.cfg preset.3.options custom_template/debug "\"$PWD/build/templates/templates.zip\""
+    - ./scripts/update-export-setting.py export_presets.cfg preset.3.options custom_template/release "\"$PWD/build/templates/templates.zip\""
+
     - mkdir -v -p build/web
     - godot -v --export "HTML5" ./build/web/index.html
   artifacts:
