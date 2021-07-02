@@ -3,6 +3,11 @@ TODO
 
 MILESTONE 0:
 
+ - Matchmaker not listing all players
+ - "Unable to restore state" when player leaves match (disconnects)
+ - Implement generic solution for modifying spawned objects after they are spawned
+
+
  - Re-implement shooting
    o A bullet and its explosion should not be saved in the SpawnManager state on the same frame
      * Is this still happening?
@@ -11,7 +16,6 @@ MILESTONE 0:
  - Implement spawning/de-spawning of the tanks themselves
  - Try out matches and scoring
  - Get the game playable by real people!!
- - Matchmaker not listing all players
 
 MILESTONE 2:
 

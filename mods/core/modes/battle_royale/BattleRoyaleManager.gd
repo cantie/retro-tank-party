@@ -25,6 +25,16 @@ func _setup_new_round() -> void:
 	round_over = false
 	game.game_setup(players, map_path)
 
+func _save_state() -> Dictionary:
+	return {
+		round_over = round_over,
+		match_over = match_over,
+	}
+
+func _load_state(state: Dictionary) -> void:
+	round_over = state['round_over']
+	match_over = state['match_over']
+
 func _on_game_player_dead(player_id: int, killer_id: int) -> void:
 	var my_id = get_tree().get_network_unique_id()
 	if player_id == my_id:

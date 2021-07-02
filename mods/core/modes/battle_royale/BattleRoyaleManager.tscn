@@ -3,7 +3,9 @@
 [ext_resource path="res://mods/core/modes/battle_royale/BattleRoyaleManager.gd" type="Script" id=1]
 [ext_resource path="res://addons/network-sync-rollback/NetworkTimer.gd" type="Script" id=2]
 
-[node name="BattleRoyaleManager" type="Node"]
+[node name="BattleRoyaleManager" type="Node" groups=[
+"network_sync",
+]]
 script = ExtResource( 1 )
 
 [node name="ShowScoreTimer" type="Node" parent="."]

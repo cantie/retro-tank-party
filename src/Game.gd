@@ -93,8 +93,10 @@ func respawn_player(peer_id: int, start_transform = null) -> void:
 		spawn_data['start_transform'] = player_start_transforms[player.index - 1]
 	
 	var tank = SyncManager.spawn(str(peer_id), players_node, TankScene, spawn_data, false)
-	tank.connect("player_dead", self, "_on_player_dead", [peer_id])
-	
+
+# @todo We need a generic solution to this!
+func _on_tank_spawned(tank) -> void:
+	tank.connect("player_dead", self, "_on_player_dead", [tank])
 	emit_signal("player_spawned", tank)
 
 func make_player_controlled(peer_id) -> void:
@@ -199,7 +201,7 @@ func kill_player(player_id) -> void:
 			# If there is no die method, we do the most important things it
 			# would have done.
 			player_node.queue_free()
-			_on_player_dead(-1, player_id)
+			_on_player_dead(-1, player_node)
 
 func remove_player(player_id) -> void:
 	players.erase(player_id)
@@ -212,16 +214,17 @@ func enable_watch_camera(enable: bool = true) -> void:
 	# Disable positional audio when the watch camera is enabled.
 	Globals.use_positional_audio = not enable
 
-func _on_player_dead(killer_id, player_id) -> void:
+func _on_player_dead(killer_id, tank) -> void:
+	var peer_id = tank.get_network_master()
 	# Ensure this will only ever be called once per player
-	if players_alive.has(player_id):
-		players_alive.erase(player_id)
+	if players_alive.has(peer_id):
+		players_alive.erase(peer_id)
 		
-		var player_node = players_node.get_node(str(player_id))
+		var player_node = players_node.get_node(str(peer_id))
 		if player_node and player_node.player_controlled:
 			hud.clear_all_labels()
 		
-		emit_signal("player_dead", player_id, killer_id)
+		emit_signal("player_dead", peer_id, killer_id)
 
 func create_free_space_detector():
 	var detector = FreeSpaceDetector.instance()
