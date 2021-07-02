@@ -1,6 +1,10 @@
 extends "res://src/components/modes/BaseManager.gd"
 
+onready var show_score_timer := $ShowScoreTimer
+onready var next_round_timer := $NextRoundTimer
+
 var round_over := false
+var match_over := false
 
 func _get_synchronized_rpc_methods() -> Array:
 	return ['_setup_new_round']
@@ -27,7 +31,7 @@ func _on_game_player_dead(player_id: int, killer_id: int) -> void:
 		ui_layer.show_message("You lose!")
 		game.enable_watch_camera()
 	
-	if get_tree().is_network_server() and not round_over and  (game.players_alive.size() == 1 or not _check_team_alive(player_id)):
+	if not round_over and  (game.players_alive.size() == 1 or not _check_team_alive(player_id)):
 		round_over = true
 		var winner_id := -1
 		if use_teams:
@@ -38,9 +42,10 @@ func _on_game_player_dead(player_id: int, killer_id: int) -> void:
 			winner_id = player_keys[0]
 
 		score.increment_score(winner_id)
+		match_over = score.get_score(winner_id) >= config['points_to_win']
 		
-		var is_match: bool = score.get_score(winner_id) >= config['points_to_win']
-		rpc("show_winner", score.get_name(winner_id), score.to_dict(), is_match)
+		show_winner(score.get_name(winner_id))
+		#rpc("show_winner", score.get_name(winner_id), score.to_dict(), is_match)
 
 func _check_team_alive(player_id: int) -> bool:
 	var team_id = get_player_team(player_id)
@@ -49,19 +54,20 @@ func _check_team_alive(player_id: int) -> bool:
 			return true
 	return false
 
-remotesync func show_winner(winner_name: String, host_score: Dictionary, is_match: bool = false) -> void:
-	if is_match:
+remotesync func show_winner(winner_name: String) -> void:
+	if match_over:
 		ui_layer.show_message(winner_name + " WINS THE WHOLE MATCH!")
 	else:
 		ui_layer.show_message(winner_name + " wins this round!")
 	
-	yield(get_tree().create_timer(2.0), "timeout")
-	
-	ui_layer.show_screen("RoundScreen", {score = host_score})
-	
-	yield(get_tree().create_timer(2.0), "timeout")
-	
-	if is_match:
+	show_score_timer.start()
+
+func _on_ShowScoreTimer_timeout() -> void:
+	ui_layer.show_screen("RoundScreen", {score = score.to_dict()})
+	next_round_timer.start()
+
+func _on_NextRoundTimer_timeout() -> void:
+	if match_over:
 		match_scene.finish_match()
 	elif get_tree().is_network_server():
 		start_new_round()
