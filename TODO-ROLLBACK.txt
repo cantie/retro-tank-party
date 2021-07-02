@@ -6,22 +6,12 @@ MILESTONE 0:
  - Matchmaker not listing all players
  - "Unable to restore state" when player leaves match (disconnects)
  - Implement generic solution for modifying spawned objects after they are spawned
-
-
- - Re-implement shooting
-   o A bullet and its explosion should not be saved in the SpawnManager state on the same frame
-     * Is this still happening?
-   o Update Spread and Tracer if necessary
-   o Fix Railgun (or disable for now?)
- - Implement spawning/de-spawning of the tanks themselves
- - Try out matches and scoring
- - Get the game playable by real people!!
+ - Get Battle Royale fully working
 
 MILESTONE 2:
 
- - Profile our rollbacks so we can see how close we are to the frame budget
- - Re-implement abilities
  - Figure out why a buffer of 20 frames is too small for 100ms of latency (we should be fine up to 320!)
+ - Profile our rollbacks so we can see how close we are to the frame budget
 
 INTERMISSION:
 
@@ -29,6 +19,9 @@ INTERMISSION:
 
 MILESTONE 3:
 
+ - Fix Railgun
+ - Re-implement abilities
+   o Maybe we shouldn't actually create the ability node until we use the ability?
  - Figure out how to handle physics
  - Figure out how to handle sound!
  - Implement spectators
