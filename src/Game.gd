@@ -81,17 +81,18 @@ func respawn_player(peer_id: int, start_transform = null) -> void:
 	var player = players[peer_id]
 	players_alive[peer_id] = player
 	
-	var tank = TankScene.instance()
-	tank.name = str(peer_id)
-	players_node.add_child(tank)
+	var spawn_data := {
+		game = self,
+		player = player,
+	}
 	
 	if start_transform:
-		tank.global_transform = start_transform
+		spawn_data['start_transform'] = start_transform
 	else:
 		var player_start_transforms = map.get_player_start_transforms()
-		tank.global_transform = player_start_transforms[player.index - 1]
+		spawn_data['start_transform'] = player_start_transforms[player.index - 1]
 	
-	tank.setup_tank(self, player)
+	var tank = SyncManager.spawn(str(peer_id), players_node, TankScene, spawn_data, false)
 	tank.connect("player_dead", self, "_on_player_dead", [peer_id])
 	
 	emit_signal("player_spawned", tank)

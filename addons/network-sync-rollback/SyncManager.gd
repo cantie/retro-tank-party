@@ -600,4 +600,4 @@ func _check_remote_state(peer_id: int, remote_state: StateBufferFrame, local_sta
 		emit_signal("remote_state_mismatch", local_state.tick, peer_id, local_state.data, remote_state.data)
 
 func spawn(name: String, parent: Node, scene: PackedScene, data: Dictionary = {}, rename: bool = true) -> Node:
-	return _spawn_manager.spawn(name, parent, scene, data)
+	return _spawn_manager.spawn(name, parent, scene, data, rename)

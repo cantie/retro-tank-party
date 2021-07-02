@@ -7,10 +7,11 @@ MILESTONE 0:
    o A bullet and its explosion should not be saved in the SpawnManager state on the same frame
      * Is this still happening?
    o Update Spread and Tracer if necessary
-   o Fix Railgun
+   o Fix Railgun (or disable for now?)
  - Implement spawning/de-spawning of the tanks themselves
  - Try out matches and scoring
  - Get the game playable by real people!!
+ - Matchmaker not listing all players
 
 MILESTONE 2:
 

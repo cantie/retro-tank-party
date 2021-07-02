@@ -148,16 +148,27 @@ func _notification(what) -> void:
 	if what == NOTIFICATION_PREDELETE:
 		hooks.clear()
 
-func setup_tank(_game, player) -> void:
-	game = _game
+func _network_spawn_preprocess(data: Dictionary) -> Dictionary:
+	data['game'] = str(data['game'].get_path())
+	var player = data['player']
+	data['player_index'] = player.index
+	data['peer_id'] = player.peer_id
+	data['player_name'] = player.name
+	data['team'] = player.team
+	return data
+
+func _network_spawn(data: Dictionary) -> void:
+	game = get_node(data['game'])
 	
-	player_index = player.index
-	set_network_master(player.peer_id)
-	player_info_node.set_player_name(player.name)
-	set_tank_color(player_index)
+	global_transform = data['start_transform']
 	
-	if player.team != -1:
-		player_info_node.set_team(player.team)
+	player_index = data['player_index']
+	set_network_master(data['peer_id'])
+	player_info_node.set_player_name(data['player_name'])
+	set_tank_color(data['player_index'])
+	
+	if data['team'] != -1:
+		player_info_node.set_team(data['team'])
 
 func pickup_weapon(_weapon_type: WeaponType) -> void:
 	hooks.dispatch_event("pickup_weapon", PickupWeaponEvent.new(self, _weapon_type))
@@ -392,12 +403,16 @@ func _save_state() -> Dictionary:
 		position = position,
 		rotation = rotation,
 		can_shoot = can_shoot,
+		health = health,
+		weapon_type = weapon_type.resource_path,
 	}
 
 func _load_state(state: Dictionary) -> void:
 	position = state['position']
 	rotation = state['rotation']
 	can_shoot = state['can_shoot']
+	update_health(state['health'])
+	set_weapon_type(load(state['weapon_type']))
 
 func _unhandled_input(event: InputEvent) -> void:
 	if event is InputEventMouseMotion:
@@ -500,12 +515,12 @@ func _hook_default_take_damage(event: TakeDamageEvent) -> void:
 	
 	emit_signal("hurt", event.damage, event.attacker_id, event.attack_vector)
 	
-	if is_network_master() and not invincible:
+	if not invincible:
 		health -= event.damage
 		if health <= 0:
-			rpc("die", event.attacker_id)
+			die(event.attacker_id)
 		else:
-			rpc("update_health", health)
+			update_health(health)
 
 func restore_health(_health: int) -> void:
 	hooks.dispatch_event("restore_health", RestoreHealthEvent.new(self, _health))
@@ -515,7 +530,7 @@ func _hook_default_restore_health(event: RestoreHealthEvent) -> void:
 		health += event.health
 		if health > 100:
 			health = 100
-		rpc("update_health", health)
+		update_health(health)
 
 remotesync func update_health(_health) -> void:
 	health = clamp(_health, 0, 100)
@@ -528,10 +543,11 @@ func _hook_default_die(event: DieEvent) -> void:
 	if not dead:
 		dead = true
 		
-		# @todo Replace with SpawnManager
-		var explosion = Explosion.instance()
-		get_parent().add_child(explosion)
-		explosion.setup(global_position, 1.5, "fire")
+		SyncManager.spawn("Explosion", get_parent(), Explosion, {
+			position = global_position,
+			scale = 1.5,
+			type = "fire",
+		})
 		
 		queue_free()
 		
