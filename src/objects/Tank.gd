@@ -149,7 +149,7 @@ func _notification(what) -> void:
 		hooks.clear()
 
 func _network_spawn_preprocess(data: Dictionary) -> Dictionary:
-	data['game'] = str(data['game'].get_path())
+	data['game'] = data['game'].get_path()
 	var player = data['player']
 	data['player_index'] = player.index
 	data['peer_id'] = player.peer_id

@@ -11,6 +11,8 @@ MILESTONE 0:
 MILESTONE 2:
 
  - Figure out why a buffer of 20 frames is too small for 100ms of latency (we should be fine up to 320!)
+ - How can we ignore the turret position when checking if we need to rollback?
+   |-> Ideally, when checking if real input matches our prediction, we wouldn't take turrent position into account
  - Profile our rollbacks so we can see how close we are to the frame budget
 
 INTERMISSION:

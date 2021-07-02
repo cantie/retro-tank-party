@@ -98,7 +98,7 @@ var state_buffer := []
 var max_buffer_size := 60
 var ticks_to_calculate_advantage := 60
 var input_delay := 2 setget set_input_delay
-var rollback_debug_ticks := 5
+var rollback_debug_ticks := 2
 var log_state := false
 
 # In seconds, because we don't want it to be dependent on the network tick.
@@ -125,6 +125,8 @@ signal remote_state_mismatch (tick, peer_id, local_state, remote_state)
 signal peer_added (peer_id)
 signal peer_removed (peer_id)
 signal peer_pinged_back (peer)
+signal state_loaded (rollback_ticks)
+signal tick_finished (is_rollback)
 
 func _ready() -> void:
 	get_tree().connect("network_peer_disconnected", self, "remove_peer")
@@ -341,8 +343,7 @@ func _do_tick(delta: float, is_rollback: bool = false) -> void:
 	_call_network_process(delta, input_frame)
 	_save_current_state()
 	
-	if is_rollback:
-		Physics.simulate()
+	emit_signal("tick_finished", is_rollback)
 
 func _get_or_create_input_frame(tick: int) -> InputBufferFrame:
 	var input_frame: InputBufferFrame
@@ -454,11 +455,7 @@ func _physics_process(delta: float) -> void:
 		state_buffer.resize(state_buffer.size() - rollback_ticks)
 		current_tick -= rollback_ticks
 		
-		# After loading all the positions from the end of the tick before the
-		# tick we are going to re-run, we need to manually run a physics tick,
-		# in order to clear the old collsion data, and set things up as they
-		# were before running this tick last time.
-		Physics.simulate()
+		emit_signal("state_loaded", rollback_ticks)
 		
 		# Iterate forward until we're at the same spot we left off.
 		while rollback_ticks > 0:

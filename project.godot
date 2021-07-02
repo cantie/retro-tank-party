@@ -198,6 +198,7 @@ Sounds="*res://src/autoload/Sounds.tscn"
 Music="*res://src/autoload/Music.tscn"
 Modding="*res://src/autoload/Modding.gd"
 SyncManager="*res://addons/network-sync-rollback/SyncManager.gd"
+SyncDebugger="*res://addons/network-sync-rollback/SyncDebugger.gd"
 
 [display]
 
@@ -319,6 +320,7 @@ sync_debug={
 [network]
 
 ssl/certificates="res://ca-certificates.crt"
+limits/debugger_stdout/max_chars_per_second=4096
 
 [physics]
 
