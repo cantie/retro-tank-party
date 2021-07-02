@@ -98,7 +98,7 @@ var state_buffer := []
 var max_buffer_size := 60
 var ticks_to_calculate_advantage := 60
 var input_delay := 2 setget set_input_delay
-var rollback_debug_ticks := 5
+var rollback_debug_ticks := 0
 var log_state := true
 
 # In seconds, because we don't want it to be dependent on the network tick.
