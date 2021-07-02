@@ -67,8 +67,6 @@ func _on_bullet_collision(body: PhysicsBody2D) -> void:
 	if not can_hit(body):
 		return
 	
-	print ("spawning an explosion")
-	
 	if body.has_method("take_damage"):
 		body.take_damage(damage, player_id, vector.normalized())
 		explode("fire")

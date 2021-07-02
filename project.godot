@@ -198,7 +198,6 @@ Sounds="*res://src/autoload/Sounds.tscn"
 Music="*res://src/autoload/Music.tscn"
 Modding="*res://src/autoload/Modding.gd"
 SyncManager="*res://addons/network-sync-rollback/SyncManager.gd"
-SyncDebugger="*res://addons/network-sync-rollback/SyncDebugger.gd"
 
 [display]
 
