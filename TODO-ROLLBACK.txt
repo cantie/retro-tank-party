@@ -3,7 +3,6 @@ TODO
 
 MILESTONE 0:
 
- - Matchmaker not listing all players
  - "Unable to restore state" when player leaves match (disconnects)
  - Setup the debug_rollback_ticks to compare the save states with the original save states so we can know the exact same things happened
  - Implement generic solution for modifying spawned objects after they are spawned

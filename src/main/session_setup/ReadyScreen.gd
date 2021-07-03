@@ -27,6 +27,10 @@ func _show_screen(info: Dictionary = {}) -> void:
 	if players.size() > 0 or clear:
 		clear_players()
 	
+	for session_id in players:
+		var player = players[session_id]
+		add_player(session_id, player.username, player.peer_id == 1)
+	
 	if match_id:
 		match_id_container.visible = true
 		match_id_label.text = match_id
