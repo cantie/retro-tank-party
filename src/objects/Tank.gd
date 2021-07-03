@@ -151,6 +151,7 @@ func _notification(what) -> void:
 func _network_spawn_preprocess(data: Dictionary) -> Dictionary:
 	data['game'] = data['game'].get_path()
 	var player = data['player']
+	data.erase('player')
 	data['player_index'] = player.index
 	data['peer_id'] = player.peer_id
 	data['player_name'] = player.name
