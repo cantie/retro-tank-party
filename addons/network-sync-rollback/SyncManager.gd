@@ -192,6 +192,9 @@ func add_peer(peer_id: int) -> void:
 func has_peer(peer_id: int) -> bool:
 	return peers.has(peer_id)
 
+func get_peer(peer_id: int) -> Peer:
+	return peers.get(peer_id)
+
 func remove_peer(peer_id: int) -> void:
 	if peers.has(peer_id):
 		peers.erase(peer_id)
@@ -347,8 +350,8 @@ func _save_current_state() -> void:
 		rpc_id(1, "_log_saved_state", current_tick, state_data)
 
 func _do_tick(delta: float, is_rollback: bool = false) -> void:
-	var input_frame := _get_input_frame(current_tick)
-	var previous_frame := _get_input_frame(current_tick - 1)
+	var input_frame := get_input_frame(current_tick)
+	var previous_frame := get_input_frame(current_tick - 1)
 	
 	assert(input_frame != null, "Input frame for current_tick is null")
 	
@@ -377,7 +380,7 @@ func _get_or_create_input_frame(tick: int) -> InputBufferFrame:
 			input_frame = InputBufferFrame.new(highest)
 			input_buffer.append(input_frame)
 	else:
-		input_frame = _get_input_frame(tick)
+		input_frame = get_input_frame(tick)
 		if input_frame == null:
 			return _handle_fatal_error("Requested input frame (%s) not found in buffer" % tick)
 	
@@ -394,7 +397,7 @@ func _get_or_create_input_frame(tick: int) -> InputBufferFrame:
 	
 	return input_frame
 
-func _get_input_frame(tick: int) -> InputBufferFrame:
+func get_input_frame(tick: int) -> InputBufferFrame:
 	if tick < _input_buffer_start_tick:
 		return null
 	var index = tick - _input_buffer_start_tick
@@ -403,6 +406,20 @@ func _get_input_frame(tick: int) -> InputBufferFrame:
 	var input_frame = input_buffer[index]
 	assert(input_frame.tick == tick, "Input frame retreived from input buffer has mismatched tick number")
 	return input_frame
+
+func get_latest_input_from_peer(peer_id: int) -> Dictionary:
+	if peers.has(peer_id):
+		var peer: Peer = peers[peer_id]
+		var input_frame = get_input_frame(peer.last_remote_tick_received)
+		if input_frame:
+			return input_frame.get_player_input(peer_id)
+	return {}
+
+func get_latest_input_for_node(node: Node) -> Dictionary:
+	return get_latest_input_from_peer_for_path(node.get_network_master(), str(node.get_path()))
+
+func get_latest_input_from_peer_for_path(peer_id: int, path: String) -> Dictionary:
+	return get_latest_input_from_peer(peer_id).get(path, {})
 
 func _get_state_frame(tick: int) -> StateBufferFrame:
 	if tick < _state_buffer_start_tick:
@@ -419,7 +436,7 @@ func is_player_input_complete(tick: int) -> bool:
 		# We don't have any input for this tick.
 		return false
 	
-	var input_frame = _get_input_frame(tick)
+	var input_frame = get_input_frame(tick)
 	if input_frame == null:
 		# This means this frame has already been removed from the buffer, which
 		# we would never allow if it wasn't complete.
@@ -558,26 +575,17 @@ remote func _receive_input_tick(msg: Dictionary) -> void:
 		var input_frame := _get_or_create_input_frame(remote_tick)
 		var tick_delta = current_tick - remote_tick
 		
+		var local_input = input_frame.get_player_input(peer_id)
+		input_frame.players[peer_id] = InputForPlayer.new(remote_input, false)
+		
 		# If we received a tick in the past and we aren't already setup to
 		# rollback earlier than that...
 		if tick_delta >= 0 and rollback_ticks <= tick_delta:
-			# Check if input matches what we had predicted, if not, inject it and then
-			# flag that we need to rollback.	
-			var local_input = input_frame.get_player_input(peer_id)
-			if local_input.hash() != remote_input.hash():
+			# Check if input matches what we had predicted, if not, flag that we
+			# need to rollback.
+			if local_input['$'] != remote_input['$']:
 				rollback_ticks = tick_delta + 1
-				input_frame.players[peer_id] = InputForPlayer.new(remote_input, false)
 				emit_signal("rollback_flagged", remote_tick, peer_id, local_input, remote_input)
-				
-
-			else:
-				# We predicted right, so just mark the input as correct!
-				input_frame.players[peer_id].predicted = false
-		# If we received a tick in the future, or are already set to rollback
-		# further anyway...
-		else:
-			# So, we just store this input for when we get to it.
-			input_frame.players[peer_id] = InputForPlayer.new(remote_input, false)
 	
 	# Record stats about the integrated input.
 	peer.last_remote_tick_received = max(msg[InputMessageKey.TICK], peer.last_remote_tick_received)

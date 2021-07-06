@@ -347,6 +347,12 @@ func _predict_remote_input(previous_input: Dictionary) -> Dictionary:
 	var input = previous_input.duplicate()
 	if input.get(PlayerInput.INPUT_VECTOR, Vector2.ZERO) != Vector2.ZERO:
 		_calculate_movement_vector(input)
+	
+	# We get turrent input from the most recent input.
+	var latest_input := SyncManager.get_latest_input_for_node(self)
+	if latest_input.has(PlayerInput.TURRET_ROTATION):
+			input[PlayerInput.TURRET_ROTATION] = latest_input[PlayerInput.TURRET_ROTATION]
+	
 	return input
 
 func _network_process(delta: float, input: Dictionary) -> void:
