@@ -200,6 +200,14 @@ Modding="*res://src/autoload/Modding.gd"
 SyncManager="*res://addons/network-sync-rollback/SyncManager.gd"
 SyncDebugger="*res://addons/network-sync-rollback/SyncDebugger.gd"
 
+[debug]
+
+multirun/number_of_windows=2
+multirun/add_custom_args=true
+multirun/first_window_args="--email=test@example.com --password=testing123 --join=matchmaker"
+multirun/other_window_args="--email=test@example.com --password=testing123 --join=matchmaker"
+multirun/window_distance=1270
+
 [display]
 
 window/size/width=1280
@@ -217,7 +225,7 @@ convert_text_resources_to_binary_on_export=true
 
 [editor_plugins]
 
-enabled=PoolStringArray( "res://addons/network-sync-rollback/plugin.cfg" )
+enabled=PoolStringArray( "res://addons/network-sync-rollback/plugin.cfg", "res://addons/multirun/plugin.cfg" )
 
 [gdnative]
 
