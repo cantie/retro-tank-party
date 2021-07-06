@@ -107,11 +107,12 @@ class NetworkSyncEvent extends TankEvent:
 		data = _data
 
 enum PlayerInput {
-	CONTROL_SCHEME,
+	TURRET_ROTATION = -1,
+	
+	CONTROL_SCHEME = 0,
 	INPUT_VECTOR,
 	MOVEMENT_VECTOR,
 	SNAP_TO_ROTATION,
-	TURRET_ROTATION,
 	SHOOTING,
 	USING_ABILITY,
 }

@@ -51,6 +51,26 @@ class InputForPlayer:
 	func _init(_input: Dictionary, _predicted: bool) -> void:
 		input = _input
 		predicted = _predicted
+		if not input.has('$'):
+			input['$'] = _calculate_cleaned_hash()
+	
+	# Calculates the input hash without any keys that start with '_' (if string)
+	# or less than 0 (if integer) to allow some properties to not count when
+	# comparing predicted input with real input.
+	func _calculate_cleaned_hash() -> int:
+		var cleaned_input := input.duplicate(true)
+		for path in cleaned_input:
+			if path == '$':
+				continue
+			for key in cleaned_input[path].keys():
+				var value = cleaned_input[path]
+				if key is String:
+					if key.begins_with('_'):
+						value.erase(key)
+				elif key is int:
+					if key < 0:
+						value.erase(key)
+		return cleaned_input.hash()
 
 class InputBufferFrame:
 	var tick: int
@@ -492,11 +512,12 @@ func _physics_process(delta: float) -> void:
 	input_tick += 1
 	current_tick += 1
 	
-	var local_input = _call_get_local_input()
 	var input_frame := _get_or_create_input_frame(input_tick)
+	assert(input_frame != null, "Unable to get or create input frame for current input tick")
 	if input_frame == null:
 		return
-	
+		
+	var local_input = _call_get_local_input()
 	input_frame.players[get_tree().get_network_unique_id()] = InputForPlayer.new(local_input, false)
 	
 	for peer_id in peers:
