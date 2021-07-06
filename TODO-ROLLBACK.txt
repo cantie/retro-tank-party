@@ -7,6 +7,8 @@ MILESTONE 0:
  - Implement generic solution for modifying spawned objects after they are spawned
  - Get Battle Royale fully working
  - Switch to storing state before starting the next tick? This would ensure that deferred stuff would happen...
+ - Integrate the multirun addon: 
+   * https://github.com/perfoon/Multirun
 
 MILESTONE 1:
 
