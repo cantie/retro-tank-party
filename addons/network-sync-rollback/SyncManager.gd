@@ -575,17 +575,21 @@ remote func _receive_input_tick(msg: Dictionary) -> void:
 		var input_frame := _get_or_create_input_frame(remote_tick)
 		var tick_delta = current_tick - remote_tick
 		
-		var local_input = input_frame.get_player_input(peer_id)
-		input_frame.players[peer_id] = InputForPlayer.new(remote_input, false)
-		
 		# If we received a tick in the past and we aren't already setup to
 		# rollback earlier than that...
 		if tick_delta >= 0 and rollback_ticks <= tick_delta:
-			# Check if input matches what we had predicted, if not, flag that we
-			# need to rollback.
+			# Grab our predicted input, and store the remote input.
+			var local_input = input_frame.get_player_input(peer_id)
+			input_frame.players[peer_id] = InputForPlayer.new(remote_input, false)
+			
+			# Check if the remote input matches what we had predicted, if not,
+			# flag that we need to rollback.
 			if local_input['$'] != remote_input['$']:
 				rollback_ticks = tick_delta + 1
 				emit_signal("rollback_flagged", remote_tick, peer_id, local_input, remote_input)
+		else:
+			# Otherwise, just store it.
+			input_frame.players[peer_id] = InputForPlayer.new(remote_input, false)
 	
 	# Record stats about the integrated input.
 	peer.last_remote_tick_received = max(msg[InputMessageKey.TICK], peer.last_remote_tick_received)
