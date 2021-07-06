@@ -11,10 +11,6 @@ MILESTONE 0:
 MILESTONE 1:
 
  - Figure out why a buffer of 20 frames is too small for 100ms of latency (we should be fine up to 320!)
- - How can we ignore the turret position when checking if we need to rollback?
-   |-> Ideally, when checking if real input matches our prediction, we wouldn't take turrent position into account
-   |-> Maybe we can explicitly put a '_hash' into the dictionary which, if present, is the comparison hash, and we
-       check each element of the input dictionary seperately? Can we get the same effect without comparing each?
  - Profile our rollbacks so we can see how close we are to the frame budget
 
 INTERMISSION:
