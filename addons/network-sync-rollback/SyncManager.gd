@@ -119,6 +119,7 @@ var max_buffer_size := 60
 var ticks_to_calculate_advantage := 60
 var input_delay := 2 setget set_input_delay
 var rollback_debug_ticks := 2
+var debug_message_bytes := 1400
 var log_state := false
 
 # In seconds, because we don't want it to be dependent on the network tick.
@@ -509,6 +510,9 @@ func _get_input_message_for_peer(peer: Peer) -> Dictionary:
 	
 	return msg
 
+func _calculate_message_bytes(msg) -> int:
+	return Marshalls.base64_to_raw(Marshalls.variant_to_base64(msg)).size()
+
 func _physics_process(delta: float) -> void:
 	if not started:
 		return
@@ -587,6 +591,13 @@ func _physics_process(delta: float) -> void:
 			InputMessageKey.NEXT_TICK_REQUESTED: peer.last_remote_tick_received + 1,
 			InputMessageKey.INPUT: _get_input_message_for_peer(peer),
 		}
+		
+		# See https://gafferongames.com/post/packet_fragmentation_and_reassembly/
+		if debug_message_bytes:
+			var bytes = _calculate_message_bytes(msg)
+			if bytes > debug_message_bytes:
+				push_warning("Sending message w/ size %s bytes" % bytes)
+		
 		rpc_unreliable_id(peer_id, "_rit", msg)
 	
 	if current_tick > 0:
