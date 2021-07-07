@@ -26,12 +26,13 @@ func _setup_new_round() -> void:
 	game.game_setup(players, map_path)
 
 func _save_state() -> Dictionary:
-	return {
-		round_over = round_over,
-		match_over = match_over,
-	}
+	var state = ._save_state()
+	state['round_over'] = round_over
+	state['match_over'] = match_over
+	return state
 
 func _load_state(state: Dictionary) -> void:
+	._load_state(state)
 	round_over = state['round_over']
 	match_over = state['match_over']
 
