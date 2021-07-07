@@ -37,14 +37,16 @@ func _network_process(_delta: float, _input: Dictionary) -> void:
 	if not _running:
 		return
 	if ticks_left <= 0:
-		if one_shot:
-			_running = false
-		else:
+		_running = false
+		return
+	
+	ticks_left -= 1
+	
+	if ticks_left == 0:
+		if not one_shot:
 			ticks_left = wait_ticks
 		if timeout_with_incomplete_input or SyncManager.is_current_player_input_complete():
 			emit_signal("timeout")
-	else:
-		ticks_left -= 1
 
 func _save_state() -> Dictionary:
 	return {
