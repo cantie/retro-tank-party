@@ -130,6 +130,9 @@ var skip_ticks: int = 0 setget _set_readonly_variable
 var rollback_ticks: int = 0 setget _set_readonly_variable
 var started := false setget _set_readonly_variable
 
+var _input_path_map := {}
+var _input_path_map_reverse := {}
+
 var _ping_timer: Timer
 var _spawn_manager
 var _input_buffer_start_tick: int
@@ -203,6 +206,36 @@ func remove_peer(peer_id: int) -> void:
 func clear_peers() -> void:
 	for peer_id in peers.keys().duplicate():
 		remove_peer(peer_id)
+
+func add_input_path_mapping(path: String, alias) -> void:
+	_input_path_map[path] = alias
+	_input_path_map_reverse[alias] = path
+
+func update_input_path_mapping(mapping: Dictionary) -> void:
+	for path in mapping:
+		add_input_path_mapping(path, mapping[path])
+
+func clear_input_path_mapping() -> void:
+	_input_path_map.clear()
+	_input_path_map_reverse.clear()
+
+func _map_input_paths(input: Dictionary) -> Dictionary:
+	if _input_path_map.size() == 0:
+		return input
+	var mapped_input := {}
+	for path in input:
+		var mapped_path = _input_path_map.get(path, path)
+		mapped_input[mapped_path] = input[path]
+	return mapped_input
+
+func _unmap_input_paths(mapped_input: Dictionary) -> Dictionary:
+	if _input_path_map_reverse.size() == 0:
+		return mapped_input
+	var input := {}
+	for mapped_path in mapped_input:
+		var path = _input_path_map_reverse.get(mapped_path, mapped_path)
+		input[path] = mapped_input[mapped_path]
+	return input
 
 func _on_ping_timer_timeout() -> void:
 	var system_time = OS.get_system_time_msecs()
@@ -291,7 +324,7 @@ func _call_get_local_input() -> Dictionary:
 	var input := {}
 	var nodes: Array = get_tree().get_nodes_in_group('network_sync')
 	for node in nodes:
-		if node.is_network_master() and node.has_method('_get_local_input'):
+		if node.is_network_master() and node.has_method('_get_local_input') and node.is_inside_tree():
 			var node_input = node._get_local_input()
 			if node_input.size() > 0:
 				input[str(node.get_path())] = node_input
@@ -320,7 +353,7 @@ func _call_network_process(delta: float, input_frame: InputBufferFrame) -> void:
 	while i > 0:
 		i -= 1
 		var node = nodes[i]
-		if node.has_method('_network_process'):
+		if node.has_method('_network_process') and node.is_inside_tree():
 			var player_input = input_frame.get_player_input(node.get_network_master())
 			node._network_process(delta, player_input.get(str(node.get_path()), {}))
 
@@ -468,7 +501,7 @@ func _get_input_message_for_peer(peer: Peer) -> Dictionary:
 		var input_frame: InputBufferFrame = input_buffer[index]
 		if not input_frame.players.has(local_peer_id):
 			break
-		msg[input_frame.tick] = input_frame.players[local_peer_id].input
+		msg[input_frame.tick] = _map_input_paths(input_frame.players[local_peer_id].input)
 		index += 1
 	
 	#var keys = msg.keys()
@@ -554,12 +587,14 @@ func _physics_process(delta: float) -> void:
 			InputMessageKey.NEXT_TICK_REQUESTED: peer.last_remote_tick_received + 1,
 			InputMessageKey.INPUT: _get_input_message_for_peer(peer),
 		}
-		rpc_unreliable_id(peer_id, "_receive_input_tick", msg)
+		rpc_unreliable_id(peer_id, "_rit", msg)
 	
 	if current_tick > 0:
 		_do_tick(delta)
 
-remote func _receive_input_tick(msg: Dictionary) -> void:
+# _rit is short for _receive_input_tick. The method name ends up in each message
+# so, we're trying to keep it short.
+remote func _rit(msg: Dictionary) -> void:
 	if not started:
 		return
 	if msg[InputMessageKey.TICK] >= input_tick + max_buffer_size:
@@ -580,7 +615,7 @@ remote func _receive_input_tick(msg: Dictionary) -> void:
 		if remote_tick <= peer.last_remote_tick_received:
 			continue
 		
-		var remote_input = all_remote_input[remote_tick]
+		var remote_input = _unmap_input_paths(all_remote_input[remote_tick])
 		var input_frame := _get_or_create_input_frame(remote_tick)
 		var tick_delta = current_tick - remote_tick
 		
