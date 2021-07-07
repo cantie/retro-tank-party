@@ -1,14 +1,6 @@
 TODO
 ====
 
-MILESTONE 0:
-
- - Get Battle Royale fully working
-   o How to restart a match?
- - Implement generic solution for modifying spawned objects after they are spawned
- - Setup the debug_rollback_ticks to compare the save states with the original save states so we can know the exact same things happened
- - Switch to storing state before starting the next tick? This would ensure that deferred stuff would happen...
-
 MILESTONE 1:
 
  - Figure out why a buffer of 20 frames is too small for 100ms of latency (we should be fine up to 320!)
@@ -19,6 +11,11 @@ INTERMISSION:
  - Decide whether this is a viable way forward or not
 
 MILESTONE 2:
+
+ - Implement generic solution for modifying spawned objects after they are spawned
+ - Setup the debug_rollback_ticks to compare the save states with the original save states so we can know the exact same things happened
+ - Switch to storing state before starting the next tick? This would ensure that deferred stuff would happen...
+
 
  - Fix Railgun
  - Re-implement abilities
