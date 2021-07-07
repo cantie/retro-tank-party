@@ -15,15 +15,9 @@ func _do_match_setup() -> void:
 	game.connect("player_dead", self, "_on_game_player_dead")
 
 func start_new_round() -> void:
-	var operation = RemoteOperations.synchronized_rpc(self, "_setup_new_round")
-	if yield(operation, "completed"):
-		game.rpc("game_start")
-	else:
-		match_scene.quit_match()
-
-func _setup_new_round() -> void:
-	round_over = false
 	game.game_setup(players, map_path)
+	game.game_start()
+	round_over = false
 
 func _save_state() -> Dictionary:
 	var state = ._save_state()
@@ -80,5 +74,5 @@ func _on_ShowScoreTimer_timeout() -> void:
 func _on_NextRoundTimer_timeout() -> void:
 	if match_over:
 		match_scene.finish_match()
-	elif get_tree().is_network_server():
+	else:
 		start_new_round()

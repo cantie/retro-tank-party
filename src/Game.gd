@@ -49,7 +49,7 @@ func _get_synchronized_rpc_methods() -> Array:
 
 # Initializes the game so that it is ready to really start.
 func game_setup(_players: Dictionary, map_path: String, player_start_transforms = null, operation: RemoteOperations.ClientOperation = null) -> void:
-	get_tree().set_pause(true)
+	get_tree().paused = true
 	
 	if game_started:
 		game_stop()
@@ -134,7 +134,7 @@ remotesync func game_start() -> void:
 	if map.has_method('map_start'):
 		map.map_start(self)
 	emit_signal("game_started")
-	get_tree().set_pause(false)
+	get_tree().paused = false
 	if get_tree().is_network_server():
 		SyncManager.start()
 
