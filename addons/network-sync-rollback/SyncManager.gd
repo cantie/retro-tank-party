@@ -116,9 +116,9 @@ var input_buffer := []
 var state_buffer := []
 
 var max_buffer_size := 60
-var ticks_to_calculate_advantage := 60
+var ticks_to_calculate_advantage := 120
 var input_delay := 2 setget set_input_delay
-var rollback_debug_ticks := 2
+var rollback_debug_ticks := 0
 var log_state := false
 
 # In seconds, because we don't want it to be dependent on the network tick.
@@ -513,6 +513,8 @@ func _physics_process(delta: float) -> void:
 		_process_logged_remote_state()
 	
 	if skip_ticks > 0:
+		# temp: disable tick skipping
+		#skip_ticks = 0
 		skip_ticks -= 1
 		if skip_ticks == 0:
 			for peer in peers.values():
@@ -536,6 +538,8 @@ func _physics_process(delta: float) -> void:
 	
 	input_tick += 1
 	current_tick += 1
+	
+	#print ("current tick: %s" % current_tick)
 	
 	var input_frame := _get_or_create_input_frame(input_tick)
 	# The underlying error would have already been reported in
@@ -562,27 +566,40 @@ func _physics_process(delta: float) -> void:
 remote func _receive_input_tick(msg: Dictionary) -> void:
 	if not started:
 		return
-	if msg[InputMessageKey.TICK] >= input_tick + max_buffer_size:
-		# This either happens because we are really far behind (but maybe, just
-		# maybe could catch up) or we are receiving old ticks from a previous
-		# round that hadn't yet arrived. Just discard the message and hope for
-		# the best, but if we can't keep up, another one of the fail safes will
-		# detect that we are out of sync.
-		return
+#	if msg[InputMessageKey.TICK] >= input_tick + max_buffer_size:
+#		# This either happens because we are really far behind (but maybe, just
+#		# maybe could catch up) or we are receiving old ticks from a previous
+#		# round that hadn't yet arrived. Just discard the message and hope for
+#		# the best, but if we can't keep up, another one of the fail safes will
+#		# detect that we are out of sync.
+#		return
 	
 	var peer_id = get_tree().get_rpc_sender_id()
 	var peer: Peer = peers[peer_id]
 	
+	print ("current tick: %s" % current_tick)
+	
 	# Integrate the input we received into the input buffer.
 	var all_remote_input: Dictionary = msg[InputMessageKey.INPUT]
 	for remote_tick in all_remote_input:
-		# Skip ticks we already have.
+		# Skip ticks that are no longer in the input buffer.
+		# This _can_ be a problem, if this input was missing from the input
+		# buffer, but that problem should be flagged elsewhere.
 		if remote_tick <= peer.last_remote_tick_received:
+			#print ("Already received %s" % remote_tick)
 			continue
 		
 		var remote_input = all_remote_input[remote_tick]
 		var input_frame := _get_or_create_input_frame(remote_tick)
+		if input_frame == null:
+			print ("NO INPUT FRAME FOR %s" % remote_tick)
+			# The error would have been flagged in _get_or_create_input_frame(),
+			# so we can just return.
+			return
+		
 		var tick_delta = current_tick - remote_tick
+		
+		print ("stored remote frame: %s" % remote_tick)
 		
 		# If we received a tick in the past and we aren't already setup to
 		# rollback earlier than that...

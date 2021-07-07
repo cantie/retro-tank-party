@@ -475,7 +475,7 @@ func _webrtc_connect_peer(player: Player) -> void:
 	_webrtc_peers[player.session_id] = webrtc_peer
 	
 	#get_tree().multiplayer._del_peer(u['peer_id'])
-	_webrtc_multiplayer.add_peer(webrtc_peer, player.peer_id)
+	_webrtc_multiplayer.add_peer(webrtc_peer, player.peer_id, 0)
 	
 	if my_session_id.casecmp_to(player.session_id) < 0:
 		var result = webrtc_peer.create_offer()
