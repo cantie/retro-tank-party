@@ -84,6 +84,11 @@ class InputBufferFrame:
 			return players[peer_id].input
 		return {}
 	
+	func is_player_input_predicted(peer_id: int) -> bool:
+		if players.has(peer_id):
+			return players[peer_id].predicted
+		return true
+	
 	func get_missing_peers(peers: Dictionary) -> Array:
 		var missing := []
 		for peer_id in peers:
@@ -118,6 +123,7 @@ var state_buffer := []
 var max_buffer_size := 60
 var ticks_to_calculate_advantage := 60
 var input_delay := 2 setget set_input_delay
+var max_messages_per_rpc := 10
 var rollback_debug_ticks := 2
 var debug_message_bytes := 1400
 var log_state := false
@@ -488,9 +494,7 @@ func is_player_input_complete(tick: int) -> bool:
 func is_current_player_input_complete() -> bool:
 	return is_player_input_complete(current_tick)
 
-func _get_input_message_for_peer(peer: Peer) -> Dictionary:
-	var msg := {}
-	
+func _get_input_messages_for_peer(peer: Peer) -> Array:
 	var index := 0
 	# If we no longer have the next tick they requested, we just start at 0 in
 	# the buffer and hope they got that input frame from a previous message.
@@ -498,17 +502,29 @@ func _get_input_message_for_peer(peer: Peer) -> Dictionary:
 		index = peer.next_local_tick_requested - _input_buffer_start_tick
 	
 	var local_peer_id = get_tree().get_network_unique_id()
+	
+	var all_messages := []
+	var msg := {}
 	while index < input_buffer.size():
 		var input_frame: InputBufferFrame = input_buffer[index]
 		if not input_frame.players.has(local_peer_id):
 			break
 		msg[input_frame.tick] = _map_input_paths(input_frame.players[local_peer_id].input)
+		
+		if max_messages_per_rpc > 0 and msg.size() >= max_messages_per_rpc:
+			all_messages.push_front(msg)
+			msg = {}
+		
 		index += 1
 	
-	#var keys = msg.keys()
-	#print ("Sending ticks %s - %s" % [keys[0], keys[-1]])
+	if msg.size() > 0:
+		all_messages.push_front(msg)
 	
-	return msg
+	var first_message_keys = all_messages[0].keys()
+	var last_message_keys = all_messages[-1].keys()
+	print ("Sending %s RPCs (%s messages: ticks %s - %s)" % [all_messages.size(), first_message_keys[-1] - last_message_keys[0], last_message_keys[0], first_message_keys[-1]])
+	
+	return all_messages
 
 func _calculate_message_bytes(msg) -> int:
 	return Marshalls.base64_to_raw(Marshalls.variant_to_base64(msg)).size()
@@ -586,19 +602,20 @@ func _physics_process(delta: float) -> void:
 	for peer_id in peers:
 		assert(peer_id != get_tree().get_network_unique_id(), "Cannot send input to ourselves")
 		var peer = peers[peer_id]
-		var msg = {
-			InputMessageKey.TICK: input_tick,
-			InputMessageKey.NEXT_TICK_REQUESTED: peer.last_remote_tick_received + 1,
-			InputMessageKey.INPUT: _get_input_message_for_peer(peer),
-		}
 		
-		# See https://gafferongames.com/post/packet_fragmentation_and_reassembly/
-		if debug_message_bytes:
-			var bytes = _calculate_message_bytes(msg)
-			if bytes > debug_message_bytes:
-				push_warning("Sending message w/ size %s bytes" % bytes)
-		
-		rpc_unreliable_id(peer_id, "_rit", msg)
+		for input in _get_input_messages_for_peer(peer):
+			var msg = {
+				InputMessageKey.NEXT_TICK_REQUESTED: peer.last_remote_tick_received + 1,
+				InputMessageKey.INPUT: input,
+			}
+			
+			# See https://gafferongames.com/post/packet_fragmentation_and_reassembly/
+			if debug_message_bytes:
+				var bytes = _calculate_message_bytes(msg)
+				if bytes > debug_message_bytes:
+					push_error("Sending message w/ size %s bytes" % bytes)
+			
+			rpc_unreliable_id(peer_id, "_rit", msg)
 	
 	if current_tick > 0:
 		_do_tick(delta)
@@ -608,7 +625,13 @@ func _physics_process(delta: float) -> void:
 remote func _rit(msg: Dictionary) -> void:
 	if not started:
 		return
-	if msg[InputMessageKey.TICK] >= input_tick + max_buffer_size:
+	
+	var all_remote_input: Dictionary = msg[InputMessageKey.INPUT]
+	var all_remote_ticks = all_remote_input.keys()
+	var first_remote_tick = all_remote_ticks[0]
+	var last_remote_tick = all_remote_ticks[-1]
+
+	if first_remote_tick >= input_tick + max_buffer_size:
 		# This either happens because we are really far behind (but maybe, just
 		# maybe could catch up) or we are receiving old ticks from a previous
 		# round that hadn't yet arrived. Just discard the message and hope for
@@ -620,18 +643,29 @@ remote func _rit(msg: Dictionary) -> void:
 	var peer: Peer = peers[peer_id]
 	
 	# Integrate the input we received into the input buffer.
-	var all_remote_input: Dictionary = msg[InputMessageKey.INPUT]
-	for remote_tick in all_remote_input:
+	for remote_tick in all_remote_ticks:
 		# Skip ticks we already have.
 		if remote_tick <= peer.last_remote_tick_received:
+			continue
+		# This means the input frame has already been retired, which can only
+		# happen if we already had all the input.
+		if remote_tick < _input_buffer_start_tick:
 			continue
 		
 		var remote_input = _unmap_input_paths(all_remote_input[remote_tick])
 		var input_frame := _get_or_create_input_frame(remote_tick)
-		var tick_delta = current_tick - remote_tick
+		if input_frame == null:
+			# _get_or_create_input_frame() will have already flagged the error,
+			# so we can just return here.
+			return
+		
+		# If we already have non-predicted input for this peer, then skip it.
+		if not input_frame.is_player_input_predicted(peer_id):
+			continue
 		
 		# If we received a tick in the past and we aren't already setup to
 		# rollback earlier than that...
+		var tick_delta = current_tick - remote_tick
 		if tick_delta >= 0 and rollback_ticks <= tick_delta:
 			# Grab our predicted input, and store the remote input.
 			var local_input = input_frame.get_player_input(peer_id)
@@ -647,7 +681,8 @@ remote func _rit(msg: Dictionary) -> void:
 			input_frame.players[peer_id] = InputForPlayer.new(remote_input, false)
 	
 	# Record stats about the integrated input.
-	peer.last_remote_tick_received = max(msg[InputMessageKey.TICK], peer.last_remote_tick_received)
+	if first_remote_tick == peer.last_remote_tick_received + 1:
+		peer.last_remote_tick_received = max(last_remote_tick, peer.last_remote_tick_received)
 	peer.next_local_tick_requested = max(msg[InputMessageKey.NEXT_TICK_REQUESTED], peer.next_local_tick_requested)
 	# Number of frames the remote is predicting for us.
 	peer.remote_lag = (peer.last_remote_tick_received + 1) - peer.next_local_tick_requested
