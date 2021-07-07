@@ -211,13 +211,13 @@ func _on_ping_timer_timeout() -> void:
 		var msg = {
 			local_time = system_time,
 		}
-		rpc_id(peer_id, "_remote_ping", msg)
+		rpc_unreliable_id(peer_id, "_remote_ping", msg)
 
 remote func _remote_ping(msg: Dictionary) -> void:
 	var peer_id = get_tree().get_rpc_sender_id()
 	assert(peer_id != get_tree().get_network_unique_id(), "Cannot ping back ourselves")
 	msg['remote_time'] = OS.get_system_time_msecs()
-	rpc_id(peer_id, "_remote_ping_back", msg)
+	rpc_unreliable_id(peer_id, "_remote_ping_back", msg)
 
 remote func _remote_ping_back(msg: Dictionary) -> void:
 	var system_time = OS.get_system_time_msecs()
@@ -233,10 +233,19 @@ func start() -> void:
 	if started:
 		return
 	if get_tree().is_network_server():
-		# @todo Use latency information to time when we do our local start.
+		var highest_rtt: int = 0
+		for peer in peers.values():
+			highest_rtt = max(highest_rtt, peer.rtt)
+		
+		# Call _remote_start() on all the other peers.
 		rpc("_remote_start")
+		
+		# Wait for half the highest RTT to start locally.
+		print ("Delaying host start by %sms" % (highest_rtt / 2))
+		yield(get_tree().create_timer(highest_rtt / 2000.0), 'timeout')
+		_remote_start()
 
-remotesync func _remote_start() -> void:
+remote func _remote_start() -> void:
 	input_tick = 0
 	current_tick = input_tick - input_delay
 	skip_ticks = 0
@@ -251,7 +260,6 @@ remotesync func _remote_start() -> void:
 
 func stop() -> void:
 	if get_tree().is_network_server():
-		# @todo Use latency information to time when we do our local start.
 		rpc("_remote_stop")
 	else:
 		_remote_stop()
@@ -373,7 +381,7 @@ func _get_or_create_input_frame(tick: int) -> InputBufferFrame:
 	if input_buffer.size() == 0:
 		input_frame = InputBufferFrame.new(tick)
 		input_buffer.append(input_frame)
-	elif input_buffer[-1].tick < tick:
+	elif tick > input_buffer[-1].tick:
 		var highest = input_buffer[-1].tick
 		while highest < tick:
 			highest += 1
@@ -530,7 +538,8 @@ func _physics_process(delta: float) -> void:
 	current_tick += 1
 	
 	var input_frame := _get_or_create_input_frame(input_tick)
-	assert(input_frame != null, "Unable to get or create input frame for current input tick")
+	# The underlying error would have already been reported in
+	# _get_or_create_input_frame() so we can just return here.
 	if input_frame == null:
 		return
 		
