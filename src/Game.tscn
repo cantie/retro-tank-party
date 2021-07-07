@@ -4,7 +4,9 @@
 [ext_resource path="res://src/Game.gd" type="Script" id=2]
 [ext_resource path="res://src/game/HUD.tscn" type="PackedScene" id=3]
 
-[node name="Game" type="Node2D"]
+[node name="Game" type="Node2D" groups=[
+"network_sync",
+]]
 script = ExtResource( 2 )
 
 [node name="Map" type="Node2D" parent="."]

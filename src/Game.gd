@@ -32,6 +32,17 @@ class Player:
 		name = _name
 		index = _index
 		team = _team
+	
+	func to_dict() -> Dictionary:
+		return {
+			peer_id = peer_id,
+			name = name,
+			index = index,
+			team = team,
+		}
+	
+	static func from_dict(data: Dictionary) -> Player:
+		return Player.new(data['peer_id'], data['name'], data['index'], data['team'])
 
 func _get_synchronized_rpc_methods() -> Array:
 	return ['respawn_player']
@@ -230,3 +241,16 @@ func create_free_space_detector():
 	var detector = FreeSpaceDetector.instance()
 	add_child(detector)
 	return detector
+
+func _save_state() -> Dictionary:
+	var serialized_players_alive := {}
+	for peer_id in players_alive:
+		serialized_players_alive[peer_id] = players_alive[peer_id].to_dict()
+	return {
+		players_alive = serialized_players_alive,
+	}
+
+func _load_state(state: Dictionary) -> void:
+	var serialized_players_alive = state['players_alive']
+	for peer_id in serialized_players_alive:
+		players_alive[peer_id] = Player.from_dict(serialized_players_alive[peer_id])
