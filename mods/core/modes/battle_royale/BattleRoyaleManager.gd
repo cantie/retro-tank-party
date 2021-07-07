@@ -50,7 +50,6 @@ func _on_game_player_dead(player_id: int, killer_id: int) -> void:
 		match_over = score.get_score(winner_id) >= config['points_to_win']
 		
 		show_winner(score.get_name(winner_id))
-		#rpc("show_winner", score.get_name(winner_id), score.to_dict(), is_match)
 
 func _check_team_alive(player_id: int) -> bool:
 	var team_id = get_player_team(player_id)
