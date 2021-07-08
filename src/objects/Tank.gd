@@ -171,9 +171,6 @@ func _network_spawn(data: Dictionary) -> void:
 	
 	if data['team'] != -1:
 		player_info_node.set_team(data['team'])
-	
-	# @todo We need a generic solution to this!
-	game._on_tank_spawned(self)
 
 func pickup_weapon(_weapon_type: WeaponType) -> void:
 	hooks.dispatch_event("pickup_weapon", PickupWeaponEvent.new(self, _weapon_type))

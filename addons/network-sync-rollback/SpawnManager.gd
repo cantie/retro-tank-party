@@ -4,6 +4,8 @@ var spawn_records := {}
 var spawned_nodes := {}
 var counter := {}
 
+signal scene_spawned (name, spawned_node, scene, data)
+
 func _ready() -> void:
 	add_to_group('network_sync')
 	SyncManager.connect("sync_stopped", self, "_on_SyncManager_sync_stopped")
@@ -18,8 +20,10 @@ func _rename_node(name: String) -> String:
 	counter[name] += 1
 	return name + str(counter[name])
 
-func spawn(name: String, parent: Node, scene: PackedScene, data: Dictionary, rename: bool = true) -> Node:
+func spawn(name: String, parent: Node, scene: PackedScene, data: Dictionary, rename: bool = true, signal_name: String = '') -> Node:
 	var spawned_node = scene.instance()
+	if signal_name == '':
+		signal_name = name
 	if rename:
 		name = _rename_node(name)
 	spawned_node.name = name
@@ -36,13 +40,16 @@ func spawn(name: String, parent: Node, scene: PackedScene, data: Dictionary, ren
 		parent = parent.get_path(),
 		scene = scene.resource_path,
 		data = data,
+		signal_name = signal_name,
 	}
 	
 	var node_path = str(spawned_node.get_path())
 	spawn_records[node_path] = spawn_record
 	spawned_nodes[node_path] = spawned_node
 	
-	print ("[%s] spawned: %s" % [SyncManager.current_tick, spawned_node.name])
+	#print ("[%s] spawned: %s" % [SyncManager.current_tick, spawned_node.name])
+	
+	emit_signal("scene_spawned", signal_name, spawned_node, scene, data)
 	
 	return spawned_node
 
@@ -52,9 +59,9 @@ func _save_state() -> Dictionary:
 		if not is_instance_valid(node):
 			spawned_nodes.erase(node_path)
 			spawn_records.erase(node_path)
-			print ("[SAVE] removing invalid: %s" % node_path)
+			#print ("[SAVE] removing invalid: %s" % node_path)
 		elif node.is_queued_for_deletion():
-			print ("[SAVE] removing deleted: %s" % node_path)
+			#print ("[SAVE] removing deleted: %s" % node_path)
 			if node.get_parent():
 				node.get_parent().remove_child(node)
 			spawned_nodes.erase(node_path)
@@ -79,7 +86,7 @@ func _load_state(state: Dictionary) -> void:
 				node.get_parent().remove_child(node)
 			node.queue_free()
 			spawned_nodes.erase(node_path)
-			print ("[LOAD] de-spawned: %s" % node.name)
+			#print ("[LOAD] de-spawned: %s" % node.name)
 	
 	# Spawn nodes that don't already exist.
 	for node_path in spawn_records.keys():
@@ -102,4 +109,6 @@ func _load_state(state: Dictionary) -> void:
 				spawned_node._network_spawn(spawn_record['data'])
 			
 			spawned_nodes[node_path] = spawned_node
-			print ("[LOAD] re-spawned: %s" % spawned_node.name)
+			emit_signal("scene_spawned", spawn_record['signal_name'], spawned_node, scene, spawn_record['data'])
+			
+			#print ("[LOAD] re-spawned: %s" % spawned_node.name)

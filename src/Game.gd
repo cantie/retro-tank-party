@@ -47,6 +47,9 @@ class Player:
 func _get_synchronized_rpc_methods() -> Array:
 	return ['respawn_player']
 
+func _ready() -> void:
+	SyncManager.connect("scene_spawned", self, "_on_SyncManager_scene_spawned")
+
 # Initializes the game so that it is ready to really start.
 func game_setup(_players: Dictionary, map_path: String, player_start_transforms = null, operation: RemoteOperations.ClientOperation = null) -> void:
 	get_tree().paused = true
@@ -103,12 +106,12 @@ func respawn_player(peer_id: int, start_transform = null) -> void:
 		var player_start_transforms = map.get_player_start_transforms()
 		spawn_data['start_transform'] = player_start_transforms[player.index - 1]
 	
-	var tank = SyncManager.spawn(str(peer_id), players_node, TankScene, spawn_data, false)
+	var tank = SyncManager.spawn(str(peer_id), players_node, TankScene, spawn_data, false, "Tank")
 
-# @todo We need a generic solution to this!
-func _on_tank_spawned(tank) -> void:
-	tank.connect("player_dead", self, "_on_player_dead", [tank])
-	emit_signal("player_spawned", tank)
+func _on_SyncManager_scene_spawned(name: String, spawned_node: Node, scene: PackedScene, data: Dictionary) -> void:
+	if name == 'Tank':
+		spawned_node.connect("player_dead", self, "_on_player_dead", [spawned_node])
+		emit_signal("player_spawned", spawned_node)
 
 func make_player_controlled(peer_id) -> void:
 	var my_player := players_node.get_node(str(peer_id))

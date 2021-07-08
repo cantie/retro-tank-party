@@ -160,6 +160,7 @@ signal peer_removed (peer_id)
 signal peer_pinged_back (peer)
 signal state_loaded (rollback_ticks)
 signal tick_finished (is_rollback)
+signal scene_spawned (name, spawned_node, scene, data)
 
 func _ready() -> void:
 	get_tree().connect("network_peer_disconnected", self, "remove_peer")
@@ -176,6 +177,7 @@ func _ready() -> void:
 	_spawn_manager = SpawnManager.new()
 	_spawn_manager.name = "SpawnManager"
 	add_child(_spawn_manager)
+	_spawn_manager.connect("scene_spawned", self, "_on_SpawnManager_scene_spawned")
 
 func _set_readonly_variable(_value) -> void:
 	pass
@@ -543,9 +545,10 @@ func _get_input_messages_for_peer(peer: Peer, disable_max_rpcs: bool = false) ->
 	if msg.size() > 0:
 		all_messages.push_front(msg)
 	
-	var first_message_keys = all_messages[0].keys()
-	var last_message_keys = all_messages[-1].keys()
-	print ("Sending %s RPCs (%s messages: ticks %s - %s)" % [all_messages.size(), first_message_keys[-1] - last_message_keys[0], last_message_keys[0], first_message_keys[-1]])
+	if all_messages.size() > 0:
+		var first_message_keys = all_messages[0].keys()
+		var last_message_keys = all_messages[-1].keys()
+		print ("Sending %s RPCs (%s messages: ticks %s - %s)" % [all_messages.size(), first_message_keys[-1] - last_message_keys[0], last_message_keys[0], first_message_keys[-1]])
 	
 	return all_messages
 
@@ -758,5 +761,8 @@ func _check_remote_state(peer_id: int, remote_state: StateBufferFrame, local_sta
 	if local_state.data.hash() != remote_state.data.hash():
 		emit_signal("remote_state_mismatch", local_state.tick, peer_id, local_state.data, remote_state.data)
 
-func spawn(name: String, parent: Node, scene: PackedScene, data: Dictionary = {}, rename: bool = true) -> Node:
-	return _spawn_manager.spawn(name, parent, scene, data, rename)
+func spawn(name: String, parent: Node, scene: PackedScene, data: Dictionary = {}, rename: bool = true, signal_name: String = '') -> Node:
+	return _spawn_manager.spawn(name, parent, scene, data, rename, signal_name)
+
+func _on_SpawnManager_scene_spawned(name: String, spawned_node: Node, scene: PackedScene, data: Dictionary) -> void:
+	emit_signal("scene_spawned", name, spawned_node, scene, data)
