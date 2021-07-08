@@ -567,7 +567,7 @@ func _calculate_skip_ticks(force_calculate_advantage: bool = false) -> bool:
 	return false
 
 func _calculate_message_bytes(msg) -> int:
-	return Marshalls.base64_to_raw(Marshalls.variant_to_base64(msg)).size()
+	return var2bytes(msg).size()
 
 func _send_input_to_peer(peer_id: int, disable_max_rpcs: bool = false) -> void:
 	assert(peer_id != get_tree().get_network_unique_id(), "Cannot send input to ourselves")
