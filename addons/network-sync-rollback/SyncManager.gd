@@ -125,7 +125,7 @@ var ticks_to_calculate_advantage := 60
 var input_delay := 2 setget set_input_delay
 var max_messages_per_rpc := 3
 var max_rpcs_per_tick := 5
-var max_input_buffer_underruns := 3
+var max_input_buffer_underruns := 10
 var rollback_debug_ticks := 2
 var debug_message_bytes := 500
 var log_state := false
@@ -445,10 +445,14 @@ func _get_or_create_input_frame(tick: int) -> InputBufferFrame:
 		var input_frame_to_retire = input_buffer[0]
 		if not input_frame_to_retire.is_complete(peers):
 			input_buffer_underruns += 1
+			var missing: Array = input_frame_to_retire.get_missing_peers(peers)
 			if input_buffer_underruns > max_input_buffer_underruns:
-				var missing: Array = input_frame_to_retire.get_missing_peers(peers)
 				return _handle_fatal_error("Retired an incomplete input frame %s (missing peer(s): %s)" % [input_frame_to_retire.tick, missing])
 			print ("Input buffer underrun")
+			# Resend input to this peer - if we're missing their input, they're
+			# probably missing ours too.
+			for peer_id in missing:
+				_send_input_to_peer(peer_id, true)
 			if not _calculate_skip_ticks(true):
 				skip_ticks = 10
 				emit_signal("skip_ticks_flagged", skip_ticks)
@@ -508,7 +512,7 @@ func is_player_input_complete(tick: int) -> bool:
 func is_current_player_input_complete() -> bool:
 	return is_player_input_complete(current_tick)
 
-func _get_input_messages_for_peer(peer: Peer) -> Array:
+func _get_input_messages_for_peer(peer: Peer, disable_max_rpcs: bool = false) -> Array:
 	var index := 0
 	# If we no longer have the next tick they requested, we just start at 0 in
 	# the buffer and hope they got that input frame from a previous message.
@@ -517,7 +521,7 @@ func _get_input_messages_for_peer(peer: Peer) -> Array:
 	
 	# Only send a certain amount of RPCs and messages per tick.
 	var max_messages = (max_messages_per_rpc * max_rpcs_per_tick)
-	if input_tick - (_input_buffer_start_tick + index) > max_messages:
+	if not disable_max_rpcs and input_tick - (_input_buffer_start_tick + index) > max_messages:
 		index = input_tick - _input_buffer_start_tick - max_messages
 	
 	var local_peer_id = get_tree().get_network_unique_id()
@@ -539,9 +543,9 @@ func _get_input_messages_for_peer(peer: Peer) -> Array:
 	if msg.size() > 0:
 		all_messages.push_front(msg)
 	
-	#var first_message_keys = all_messages[0].keys()
-	#var last_message_keys = all_messages[-1].keys()
-	#print ("Sending %s RPCs (%s messages: ticks %s - %s)" % [all_messages.size(), first_message_keys[-1] - last_message_keys[0], last_message_keys[0], first_message_keys[-1]])
+	var first_message_keys = all_messages[0].keys()
+	var last_message_keys = all_messages[-1].keys()
+	print ("Sending %s RPCs (%s messages: ticks %s - %s)" % [all_messages.size(), first_message_keys[-1] - last_message_keys[0], last_message_keys[0], first_message_keys[-1]])
 	
 	return all_messages
 
@@ -564,6 +568,28 @@ func _calculate_skip_ticks(force_calculate_advantage: bool = false) -> bool:
 
 func _calculate_message_bytes(msg) -> int:
 	return Marshalls.base64_to_raw(Marshalls.variant_to_base64(msg)).size()
+
+func _send_input_to_peer(peer_id: int, disable_max_rpcs: bool = false) -> void:
+	assert(peer_id != get_tree().get_network_unique_id(), "Cannot send input to ourselves")
+	var peer = peers[peer_id]
+	
+	for input in _get_input_messages_for_peer(peer, disable_max_rpcs):
+		var msg = {
+			InputMessageKey.NEXT_TICK_REQUESTED: peer.last_remote_tick_received + 1,
+			InputMessageKey.INPUT: input,
+		}
+		
+		# See https://gafferongames.com/post/packet_fragmentation_and_reassembly/
+		if debug_message_bytes:
+			var bytes = _calculate_message_bytes(msg)
+			if bytes > debug_message_bytes:
+				push_error("Sending message w/ size %s bytes" % bytes)
+		
+		rpc_unreliable_id(peer_id, "_rit", msg)
+
+func _send_input_to_all_peers() -> void:
+	for peer_id in peers:
+		_send_input_to_peer(peer_id)
 
 func _physics_process(delta: float) -> void:
 	if not started:
@@ -607,6 +633,8 @@ func _physics_process(delta: float) -> void:
 			for peer in peers.values():
 				peer.clear_advantage()
 		else:
+			# Even when we're skipping ticks, still send input.
+			_send_input_to_all_peers()
 			return
 	
 	if _calculate_skip_ticks():
@@ -623,24 +651,7 @@ func _physics_process(delta: float) -> void:
 		
 	var local_input = _call_get_local_input()
 	input_frame.players[get_tree().get_network_unique_id()] = InputForPlayer.new(local_input, false)
-	
-	for peer_id in peers:
-		assert(peer_id != get_tree().get_network_unique_id(), "Cannot send input to ourselves")
-		var peer = peers[peer_id]
-		
-		for input in _get_input_messages_for_peer(peer):
-			var msg = {
-				InputMessageKey.NEXT_TICK_REQUESTED: peer.last_remote_tick_received + 1,
-				InputMessageKey.INPUT: input,
-			}
-			
-			# See https://gafferongames.com/post/packet_fragmentation_and_reassembly/
-			if debug_message_bytes:
-				var bytes = _calculate_message_bytes(msg)
-				if bytes > debug_message_bytes:
-					push_error("Sending message w/ size %s bytes" % bytes)
-			
-			rpc_unreliable_id(peer_id, "_rit", msg)
+	_send_input_to_all_peers()
 	
 	if current_tick > 0:
 		_do_tick(delta)
@@ -662,6 +673,7 @@ remote func _rit(msg: Dictionary) -> void:
 		# round that hadn't yet arrived. Just discard the message and hope for
 		# the best, but if we can't keep up, another one of the fail safes will
 		# detect that we are out of sync.
+		print ("Discarding message from the future")
 		return
 	
 	var peer_id = get_tree().get_rpc_sender_id()
@@ -687,6 +699,8 @@ remote func _rit(msg: Dictionary) -> void:
 		# If we already have non-predicted input for this peer, then skip it.
 		if not input_frame.is_player_input_predicted(peer_id):
 			continue
+		
+		print ("Received remote tick %s from %s" % [remote_tick, peer_id])
 		
 		# If we received a tick in the past and we aren't already setup to
 		# rollback earlier than that...

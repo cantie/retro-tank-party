@@ -4,6 +4,7 @@ TODO
 MILESTONE 1:
 
  - Figure out why a buffer of 20 frames is too small for 100ms of latency (we should be fine up to 320!)
+   o Do a better job of re-sending old input. We seem to sometimes lose old data, but then don't resend it due to our maxes
  - Profile our rollbacks so we can see how close we are to the frame budget
 
 INTERMISSION:
