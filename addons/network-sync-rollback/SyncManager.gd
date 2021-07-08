@@ -125,6 +125,7 @@ var ticks_to_calculate_advantage := 60
 var input_delay := 2 setget set_input_delay
 var max_messages_per_rpc := 3
 var max_rpcs_per_tick := 5
+var max_input_buffer_underruns := 3
 var rollback_debug_ticks := 2
 var debug_message_bytes := 500
 var log_state := false
@@ -136,6 +137,7 @@ var input_tick: int = 0 setget _set_readonly_variable
 var current_tick: int = 0 setget _set_readonly_variable
 var skip_ticks: int = 0 setget _set_readonly_variable
 var rollback_ticks: int = 0 setget _set_readonly_variable
+var input_buffer_underruns := 0 setget _set_readonly_variable
 var started := false setget _set_readonly_variable
 
 var _input_path_map := {}
@@ -291,6 +293,7 @@ remote func _remote_start() -> void:
 	current_tick = input_tick - input_delay
 	skip_ticks = 0
 	rollback_ticks = 0
+	input_buffer_underruns = 0
 	input_buffer.clear()
 	state_buffer.clear()
 	_input_buffer_start_tick = 1
@@ -311,6 +314,7 @@ remotesync func _remote_stop() -> void:
 	current_tick = 0
 	skip_ticks = 0
 	rollback_ticks = 0
+	input_buffer_underruns = 0
 	input_buffer.clear()
 	state_buffer.clear()
 	_input_buffer_start_tick = 0
@@ -438,11 +442,20 @@ func _get_or_create_input_frame(tick: int) -> InputBufferFrame:
 	# many future frames to end up discarding input for the current frame, so we
 	# only count input frames before the current frame towards the buffer size.
 	while (current_tick - _input_buffer_start_tick) > max_buffer_size:
-		_input_buffer_start_tick += 1
-		var retired_input_frame = input_buffer.pop_front()
-		if not retired_input_frame.is_complete(peers):
-			var missing: Array = retired_input_frame.get_missing_peers(peers)
-			return _handle_fatal_error("Retired an incomplete input frame %s (missing peer(s): %s)" % [retired_input_frame.tick, missing])
+		var input_frame_to_retire = input_buffer[0]
+		if not input_frame_to_retire.is_complete(peers):
+			input_buffer_underruns += 1
+			if input_buffer_underruns > max_input_buffer_underruns:
+				var missing: Array = input_frame_to_retire.get_missing_peers(peers)
+				return _handle_fatal_error("Retired an incomplete input frame %s (missing peer(s): %s)" % [input_frame_to_retire.tick, missing])
+			print ("Input buffer underrun")
+			if not _calculate_skip_ticks(true):
+				skip_ticks = 10
+				emit_signal("skip_ticks_flagged", skip_ticks)
+		else:
+			_input_buffer_start_tick += 1
+			input_buffer.pop_front()
+			input_buffer_underruns = 0
 	
 	return input_frame
 
@@ -526,11 +539,28 @@ func _get_input_messages_for_peer(peer: Peer) -> Array:
 	if msg.size() > 0:
 		all_messages.push_front(msg)
 	
-	var first_message_keys = all_messages[0].keys()
-	var last_message_keys = all_messages[-1].keys()
-	print ("Sending %s RPCs (%s messages: ticks %s - %s)" % [all_messages.size(), first_message_keys[-1] - last_message_keys[0], last_message_keys[0], first_message_keys[-1]])
+	#var first_message_keys = all_messages[0].keys()
+	#var last_message_keys = all_messages[-1].keys()
+	#print ("Sending %s RPCs (%s messages: ticks %s - %s)" % [all_messages.size(), first_message_keys[-1] - last_message_keys[0], last_message_keys[0], first_message_keys[-1]])
 	
 	return all_messages
+
+func _calculate_skip_ticks(force_calculate_advantage: bool = false) -> bool:
+	var max_advantage: float
+	for peer in peers.values():
+		# Number of frames we are predicting for this peer.
+		peer.local_lag = (input_tick + 1) - peer.last_remote_tick_received
+		# Calculate the advantage the peer has over us.
+		peer.record_advantage(ticks_to_calculate_advantage if not force_calculate_advantage else 0)
+		# Attempt to find the greatest advantage.
+		max_advantage = max(max_advantage, peer.calculated_advantage)
+		
+	if max_advantage >= 2.0 and skip_ticks == 0:
+		skip_ticks = int(max_advantage / 2)
+		emit_signal("skip_ticks_flagged", skip_ticks)
+		return true
+	
+	return false
 
 func _calculate_message_bytes(msg) -> int:
 	return Marshalls.base64_to_raw(Marshalls.variant_to_base64(msg)).size()
@@ -579,18 +609,7 @@ func _physics_process(delta: float) -> void:
 		else:
 			return
 	
-	var max_advantage: float
-	for peer in peers.values():
-		# Number of frames we are predicting for this peer.
-		peer.local_lag = (input_tick + 1) - peer.last_remote_tick_received
-		# Calculate the advantage the peer has over us.
-		peer.record_advantage(ticks_to_calculate_advantage)
-		# Attempt to find the greatest advantage.
-		max_advantage = max(max_advantage, peer.calculated_advantage)
-		
-	if max_advantage >= 2.0 and skip_ticks == 0:
-		skip_ticks = int(max_advantage / 2)
-		emit_signal("skip_ticks_flagged", skip_ticks)
+	if _calculate_skip_ticks():
 		return
 	
 	input_tick += 1
