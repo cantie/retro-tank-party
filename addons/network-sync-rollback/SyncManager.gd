@@ -123,9 +123,10 @@ var state_buffer := []
 var max_buffer_size := 60
 var ticks_to_calculate_advantage := 60
 var input_delay := 2 setget set_input_delay
-var max_messages_per_rpc := 10
+var max_messages_per_rpc := 3
+var max_rpcs_per_tick := 5
 var rollback_debug_ticks := 2
-var debug_message_bytes := 1400
+var debug_message_bytes := 500
 var log_state := false
 
 # In seconds, because we don't want it to be dependent on the network tick.
@@ -500,6 +501,11 @@ func _get_input_messages_for_peer(peer: Peer) -> Array:
 	# the buffer and hope they got that input frame from a previous message.
 	if peer.next_local_tick_requested > _input_buffer_start_tick:
 		index = peer.next_local_tick_requested - _input_buffer_start_tick
+	
+	# Only send a certain amount of RPCs and messages per tick.
+	var max_messages = (max_messages_per_rpc * max_rpcs_per_tick)
+	if input_tick - (_input_buffer_start_tick + index) > max_messages:
+		index = input_tick - _input_buffer_start_tick - max_messages
 	
 	var local_peer_id = get_tree().get_network_unique_id()
 	
