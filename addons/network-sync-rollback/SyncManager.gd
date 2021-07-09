@@ -126,7 +126,7 @@ var input_delay := 2 setget set_input_delay
 var max_messages_per_rpc := 3
 var max_rpcs_per_tick := 5
 var max_input_buffer_underruns := 10
-var rollback_debug_ticks := 2
+var rollback_debug_ticks := 0
 var debug_message_bytes := 500
 var log_state := false
 
