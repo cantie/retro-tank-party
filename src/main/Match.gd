@@ -10,6 +10,9 @@ func _ready() -> void:
 	OnlineMatch.connect("error", self, "_on_OnlineMatch_error")
 	OnlineMatch.connect("disconnected", self, "_on_OnlineMatch_disconnected")
 	OnlineMatch.connect("player_left", self, "_on_OnlineMatch_player_left")
+	
+	SyncManager.connect("sync_lost", self, "_on_SyncManager_sync_lost")
+	SyncManager.connect("sync_regained", self, "_on_SyncManager_sync_regained")
 	SyncManager.connect("sync_error", self, "_on_SyncManager_sync_error")
 	
 	randomize()
@@ -122,6 +125,16 @@ func _on_OnlineMatch_player_left(player) -> void:
 		_on_OnlineMatch_error(player.username + " has left - not enough players!")
 	else:
 		ui_layer.show_message(player.username + " has left")
+
+#####
+# SyncManager callbacks
+#####
+
+func _on_SyncManager_sync_lost() -> void:
+	ui_layer.show_message("Attempting to regain sync...")
+
+func _on_SyncManager_sync_regained() -> void:
+	ui_layer.hide_message()
 
 func _on_SyncManager_sync_error(_msg) -> void:
 	_on_OnlineMatch_error('Synchronization lost')
