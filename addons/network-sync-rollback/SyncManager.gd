@@ -130,6 +130,7 @@ var input_delay := 2 setget set_input_delay
 var max_input_frames_per_message := 5
 var max_messages_per_tick := 2
 var max_input_buffer_underruns := 300
+var skip_ticks_after_sync_regained := 10
 var rollback_debug_ticks := 0
 var debug_message_bytes := 640
 var log_state := false
@@ -692,7 +693,24 @@ func _physics_process(delta: float) -> void:
 	
 	_record_advantage()
 	
-	if not _cleanup_buffers():
+	# Negative numbers are used to skip some additional ticks after we've
+	# technically regained sync, but we don't want to start back up again right
+	# away.
+	if input_buffer_underruns < 0:
+		input_buffer_underruns += 1
+		if input_buffer_underruns == 0:
+			# Let the world know we've regained sync, and fall back to normal
+			# operation. (This is the only branch that shouldn't 'return').
+			emit_signal("sync_regained")
+			# We don't want to skip ticks through the normal mechanism, because
+			# any skips that were previously calculated don't apply anymore.
+			skip_ticks = 0
+		else:
+			# Even when we're skipping ticks, still send input.
+			_send_input_messages_to_all_peers()
+			return
+	# Attempt to clean up buffers, but if we can't, that means we've lost sync.
+	elif not _cleanup_buffers():
 		if input_buffer_underruns == 0:
 			emit_signal("sync_lost")
 		input_buffer_underruns += 1
@@ -703,10 +721,10 @@ func _physics_process(delta: float) -> void:
 		_send_input_messages_to_all_peers()
 		return
 	elif input_buffer_underruns > 0:
-		emit_signal("sync_regained")
-		input_buffer_underruns = 0
-		# We may need to still skip a few ticks to account for our latency
-		_calculate_skip_ticks()
+		# We've technically regained sync, but we don't want to just fall out of
+		# sync again next frame, so skip a few more frames for good luck.
+		input_buffer_underruns = -skip_ticks_after_sync_regained
+		return
 	
 	if skip_ticks > 0:
 		skip_ticks -= 1

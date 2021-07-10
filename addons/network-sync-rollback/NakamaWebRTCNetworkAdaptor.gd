@@ -60,7 +60,6 @@ func send_input_tick(peer_id: int, msg: Dictionary) -> void:
 	else:
 		data_channels[peer_id].put_var(msg)
 
-
 func poll() -> void:
 	for peer_id in data_channels:
 		var data_channel: WebRTCDataChannel = data_channels[peer_id]
