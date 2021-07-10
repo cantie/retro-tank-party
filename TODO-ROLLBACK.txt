@@ -3,23 +3,27 @@ TODO
 
 MILESTONE 1:
 
- - Figure out why a buffer of 20 frames is too small for 100ms of latency (we should be fine up to 320!)
-   o Update to the latest version of the WebRTC plugin (do this on the devel branch)
-   o Impleement a "communication adaptor" system, and use it to create a custom WebRTC data channel for our communication
+ - Solve problems with latency and packet loss
+   o Implement a "message sender" system, and use it to create a custom WebRTC data channel for our communication
+   o Implement a "message serializer" system to allow us to really byte pack our message and reduce size
    o Dig deeper into WebRTC and try to see where things are going awry!
- - Profile our rollbacks so we can see how close we are to the frame budget
- - Add some unit tests to verify internal behavior
- - Add "CommunicationAdaptor" to swap out how network communication is done
+   o Try always skipping a few frames after regaining sync to prevent us just immediately falling behind again
+     |-> Can we wait until we've buffered up a certain number of frames?
+ - See if we can improve rubberbanding problem with better prediction
+   o I'd like to try not predicting movement if we've already predicted X frames in a row
 
 INTERMISSION:
 
  - Decide whether this is a viable way forward or not
 
-MILESTONE 2:
+MILESTONE 2 (internal cleanup):
 
+ - Profile our rollbacks so we can see how close we are to the frame budget
+ - Add some unit tests to verify internal behavior
  - Setup the debug_rollback_ticks to compare the save states with the original save states so we can know the exact same things happened
  - Switch to storing state before starting the next tick? This would ensure that deferred stuff would happen...
 
+MILESTOE 3 (finish porting all the things):
 
  - Fix Railgun
  - Re-implement abilities
