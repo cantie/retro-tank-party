@@ -1,6 +1,8 @@
 extends Node
 
 const SpawnManager = preload("res://addons/network-sync-rollback/SpawnManager.gd")
+const NetworkAdaptor = preload("res://addons/network-sync-rollback/NetworkAdaptor.gd")
+const RPCNetworkAdaptor = preload("res://addons/network-sync-rollback/RPCNetworkAdaptor.gd")
 
 class Peer extends Reference:
 	var peer_id: int
@@ -116,6 +118,8 @@ enum InputMessageKey {
 	INPUT,
 }
 
+var network_adaptor: NetworkAdaptor setget set_network_adaptor
+
 var peers := {}
 var input_buffer := []
 var state_buffer := []
@@ -184,9 +188,27 @@ func _ready() -> void:
 	_spawn_manager.name = "SpawnManager"
 	add_child(_spawn_manager)
 	_spawn_manager.connect("scene_spawned", self, "_on_SpawnManager_scene_spawned")
+	
+	if network_adaptor == null:
+		set_network_adaptor(RPCNetworkAdaptor.new())
 
 func _set_readonly_variable(_value) -> void:
 	pass
+
+func set_network_adaptor(_network_adaptor: NetworkAdaptor) -> void:
+	assert(not started, "Changing the network adaptor after SyncManager has started will probably break everything")
+	
+	if network_adaptor != null:
+		network_adaptor.detach_network_adaptor(self)
+		network_adaptor.disconnect("received_input_tick", self, "_receive_input_tick")
+		remove_child(network_adaptor)
+		network_adaptor.queue_free()
+	
+	network_adaptor = _network_adaptor
+	network_adaptor.name = 'NetworkAdaptor'
+	add_child(network_adaptor)
+	network_adaptor.connect("received_input_tick", self, "_receive_input_tick")
+	network_adaptor.attach_network_adaptor(self)
 
 func set_ping_frequency(_ping_frequency) -> void:
 	ping_frequency = _ping_frequency
@@ -620,7 +642,7 @@ func _send_input_messages_to_peer(peer_id: int) -> void:
 		#var ticks = msg[InputMessageKey.INPUT].keys()
 		#print ("Sending ticks %s - %s" % [min(ticks[0], ticks[-1]), max(ticks[0], ticks[-1])])
 		
-		rpc_unreliable_id(peer_id, "_rit", msg)
+		network_adaptor.send_input_tick(peer_id, msg)
 
 func _send_input_messages_to_all_peers() -> void:
 	for peer_id in peers:
@@ -710,9 +732,7 @@ func _physics_process(delta: float) -> void:
 	if current_tick > 0:
 		_do_tick(delta)
 
-# _rit is short for _receive_input_tick. The method name ends up in each message
-# so, we're trying to keep it short.
-remote func _rit(msg: Dictionary) -> void:
+func _receive_input_tick(peer_id: int, msg: Dictionary) -> void:
 	if not started:
 		return
 	
@@ -730,7 +750,6 @@ remote func _rit(msg: Dictionary) -> void:
 		print ("Discarding message from the future")
 		return
 	
-	var peer_id = get_tree().get_rpc_sender_id()
 	var peer: Peer = peers[peer_id]
 	
 	# Integrate the input we received into the input buffer.
