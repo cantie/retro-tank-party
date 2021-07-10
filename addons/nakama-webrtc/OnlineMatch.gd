@@ -74,6 +74,9 @@ signal player_status_changed (player, status)
 signal match_ready (players)
 signal match_not_ready ()
 
+signal webrtc_peer_added (webrtc_peer, player)
+signal webrtc_peer_removed (webrtc_peer, player)
+
 class Player:
 	var session_id: String
 	var peer_id: int
@@ -477,6 +480,8 @@ func _webrtc_connect_peer(player: Player) -> void:
 	#get_tree().multiplayer._del_peer(u['peer_id'])
 	_webrtc_multiplayer.add_peer(webrtc_peer, player.peer_id, 0)
 	
+	emit_signal("webrtc_peer_added", webrtc_peer, player)
+	
 	if my_session_id.casecmp_to(player.session_id) < 0:
 		var result = webrtc_peer.create_offer()
 		if result != OK:
@@ -484,6 +489,7 @@ func _webrtc_connect_peer(player: Player) -> void:
 
 func _webrtc_disconnect_peer(player: Player) -> void:
 	var webrtc_peer = _webrtc_peers[player.session_id]
+	emit_signal("webrtc_peer_removed", webrtc_peer, player)
 	webrtc_peer.close()
 	_webrtc_peers.erase(player.session_id)
 	_webrtc_peers_connected.erase(player.session_id)
@@ -491,6 +497,7 @@ func _webrtc_disconnect_peer(player: Player) -> void:
 func _webrtc_reconnect_peer(player: Player) -> void:
 	var old_webrtc_peer = _webrtc_peers[player.session_id]
 	if old_webrtc_peer:
+		emit_signal("webrtc_peer_removed", old_webrtc_peer, player)
 		old_webrtc_peer.close()
 	
 	_webrtc_peers_connected.erase(player.session_id)

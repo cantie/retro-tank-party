@@ -332,6 +332,7 @@ remote func _remote_start() -> void:
 	_state_buffer_start_tick = 0
 	_logged_remote_state.clear()
 	started = true
+	network_adaptor.start_network_adaptor(self)
 	emit_signal("sync_started")
 
 func stop() -> void:
@@ -341,6 +342,7 @@ func stop() -> void:
 		_remote_stop()
 
 remotesync func _remote_stop() -> void:
+	network_adaptor.stop_network_adaptor(self)
 	started = false
 	input_tick = 0
 	current_tick = 0
@@ -656,6 +658,10 @@ func _physics_process(delta: float) -> void:
 		# Store an initial state before any ticks.
 		_save_current_state()
 	
+	# We do this in _process() too, so hopefully all is good by now, but just in
+	# case, we don't want to miss out on any data.
+	network_adaptor.poll()
+	
 	if rollback_debug_ticks > 0 and current_tick >= rollback_debug_ticks:
 		rollback_ticks = max(rollback_ticks, rollback_debug_ticks)
 	
@@ -731,6 +737,10 @@ func _physics_process(delta: float) -> void:
 	
 	if current_tick > 0:
 		_do_tick(delta)
+
+func _process(delta: float) -> void:
+	if started:
+		network_adaptor.poll()
 
 func _receive_input_tick(peer_id: int, msg: Dictionary) -> void:
 	if not started:

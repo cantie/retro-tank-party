@@ -30,15 +30,6 @@ func _ready() -> void:
 		if argument.find("=") > -1:
 			var key_value = argument.split("=")
 			arguments[key_value[0].lstrip("--")] = key_value[1]
-	
-	# Configure the input path mappings for SyncManager.
-	SyncManager.update_input_path_mapping({
-		'$': 0,
-		'/root/Match/Game/Players/1': 1,
-		'/root/Match/Game/Players/2': 2,
-		'/root/Match/Game/Players/3': 3,
-		'/root/Match/Game/Players/4': 4,
-	})
 
 func _input(event: InputEvent) -> void:
 	if event is InputEventJoypadMotion or event is InputEventJoypadButton:

@@ -1,6 +1,19 @@
 extends Node
 
+const NakamaWebRTCNetworkAdaptor = preload("res://addons/network-sync-rollback/NakamaWebRTCNetworkAdaptor.gd")
+
 func _ready() -> void:
+	# Configure the input path mappings for SyncManager.
+	SyncManager.update_input_path_mapping({
+		'$': 0,
+		'/root/Match/Game/Players/1': 1,
+		'/root/Match/Game/Players/2': 2,
+		'/root/Match/Game/Players/3': 3,
+		'/root/Match/Game/Players/4': 4,
+	})
+	
+	SyncManager.network_adaptor = NakamaWebRTCNetworkAdaptor.new()
+	
 	SyncManager.connect("state_loaded", self, "_on_SyncManager_state_loaded")
 	SyncManager.connect("tick_finished", self, "_on_SyncManager_tick_finished")
 
