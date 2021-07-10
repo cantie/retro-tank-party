@@ -169,6 +169,7 @@ signal scene_spawned (name, spawned_node, scene, data)
 
 func _ready() -> void:
 	get_tree().connect("network_peer_disconnected", self, "remove_peer")
+	get_tree().connect("server_disconnected", self, "stop")
 	
 	_ping_timer = Timer.new()
 	_ping_timer.name = "PingTimer"
@@ -219,6 +220,8 @@ func remove_peer(peer_id: int) -> void:
 	if peers.has(peer_id):
 		peers.erase(peer_id)
 		emit_signal("peer_removed", peer_id)
+	if peers.size() == 0:
+		stop()
 
 func clear_peers() -> void:
 	for peer_id in peers.keys().duplicate():
@@ -592,7 +595,7 @@ func _calculate_message_bytes(msg) -> int:
 func _calculate_minimum_next_tick_requested() -> int:
 	if peers.size() == 0:
 		return 0
-	var peer_list := peers.values()
+	var peer_list := peers.values().duplicate()
 	var result: int = peer_list.pop_front().next_local_tick_requested
 	for peer in peer_list:
 		result = min(result, peer.next_local_tick_requested)
