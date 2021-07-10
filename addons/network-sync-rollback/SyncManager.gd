@@ -563,16 +563,22 @@ func _get_input_messages_for_peer(peer: Peer) -> Array:
 	return _get_input_messages_in_range(last_index - (new_messages * max_input_frames_per_message) + 1, last_index, true) + \
 		   _get_input_messages_in_range(first_index, first_index + (old_messages * max_input_frames_per_message) - 1)
 
-func _calculate_skip_ticks(force_calculate_advantage: bool = false) -> bool:
+func _record_advantage(force_calculate_advantage: bool = false) -> void:
 	var max_advantage: float
 	for peer in peers.values():
 		# Number of frames we are predicting for this peer.
-		peer.local_lag = (input_tick + 1) - peer.last_remote_tick_received
+		peer.local_lag = (current_tick + 1) - peer.last_remote_tick_received
 		# Calculate the advantage the peer has over us.
 		peer.record_advantage(ticks_to_calculate_advantage if not force_calculate_advantage else 0)
 		# Attempt to find the greatest advantage.
 		max_advantage = max(max_advantage, peer.calculated_advantage)
-		
+
+func _calculate_skip_ticks() -> bool:
+	# Attempt to find the greatest advantage.
+	var max_advantage: float
+	for peer in peers.values():
+		max_advantage = max(max_advantage, peer.calculated_advantage)
+	
 	if max_advantage >= 2.0 and skip_ticks == 0:
 		skip_ticks = int(max_advantage / 2)
 		emit_signal("skip_ticks_flagged", skip_ticks)
@@ -653,6 +659,8 @@ func _physics_process(delta: float) -> void:
 	if get_tree().is_network_server() and _logged_remote_state.size() > 0:
 		_process_logged_remote_state()
 	
+	_record_advantage()
+	
 	if not _cleanup_buffers():
 		if input_buffer_underruns == 0:
 			emit_signal("sync_lost")
@@ -662,11 +670,12 @@ func _physics_process(delta: float) -> void:
 			return
 		# Even when we're skipping ticks, still send input.
 		_send_input_messages_to_all_peers()
+		return
 	elif input_buffer_underruns > 0:
 		emit_signal("sync_regained")
 		input_buffer_underruns = 0
 		# We may need to still skip a few ticks to account for our latency
-		_calculate_skip_ticks(true)
+		_calculate_skip_ticks()
 	
 	if skip_ticks > 0:
 		skip_ticks -= 1
@@ -679,6 +688,7 @@ func _physics_process(delta: float) -> void:
 			return
 	
 	if _calculate_skip_ticks():
+		# This means we need to skip some ticks, so may as well start now!
 		return
 	
 	input_tick += 1
