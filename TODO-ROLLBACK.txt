@@ -8,6 +8,8 @@ MILESTONE 1:
    o Impleement a "communication adaptor" system, and use it to create a custom WebRTC data channel for our communication
    o Dig deeper into WebRTC and try to see where things are going awry!
  - Profile our rollbacks so we can see how close we are to the frame budget
+ - Add some unit tests to verify internal behavior
+ - Add "CommunicationAdaptor" to swap out how network communication is done
 
 INTERMISSION:
 
