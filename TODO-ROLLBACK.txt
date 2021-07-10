@@ -3,10 +3,10 @@ TODO
 
 MILESTONE 1:
 
- - Implement generic solution for modifying spawned objects after they are spawned
  - Figure out why a buffer of 20 frames is too small for 100ms of latency (we should be fine up to 320!)
-   o Do a better job of re-sending old input. We seem to sometimes lose old data, but then don't resend it due to our maxes
-     |-> Maybe keep our input in a seperate buffer, and only retire data after all peers have it, with some way to wait for and kick unresponsive peers
+   o Update to the latest version of the WebRTC plugin (do this on the devel branch)
+   o Impleement a "communication adaptor" system, and use it to create a custom WebRTC data channel for our communication
+   o Dig deeper into WebRTC and try to see where things are going awry!
  - Profile our rollbacks so we can see how close we are to the frame budget
 
 INTERMISSION:
@@ -25,4 +25,9 @@ MILESTONE 2:
  - Figure out how to handle physics
  - Figure out how to handle sound!
  - Implement spectators
+
+BEFORE RELEASE:
+
+ - Implement a way to kick problematic peers, rather than 
+ - Smooth out our frame skipping so we don't do it all at once
 
