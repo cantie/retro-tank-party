@@ -5,6 +5,7 @@ MILESTONE 1:
 
  - Solve problems with latency and packet loss
    o Implement a "message serializer" system to allow us to really byte pack our message and reduce size
+   o Keep a special queue of pre-serialized messages to send out
    o Dig deeper into WebRTC and try to see where things are going awry!
  - See if we can improve rubberbanding problem with better prediction
    o I'd like to try not predicting movement if we've already predicted X frames in a row

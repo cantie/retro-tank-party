@@ -113,12 +113,58 @@ class StateBufferFrame:
 		data = _data
 
 enum InputMessageKey {
-	TICK,
 	NEXT_TICK_REQUESTED,
 	INPUT,
 }
 
+const DEFAULT_MESSAGE_BUFFER_SIZE = 1280
+
+class MessageSerializer:
+	func serialize_input(input: Dictionary) -> PoolByteArray:
+		return var2bytes(input)
+
+	func unserialize_input(serialized: PoolByteArray) -> Dictionary:
+		return bytes2var(serialized)
+
+	func serialize_message(msg: Dictionary) -> PoolByteArray:
+		var buffer := StreamPeerBuffer.new()
+		buffer.resize(DEFAULT_MESSAGE_BUFFER_SIZE)
+	
+		buffer.put_u32(msg[InputMessageKey.NEXT_TICK_REQUESTED])
+		
+		var input_ticks = msg[InputMessageKey.INPUT]
+		buffer.put_u8(input_ticks.size())
+		for tick in input_ticks:
+			buffer.put_u32(tick)
+			
+			var input = input_ticks[tick]
+			buffer.put_u16(input.size())
+			buffer.put_data(input)
+		
+		buffer.resize(buffer.get_position())
+		return buffer.data_array
+
+	func unserialize_message(serialized) -> Dictionary:
+		var buffer := StreamPeerBuffer.new()
+		buffer.put_data(serialized)
+		buffer.seek(0)
+		
+		var msg := {
+			InputMessageKey.NEXT_TICK_REQUESTED: buffer.get_u32(),
+			InputMessageKey.INPUT: {}
+		}
+		
+		var tick_count = buffer.get_u8()
+		for tick_index in range(tick_count):
+			var tick = buffer.get_u32()
+			
+			var input_size = buffer.get_u16()
+			msg[InputMessageKey.INPUT][tick] = buffer.get_data(input_size)[1]
+		
+		return msg
+
 var network_adaptor: NetworkAdaptor setget set_network_adaptor
+var message_serializer: MessageSerializer setget set_message_serializer
 
 var peers := {}
 var input_buffer := []
@@ -132,7 +178,7 @@ var max_messages_per_tick := 2
 var max_input_buffer_underruns := 300
 var skip_ticks_after_sync_regained := 10
 var rollback_debug_ticks := 0
-var debug_message_bytes := 640
+var debug_message_bytes := 700
 var log_state := false
 
 # In seconds, because we don't want it to be dependent on the network tick.
@@ -144,9 +190,6 @@ var skip_ticks: int = 0 setget _set_readonly_variable
 var rollback_ticks: int = 0 setget _set_readonly_variable
 var input_buffer_underruns := 0 setget _set_readonly_variable
 var started := false setget _set_readonly_variable
-
-var _input_path_map := {}
-var _input_path_map_reverse := {}
 
 var _ping_timer: Timer
 var _spawn_manager
@@ -192,6 +235,8 @@ func _ready() -> void:
 	
 	if network_adaptor == null:
 		set_network_adaptor(RPCNetworkAdaptor.new())
+	if message_serializer == null:
+		set_message_serializer(MessageSerializer.new())
 
 func _set_readonly_variable(_value) -> void:
 	pass
@@ -210,6 +255,10 @@ func set_network_adaptor(_network_adaptor: NetworkAdaptor) -> void:
 	add_child(network_adaptor)
 	network_adaptor.connect("received_input_tick", self, "_receive_input_tick")
 	network_adaptor.attach_network_adaptor(self)
+
+func set_message_serializer(_message_serializer: MessageSerializer) -> void:
+	assert(not started, "Changing the message serializer after SyncManager has started will probably break everything")
+	message_serializer = _message_serializer
 
 func set_ping_frequency(_ping_frequency) -> void:
 	ping_frequency = _ping_frequency
@@ -249,36 +298,6 @@ func remove_peer(peer_id: int) -> void:
 func clear_peers() -> void:
 	for peer_id in peers.keys().duplicate():
 		remove_peer(peer_id)
-
-func add_input_path_mapping(path: String, alias) -> void:
-	_input_path_map[path] = alias
-	_input_path_map_reverse[alias] = path
-
-func update_input_path_mapping(mapping: Dictionary) -> void:
-	for path in mapping:
-		add_input_path_mapping(path, mapping[path])
-
-func clear_input_path_mapping() -> void:
-	_input_path_map.clear()
-	_input_path_map_reverse.clear()
-
-func _map_input_paths(input: Dictionary) -> Dictionary:
-	if _input_path_map.size() == 0:
-		return input
-	var mapped_input := {}
-	for path in input:
-		var mapped_path = _input_path_map.get(path, path)
-		mapped_input[mapped_path] = input[path]
-	return mapped_input
-
-func _unmap_input_paths(mapped_input: Dictionary) -> Dictionary:
-	if _input_path_map_reverse.size() == 0:
-		return mapped_input
-	var input := {}
-	for mapped_path in mapped_input:
-		var path = _input_path_map_reverse.get(mapped_path, mapped_path)
-		input[path] = mapped_input[mapped_path]
-	return input
 
 func _on_ping_timer_timeout() -> void:
 	var system_time = OS.get_system_time_msecs()
@@ -566,7 +585,7 @@ func _get_input_messages_in_range(first_index: int, last_index: int, reverse: bo
 	var indexes = range(first_index, last_index + 1) if not reverse else range(last_index, first_index - 1, -1)
 	for index in indexes:
 		var input_frame: InputBufferFrame = input_buffer[index]
-		msg[input_frame.tick] = _map_input_paths(input_frame.players[local_peer_id].input)
+		msg[input_frame.tick] = message_serializer.serialize_input(input_frame.players[local_peer_id].input)
 		
 		if max_input_frames_per_message > 0 and msg.size() == max_input_frames_per_message:
 			all_messages.append(msg)
@@ -636,16 +655,19 @@ func _send_input_messages_to_peer(peer_id: int) -> void:
 			InputMessageKey.INPUT: input,
 		}
 		
+		var bytes = message_serializer.serialize_message(msg)
+		
 		# See https://gafferongames.com/post/packet_fragmentation_and_reassembly/
 		if debug_message_bytes:
-			var bytes = _calculate_message_bytes(msg)
-			if bytes > debug_message_bytes:
+			if bytes.size() > debug_message_bytes:
 				push_error("Sending message w/ size %s bytes" % bytes)
 		
 		#var ticks = msg[InputMessageKey.INPUT].keys()
 		#print ("Sending ticks %s - %s" % [min(ticks[0], ticks[-1]), max(ticks[0], ticks[-1])])
+		#print (Marshalls.variant_to_base64(msg))
+		#print ("-------")
 		
-		network_adaptor.send_input_tick(peer_id, msg)
+		network_adaptor.send_input_tick(peer_id, bytes)
 
 func _send_input_messages_to_all_peers() -> void:
 	for peer_id in peers:
@@ -760,9 +782,11 @@ func _process(delta: float) -> void:
 	if started:
 		network_adaptor.poll()
 
-func _receive_input_tick(peer_id: int, msg: Dictionary) -> void:
+func _receive_input_tick(peer_id: int, serialized_msg: PoolByteArray) -> void:
 	if not started:
 		return
+	
+	var msg = message_serializer.unserialize_message(serialized_msg)
 	
 	var all_remote_input: Dictionary = msg[InputMessageKey.INPUT]
 	var all_remote_ticks = all_remote_input.keys()
@@ -790,7 +814,7 @@ func _receive_input_tick(peer_id: int, msg: Dictionary) -> void:
 		if remote_tick < _input_buffer_start_tick:
 			continue
 		
-		var remote_input = _unmap_input_paths(all_remote_input[remote_tick])
+		var remote_input = message_serializer.unserialize_input(all_remote_input[remote_tick])
 		var input_frame := _get_or_create_input_frame(remote_tick)
 		if input_frame == null:
 			# _get_or_create_input_frame() will have already flagged the error,

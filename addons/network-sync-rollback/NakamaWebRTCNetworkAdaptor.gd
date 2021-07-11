@@ -52,13 +52,13 @@ func _on_OnlineMatch_disconnected() -> void:
 	data_channels.clear()
 	message_queue.clear()
 
-func send_input_tick(peer_id: int, msg: Dictionary) -> void:
+func send_input_tick(peer_id: int, msg: PoolByteArray) -> void:
 	if not data_channels.has(peer_id) or data_channels[peer_id].get_ready_state() != WebRTCDataChannel.STATE_OPEN:
 		if not message_queue.has(peer_id):
 			message_queue[peer_id] = []
 		message_queue[peer_id].append(msg)
 	else:
-		data_channels[peer_id].put_var(msg)
+		data_channels[peer_id].put_packet(msg)
 
 func poll() -> void:
 	for peer_id in data_channels:
@@ -70,7 +70,7 @@ func poll() -> void:
 		
 		# Get all received messages.
 		while data_channel.get_available_packet_count() > 0:
-			var msg = data_channel.get_var()
+			var msg = data_channel.get_packet()
 			emit_signal("received_input_tick", peer_id, msg)
 		
 		# Send any queued messages.
@@ -78,5 +78,5 @@ func poll() -> void:
 			var messages_to_send = message_queue[peer_id]
 			if messages_to_send.size() > 0:
 				for msg in messages_to_send:
-					data_channel.put_var(msg)
+					data_channel.put_packet(msg)
 				messages_to_send.clear()

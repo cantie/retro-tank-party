@@ -346,7 +346,7 @@ func _predict_remote_input(previous_input: Dictionary) -> Dictionary:
 		_calculate_movement_vector(input)
 	
 	# We get turrent input from the most recent input.
-	var latest_input := SyncManager.get_latest_input_for_node(self)
+	var latest_input: Dictionary = SyncManager.get_latest_input_for_node(self)
 	if latest_input.has(PlayerInput.TURRET_ROTATION):
 			input[PlayerInput.TURRET_ROTATION] = latest_input[PlayerInput.TURRET_ROTATION]
 	
