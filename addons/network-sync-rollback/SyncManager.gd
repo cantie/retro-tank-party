@@ -790,6 +790,8 @@ func _receive_input_tick(peer_id: int, serialized_msg: PoolByteArray) -> void:
 	
 	var all_remote_input: Dictionary = msg[InputMessageKey.INPUT]
 	var all_remote_ticks = all_remote_input.keys()
+	all_remote_ticks.sort()
+	
 	var first_remote_tick = all_remote_ticks[0]
 	var last_remote_tick = all_remote_ticks[-1]
 
