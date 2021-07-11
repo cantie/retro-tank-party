@@ -103,6 +103,12 @@ func _ready() -> void:
 	SyncManager.network_adaptor = NakamaWebRTCNetworkAdaptor.new()
 	SyncManager.message_serializer = RTPMessageSerializer.new()
 	
+	# Tweak some settings
+	SyncManager.debug_message_bytes = 220
+	#SyncManager.max_input_frames_per_message = 5
+	#SyncManager.max_messages_per_tick = 2
+	SyncManager.skip_ticks_after_sync_regained = 2
+	
 	SyncManager.connect("state_loaded", self, "_on_SyncManager_state_loaded")
 	SyncManager.connect("tick_finished", self, "_on_SyncManager_tick_finished")
 

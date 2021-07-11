@@ -660,7 +660,7 @@ func _send_input_messages_to_peer(peer_id: int) -> void:
 		# See https://gafferongames.com/post/packet_fragmentation_and_reassembly/
 		if debug_message_bytes:
 			if bytes.size() > debug_message_bytes:
-				push_error("Sending message w/ size %s bytes" % bytes)
+				push_error("Sending message w/ size %s bytes" % bytes.size())
 		
 		#var ticks = msg[InputMessageKey.INPUT].keys()
 		#print ("Sending ticks %s - %s" % [min(ticks[0], ticks[-1]), max(ticks[0], ticks[-1])])
