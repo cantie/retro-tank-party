@@ -11,17 +11,6 @@ const input_path_mapping := {
 	'/root/Match/Game/Players/4': 4,
 }
 
-enum PlayerInput {
-	TURRET_ROTATION = -1,
-	
-	CONTROL_SCHEME = 0,
-	INPUT_VECTOR,
-	MOVEMENT_VECTOR,
-	SNAP_TO_ROTATION,
-	SHOOTING,
-	USING_ABILITY,
-}
-
 class RTPMessageSerializer extends SyncManager.MessageSerializer:
 	func serialize_input(input: Dictionary) -> PoolByteArray:
 		var buffer := StreamPeerBuffer.new()
