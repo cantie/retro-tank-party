@@ -512,7 +512,7 @@ func _cleanup_buffers() -> bool:
 	while (current_tick - _input_buffer_start_tick) > max_buffer_size * 2:
 		var input_frame_to_retire = input_buffer[0]
 		
-		if input_frame_to_retire.tick >= min_next_tick_requested:
+		if min_next_tick_requested > 0 and input_frame_to_retire.tick >= min_next_tick_requested:
 			var peer_ids := []
 			for peer_id in peers:
 				var peer = peers[peer_id]
