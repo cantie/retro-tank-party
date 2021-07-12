@@ -4,10 +4,12 @@ TODO
 MILESTONE 1:
 
  - Solve problems with latency and packet loss
-   o Keep a special queue of pre-serialized messages to send out
    o Dig deeper into WebRTC and try to see where things are going awry!
  - See if we can improve rubberbanding problem with better prediction
    o I'd like to try not predicting movement if we've already predicted X frames in a row
+ - Try reducing physics frame rate to 30fps, and calculating in-between frames in process
+   o This might be tricky to do in the current design... How can we know the next position/rotation
+     of all entities but not apply to the visuals yet?
 
 INTERMISSION:
 
@@ -16,7 +18,8 @@ INTERMISSION:
 MILESTONE 2 (internal cleanup):
 
  - Profile our rollbacks so we can see how close we are to the frame budget
- - Add some unit tests to verify internal behavior
+ - Move ping and other RPCs out of SyncManager and into NetworkAdaptor - will hepl with unit tests
+ - Add some unit tests to verify internal behavior of SyncManager
  - Setup the debug_rollback_ticks to compare the save states with the original save states so we can know the exact same things happened
  - Switch to storing state before starting the next tick? This would ensure that deferred stuff would happen...
 
