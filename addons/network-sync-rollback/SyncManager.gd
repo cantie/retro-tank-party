@@ -11,8 +11,8 @@ class Peer extends Reference:
 	var last_ping_received: int
 	var time_delta: float
 	
-	var last_remote_tick_received: int
-	var next_local_tick_requested: int
+	var last_remote_tick_received: int = 0
+	var next_local_tick_requested: int = 1
 	
 	var remote_lag: int
 	var local_lag: int
@@ -53,26 +53,6 @@ class InputForPlayer:
 	func _init(_input: Dictionary, _predicted: bool) -> void:
 		input = _input
 		predicted = _predicted
-		if not input.has('$'):
-			input['$'] = _calculate_cleaned_hash()
-	
-	# Calculates the input hash without any keys that start with '_' (if string)
-	# or less than 0 (if integer) to allow some properties to not count when
-	# comparing predicted input with real input.
-	func _calculate_cleaned_hash() -> int:
-		var cleaned_input := input.duplicate(true)
-		for path in cleaned_input:
-			if path == '$':
-				continue
-			for key in cleaned_input[path].keys():
-				var value = cleaned_input[path]
-				if key is String:
-					if key.begins_with('_'):
-						value.erase(key)
-				elif key is int:
-					if key < 0:
-						value.erase(key)
-		return cleaned_input.hash()
 
 class InputBufferFrame:
 	var tick: int
@@ -195,6 +175,8 @@ var _ping_timer: Timer
 var _spawn_manager
 var _input_buffer_start_tick: int
 var _state_buffer_start_tick: int
+var _input_send_queue := []
+var _input_send_queue_start_tick: int
 var _logged_remote_state: Dictionary
 
 signal sync_started ()
@@ -350,6 +332,8 @@ remote func _remote_start() -> void:
 	state_buffer.clear()
 	_input_buffer_start_tick = 1
 	_state_buffer_start_tick = 0
+	_input_send_queue.clear()
+	_input_send_queue_start_tick = 1
 	_logged_remote_state.clear()
 	started = true
 	network_adaptor.start_network_adaptor(self)
@@ -373,6 +357,8 @@ remotesync func _remote_stop() -> void:
 	state_buffer.clear()
 	_input_buffer_start_tick = 0
 	_state_buffer_start_tick = 0
+	_input_send_queue.clear()
+	_input_send_queue_start_tick = 0
 	_logged_remote_state.clear()
 	
 	for peer in peers.values():
@@ -464,6 +450,7 @@ func _do_tick(delta: float, is_rollback: bool = false) -> void:
 			var predicted_input := {}
 			if previous_frame:
 				predicted_input = _call_predict_remote_input(previous_frame.get_player_input(peer_id))
+			_calculate_input_hash(predicted_input)
 			input_frame.players[peer_id] = InputForPlayer.new(predicted_input, true)
 	
 	_call_network_process(delta, input_frame)
@@ -490,6 +477,12 @@ func _get_or_create_input_frame(tick: int) -> InputBufferFrame:
 	return input_frame
 
 func _cleanup_buffers() -> bool:
+	# Clean-up the input send queue.
+	var min_next_tick_requested = _calculate_minimum_next_tick_requested()
+	while _input_send_queue_start_tick < min_next_tick_requested:
+		_input_send_queue.pop_front()
+		_input_send_queue_start_tick += 1
+	
 	# Clean-up old state buffer frames.
 	while state_buffer.size() > max_buffer_size:
 		var state_frame_to_retire: StateBufferFrame = state_buffer[0]
@@ -506,21 +499,7 @@ func _cleanup_buffers() -> bool:
 	# frames from the future if we are running behind. We don't want having too
 	# many future frames to end up discarding input for the current frame, so we
 	# only count input frames before the current frame towards the buffer size.
-	# Also, at full latency, we need to retain twice as many input frames as
-	# state frames, because we could it could be RTT to ack an input frame.
-	var min_next_tick_requested = _calculate_minimum_next_tick_requested()
-	while (current_tick - _input_buffer_start_tick) > max_buffer_size * 2:
-		var input_frame_to_retire = input_buffer[0]
-		
-		if min_next_tick_requested > 0 and input_frame_to_retire.tick >= min_next_tick_requested:
-			var peer_ids := []
-			for peer_id in peers:
-				var peer = peers[peer_id]
-				if peer.next_local_tick_requested == min_next_tick_requested:
-					peer_ids.append(peer_id)
-			push_warning("Attempting to retire input frame %s still requested by peer(s): %s" % [min_next_tick_requested, peer_ids])
-			return false
-		
+	while (current_tick - _input_buffer_start_tick) > max_buffer_size:
 		_input_buffer_start_tick += 1
 		input_buffer.pop_front()
 	
@@ -575,17 +554,13 @@ func is_player_input_complete(tick: int) -> bool:
 func is_current_player_input_complete() -> bool:
 	return is_player_input_complete(current_tick)
 
-func _get_input_messages_in_range(first_index: int, last_index: int, reverse: bool = false) -> Array:
-	var all_messages := []
-	
-	var local_peer_id = get_tree().get_network_unique_id()
-	
-	var msg := {}
-	
+func _get_input_messages_from_send_queue_in_range(first_index: int, last_index: int, reverse: bool = false) -> Array:
 	var indexes = range(first_index, last_index + 1) if not reverse else range(last_index, first_index - 1, -1)
+	
+	var all_messages := []
+	var msg := {}
 	for index in indexes:
-		var input_frame: InputBufferFrame = input_buffer[index]
-		msg[input_frame.tick] = message_serializer.serialize_input(input_frame.players[local_peer_id].input)
+		msg[_input_send_queue_start_tick + index] = _input_send_queue[index]
 		
 		if max_input_frames_per_message > 0 and msg.size() == max_input_frames_per_message:
 			all_messages.append(msg)
@@ -596,19 +571,19 @@ func _get_input_messages_in_range(first_index: int, last_index: int, reverse: bo
 	
 	return all_messages
 
-func _get_input_messages_for_peer(peer: Peer) -> Array:
-	var first_index := peer.next_local_tick_requested - _input_buffer_start_tick
-	var last_index := input_tick - _input_buffer_start_tick
+func _get_input_messages_from_send_queue_for_peer(peer: Peer) -> Array:
+	var first_index := peer.next_local_tick_requested - _input_send_queue_start_tick
+	var last_index := _input_send_queue.size() - 1
 	var max_messages := (max_input_frames_per_message * max_messages_per_tick)
 	
 	if (last_index + 1) - first_index <= max_messages:
-		return _get_input_messages_in_range(first_index, last_index, true)
+		return _get_input_messages_from_send_queue_in_range(first_index, last_index, true)
 	
 	var new_messages = int(ceil(max_messages_per_tick / 2.0))
 	var old_messages = int(floor(max_messages_per_tick / 2.0))
 	
-	return _get_input_messages_in_range(last_index - (new_messages * max_input_frames_per_message) + 1, last_index, true) + \
-		   _get_input_messages_in_range(first_index, first_index + (old_messages * max_input_frames_per_message) - 1)
+	return _get_input_messages_from_send_queue_in_range(last_index - (new_messages * max_input_frames_per_message) + 1, last_index, true) + \
+		   _get_input_messages_from_send_queue_in_range(first_index, first_index + (old_messages * max_input_frames_per_message) - 1)
 
 func _record_advantage(force_calculate_advantage: bool = false) -> void:
 	var max_advantage: float
@@ -638,7 +613,7 @@ func _calculate_message_bytes(msg) -> int:
 
 func _calculate_minimum_next_tick_requested() -> int:
 	if peers.size() == 0:
-		return 0
+		return 1
 	var peer_list := peers.values().duplicate()
 	var result: int = peer_list.pop_front().next_local_tick_requested
 	for peer in peer_list:
@@ -649,7 +624,7 @@ func _send_input_messages_to_peer(peer_id: int) -> void:
 	assert(peer_id != get_tree().get_network_unique_id(), "Cannot send input to ourselves")
 	var peer = peers[peer_id]
 	
-	for input in _get_input_messages_for_peer(peer):
+	for input in _get_input_messages_from_send_queue_for_peer(peer):
 		var msg = {
 			InputMessageKey.NEXT_TICK_REQUESTED: peer.last_remote_tick_received + 1,
 			InputMessageKey.INPUT: input,
@@ -664,8 +639,6 @@ func _send_input_messages_to_peer(peer_id: int) -> void:
 		
 		#var ticks = msg[InputMessageKey.INPUT].keys()
 		#print ("Sending ticks %s - %s" % [min(ticks[0], ticks[-1]), max(ticks[0], ticks[-1])])
-		#print (Marshalls.variant_to_base64(msg))
-		#print ("-------")
 		
 		network_adaptor.send_input_tick(peer_id, bytes)
 
@@ -772,7 +745,10 @@ func _physics_process(delta: float) -> void:
 		return
 		
 	var local_input = _call_get_local_input()
+	_calculate_input_hash(local_input)
 	input_frame.players[get_tree().get_network_unique_id()] = InputForPlayer.new(local_input, false)
+	_input_send_queue.append(message_serializer.serialize_input(local_input))
+	assert(input_tick == _input_send_queue_start_tick + _input_send_queue.size() - 1, "Input send queue ticks numbers are misaligned")
 	_send_input_messages_to_all_peers()
 	
 	if current_tick > 0:
@@ -781,6 +757,24 @@ func _physics_process(delta: float) -> void:
 func _process(delta: float) -> void:
 	if started:
 		network_adaptor.poll()
+
+# Calculates the input hash without any keys that start with '_' (if string)
+# or less than 0 (if integer) to allow some properties to not count when
+# comparing predicted input with real input.
+func _calculate_input_hash(input: Dictionary) -> void:
+	var cleaned_input := input.duplicate(true)
+	if cleaned_input.has('$'):
+		cleaned_input.erase('$')
+	for path in cleaned_input:
+		for key in cleaned_input[path].keys():
+			var value = cleaned_input[path]
+			if key is String:
+				if key.begins_with('_'):
+					value.erase(key)
+			elif key is int:
+				if key < 0:
+					value.erase(key)
+	input['$'] = cleaned_input.hash()
 
 func _receive_input_tick(peer_id: int, serialized_msg: PoolByteArray) -> void:
 	if not started:
