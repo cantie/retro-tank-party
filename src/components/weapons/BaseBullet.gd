@@ -45,6 +45,10 @@ func _load_state(state: Dictionary) -> void:
 	position = state['position']
 	rotation = state['rotation']
 
+func _interpolate_state(old_state: Dictionary, new_state: Dictionary, weight: float) -> void:
+	position = lerp(old_state['position'], new_state['position'], weight)
+	rotation = lerp_angle(old_state['rotation'], new_state['rotation'], weight)
+
 func setup_bullet(_tank, weapon_type) -> void:
 	# @todo Remove this method!
 	pass

@@ -781,8 +781,9 @@ func _physics_process(delta: float) -> void:
 				if from_state.has(path):
 					_interpolation_state[path] = [from_state[path], to_state[path]]
 			
+			# Return to state from the previous frame, so we can interpolate
+			# towards the state of the current frame.
 			_call_load_state(state_buffer[-2].data)
-			emit_signal("state_loaded", 0)
 			_interpolation_delta = 0.0
 
 func _process(delta: float) -> void:
@@ -796,7 +797,6 @@ func _process(delta: float) -> void:
 		var weight: float = _interpolation_delta / (1.0 / Engine.iterations_per_second)
 		if weight > 1.0:
 			weight = 1.0
-		#print (weight)
 		_call_interpolate_state(weight)
 
 # Calculates the input hash without any keys that start with '_' (if string)

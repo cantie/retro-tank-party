@@ -11,12 +11,12 @@ script = ExtResource( 1 )
 [node name="ShowScoreTimer" type="Node" parent="."]
 script = ExtResource( 2 )
 one_shot = true
-wait_ticks = 120
+wait_ticks = 60
 
 [node name="NextRoundTimer" type="Node" parent="."]
 script = ExtResource( 2 )
 one_shot = true
-wait_ticks = 120
+wait_ticks = 60
 
 [connection signal="timeout" from="ShowScoreTimer" to="." method="_on_ShowScoreTimer_timeout"]
 [connection signal="timeout" from="NextRoundTimer" to="." method="_on_NextRoundTimer_timeout"]
