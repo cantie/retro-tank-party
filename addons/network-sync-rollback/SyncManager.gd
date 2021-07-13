@@ -157,7 +157,7 @@ var max_input_frames_per_message := 5
 var max_messages_per_tick := 2
 var max_input_buffer_underruns := 300
 var skip_ticks_after_sync_regained := 10
-var interpolation := false
+var interpolation := true
 var rollback_debug_ticks := 0
 var debug_message_bytes := 700
 var log_state := false
@@ -796,6 +796,7 @@ func _process(delta: float) -> void:
 		var weight: float = _interpolation_delta / (1.0 / Engine.iterations_per_second)
 		if weight > 1.0:
 			weight = 1.0
+		#print (weight)
 		_call_interpolate_state(weight)
 
 # Calculates the input hash without any keys that start with '_' (if string)
