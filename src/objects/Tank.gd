@@ -343,10 +343,14 @@ func _calculate_movement_vector(input: Dictionary) -> void:
 	
 	input[PlayerInput.MOVEMENT_VECTOR] = movement_vector
 
-func _predict_remote_input(previous_input: Dictionary) -> Dictionary:
+func _predict_remote_input(previous_input: Dictionary, ticks_since_real_input: int) -> Dictionary:
 	var input = previous_input.duplicate()
-	if input.get(PlayerInput.INPUT_VECTOR, Vector2.ZERO) != Vector2.ZERO:
-		_calculate_movement_vector(input)
+	if ticks_since_real_input <= 5:
+		if input.get(PlayerInput.INPUT_VECTOR, Vector2.ZERO) != Vector2.ZERO:
+			_calculate_movement_vector(input)
+	else:
+		input.erase(PlayerInput.INPUT_VECTOR)
+		input.erase(PlayerInput.MOVEMENT_VECTOR)
 	
 	# We get turrent input from the most recent input.
 	var latest_input: Dictionary = SyncManager.get_latest_input_for_node(self)
