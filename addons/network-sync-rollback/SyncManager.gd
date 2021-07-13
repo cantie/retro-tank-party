@@ -598,7 +598,7 @@ func _record_advantage(force_calculate_advantage: bool = false) -> void:
 	var max_advantage: float
 	for peer in peers.values():
 		# Number of frames we are predicting for this peer.
-		peer.local_lag = (current_tick + 1) - peer.last_remote_tick_received
+		peer.local_lag = (input_tick + 1) - peer.last_remote_tick_received
 		# Calculate the advantage the peer has over us.
 		peer.record_advantage(ticks_to_calculate_advantage if not force_calculate_advantage else 0)
 		# Attempt to find the greatest advantage.
