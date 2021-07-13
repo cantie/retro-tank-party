@@ -94,6 +94,7 @@ func _ready() -> void:
 	SyncManager.message_serializer = RTPMessageSerializer.new()
 	
 	# Tweak some settings
+	#SyncManager.max_buffer_size = 20
 	SyncManager.debug_message_bytes = 220
 	#SyncManager.max_input_frames_per_message = 5
 	#SyncManager.max_messages_per_tick = 2
