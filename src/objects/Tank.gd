@@ -422,6 +422,10 @@ func _load_state(state: Dictionary) -> void:
 	update_health(state['health'])
 	set_weapon_type(load(state['weapon_type']))
 
+func _interpolate_state(old_state: Dictionary, new_state: Dictionary, weight: float) -> void:
+	position = lerp(old_state['position'], new_state['position'], weight)
+	rotation = lerp_angle(old_state['rotation'], old_state['rotation'], weight)
+
 func _unhandled_input(event: InputEvent) -> void:
 	if event is InputEventMouseMotion:
 		_input_mouse_control = true

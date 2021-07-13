@@ -332,6 +332,7 @@ limits/debugger_stdout/max_chars_per_second=4096
 
 [physics]
 
+common/physics_fps=30
 2d/default_gravity_vector=Vector2( 0, 0 )
 
 [rendering]
