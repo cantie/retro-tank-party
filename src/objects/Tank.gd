@@ -299,6 +299,9 @@ func _hook_default_gather_input(event: GatherInputEvent) -> void:
 		input[PlayerInput.SHOOTING] = true
 	if _input_use_ability:
 		input[PlayerInput.USING_ABILITY] = true
+	
+	_input_shoot = false
+	_input_use_ability = false
 
 func _calculate_movement_vector(input: Dictionary) -> void:
 	if input.get(PlayerInput.CONTROL_SCHEME, GameSettings.ControlScheme.MODERN) == GameSettings.ControlScheme.RETRO:
@@ -383,9 +386,6 @@ func _network_process(delta: float, input: Dictionary) -> void:
 	else:
 		turret_pivot.rotation = 0.0
 	
-	# Make info follow the tank
-	player_info_node.position = global_position + player_info_offset
-	
 	if input.get(PlayerInput.SHOOTING, false) and can_shoot:
 		can_shoot = false
 		shoot_cooldown_timer.start()
@@ -395,21 +395,24 @@ func _network_process(delta: float, input: Dictionary) -> void:
 #	if using_ability:
 #		use_ability()
 	
-	if camera:
-		camera.global_position = global_position
+	_after_update_position()
 	
 	#var sync_event = NetworkSyncEvent.new(self, {})
 	#hooks.dispatch_event('send_remote_update', sync_event)
 	#rpc("_receive_remote_update", sync_event.data)
 
-func _physics_process(delta: float) -> void:
-	_input_shoot = false
-	_input_use_ability = false
+func _after_update_position() -> void:
+	# Make info follow the tank
+	player_info_node.position = global_position + player_info_offset
+	
+	if camera:
+		camera.global_position = global_position
 
 func _save_state() -> Dictionary:
 	return {
 		position = position,
 		rotation = rotation,
+		turret_rotation = turret_pivot.global_rotation,
 		can_shoot = can_shoot,
 		health = health,
 		weapon_type = weapon_type.resource_path,
@@ -418,9 +421,17 @@ func _save_state() -> Dictionary:
 func _load_state(state: Dictionary) -> void:
 	position = state['position']
 	rotation = state['rotation']
+	turret_pivot.global_rotation = state['turret_rotation']
 	can_shoot = state['can_shoot']
 	update_health(state['health'])
 	set_weapon_type(load(state['weapon_type']))
+	_after_update_position()
+
+func _interpolate_state(old_state: Dictionary, new_state: Dictionary, weight: float) -> void:
+	position = lerp(old_state['position'], new_state['position'], weight)
+	rotation = lerp_angle(old_state['rotation'], new_state['rotation'], weight)
+	turret_pivot.global_rotation = lerp_angle(old_state['turret_rotation'], new_state['turret_rotation'], weight)
+	_after_update_position()
 
 func _unhandled_input(event: InputEvent) -> void:
 	if event is InputEventMouseMotion:

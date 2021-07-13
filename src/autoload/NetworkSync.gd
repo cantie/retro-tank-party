@@ -9,6 +9,7 @@ const input_path_mapping := {
 	'/root/Match/Game/Players/2': 2,
 	'/root/Match/Game/Players/3': 3,
 	'/root/Match/Game/Players/4': 4,
+	'/root/Practice/Game/Players/1': 1,
 }
 
 class RTPMessageSerializer extends SyncManager.MessageSerializer:
