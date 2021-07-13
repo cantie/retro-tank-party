@@ -97,7 +97,8 @@ func _ready() -> void:
 	#SyncManager.max_buffer_size = 20
 	SyncManager.debug_message_bytes = 220
 	#SyncManager.max_input_frames_per_message = 5
-	#SyncManager.max_messages_per_tick = 2
+	#SyncManager.max_messages_at_once = 2
+	SyncManager.interpolation = true
 	SyncManager.skip_ticks_after_sync_regained = 2
 	#SyncManager.message_resend_frequency = (1.0 / Engine.iterations_per_second) / 2.0
 	
