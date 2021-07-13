@@ -154,7 +154,8 @@ var max_buffer_size := 20
 var ticks_to_calculate_advantage := 60
 var input_delay := 2 setget set_input_delay
 var max_input_frames_per_message := 5
-var max_messages_per_tick := 2
+var max_messages_at_once := 2
+var message_resend_frequency := 0.0
 var max_input_buffer_underruns := 300
 var skip_ticks_after_sync_regained := 10
 var interpolation := true
@@ -174,12 +175,15 @@ var started := false setget _set_readonly_variable
 
 var _ping_timer: Timer
 var _spawn_manager
+var _tick_time: float
 var _input_buffer_start_tick: int
 var _state_buffer_start_tick: int
 var _input_send_queue := []
 var _input_send_queue_start_tick: int
+var _message_resend_delta := 0.0
+var _started_resending_messages := false
 var _interpolation_state := {}
-var _interpolation_delta := 0.0
+var _time_since_last_tick := 0.0
 var _logged_remote_state: Dictionary
 
 signal sync_started ()
@@ -325,7 +329,7 @@ func start() -> void:
 		yield(get_tree().create_timer(highest_rtt / 2000.0), 'timeout')
 		_remote_start()
 
-remote func _remote_start() -> void:
+func _reset() -> void:
 	input_tick = 0
 	current_tick = input_tick - input_delay
 	skip_ticks = 0
@@ -337,8 +341,15 @@ remote func _remote_start() -> void:
 	_state_buffer_start_tick = 0
 	_input_send_queue.clear()
 	_input_send_queue_start_tick = 1
+	_message_resend_delta = 0.0
+	_started_resending_messages = false
 	_interpolation_state.clear()
+	_time_since_last_tick = 0.0
 	_logged_remote_state.clear()
+
+remote func _remote_start() -> void:
+	_reset()
+	_tick_time = (1.0 / Engine.iterations_per_second)
 	started = true
 	network_adaptor.start_network_adaptor(self)
 	emit_signal("sync_started")
@@ -352,19 +363,7 @@ func stop() -> void:
 remotesync func _remote_stop() -> void:
 	network_adaptor.stop_network_adaptor(self)
 	started = false
-	input_tick = 0
-	current_tick = 0
-	skip_ticks = 0
-	rollback_ticks = 0
-	input_buffer_underruns = 0
-	input_buffer.clear()
-	state_buffer.clear()
-	_input_buffer_start_tick = 0
-	_state_buffer_start_tick = 0
-	_input_send_queue.clear()
-	_input_send_queue_start_tick = 0
-	_interpolation_state.clear()
-	_logged_remote_state.clear()
+	_reset()
 	
 	for peer in peers.values():
 		peer.clear()
@@ -587,13 +586,13 @@ func _get_input_messages_from_send_queue_in_range(first_index: int, last_index: 
 func _get_input_messages_from_send_queue_for_peer(peer: Peer) -> Array:
 	var first_index := peer.next_local_tick_requested - _input_send_queue_start_tick
 	var last_index := _input_send_queue.size() - 1
-	var max_messages := (max_input_frames_per_message * max_messages_per_tick)
+	var max_messages := (max_input_frames_per_message * max_messages_at_once)
 	
 	if (last_index + 1) - first_index <= max_messages:
 		return _get_input_messages_from_send_queue_in_range(first_index, last_index, true)
 	
-	var new_messages = int(ceil(max_messages_per_tick / 2.0))
-	var old_messages = int(floor(max_messages_per_tick / 2.0))
+	var new_messages = int(ceil(max_messages_at_once / 2.0))
+	var old_messages = int(floor(max_messages_at_once / 2.0))
 	
 	return _get_input_messages_from_send_queue_in_range(last_index - (new_messages * max_input_frames_per_message) + 1, last_index, true) + \
 		   _get_input_messages_from_send_queue_in_range(first_index, first_index + (old_messages * max_input_frames_per_message) - 1)
@@ -650,8 +649,8 @@ func _send_input_messages_to_peer(peer_id: int) -> void:
 			if bytes.size() > debug_message_bytes:
 				push_error("Sending message w/ size %s bytes" % bytes.size())
 		
-		#var ticks = msg[InputMessageKey.INPUT].keys()
-		#print ("Sending ticks %s - %s" % [min(ticks[0], ticks[-1]), max(ticks[0], ticks[-1])])
+		var ticks = msg[InputMessageKey.INPUT].keys()
+		print ("[%s] Sending ticks %s - %s" % [current_tick, min(ticks[0], ticks[-1]), max(ticks[0], ticks[-1])])
 		
 		network_adaptor.send_input_tick(peer_id, bytes)
 
@@ -720,7 +719,8 @@ func _physics_process(delta: float) -> void:
 			skip_ticks = 0
 		else:
 			# Even when we're skipping ticks, still send input.
-			_send_input_messages_to_all_peers()
+			if message_resend_frequency == 0.0:
+				_send_input_messages_to_all_peers()
 			return
 	# Attempt to clean up buffers, but if we can't, that means we've lost sync.
 	elif not _cleanup_buffers():
@@ -731,7 +731,8 @@ func _physics_process(delta: float) -> void:
 			_handle_fatal_error("Unable to regain synchronization")
 			return
 		# Even when we're skipping ticks, still send input.
-		_send_input_messages_to_all_peers()
+		if message_resend_frequency == 0.0:
+			_send_input_messages_to_all_peers()
 		return
 	elif input_buffer_underruns > 0:
 		# We've technically regained sync, but we don't want to just fall out of
@@ -746,7 +747,8 @@ func _physics_process(delta: float) -> void:
 				peer.clear_advantage()
 		else:
 			# Even when we're skipping ticks, still send input.
-			_send_input_messages_to_all_peers()
+			if message_resend_frequency == 0.0:
+				_send_input_messages_to_all_peers()
 			return
 	
 	if _calculate_skip_ticks():
@@ -769,6 +771,9 @@ func _physics_process(delta: float) -> void:
 	assert(input_tick == _input_send_queue_start_tick + _input_send_queue.size() - 1, "Input send queue ticks numbers are misaligned")
 	_send_input_messages_to_all_peers()
 	
+	_time_since_last_tick = 0.0
+	_started_resending_messages = false
+	
 	if current_tick > 0:
 		_do_tick(delta)
 		
@@ -784,17 +789,30 @@ func _physics_process(delta: float) -> void:
 			# Return to state from the previous frame, so we can interpolate
 			# towards the state of the current frame.
 			_call_load_state(state_buffer[-2].data)
-			_interpolation_delta = 0.0
 
 func _process(delta: float) -> void:
 	if not started:
 		return
 	
+	_time_since_last_tick += delta
+	
 	network_adaptor.poll()
 	
+	if message_resend_frequency > 0.0 and _time_since_last_tick > message_resend_frequency:
+		if not _started_resending_messages:
+			_started_resending_messages = true
+			print ("[%s] Resending..." % [current_tick])
+			_send_input_messages_to_all_peers()
+			_message_resend_delta = 0.0
+		else:
+			_message_resend_delta += delta
+			if _message_resend_delta > message_resend_frequency:
+				print ("[%s] Resending..." % [current_tick])
+				_send_input_messages_to_all_peers()
+				_message_resend_delta = 0.0
+	
 	if interpolation:
-		_interpolation_delta += delta
-		var weight: float = _interpolation_delta / (1.0 / Engine.iterations_per_second)
+		var weight: float = _time_since_last_tick / _tick_time
 		if weight > 1.0:
 			weight = 1.0
 		_call_interpolate_state(weight)

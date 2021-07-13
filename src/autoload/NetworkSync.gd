@@ -98,6 +98,7 @@ func _ready() -> void:
 	#SyncManager.max_input_frames_per_message = 5
 	#SyncManager.max_messages_per_tick = 2
 	SyncManager.skip_ticks_after_sync_regained = 2
+	#SyncManager.message_resend_frequency = (1.0 / Engine.iterations_per_second) / 2.0
 	
 	SyncManager.connect("state_loaded", self, "_on_SyncManager_state_loaded")
 	SyncManager.connect("tick_finished", self, "_on_SyncManager_tick_finished")
