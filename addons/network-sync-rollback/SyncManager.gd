@@ -155,7 +155,6 @@ var ticks_to_calculate_advantage := 60
 var input_delay := 2 setget set_input_delay
 var max_input_frames_per_message := 5
 var max_messages_at_once := 2
-var message_resend_frequency := 0.0
 var max_input_buffer_underruns := 300
 var skip_ticks_after_sync_regained := 0
 var interpolation := false
@@ -180,8 +179,6 @@ var _input_buffer_start_tick: int
 var _state_buffer_start_tick: int
 var _input_send_queue := []
 var _input_send_queue_start_tick: int
-var _message_resend_delta := 0.0
-var _started_resending_messages := false
 var _interpolation_state := {}
 var _time_since_last_tick := 0.0
 var _logged_remote_state: Dictionary
@@ -341,8 +338,6 @@ func _reset() -> void:
 	_state_buffer_start_tick = 0
 	_input_send_queue.clear()
 	_input_send_queue_start_tick = 1
-	_message_resend_delta = 0.0
-	_started_resending_messages = false
 	_interpolation_state.clear()
 	_time_since_last_tick = 0.0
 	_logged_remote_state.clear()
@@ -721,8 +716,7 @@ func _physics_process(delta: float) -> void:
 			skip_ticks = 0
 		else:
 			# Even when we're skipping ticks, still send input.
-			if message_resend_frequency == 0.0:
-				_send_input_messages_to_all_peers()
+			_send_input_messages_to_all_peers()
 			return
 	# Attempt to clean up buffers, but if we can't, that means we've lost sync.
 	elif not _cleanup_buffers():
@@ -733,8 +727,7 @@ func _physics_process(delta: float) -> void:
 			_handle_fatal_error("Unable to regain synchronization")
 			return
 		# Even when we're skipping ticks, still send input.
-		if message_resend_frequency == 0.0:
-			_send_input_messages_to_all_peers()
+		_send_input_messages_to_all_peers()
 		return
 	elif input_buffer_underruns > 0:
 		# We've technically regained sync, but we don't want to just fall out of
@@ -749,8 +742,7 @@ func _physics_process(delta: float) -> void:
 				peer.clear_advantage()
 		else:
 			# Even when we're skipping ticks, still send input.
-			if message_resend_frequency == 0.0:
-				_send_input_messages_to_all_peers()
+			_send_input_messages_to_all_peers()
 			return
 	
 	if _calculate_skip_ticks():
@@ -774,7 +766,6 @@ func _physics_process(delta: float) -> void:
 	_send_input_messages_to_all_peers()
 	
 	_time_since_last_tick = 0.0
-	_started_resending_messages = false
 	
 	if current_tick > 0:
 		_do_tick(delta)
@@ -799,19 +790,6 @@ func _process(delta: float) -> void:
 	_time_since_last_tick += delta
 	
 	network_adaptor.poll()
-	
-	if message_resend_frequency > 0.0 and _time_since_last_tick > message_resend_frequency:
-		if not _started_resending_messages:
-			_started_resending_messages = true
-			print ("[%s] Resending..." % [current_tick])
-			_send_input_messages_to_all_peers()
-			_message_resend_delta = 0.0
-		else:
-			_message_resend_delta += delta
-			if _message_resend_delta > message_resend_frequency:
-				print ("[%s] Resending..." % [current_tick])
-				_send_input_messages_to_all_peers()
-				_message_resend_delta = 0.0
 	
 	if interpolation:
 		var weight: float = _time_since_last_tick / _tick_time
