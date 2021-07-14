@@ -3,6 +3,8 @@ TODO
 
 MILESTONE 1:
 
+ - Do more real world tests with different regions
+
  - Solve problems with latency and packet loss
    o Dig deeper into WebRTC and try to see where things are going awry!
 

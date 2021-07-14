@@ -27,7 +27,6 @@ const DEFAULT_SPEED := 400
 var turn_speed := DEFAULT_TURN_SPEED
 var speed := DEFAULT_SPEED
 var velocity: Vector2
-var desired_rotation: float
 
 var health := 100
 var dead := false
@@ -111,8 +110,6 @@ enum PlayerInput {
 	
 	CONTROL_SCHEME = 0,
 	INPUT_VECTOR,
-	MOVEMENT_VECTOR,
-	SNAP_TO_ROTATION,
 	SHOOTING,
 	USING_ABILITY,
 }
@@ -284,7 +281,6 @@ func _hook_default_gather_input(event: GatherInputEvent) -> void:
 	
 	if input_vector != Vector2.ZERO:
 		input[PlayerInput.INPUT_VECTOR] = input_vector
-		_calculate_movement_vector(input)
 	
 	if _input_mouse_control:
 		input[PlayerInput.TURRET_ROTATION] = (get_global_mouse_position() - turret_pivot.global_position).angle()
@@ -303,18 +299,20 @@ func _hook_default_gather_input(event: GatherInputEvent) -> void:
 	_input_shoot = false
 	_input_use_ability = false
 
-func _calculate_movement_vector(input: Dictionary) -> void:
+func _calculate_movement_vector(input: Dictionary) -> Vector2:
+	if not input.has(PlayerInput.INPUT_VECTOR):
+		return Vector2.ZERO
+	
 	if input.get(PlayerInput.CONTROL_SCHEME, GameSettings.ControlScheme.MODERN) == GameSettings.ControlScheme.RETRO:
 		var input_vector = input[PlayerInput.INPUT_VECTOR]
 		# Movement is relative to a tank facing to the right, so Y turns to the
 		# left/right, and X moves forward backward.
-		input[PlayerInput.MOVEMENT_VECTOR] = Vector2(-input_vector.y, input_vector.x)
-		return
+		return Vector2(-input_vector.y, input_vector.x)
 	
 	var movement_vector: Vector2
 	var current_vector = Vector2.RIGHT.rotated(rotation)
 	
-	var desired_vector = input[PlayerInput.INPUT_VECTOR]
+	var desired_vector: Vector2 = input.get(PlayerInput.INPUT_VECTOR, Vector2.ZERO)
 	if desired_vector.length() > 0.85:
 		desired_vector = desired_vector.normalized()
 	
@@ -334,33 +332,24 @@ func _calculate_movement_vector(input: Dictionary) -> void:
 	if abs(angle_to) > PI / 2.0:
 		angle_to = TAU - angle_to
 	
-	if abs(angle_to) < 0.1:
-		# If the difference is small enough, then snap to angle.
-		input[PlayerInput.SNAP_TO_ROTATION] = rotation + angle_to
-	else:
-		# Rotate in the direction of the angle to the desired vector.
-		movement_vector.y = clamp(angle_to / (turn_speed * get_physics_process_delta_time()), -1.0, 1.0)
+	movement_vector.y = clamp(angle_to / (turn_speed * get_physics_process_delta_time()), -1.0, 1.0)
 	
-	input[PlayerInput.MOVEMENT_VECTOR] = movement_vector
+	return movement_vector
 
 func _predict_remote_input(previous_input: Dictionary, ticks_since_real_input: int) -> Dictionary:
 	var input = previous_input.duplicate()
-	if ticks_since_real_input <= 5:
-		if input.get(PlayerInput.INPUT_VECTOR, Vector2.ZERO) != Vector2.ZERO:
-			_calculate_movement_vector(input)
-	else:
+	if ticks_since_real_input > 5:
 		input.erase(PlayerInput.INPUT_VECTOR)
-		input.erase(PlayerInput.MOVEMENT_VECTOR)
 	
 	# We get turrent input from the most recent input.
 	var latest_input: Dictionary = SyncManager.get_latest_input_for_node(self)
 	if latest_input.has(PlayerInput.TURRET_ROTATION):
-			input[PlayerInput.TURRET_ROTATION] = latest_input[PlayerInput.TURRET_ROTATION]
+		input[PlayerInput.TURRET_ROTATION] = latest_input[PlayerInput.TURRET_ROTATION]
 	
 	return input
 
 func _network_process(delta: float, input: Dictionary) -> void:
-	var movement_vector = input.get(PlayerInput.MOVEMENT_VECTOR, Vector2.ZERO)
+	var movement_vector = _calculate_movement_vector(input)
 	
 	engine_sound.turning = false
 	if movement_vector.y < 0:
@@ -368,10 +357,7 @@ func _network_process(delta: float, input: Dictionary) -> void:
 	if movement_vector.y > 0:
 		engine_sound.turning = true
 	
-	if input.has(PlayerInput.SNAP_TO_ROTATION):
-		rotation = input[PlayerInput.SNAP_TO_ROTATION]
-	else:
-		rotation += movement_vector.y * turn_speed * delta
+	rotation += movement_vector.y * turn_speed * delta
 
 	velocity = Vector2()
 	velocity.x = movement_vector.x

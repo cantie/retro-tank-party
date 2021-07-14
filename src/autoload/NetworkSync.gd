@@ -31,8 +31,7 @@ class RTPMessageSerializer extends SyncManager.MessageSerializer:
 				
 				var value = input[path][input_key]
 				match input_key:
-					Tank.PlayerInput.TURRET_ROTATION, \
-					Tank.PlayerInput.SNAP_TO_ROTATION:
+					Tank.PlayerInput.TURRET_ROTATION:
 						buffer.put_float(value)
 					
 					Tank.PlayerInput.CONTROL_SCHEME, \
@@ -40,8 +39,7 @@ class RTPMessageSerializer extends SyncManager.MessageSerializer:
 					Tank.PlayerInput.USING_ABILITY:
 						buffer.put_u8(value)
 					
-					Tank.PlayerInput.INPUT_VECTOR, \
-					Tank.PlayerInput.MOVEMENT_VECTOR:
+					Tank.PlayerInput.INPUT_VECTOR:
 						buffer.put_float(value.x)
 						buffer.put_float(value.y)
 	
@@ -71,8 +69,7 @@ class RTPMessageSerializer extends SyncManager.MessageSerializer:
 				
 				var value
 				match input_key:
-					Tank.PlayerInput.TURRET_ROTATION, \
-					Tank.PlayerInput.SNAP_TO_ROTATION:
+					Tank.PlayerInput.TURRET_ROTATION:
 						value = buffer.get_float()
 					
 					Tank.PlayerInput.CONTROL_SCHEME, \
@@ -80,8 +77,7 @@ class RTPMessageSerializer extends SyncManager.MessageSerializer:
 					Tank.PlayerInput.USING_ABILITY:
 						value = buffer.get_u8()
 					
-					Tank.PlayerInput.INPUT_VECTOR, \
-					Tank.PlayerInput.MOVEMENT_VECTOR:
+					Tank.PlayerInput.INPUT_VECTOR:
 						value = Vector2(buffer.get_float(), buffer.get_float())
 				
 				if value != null:
