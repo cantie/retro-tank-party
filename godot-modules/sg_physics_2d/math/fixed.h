@@ -45,7 +45,7 @@ struct fixed {
         return fixed(p_float_value * FRACTIONAL_SIZE);
     }
 
-    inline uint32_t to_int() const {
+    inline int32_t to_int() const {
         return value >> FRACTIONAL_BITS;
     }
 
@@ -63,7 +63,7 @@ struct fixed {
 
     inline fixed operator*(const fixed& p_other) const {
         int64_t temp = value * p_other.value;
-        return fixed((uint32_t)(temp >> FRACTIONAL_BITS));
+        return fixed((int32_t)(temp >> FRACTIONAL_BITS));
     }
 
     inline fixed operator/(const fixed& p_other) const {
