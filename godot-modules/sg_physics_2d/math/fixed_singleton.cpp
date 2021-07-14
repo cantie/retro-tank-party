@@ -21,25 +21,54 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
 /*************************************************************************/
 
-#include "register_types.h"
+#include "fixed_singleton.h"
 
-#include <core/class_db.h>
-#include <core/engine.h>
+#include "fixed.h"
 
-#include "./scene/2d/sg_area_2d.h"
-#include "./math/fixed_singleton.h"
+Fixed *Fixed::singleton = NULL;
 
-static Fixed *fixed_singleton;
-
-void register_sg_physics_2d_types() {
-    ClassDB::register_class<SGArea2D>();
-    ClassDB::register_class<Fixed>();
-
-    fixed_singleton = memnew(Fixed);
-
-    Engine::get_singleton()->add_singleton(Engine::Singleton("Fixed", Fixed::get_singleton()));
+Fixed::Fixed() {
+    ERR_FAIL_COND(singleton != NULL);
+    singleton = this;
 }
 
-void unregister_sg_physics_2d_types() {
-    memdelete(fixed_singleton);
+Fixed::~Fixed() {
+    singleton = NULL;
+}
+
+Fixed *Fixed::get_singleton() {
+    return singleton;
+}
+
+void Fixed::_bind_methods() {
+    ClassDB::bind_method(D_METHOD("from_int"), &Fixed::from_int);
+    ClassDB::bind_method(D_METHOD("from_float"), &Fixed::from_float);
+    ClassDB::bind_method(D_METHOD("to_int"), &Fixed::to_int);
+    ClassDB::bind_method(D_METHOD("to_float"), &Fixed::to_float);
+    ClassDB::bind_method(D_METHOD("mul"), &Fixed::mul);
+    ClassDB::bind_method(D_METHOD("div"), &Fixed::div);
+}
+
+int Fixed::from_int(int p_int_value) const {
+    return fixed::from_int(p_int_value).value;
+}
+
+int Fixed::from_float(float p_float_value) const {
+    return fixed::from_float(p_float_value).value;
+}
+
+int Fixed::to_int(int p_fixed_value) const {
+    return fixed(p_fixed_value).to_int();
+}
+
+float Fixed::to_float(int p_fixed_value) const {
+    return fixed(p_fixed_value).to_float();
+}
+
+int Fixed::mul(int p_fixed_one, int p_fixed_two) const {
+    return (fixed(p_fixed_one) * fixed(p_fixed_two)).value;
+}
+
+int Fixed::div(int p_fixed_one, int p_fixed_two) const {
+    return (fixed(p_fixed_one) / fixed(p_fixed_two)).value;
 }

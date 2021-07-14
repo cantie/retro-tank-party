@@ -21,25 +21,54 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
 /*************************************************************************/
 
-#include "register_types.h"
+#ifndef SG_PHYSICS_2D_FIXED_H
+#define SG_PHYSICS_2D_FIXED_H
 
-#include <core/class_db.h>
-#include <core/engine.h>
+#include <core/typedefs.h>
 
-#include "./scene/2d/sg_area_2d.h"
-#include "./math/fixed_singleton.h"
+struct fixed {
+    int32_t value;
 
-static Fixed *fixed_singleton;
+    static const uint16_t FRACTIONAL_BITS = 10;
+    static const uint16_t FRACTIONAL_SIZE = 1024;
 
-void register_sg_physics_2d_types() {
-    ClassDB::register_class<SGArea2D>();
-    ClassDB::register_class<Fixed>();
+    inline fixed () {}
 
-    fixed_singleton = memnew(Fixed);
+    explicit inline fixed (int32_t p_initial_value)
+        : value(p_initial_value) {}
 
-    Engine::get_singleton()->add_singleton(Engine::Singleton("Fixed", Fixed::get_singleton()));
-}
+    static inline fixed from_int(int p_int_value) {
+        return fixed(p_int_value << FRACTIONAL_BITS);
+    }
+    
+    static inline fixed from_float(float p_float_value) {
+        return fixed(p_float_value * FRACTIONAL_SIZE);
+    }
 
-void unregister_sg_physics_2d_types() {
-    memdelete(fixed_singleton);
-}
+    inline uint32_t to_int() const {
+        return value >> FRACTIONAL_BITS;
+    }
+
+    inline float to_float() const {
+        return (float)value / FRACTIONAL_SIZE;
+    }
+
+    inline fixed operator+(const fixed& p_other) const {
+        return fixed(value + p_other.value);
+    }
+
+    inline fixed operator-(const fixed& p_other) const {
+        return fixed(value - p_other.value);
+    }
+
+    inline fixed operator*(const fixed& p_other) const {
+        int64_t temp = value * p_other.value;
+        return fixed((uint32_t)(temp >> FRACTIONAL_BITS));
+    }
+
+    inline fixed operator/(const fixed& p_other) const {
+        return fixed(((int64_t)value << FRACTIONAL_BITS) / (int64_t)p_other.value);
+    }
+};
+
+#endif

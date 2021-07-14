@@ -21,25 +21,34 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
 /*************************************************************************/
 
-#include "register_types.h"
+#ifndef SG_PHYSICS_2D_FIXED_SINGLETON_H
+#define SG_PHYSICS_2D_FIXED_SINGLETON_H
 
-#include <core/class_db.h>
-#include <core/engine.h>
+#include <core/object.h>
 
-#include "./scene/2d/sg_area_2d.h"
-#include "./math/fixed_singleton.h"
+class Fixed : public Object {
 
-static Fixed *fixed_singleton;
+    GDCLASS(Fixed, Object);
 
-void register_sg_physics_2d_types() {
-    ClassDB::register_class<SGArea2D>();
-    ClassDB::register_class<Fixed>();
+    static Fixed *singleton;
 
-    fixed_singleton = memnew(Fixed);
+protected:
+    static void _bind_methods();
 
-    Engine::get_singleton()->add_singleton(Engine::Singleton("Fixed", Fixed::get_singleton()));
-}
+public:
+    static Fixed *get_singleton();
 
-void unregister_sg_physics_2d_types() {
-    memdelete(fixed_singleton);
-}
+    int from_int(int p_int_value) const;
+    int from_float(float p_float_value) const;
+
+    int to_int(int p_fixed_value) const;
+    float to_float(int p_fixed_value) const;
+
+    int mul(int p_fixed_one, int p_fixed_two) const;
+    int div(int p_fixed_one, int p_fixed_two) const;
+
+    Fixed();
+    ~Fixed();
+};
+
+#endif
