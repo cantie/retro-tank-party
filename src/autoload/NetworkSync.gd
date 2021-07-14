@@ -96,7 +96,7 @@ func _ready() -> void:
 	
 	# Tweak some settings
 	#SyncManager.max_buffer_size = 20
-	SyncManager.debug_message_bytes = 100
+	SyncManager.debug_message_bytes = 150
 	#SyncManager.max_input_frames_per_message = 5
 	#SyncManager.max_messages_at_once = 2
 	SyncManager.interpolation = true
