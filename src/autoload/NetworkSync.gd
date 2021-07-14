@@ -13,36 +13,44 @@ const input_path_mapping := {
 }
 
 class RTPMessageSerializer extends SyncManager.MessageSerializer:
-	func serialize_input(input: Dictionary) -> PoolByteArray:
+	enum HeaderFlags {
+		RETRO_CONTROLS = 0x01,
+		HAS_INPUT_VECTOR = 0x02,
+		SHOOTING = 0x04,
+		USING_ABILITY = 0x08,
+	}
+	
+	func serialize_input(all_input: Dictionary) -> PoolByteArray:
 		var buffer := StreamPeerBuffer.new()
-		buffer.resize(SyncManager.DEFAULT_MESSAGE_BUFFER_SIZE)
+		buffer.resize(20)
 		
-		buffer.put_u8(input.size())
-		for path in input:
+		buffer.put_u8(all_input.size())
+		for path in all_input:
 			var mapped_path = input_path_mapping[path]
 			buffer.put_u8(mapped_path)
 			if mapped_path == 0:
-				buffer.put_u32(input[path])
+				buffer.put_u32(all_input[path])
 				continue
-				
-			buffer.put_u8(input[path].size())
-			for input_key in input[path]:
-				buffer.put_8(input_key)
-				
-				var value = input[path][input_key]
-				match input_key:
-					Tank.PlayerInput.TURRET_ROTATION:
-						buffer.put_float(value)
-					
-					Tank.PlayerInput.CONTROL_SCHEME, \
-					Tank.PlayerInput.SHOOTING, \
-					Tank.PlayerInput.USING_ABILITY:
-						buffer.put_u8(value)
-					
-					Tank.PlayerInput.INPUT_VECTOR:
-						buffer.put_float(value.x)
-						buffer.put_float(value.y)
-	
+			
+			var input = all_input[path]
+			
+			var header: int = 0
+			if input.get(Tank.PlayerInput.CONTROL_SCHEME, GameSettings.ControlScheme.MODERN) == GameSettings.ControlScheme.RETRO:
+				header |= HeaderFlags.RETRO_CONTROLS
+			if input.has(Tank.PlayerInput.INPUT_VECTOR):
+				header |= HeaderFlags.HAS_INPUT_VECTOR
+			if input.get(Tank.PlayerInput.SHOOTING, false):
+				header |= HeaderFlags.SHOOTING
+			if input.get(Tank.PlayerInput.USING_ABILITY, false):
+				header |= HeaderFlags.USING_ABILITY
+			
+			buffer.put_u8(header)
+			buffer.put_float(input.get(Tank.PlayerInput.TURRET_ROTATION, 0.0))
+			if input.has(Tank.PlayerInput.INPUT_VECTOR):
+				var input_vector: Vector2 = input[Tank.PlayerInput.INPUT_VECTOR]
+				buffer.put_float(input_vector.x)
+				buffer.put_float(input_vector.y)
+		
 		buffer.resize(buffer.get_position())
 		return buffer.data_array
 
@@ -51,39 +59,36 @@ class RTPMessageSerializer extends SyncManager.MessageSerializer:
 		buffer.put_data(serialized)
 		buffer.seek(0)
 		
-		var input := {}
+		var all_input := {}
 		
 		var path_count = buffer.get_u8()
 		for path_index in range(path_count):
 			var mapped_path = buffer.get_u8()
 			if mapped_path == 0:
-				input['$'] = buffer.get_u32()
+				all_input['$'] = buffer.get_u32()
 				continue
 			
-			var path = '/root/Match/Game/Players/' + str(mapped_path)
-			input[path] = {}
+			var input := {}
 			
-			var input_count = buffer.get_u8()
-			for input_index in range(input_count):
-				var input_key = buffer.get_8()
-				
-				var value
-				match input_key:
-					Tank.PlayerInput.TURRET_ROTATION:
-						value = buffer.get_float()
-					
-					Tank.PlayerInput.CONTROL_SCHEME, \
-					Tank.PlayerInput.SHOOTING, \
-					Tank.PlayerInput.USING_ABILITY:
-						value = buffer.get_u8()
-					
-					Tank.PlayerInput.INPUT_VECTOR:
-						value = Vector2(buffer.get_float(), buffer.get_float())
-				
-				if value != null:
-					input[path][input_key] = value
+			var header = buffer.get_u8()
+			if header & HeaderFlags.RETRO_CONTROLS:
+				input[Tank.PlayerInput.CONTROL_SCHEME] = GameSettings.ControlScheme.RETRO
+			if header & HeaderFlags.SHOOTING:
+				input[Tank.PlayerInput.SHOOTING] = true
+			if header & HeaderFlags.USING_ABILITY:
+				input[Tank.PlayerInput.USING_ABILITY] = true
+			
+			input[Tank.PlayerInput.TURRET_ROTATION] = buffer.get_float()
+			
+			if header & HeaderFlags.HAS_INPUT_VECTOR:
+				input[Tank.PlayerInput.INPUT_VECTOR] = Vector2(
+					buffer.get_float(),
+					buffer.get_float())
+			
+			var path = '/root/Match/Game/Players/' + str(mapped_path)
+			all_input[path] = input
 		
-		return input
+		return all_input
 
 func _ready() -> void:
 	SyncManager.network_adaptor = NakamaWebRTCNetworkAdaptor.new()
@@ -91,7 +96,7 @@ func _ready() -> void:
 	
 	# Tweak some settings
 	#SyncManager.max_buffer_size = 20
-	SyncManager.debug_message_bytes = 150
+	SyncManager.debug_message_bytes = 100
 	#SyncManager.max_input_frames_per_message = 5
 	#SyncManager.max_messages_at_once = 2
 	SyncManager.interpolation = true
