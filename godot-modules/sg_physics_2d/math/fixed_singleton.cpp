@@ -23,7 +23,7 @@
 
 #include "fixed_singleton.h"
 
-#include "fixed.h"
+#include "./internal/fixed.h"
 
 Fixed *Fixed::singleton = NULL;
 
@@ -47,6 +47,7 @@ void Fixed::_bind_methods() {
     ClassDB::bind_method(D_METHOD("to_float"), &Fixed::to_float);
     ClassDB::bind_method(D_METHOD("mul"), &Fixed::mul);
     ClassDB::bind_method(D_METHOD("div"), &Fixed::div);
+    ClassDB::bind_method(D_METHOD("vector2"), &Fixed::vector2);
 }
 
 int Fixed::from_int(int p_int_value) const {
@@ -71,4 +72,8 @@ int Fixed::mul(int p_fixed_one, int p_fixed_two) const {
 
 int Fixed::div(int p_fixed_one, int p_fixed_two) const {
     return (fixed(p_fixed_one) / fixed(p_fixed_two)).value;
+}
+
+Ref<FixedVector2> Fixed::vector2(int p_fixed_x, int p_fixed_y) const {
+    return Ref<FixedVector2>(memnew(FixedVector2(fixed_vector2(fixed(p_fixed_x), fixed(p_fixed_y)))));
 }

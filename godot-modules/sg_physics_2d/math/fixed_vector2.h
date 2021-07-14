@@ -21,27 +21,45 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
 /*************************************************************************/
 
-#include "register_types.h"
+#ifndef SG_PHYSICS_2D_FIXED_VECTOR2_H
+#define SG_PHYSICS_2D_FIXED_VECTOR2_H
 
-#include <core/class_db.h>
-#include <core/engine.h>
+#include <core/reference.h>
 
-#include "./scene/2d/sg_area_2d.h"
-#include "./math/fixed_singleton.h"
-#include "./math/fixed_vector2.h"
+#include "./internal/fixed_vector2.h"
 
-static Fixed *fixed_singleton;
+class FixedVector2 : public Reference {
 
-void register_sg_physics_2d_types() {
-    ClassDB::register_class<SGArea2D>();
-    ClassDB::register_class<FixedVector2>();
-    ClassDB::register_class<Fixed>();
+    GDCLASS(FixedVector2, Reference);
 
-    fixed_singleton = memnew(Fixed);
+    fixed_vector2 value;
 
-    Engine::get_singleton()->add_singleton(Engine::Singleton("Fixed", Fixed::get_singleton()));
-}
+protected:
+    static void _bind_methods();
 
-void unregister_sg_physics_2d_types() {
-    memdelete(fixed_singleton);
-}
+public:
+
+    int get_x() const { return value.x.value; }
+    void set_x(int p_x) { value.x.value = p_x; }
+
+    int get_y() const { return value.y.value; }
+    void set_y(int p_y) { value.y.value = p_y; }
+
+
+    Ref<FixedVector2> add(const Ref<FixedVector2> &p_other) const;
+    void iadd(const Ref<FixedVector2>& p_other);
+    Ref<FixedVector2> sub(const Ref<FixedVector2> &p_other) const;
+    void isub(const Ref<FixedVector2>& p_other);
+
+    Vector2 to_float() const;
+
+    FixedVector2() { }
+    FixedVector2(const fixed_vector2& p_internal_vector) {
+        value = p_internal_vector;
+    }
+
+    ~FixedVector2() { };
+
+};
+
+#endif

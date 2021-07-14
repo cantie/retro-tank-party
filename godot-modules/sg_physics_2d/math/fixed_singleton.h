@@ -26,6 +26,8 @@
 
 #include <core/object.h>
 
+#include "fixed_vector2.h"
+
 class Fixed : public Object {
 
     GDCLASS(Fixed, Object);
@@ -46,6 +48,8 @@ public:
 
     int mul(int p_fixed_one, int p_fixed_two) const;
     int div(int p_fixed_one, int p_fixed_two) const;
+
+    Ref<FixedVector2> vector2(int p_fixed_x, int p_fixed_y) const;
 
     Fixed();
     ~Fixed();

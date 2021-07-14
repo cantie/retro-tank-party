@@ -21,27 +21,41 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
 /*************************************************************************/
 
-#include "register_types.h"
+#include "fixed_vector2.h"
 
-#include <core/class_db.h>
-#include <core/engine.h>
+void FixedVector2::_bind_methods() {
+    ClassDB::bind_method(D_METHOD("get_x"), &FixedVector2::get_x);
+    ClassDB::bind_method(D_METHOD("set_x"), &FixedVector2::set_x);
+    ClassDB::bind_method(D_METHOD("get_y"), &FixedVector2::get_y);
+    ClassDB::bind_method(D_METHOD("set_y"), &FixedVector2::set_y);
 
-#include "./scene/2d/sg_area_2d.h"
-#include "./math/fixed_singleton.h"
-#include "./math/fixed_vector2.h"
+	ADD_PROPERTY(PropertyInfo(Variant::INT, "x", PROPERTY_HINT_NONE), "set_x", "get_x");
+	ADD_PROPERTY(PropertyInfo(Variant::INT, "y", PROPERTY_HINT_NONE), "set_y", "get_y");
 
-static Fixed *fixed_singleton;
+    ClassDB::bind_method(D_METHOD("add"), &FixedVector2::add);
+    ClassDB::bind_method(D_METHOD("iadd"), &FixedVector2::iadd);
+    ClassDB::bind_method(D_METHOD("sub"), &FixedVector2::sub);
+    ClassDB::bind_method(D_METHOD("isub"), &FixedVector2::isub);
 
-void register_sg_physics_2d_types() {
-    ClassDB::register_class<SGArea2D>();
-    ClassDB::register_class<FixedVector2>();
-    ClassDB::register_class<Fixed>();
-
-    fixed_singleton = memnew(Fixed);
-
-    Engine::get_singleton()->add_singleton(Engine::Singleton("Fixed", Fixed::get_singleton()));
+    ClassDB::bind_method(D_METHOD("to_float"), &FixedVector2::to_float);
 }
 
-void unregister_sg_physics_2d_types() {
-    memdelete(fixed_singleton);
+Ref<FixedVector2> FixedVector2::add(const Ref<FixedVector2>& p_other) const {
+    return Ref<FixedVector2>(memnew(FixedVector2(value + p_other->value)));
+}
+
+void FixedVector2::iadd(const Ref<FixedVector2>& p_other) {
+    value += p_other->value;
+}
+
+Ref<FixedVector2> FixedVector2::sub(const Ref<FixedVector2>& p_other) const {
+    return Ref<FixedVector2>(memnew(FixedVector2(value - p_other->value)));
+}
+
+void FixedVector2::isub(const Ref<FixedVector2>& p_other) {
+    value -= p_other->value;
+}
+
+Vector2 FixedVector2::to_float() const {
+    return Vector2(value.x.to_float(), value.y.to_float());
 }

@@ -8,6 +8,9 @@ func _ready() -> void:
 	test_multiplication()
 	print ("-----")
 	test_division()
+	print ("-----")
+	
+	test_fixed_vector2()
 	
 	get_tree().quit()
 
@@ -44,3 +47,10 @@ func test_division():
 	
 	print ("[fixed] 15 / 2 = %s" % Fixed.to_float(c))
 	print ("[float] 15 / 2 = %s" % (15.0 / 2.0))
+
+func test_fixed_vector2():
+	var a: FixedVector2 = Fixed.vector2(1024, 1024)
+	var b: FixedVector2 = Fixed.vector2(2048, 2048)
+	var c := a.add(b);
+	
+	print ("(1, 1) + (2, 2) = %s" % c.to_float())

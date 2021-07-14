@@ -21,54 +21,53 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
 /*************************************************************************/
 
-#ifndef SG_PHYSICS_2D_FIXED_H
-#define SG_PHYSICS_2D_FIXED_H
+#ifndef SG_PHYSICS_2D_INTERNAL_FIXED_VECTOR2_H
+#define SG_PHYSICS_2D_INTERNAL_FIXED_VECTOR2_H
 
-#include <core/typedefs.h>
+#include "fixed.h"
 
-struct fixed {
-    int32_t value;
+struct fixed_vector2 {
+    enum Axis {
+        AXIS_X,
+        AXIS_Y,
+    };
 
-    static const uint16_t FRACTIONAL_BITS = 10;
-    static const uint16_t FRACTIONAL_SIZE = 1024;
+    union {
+        fixed x;
+        fixed width;
+    };
+    union {
+        fixed y;
+        fixed height;
+    };
 
-    inline fixed () {}
+	_FORCE_INLINE_ fixed_vector2(fixed p_x, fixed p_y) 
+        : x(p_x), y(p_y) {}
+	_FORCE_INLINE_ fixed_vector2()
+        : x(fixed(0)), y(fixed(0)) {}
 
-    explicit inline fixed (int32_t p_initial_value)
-        : value(p_initial_value) {}
-
-    static inline fixed from_int(int p_int_value) {
-        return fixed(p_int_value << FRACTIONAL_BITS);
-    }
-    
-    static inline fixed from_float(float p_float_value) {
-        return fixed(p_float_value * FRACTIONAL_SIZE);
-    }
-
-    inline int32_t to_int() const {
-        return value >> FRACTIONAL_BITS;
-    }
-
-    inline float to_float() const {
-        return (float)value / FRACTIONAL_SIZE;
-    }
-
-    inline fixed operator+(const fixed& p_other) const {
-        return fixed(value + p_other.value);
+	_FORCE_INLINE_ fixed &operator[](int p_idx) {
+		return p_idx ? y : x;
+	}
+	_FORCE_INLINE_ const fixed &operator[](int p_idx) const {
+		return p_idx ? y : x;
     }
 
-    inline fixed operator-(const fixed& p_other) const {
-        return fixed(value - p_other.value);
+	_FORCE_INLINE_ fixed_vector2 operator+(const fixed_vector2 &p_v) const {
+        return fixed_vector2(x + p_v.x, y + p_v.y);
+    }
+	_FORCE_INLINE_ void operator+=(const fixed_vector2 &p_v) {
+        x += p_v.x;
+        y += p_v.y;
+    }
+	_FORCE_INLINE_ fixed_vector2 operator-(const fixed_vector2 &p_v) const {
+        return fixed_vector2(x - p_v.x, y - p_v.y);
+    }
+	_FORCE_INLINE_ void operator-=(const fixed_vector2 &p_v) {
+        x -= p_v.x;
+        y -= p_v.y;
     }
 
-    inline fixed operator*(const fixed& p_other) const {
-        int64_t temp = value * p_other.value;
-        return fixed((int32_t)(temp >> FRACTIONAL_BITS));
-    }
-
-    inline fixed operator/(const fixed& p_other) const {
-        return fixed(((int64_t)value << FRACTIONAL_BITS) / (int64_t)p_other.value);
-    }
 };
 
 #endif
