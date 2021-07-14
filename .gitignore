@@ -1,7 +1,13 @@
 /build/
 /.import/
-*.swp
+
 /webrtc_debug/lib/
 /webrtc/lib/
 /steam_appid.txt
 /steam_build_output/
+/rtp.code-workspace
+
+*.swp
+*.o
+*.pyc
+
