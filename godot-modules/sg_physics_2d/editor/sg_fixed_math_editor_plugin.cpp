@@ -29,7 +29,7 @@ void EditorPropertyFixedVector2::_value_changed(double val, const String &p_name
 	if (setting)
 		return;
 
-	Ref<FixedVector2> v2;
+	Ref<FixedVector2> v2(memnew(FixedVector2()));
     v2->set_x((int)spin[0]->get_value());
     v2->set_y((int)spin[1]->get_value());
 	emit_changed(get_edited_property(), v2, p_name);
