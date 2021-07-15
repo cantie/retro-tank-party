@@ -40,7 +40,6 @@ protected:
 
 public:
 	virtual void update_property();
-	void setup(double p_min, double p_max, double p_step, bool p_no_slider);
 	EditorPropertyFixedVector2();
 };
 

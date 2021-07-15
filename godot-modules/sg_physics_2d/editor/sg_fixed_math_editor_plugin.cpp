@@ -56,20 +56,7 @@ void EditorPropertyFixedVector2::_notification(int p_what) {
 }
 
 void EditorPropertyFixedVector2::_bind_methods() {
-
 	ClassDB::bind_method(D_METHOD("_value_changed"), &EditorPropertyFixedVector2::_value_changed);
-}
-
-void EditorPropertyFixedVector2::setup(double p_min, double p_max, double p_step, bool p_no_slider) {
-	for (int i = 0; i < 2; i++) {
-		spin[i]->set_min(p_min);
-		spin[i]->set_max(p_max);
-		spin[i]->set_step(p_step);
-		spin[i]->set_hide_slider(p_no_slider);
-		spin[i]->set_allow_greater(true);
-		spin[i]->set_allow_lesser(true);
-        spin[i]->set_use_rounded_values(true);
-	}
 }
 
 EditorPropertyFixedVector2::EditorPropertyFixedVector2() {
@@ -97,6 +84,14 @@ EditorPropertyFixedVector2::EditorPropertyFixedVector2() {
 		if (horizontal) {
 			spin[i]->set_h_size_flags(SIZE_EXPAND_FILL);
 		}
+
+		spin[i]->set_min(-65535);
+		spin[i]->set_max(65535);
+		spin[i]->set_step(1);
+		spin[i]->set_hide_slider(true);
+		spin[i]->set_allow_greater(true);
+		spin[i]->set_allow_lesser(true);
+        spin[i]->set_use_rounded_values(true);
 	}
 
 	if (!horizontal) {
@@ -116,10 +111,6 @@ void SGFixedMathEditorInspectorPlugin::parse_begin(Object *p_object) {
 bool SGFixedMathEditorInspectorPlugin::parse_property(Object *p_object, Variant::Type p_type, const String &p_path, PropertyHint p_hint, const String &p_hint_text, int p_usage) {
     if (p_hint == PROPERTY_HINT_TYPE_STRING && p_hint_text == "FixedVector2") {
         EditorPropertyFixedVector2 *editor = memnew(EditorPropertyFixedVector2);
-        double min = -65535, max = 65535, step = 1;
-        bool hide_slider = true;
-
-        editor->setup(min, max, step, hide_slider);
         add_property_editor(p_path, editor);
         return true;
     }
