@@ -7,8 +7,9 @@ env_sg_physics_2d = env_modules.Clone()
 
 sg_physics_2d_subdirs = [
     "",
-    "math/internal/",
+    "internal/",
     "math/",
+    "servers/",
     "scene/2d/",
     "scene/resources/",
     "editor/",

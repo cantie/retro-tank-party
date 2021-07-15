@@ -26,7 +26,7 @@
 
 #include <core/resource.h>
 
-#include "../../math/fixed_vector2.h"
+#include "../../math/sg_fixed_vector2.h"
 
 class SGShape2D : public Resource {
 	GDCLASS(SGShape2D, Resource);
@@ -48,14 +48,14 @@ class SGRectangleShape2D : public SGShape2D {
 	GDCLASS(SGRectangleShape2D, SGShape2D);
 	OBJ_SAVE_TYPE(SGRectangleShape2D);
 
-    Ref<FixedVector2> extents;
+    Ref<SGFixedVector2> extents;
 
 protected:
     static void _bind_methods();
 
 public:
-    void set_extents(const Ref<FixedVector2>& p_extents);
-	Ref<FixedVector2> get_extents();
+    void set_extents(const Ref<SGFixedVector2>& p_extents);
+	Ref<SGFixedVector2> get_extents();
 
     virtual void draw(const RID &p_to_rid, const Color &p_color) override;
 

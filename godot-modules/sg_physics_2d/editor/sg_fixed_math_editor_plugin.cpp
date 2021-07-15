@@ -25,25 +25,25 @@
 
 #include "../scene/resources/sg_shapes_2d.h"
 
-void EditorPropertyFixedVector2::_value_changed(double val, const String &p_name) {
+void EditorPropertySGFixedVector2::_value_changed(double val, const String &p_name) {
 	if (setting)
 		return;
 
-	Ref<FixedVector2> v2(memnew(FixedVector2()));
+	Ref<SGFixedVector2> v2(memnew(SGFixedVector2()));
     v2->set_x((int)spin[0]->get_value());
     v2->set_y((int)spin[1]->get_value());
 	emit_changed(get_edited_property(), v2, p_name);
 }
 
-void EditorPropertyFixedVector2::update_property() {
-	Ref<FixedVector2> val = get_edited_object()->get(get_edited_property());
+void EditorPropertySGFixedVector2::update_property() {
+	Ref<SGFixedVector2> val = get_edited_object()->get(get_edited_property());
 	setting = true;
 	spin[0]->set_value(val->get_x());
 	spin[1]->set_value(val->get_y());
 	setting = false;
 }
 
-void EditorPropertyFixedVector2::_notification(int p_what) {
+void EditorPropertySGFixedVector2::_notification(int p_what) {
 	if (p_what == NOTIFICATION_ENTER_TREE || p_what == NOTIFICATION_THEME_CHANGED) {
 		Color base = get_color("accent_color", "Editor");
 		for (int i = 0; i < 2; i++) {
@@ -55,11 +55,11 @@ void EditorPropertyFixedVector2::_notification(int p_what) {
 	}
 }
 
-void EditorPropertyFixedVector2::_bind_methods() {
-	ClassDB::bind_method(D_METHOD("_value_changed"), &EditorPropertyFixedVector2::_value_changed);
+void EditorPropertySGFixedVector2::_bind_methods() {
+	ClassDB::bind_method(D_METHOD("_value_changed"), &EditorPropertySGFixedVector2::_value_changed);
 }
 
-EditorPropertyFixedVector2::EditorPropertyFixedVector2() {
+EditorPropertySGFixedVector2::EditorPropertySGFixedVector2() {
 	bool horizontal = EDITOR_GET("interface/inspector/horizontal_vector2_editing");
 
 	BoxContainer *bc;
@@ -109,8 +109,8 @@ void SGFixedMathEditorInspectorPlugin::parse_begin(Object *p_object) {
 }
 
 bool SGFixedMathEditorInspectorPlugin::parse_property(Object *p_object, Variant::Type p_type, const String &p_path, PropertyHint p_hint, const String &p_hint_text, int p_usage) {
-    if (p_hint == PROPERTY_HINT_TYPE_STRING && p_hint_text == "FixedVector2") {
-        EditorPropertyFixedVector2 *editor = memnew(EditorPropertyFixedVector2);
+    if (p_hint == PROPERTY_HINT_TYPE_STRING && p_hint_text == "SGFixedVector2") {
+        EditorPropertySGFixedVector2 *editor = memnew(EditorPropertySGFixedVector2);
         add_property_editor(p_path, editor);
         return true;
     }

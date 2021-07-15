@@ -21,53 +21,23 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
 /*************************************************************************/
 
-#ifndef SG_PHYSICS_2D_INTERNAL_FIXED_VECTOR2_H
-#define SG_PHYSICS_2D_INTERNAL_FIXED_VECTOR2_H
+#ifndef SG_PHYSICS_2D_SERVER_H
+#define SG_PHYSICS_2D_SERVER_H
 
-#include "fixed.h"
+#include <core/object.h>
 
-struct fixed_vector2 {
-    enum Axis {
-        AXIS_X,
-        AXIS_Y,
-    };
+class SGPhysics2DServer : public Object {
+    GDCLASS(SGPhysics2DServer, Object);
 
-    union {
-        fixed x;
-        fixed width;
-    };
-    union {
-        fixed y;
-        fixed height;
-    };
+    static SGPhysics2DServer *singleton;
 
-	_FORCE_INLINE_ fixed_vector2(fixed p_x, fixed p_y) 
-        : x(p_x), y(p_y) {}
-	_FORCE_INLINE_ fixed_vector2()
-        : x(fixed(0)), y(fixed(0)) {}
+    //mutable RID_Owner<
 
-	_FORCE_INLINE_ fixed &operator[](int p_idx) {
-		return p_idx ? y : x;
-	}
-	_FORCE_INLINE_ const fixed &operator[](int p_idx) const {
-		return p_idx ? y : x;
-    }
+protected:
+    static void _bind_methods();
 
-	_FORCE_INLINE_ fixed_vector2 operator+(const fixed_vector2 &p_v) const {
-        return fixed_vector2(x + p_v.x, y + p_v.y);
-    }
-	_FORCE_INLINE_ void operator+=(const fixed_vector2 &p_v) {
-        x += p_v.x;
-        y += p_v.y;
-    }
-	_FORCE_INLINE_ fixed_vector2 operator-(const fixed_vector2 &p_v) const {
-        return fixed_vector2(x - p_v.x, y - p_v.y);
-    }
-	_FORCE_INLINE_ void operator-=(const fixed_vector2 &p_v) {
-        x -= p_v.x;
-        y -= p_v.y;
-    }
-
+public:
+    static SGPhysics2DServer *get_singleton();
 };
 
 #endif

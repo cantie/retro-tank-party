@@ -63,5 +63,4 @@ public:
     ~SGCollisionShape2DEditorPlugin();
 };
 
-
 #endif

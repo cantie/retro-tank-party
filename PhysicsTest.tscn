@@ -1,7 +1,7 @@
 [gd_scene load_steps=2 format=2]
 
 [sub_resource type="SGRectangleShape2D" id=1]
-extents = Object(FixedVector2,"x":51200,"y":51200,"script":null)
+extents = Object(SGFixedVector2,"x":51200,"y":51200,"script":null)
 
 
 [node name="PhysicsTest" type="Node2D"]

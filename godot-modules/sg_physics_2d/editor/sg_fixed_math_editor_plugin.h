@@ -27,8 +27,8 @@
 #include <editor/editor_plugin.h>
 #include <editor/editor_properties.h>
 
-class EditorPropertyFixedVector2 : public EditorProperty {
-	GDCLASS(EditorPropertyFixedVector2, EditorProperty);
+class EditorPropertySGFixedVector2 : public EditorProperty {
+	GDCLASS(EditorPropertySGFixedVector2, EditorProperty);
 
 	EditorSpinSlider *spin[2];
 	bool setting;
@@ -40,7 +40,7 @@ protected:
 
 public:
 	virtual void update_property();
-	EditorPropertyFixedVector2();
+	EditorPropertySGFixedVector2();
 };
 
 class SGFixedMathEditorInspectorPlugin : public EditorInspectorPlugin {

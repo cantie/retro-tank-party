@@ -5,7 +5,6 @@ MILESTONE 1:
 
  - Do more real world tests with different regions
  - Initial implementation of deterministic physics
-   o Maybe rename fixed to sg_fixed for consistency?
    o Edit rectangle shape in Godot editor
    o Do super basic collision checking
    o Unit tests!

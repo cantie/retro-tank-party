@@ -21,41 +21,41 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
 /*************************************************************************/
 
-#include "fixed_vector2.h"
+#include "sg_fixed_vector2.h"
 
-void FixedVector2::_bind_methods() {
-    ClassDB::bind_method(D_METHOD("get_x"), &FixedVector2::get_x);
-    ClassDB::bind_method(D_METHOD("set_x", "x"), &FixedVector2::set_x);
-    ClassDB::bind_method(D_METHOD("get_y"), &FixedVector2::get_y);
-    ClassDB::bind_method(D_METHOD("set_y", "y"), &FixedVector2::set_y);
+void SGFixedVector2::_bind_methods() {
+    ClassDB::bind_method(D_METHOD("get_x"), &SGFixedVector2::get_x);
+    ClassDB::bind_method(D_METHOD("set_x", "x"), &SGFixedVector2::set_x);
+    ClassDB::bind_method(D_METHOD("get_y"), &SGFixedVector2::get_y);
+    ClassDB::bind_method(D_METHOD("set_y", "y"), &SGFixedVector2::set_y);
 
 	ADD_PROPERTY(PropertyInfo(Variant::INT, "x", PROPERTY_HINT_NONE), "set_x", "get_x");
 	ADD_PROPERTY(PropertyInfo(Variant::INT, "y", PROPERTY_HINT_NONE), "set_y", "get_y");
 
-    ClassDB::bind_method(D_METHOD("add", "other_vector"), &FixedVector2::add);
-    ClassDB::bind_method(D_METHOD("iadd" "other_vector"), &FixedVector2::iadd);
-    ClassDB::bind_method(D_METHOD("sub", "other_vector"), &FixedVector2::sub);
-    ClassDB::bind_method(D_METHOD("isub", "other_vector"), &FixedVector2::isub);
+    ClassDB::bind_method(D_METHOD("add", "other_vector"), &SGFixedVector2::add);
+    ClassDB::bind_method(D_METHOD("iadd" "other_vector"), &SGFixedVector2::iadd);
+    ClassDB::bind_method(D_METHOD("sub", "other_vector"), &SGFixedVector2::sub);
+    ClassDB::bind_method(D_METHOD("isub", "other_vector"), &SGFixedVector2::isub);
 
-    ClassDB::bind_method(D_METHOD("to_float"), &FixedVector2::to_float);
+    ClassDB::bind_method(D_METHOD("to_float"), &SGFixedVector2::to_float);
 }
 
-Ref<FixedVector2> FixedVector2::add(const Ref<FixedVector2>& p_other) const {
-    return Ref<FixedVector2>(memnew(FixedVector2(value + p_other->value)));
+Ref<SGFixedVector2> SGFixedVector2::add(const Ref<SGFixedVector2>& p_other) const {
+    return Ref<SGFixedVector2>(memnew(SGFixedVector2(value + p_other->value)));
 }
 
-void FixedVector2::iadd(const Ref<FixedVector2>& p_other) {
+void SGFixedVector2::iadd(const Ref<SGFixedVector2>& p_other) {
     value += p_other->value;
 }
 
-Ref<FixedVector2> FixedVector2::sub(const Ref<FixedVector2>& p_other) const {
-    return Ref<FixedVector2>(memnew(FixedVector2(value - p_other->value)));
+Ref<SGFixedVector2> SGFixedVector2::sub(const Ref<SGFixedVector2>& p_other) const {
+    return Ref<SGFixedVector2>(memnew(SGFixedVector2(value - p_other->value)));
 }
 
-void FixedVector2::isub(const Ref<FixedVector2>& p_other) {
+void SGFixedVector2::isub(const Ref<SGFixedVector2>& p_other) {
     value -= p_other->value;
 }
 
-Vector2 FixedVector2::to_float() const {
+Vector2 SGFixedVector2::to_float() const {
     return Vector2(value.x.to_float(), value.y.to_float());
 }

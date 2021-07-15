@@ -21,45 +21,38 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
 /*************************************************************************/
 
-#ifndef SG_PHYSICS_2D_FIXED_VECTOR2_H
-#define SG_PHYSICS_2D_FIXED_VECTOR2_H
+#ifndef SG_FIXED_SINGLETON_H
+#define SG_FIXED_SINGLETON_H
 
-#include <core/reference.h>
+#include <core/object.h>
 
-#include "./internal/fixed_vector2.h"
+#include "sg_fixed_vector2.h"
 
-class FixedVector2 : public Reference {
+class SGFixed : public Object {
 
-    GDCLASS(FixedVector2, Reference);
+    GDCLASS(SGFixed, Object);
 
-    fixed_vector2 value;
+    static SGFixed *singleton;
 
 protected:
     static void _bind_methods();
 
 public:
+    static SGFixed *get_singleton();
 
-    _FORCE_INLINE_ int get_x() const { return value.x.value; }
-    _FORCE_INLINE_ void set_x(int p_x) { value.x.value = p_x; }
+    int from_int(int p_int_value) const;
+    int from_float(float p_float_value) const;
 
-    _FORCE_INLINE_ int get_y() const { return value.y.value; }
-    _FORCE_INLINE_ void set_y(int p_y) { value.y.value = p_y; }
+    int to_int(int p_fixed_value) const;
+    float to_float(int p_fixed_value) const;
 
+    int mul(int p_fixed_one, int p_fixed_two) const;
+    int div(int p_fixed_one, int p_fixed_two) const;
 
-    Ref<FixedVector2> add(const Ref<FixedVector2> &p_other) const;
-    void iadd(const Ref<FixedVector2>& p_other);
-    Ref<FixedVector2> sub(const Ref<FixedVector2> &p_other) const;
-    void isub(const Ref<FixedVector2>& p_other);
+    Ref<SGFixedVector2> vector2(int p_fixed_x, int p_fixed_y) const;
 
-    Vector2 to_float() const;
-
-    FixedVector2() { }
-    FixedVector2(const fixed_vector2& p_internal_vector) {
-        value = p_internal_vector;
-    }
-
-    ~FixedVector2() { };
-
+    SGFixed();
+    ~SGFixed();
 };
 
 #endif

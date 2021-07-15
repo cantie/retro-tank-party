@@ -30,7 +30,7 @@ void SGShape2D::_bind_methods() {
 }
 
 SGRectangleShape2D::SGRectangleShape2D() {
-    extents = Ref<FixedVector2>(memnew(FixedVector2));
+    extents = Ref<SGFixedVector2>(memnew(SGFixedVector2));
 }
 
 SGRectangleShape2D::~SGRectangleShape2D() {
@@ -40,15 +40,15 @@ void SGRectangleShape2D::_bind_methods() {
     ClassDB::bind_method(D_METHOD("get_extents"), &SGRectangleShape2D::get_extents);
     ClassDB::bind_method(D_METHOD("set_extents", "extents"), &SGRectangleShape2D::set_extents);
 
-	ADD_PROPERTY(PropertyInfo(Variant::OBJECT, "extents", PROPERTY_HINT_TYPE_STRING, "FixedVector2"), "set_extents", "get_extents");
+	ADD_PROPERTY(PropertyInfo(Variant::OBJECT, "extents", PROPERTY_HINT_TYPE_STRING, "SGFixedVector2"), "set_extents", "get_extents");
 }
 
-void SGRectangleShape2D::set_extents(const Ref<FixedVector2>& p_extents) {
+void SGRectangleShape2D::set_extents(const Ref<SGFixedVector2>& p_extents) {
     extents = p_extents;
     emit_changed();
 }
 
-Ref<FixedVector2> SGRectangleShape2D::get_extents() {
+Ref<SGFixedVector2> SGRectangleShape2D::get_extents() {
     return extents;
 }
 
