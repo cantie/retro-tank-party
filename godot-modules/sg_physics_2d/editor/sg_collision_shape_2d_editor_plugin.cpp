@@ -21,46 +21,42 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
 /*************************************************************************/
 
-#ifndef SG_SHAPES_2D_H
-#define SG_SHAPES_2D_H
+#include "sg_collision_shape_2d_editor_plugin.h"
 
-#include <core/resource.h>
+#include <editor/editor_node.h>
+#include "../scene/2d/sg_collision_shape_2d.h"
 
-#include "../../math/fixed_vector2.h"
+void SGCollisionShape2DEditor::edit(Node *p_node) {
 
-class SGShape2D : public Resource {
-	GDCLASS(SGShape2D, Resource);
-	OBJ_SAVE_TYPE(SGShape2D);
+}
 
-protected:
-    static void _bind_methods();
+SGCollisionShape2DEditor::SGCollisionShape2DEditor(EditorNode *p_editor) :
+    editor(p_editor),
+    undo_redo(p_editor->get_undo_redo()) {
 
-public:
+}
 
-    virtual void draw(const RID &p_to_rid, const Color &p_color) = 0;
+bool SGCollisionShape2DEditorPlugin::handles(Object *p_obj) {
+    SGCollisionShape2D *node = Object::cast_to<SGCollisionShape2D>(p_obj);
+    return (bool)node;
+}
 
-    SGShape2D() {};
-    virtual ~SGShape2D() {};
-};
+void SGCollisionShape2DEditorPlugin::edit(Object *p_obj) {
 
+}
 
-class SGRectangleShape2D : public SGShape2D {
-	GDCLASS(SGRectangleShape2D, SGShape2D);
-	OBJ_SAVE_TYPE(SGRectangleShape2D);
+void SGCollisionShape2DEditorPlugin::make_visible(bool visible) {
+    if (!visible) {
+        edit(nullptr);
+    }
+}
 
-    Ref<FixedVector2> extents;
+SGCollisionShape2DEditorPlugin::SGCollisionShape2DEditorPlugin(EditorNode *p_editor) :
+    editor(p_editor) {
+    collision_shape2d_editor_plugin = memnew(SGCollisionShape2DEditor(p_editor));
+    p_editor->get_gui_base()->add_child(collision_shape2d_editor_plugin);
+}
 
-protected:
-    static void _bind_methods();
+SGCollisionShape2DEditorPlugin::~SGCollisionShape2DEditorPlugin() {
 
-public:
-    void set_extents(const Ref<FixedVector2>& p_extents);
-	Ref<FixedVector2> get_extents();
-
-    virtual void draw(const RID &p_to_rid, const Color &p_color) override;
-
-    SGRectangleShape2D();
-    ~SGRectangleShape2D();
-};
-
-#endif
+}

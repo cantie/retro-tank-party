@@ -36,11 +36,14 @@ class SGCollisionShape2D : public Node2D {
 
 protected:
     static void _bind_methods();
+    void _notification(int p_what);
 
 public:
 
     void set_shape(const Ref<SGShape2D> &p_shape);
     Ref<SGShape2D> get_shape();
+
+    void _shape_changed();
 
     SGCollisionShape2D() {};
     ~SGCollisionShape2D() {};

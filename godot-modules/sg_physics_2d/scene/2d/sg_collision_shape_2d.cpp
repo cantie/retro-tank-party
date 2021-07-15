@@ -23,17 +23,50 @@
 
 #include "sg_collision_shape_2d.h"
 
+#include <core/engine.h>
+
 void SGCollisionShape2D::_bind_methods() {
     ClassDB::bind_method(D_METHOD("set_shape", "shape"), &SGCollisionShape2D::set_shape);
 	ClassDB::bind_method(D_METHOD("get_shape"), &SGCollisionShape2D::get_shape);
 
+	ClassDB::bind_method(D_METHOD("_shape_changed"), &SGCollisionShape2D::_shape_changed);
+
     ADD_PROPERTY(PropertyInfo(Variant::OBJECT, "shape", PROPERTY_HINT_RESOURCE_TYPE, "SGShape2D"), "set_shape", "get_shape");
 }
 
+void SGCollisionShape2D::_notification(int p_what) {
+    switch (p_what) {
+        case NOTIFICATION_DRAW:
+            if (!Engine::get_singleton()->is_editor_hint() && !get_tree()->is_debugging_collisions_hint()) {
+                return;
+            }
+
+            if (shape.is_valid()) {
+                shape->draw(get_canvas_item(), Color(0.9f, 0.7f, 0.7f));
+            }
+
+            break;
+    }
+}
+
 void SGCollisionShape2D::set_shape(const Ref<SGShape2D> &p_shape) {
+    if (shape.is_valid()) {
+        shape->disconnect("changed", this, "_shape_changed");
+    }
+
     shape = p_shape;
+
+    if (shape.is_valid()) {
+        shape->connect("changed", this, "_shape_changed");
+    }
+
+    update();
 }
 
 Ref<SGShape2D> SGCollisionShape2D::get_shape() {
     return shape;
+}
+
+void SGCollisionShape2D::_shape_changed() {
+    update();
 }

@@ -33,6 +33,7 @@
 #include "./scene/resources/sg_shapes_2d.h"
 
 #include "./editor/sg_fixed_math_editor_plugin.h"
+#include "./editor/sg_collision_shape_2d_editor_plugin.h"
 
 static Fixed *fixed_singleton;
 
@@ -52,6 +53,7 @@ void register_sg_physics_2d_types() {
 
 #if TOOLS_ENABLED
     EditorPlugins::add_by_type<SGFixedMathEditorPlugin>();
+    EditorPlugins::add_by_type<SGCollisionShape2DEditorPlugin>();
 #endif
 }
 

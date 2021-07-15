@@ -21,46 +21,47 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
 /*************************************************************************/
 
-#ifndef SG_SHAPES_2D_H
-#define SG_SHAPES_2D_H
+#ifndef SG_COLLISION_SHAPE_2D_EDITOR_PLUGIN_H
+#define SG_COLLISION_SHAPE_2D_EDITOR_PLUGIN_H
 
-#include <core/resource.h>
+#include <editor/editor_plugin.h>
 
-#include "../../math/fixed_vector2.h"
+class CanvasItemEditor;
+class SGCollisionShape2D;
 
-class SGShape2D : public Resource {
-	GDCLASS(SGShape2D, Resource);
-	OBJ_SAVE_TYPE(SGShape2D);
+class SGCollisionShape2DEditor : public Control {
+    GDCLASS(SGCollisionShape2DEditor, Control);
 
-protected:
-    static void _bind_methods();
-
-public:
-
-    virtual void draw(const RID &p_to_rid, const Color &p_color) = 0;
-
-    SGShape2D() {};
-    virtual ~SGShape2D() {};
-};
-
-
-class SGRectangleShape2D : public SGShape2D {
-	GDCLASS(SGRectangleShape2D, SGShape2D);
-	OBJ_SAVE_TYPE(SGRectangleShape2D);
-
-    Ref<FixedVector2> extents;
+    EditorNode *editor;
+    UndoRedo *undo_redo;
+    CanvasItemEditor *canvas_item_editor = NULL;
+    SGCollisionShape2D *node = NULL;
 
 protected:
-    static void _bind_methods();
+    //static void _bind_methods();
 
 public:
-    void set_extents(const Ref<FixedVector2>& p_extents);
-	Ref<FixedVector2> get_extents();
+    void edit(Node *p_node);
 
-    virtual void draw(const RID &p_to_rid, const Color &p_color) override;
-
-    SGRectangleShape2D();
-    ~SGRectangleShape2D();
+    SGCollisionShape2DEditor(EditorNode *p_editor);
 };
+
+class SGCollisionShape2DEditorPlugin : public EditorPlugin {
+    GDCLASS(SGCollisionShape2DEditorPlugin, EditorPlugin);
+
+    EditorNode *editor;
+    SGCollisionShape2DEditor *collision_shape2d_editor_plugin;
+
+public:
+    virtual String get_name() const { return "SGCollisionShape2D"; }
+    bool has_main_screen() const { return false; }
+    virtual bool handles(Object *p_obj);
+    virtual void edit(Object *p_obj);
+    virtual void make_visible(bool visible);
+
+    SGCollisionShape2DEditorPlugin(EditorNode *p_editor);
+    ~SGCollisionShape2DEditorPlugin();
+};
+
 
 #endif

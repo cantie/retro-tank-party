@@ -23,6 +23,8 @@
 
 #include "sg_shapes_2d.h"
 
+#include <servers/visual_server.h>
+
 void SGShape2D::_bind_methods() {
     // @todo?
 }
@@ -43,8 +45,32 @@ void SGRectangleShape2D::_bind_methods() {
 
 void SGRectangleShape2D::set_extents(const Ref<FixedVector2>& p_extents) {
     extents = p_extents;
+    emit_changed();
 }
 
 Ref<FixedVector2> SGRectangleShape2D::get_extents() {
     return extents;
+}
+
+void SGRectangleShape2D::draw(const RID &p_to_rid, const Color &p_color) {
+    Size2 float_extents = extents->to_float();
+
+	VisualServer::get_singleton()->canvas_item_add_rect(p_to_rid, Rect2(-float_extents, float_extents * 2.0), p_color);
+
+    // Draw an outlined rectangle to make individual shapes easier to distinguish.
+    Vector<Vector2> stroke_points;
+    stroke_points.resize(5);
+    stroke_points.write[0] = -float_extents;
+    stroke_points.write[1] = Vector2(float_extents.x, -float_extents.y);
+    stroke_points.write[2] = float_extents;
+    stroke_points.write[3] = Vector2(-float_extents.x, float_extents.y);
+    stroke_points.write[4] = -float_extents;
+
+    Vector<Color> stroke_colors;
+    stroke_colors.resize(5);
+    for (int i = 0; i < 5; i++) {
+        stroke_colors.write[i] = p_color;
+    }
+
+    VisualServer::get_singleton()->canvas_item_add_polyline(p_to_rid, stroke_points, stroke_colors, 1.0, true);
 }
