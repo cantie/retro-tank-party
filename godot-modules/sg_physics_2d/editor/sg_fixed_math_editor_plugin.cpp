@@ -107,14 +107,14 @@ EditorPropertyFixedVector2::EditorPropertyFixedVector2() {
 
 
 bool SGFixedMathEditorInspectorPlugin::can_handle(Object *p_object) {
-	return Object::cast_to<SGRectangleShape2D>(p_object) != NULL;
+	return true;
 }
 
 void SGFixedMathEditorInspectorPlugin::parse_begin(Object *p_object) {
 }
 
 bool SGFixedMathEditorInspectorPlugin::parse_property(Object *p_object, Variant::Type p_type, const String &p_path, PropertyHint p_hint, const String &p_hint_text, int p_usage) {
-    if (p_path == "extents") {
+    if (p_hint == PROPERTY_HINT_TYPE_STRING && p_hint_text == "FixedVector2") {
         EditorPropertyFixedVector2 *editor = memnew(EditorPropertyFixedVector2);
         double min = -65535, max = 65535, step = 1;
         bool hide_slider = true;
@@ -134,7 +134,6 @@ SGFixedMathEditorPlugin::SGFixedMathEditorPlugin(EditorNode *p_editor) {
 }
 
 SGFixedMathEditorPlugin::~SGFixedMathEditorPlugin() {
-    memdelete(fixed_math_editor_inspector_plugin);
 }
 
 void SGFixedMathEditorPlugin::_notification(int p_what) {
