@@ -21,59 +21,30 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
 /*************************************************************************/
 
-#include "fixed_singleton.h"
+#include "sg_shapes_2d.h"
 
-#include "./internal/fixed.h"
-
-Fixed *Fixed::singleton = NULL;
-
-Fixed::Fixed() {
-    ERR_FAIL_COND(singleton != NULL);
-    singleton = this;
+void SGShape2D::_bind_methods() {
+    // @todo?
 }
 
-Fixed::~Fixed() {
-    singleton = NULL;
+SGRectangleShape2D::SGRectangleShape2D() {
+    extents = Ref<FixedVector2>(memnew(FixedVector2));
 }
 
-Fixed *Fixed::get_singleton() {
-    return singleton;
+SGRectangleShape2D::~SGRectangleShape2D() {
 }
 
-void Fixed::_bind_methods() {
-    ClassDB::bind_method(D_METHOD("from_int", "int_value"), &Fixed::from_int);
-    ClassDB::bind_method(D_METHOD("from_float", "float_value"), &Fixed::from_float);
-    ClassDB::bind_method(D_METHOD("to_int"), &Fixed::to_int);
-    ClassDB::bind_method(D_METHOD("to_float"), &Fixed::to_float);
-    ClassDB::bind_method(D_METHOD("mul", "fixed_one", "fixed_two"), &Fixed::mul);
-    ClassDB::bind_method(D_METHOD("div", "fixed_one", "fixed_two"), &Fixed::div);
-    ClassDB::bind_method(D_METHOD("vector2", "fixed_x", "fixed_y"), &Fixed::vector2);
+void SGRectangleShape2D::_bind_methods() {
+    ClassDB::bind_method(D_METHOD("get_extents"), &SGRectangleShape2D::get_extents);
+    ClassDB::bind_method(D_METHOD("set_extents", "extents"), &SGRectangleShape2D::set_extents);
+
+	ADD_PROPERTY(PropertyInfo(Variant::OBJECT, "extents", PROPERTY_HINT_NONE), "set_extents", "get_extents");
 }
 
-int Fixed::from_int(int p_int_value) const {
-    return fixed::from_int(p_int_value).value;
+void SGRectangleShape2D::set_extents(const Ref<FixedVector2>& p_extents) {
+    extents = p_extents;
 }
 
-int Fixed::from_float(float p_float_value) const {
-    return fixed::from_float(p_float_value).value;
-}
-
-int Fixed::to_int(int p_fixed_value) const {
-    return fixed(p_fixed_value).to_int();
-}
-
-float Fixed::to_float(int p_fixed_value) const {
-    return fixed(p_fixed_value).to_float();
-}
-
-int Fixed::mul(int p_fixed_one, int p_fixed_two) const {
-    return (fixed(p_fixed_one) * fixed(p_fixed_two)).value;
-}
-
-int Fixed::div(int p_fixed_one, int p_fixed_two) const {
-    return (fixed(p_fixed_one) / fixed(p_fixed_two)).value;
-}
-
-Ref<FixedVector2> Fixed::vector2(int p_fixed_x, int p_fixed_y) const {
-    return Ref<FixedVector2>(memnew(FixedVector2(fixed_vector2(fixed(p_fixed_x), fixed(p_fixed_y)))));
+Ref<FixedVector2> SGRectangleShape2D::get_extents() {
+    return extents;
 }

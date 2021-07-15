@@ -25,17 +25,17 @@
 
 void FixedVector2::_bind_methods() {
     ClassDB::bind_method(D_METHOD("get_x"), &FixedVector2::get_x);
-    ClassDB::bind_method(D_METHOD("set_x"), &FixedVector2::set_x);
+    ClassDB::bind_method(D_METHOD("set_x", "x"), &FixedVector2::set_x);
     ClassDB::bind_method(D_METHOD("get_y"), &FixedVector2::get_y);
-    ClassDB::bind_method(D_METHOD("set_y"), &FixedVector2::set_y);
+    ClassDB::bind_method(D_METHOD("set_y", "y"), &FixedVector2::set_y);
 
 	ADD_PROPERTY(PropertyInfo(Variant::INT, "x", PROPERTY_HINT_NONE), "set_x", "get_x");
 	ADD_PROPERTY(PropertyInfo(Variant::INT, "y", PROPERTY_HINT_NONE), "set_y", "get_y");
 
-    ClassDB::bind_method(D_METHOD("add"), &FixedVector2::add);
-    ClassDB::bind_method(D_METHOD("iadd"), &FixedVector2::iadd);
-    ClassDB::bind_method(D_METHOD("sub"), &FixedVector2::sub);
-    ClassDB::bind_method(D_METHOD("isub"), &FixedVector2::isub);
+    ClassDB::bind_method(D_METHOD("add", "other_vector"), &FixedVector2::add);
+    ClassDB::bind_method(D_METHOD("iadd" "other_vector"), &FixedVector2::iadd);
+    ClassDB::bind_method(D_METHOD("sub", "other_vector"), &FixedVector2::sub);
+    ClassDB::bind_method(D_METHOD("isub", "other_vector"), &FixedVector2::isub);
 
     ClassDB::bind_method(D_METHOD("to_float"), &FixedVector2::to_float);
 }

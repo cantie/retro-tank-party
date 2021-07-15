@@ -4,13 +4,11 @@ TODO
 MILESTONE 1:
 
  - Do more real world tests with different regions
-
- - Solve problems with latency and packet loss
-   o Dig deeper into WebRTC and try to see where things are going awry!
-
-INTERMISSION:
-
- - Decide whether this is a viable way forward or not
+ - Initial implementation of deterministic physics
+   o Maybe rename fixed to sg_fixed for consistency?
+   o Edit rectangle shape in Godot editor
+   o Do super basic collision checking
+   o Unit tests!
 
 MILESTONE 2 (internal cleanup):
 
@@ -33,4 +31,9 @@ BEFORE RELEASE:
 
  - Implement a way to kick problematic peers, rather than 
  - Smooth out our frame skipping so we don't do it all at once
+
+BACKLOG:
+
+ - Solve problems packet loss
+   o Dig deeper into WebRTC and try to see where things are going awry!
 

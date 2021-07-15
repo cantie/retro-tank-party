@@ -21,8 +21,8 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
 /*************************************************************************/
 
-#ifndef SG_AREA_2D
-#define SG_AREA_2D
+#ifndef SG_AREA_2D_H
+#define SG_AREA_2D_H
 
 #include <scene/2d/node_2d.h>
 

@@ -39,11 +39,11 @@ protected:
 
 public:
 
-    int get_x() const { return value.x.value; }
-    void set_x(int p_x) { value.x.value = p_x; }
+    _FORCE_INLINE_ int get_x() const { return value.x.value; }
+    _FORCE_INLINE_ void set_x(int p_x) { value.x.value = p_x; }
 
-    int get_y() const { return value.y.value; }
-    void set_y(int p_y) { value.y.value = p_y; }
+    _FORCE_INLINE_ int get_y() const { return value.y.value; }
+    _FORCE_INLINE_ void set_y(int p_y) { value.y.value = p_y; }
 
 
     Ref<FixedVector2> add(const Ref<FixedVector2> &p_other) const;

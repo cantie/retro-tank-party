@@ -10,6 +10,8 @@ sg_physics_2d_subdirs = [
     "math/internal/",
     "math/",
     "scene/2d/",
+    "scene/resources/",
+    "editor/",
 ]
 
 for d in sg_physics_2d_subdirs:

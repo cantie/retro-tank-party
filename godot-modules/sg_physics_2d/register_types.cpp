@@ -26,20 +26,33 @@
 #include <core/class_db.h>
 #include <core/engine.h>
 
-#include "./scene/2d/sg_area_2d.h"
 #include "./math/fixed_singleton.h"
 #include "./math/fixed_vector2.h"
+#include "./scene/2d/sg_area_2d.h"
+#include "./scene/2d/sg_collision_shape_2d.h"
+#include "./scene/resources/sg_shapes_2d.h"
+
+#include "./editor/sg_fixed_math_editor_plugin.h"
 
 static Fixed *fixed_singleton;
 
 void register_sg_physics_2d_types() {
-    ClassDB::register_class<SGArea2D>();
-    ClassDB::register_class<FixedVector2>();
     ClassDB::register_class<Fixed>();
+    ClassDB::register_class<FixedVector2>();
+
+    ClassDB::register_class<SGCollisionShape2D>();
+
+    ClassDB::register_class<SGArea2D>();
+
+    ClassDB::register_virtual_class<SGShape2D>();
+    ClassDB::register_class<SGRectangleShape2D>();
 
     fixed_singleton = memnew(Fixed);
-
     Engine::get_singleton()->add_singleton(Engine::Singleton("Fixed", Fixed::get_singleton()));
+
+#if TOOLS_ENABLED
+    EditorPlugins::add_by_type<SGFixedMathEditorPlugin>();
+#endif
 }
 
 void unregister_sg_physics_2d_types() {
