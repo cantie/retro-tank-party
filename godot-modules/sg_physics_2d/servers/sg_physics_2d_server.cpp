@@ -21,47 +21,47 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
 /*************************************************************************/
 
-#include "register_types.h"
+#include "sg_physics_2d_server.h"
 
-#include <core/class_db.h>
-#include <core/engine.h>
+SGPhysics2DServer *SGPhysics2DServer::singleton = nullptr;
 
-#include "./math/sg_fixed_singleton.h"
-#include "./math/sg_fixed_vector2.h"
-#include "./servers/sg_physics_2d_server.h"
-#include "./scene/2d/sg_area_2d.h"
-#include "./scene/2d/sg_collision_shape_2d.h"
-#include "./scene/resources/sg_shapes_2d.h"
-
-#include "./editor/sg_fixed_math_editor_plugin.h"
-#include "./editor/sg_collision_shape_2d_editor_plugin.h"
-
-static SGFixed *fixed_singleton;
-static SGPhysics2DServer *physics_server;
-
-void register_sg_physics_2d_types() {
-    ClassDB::register_class<SGFixed>();
-    ClassDB::register_class<SGFixedVector2>();
-
-    ClassDB::register_class<SGCollisionShape2D>();
-
-    ClassDB::register_class<SGArea2D>();
-
-    ClassDB::register_virtual_class<SGShape2D>();
-    ClassDB::register_class<SGRectangleShape2D>();
-
-    fixed_singleton = memnew(SGFixed);
-    Engine::get_singleton()->add_singleton(Engine::Singleton("SGFixed", SGFixed::get_singleton()));
-
-    physics_server = memnew(SGPhysics2DServer);
-    Engine::get_singleton()->add_singleton(Engine::Singleton("SGPhysics2DServer", SGPhysics2DServer::get_singleton()));
-
-#if TOOLS_ENABLED
-    EditorPlugins::add_by_type<SGFixedMathEditorPlugin>();
-    EditorPlugins::add_by_type<SGCollisionShape2DEditorPlugin>();
-#endif
+SGPhysics2DServer::SGPhysics2DServer() {
+	ERR_FAIL_COND(singleton != NULL);
+	singleton = this;
 }
 
-void unregister_sg_physics_2d_types() {
-    memdelete(fixed_singleton);
+SGPhysics2DServer::~SGPhysics2DServer() {
+	singleton = NULL;
+}
+
+SGPhysics2DServer *SGPhysics2DServer::get_singleton() {
+	return singleton;
+}
+
+void SGPhysics2DServer::_bind_methods() {
+    ClassDB::bind_method(D_METHOD("create_rectangle_shape", "x", "y", "w", "h"), &SGPhysics2DServer::create_rectangle_shape);
+    ClassDB::bind_method(D_METHOD("shape_overlaps", "shape_one", "shape_two"), &SGPhysics2DServer::shape_overlaps);
+}
+
+RID SGPhysics2DServer::create_rectangle_shape(int x, int y, int w, int h) {
+    SGRectangle2DInternal *rectangle = memnew(SGRectangle2DInternal);
+    rectangle->set_position(fixed_vector2(fixed(x), fixed(y)));
+    rectangle->set_extents(fixed_vector2(fixed(w), fixed(h)));
+
+    RID id = shape_owner.make_rid(rectangle);
+	return id;
+}
+
+bool SGPhysics2DServer::shape_overlaps(RID p_shape_one, RID p_shape_two) {
+
+    SGRectangle2DInternal *rect1 = static_cast<SGRectangle2DInternal *>(p_shape_one.get_data());
+    SGRectangle2DInternal *rect2 = static_cast<SGRectangle2DInternal *>(p_shape_two.get_data());
+
+    fixed_vector2 min_one = rect1->get_bounds().get_min();
+    fixed_vector2 max_one = rect1->get_bounds().get_max();
+    fixed_vector2 min_two = rect2->get_bounds().get_min();
+    fixed_vector2 max_two = rect2->get_bounds().get_max();
+
+    return (min_two.x <= max_one.x) && (min_one.x <= max_two.x) && \
+           (min_two.y <= max_one.y) && (min_one.y <= max_two.y);
 }

@@ -77,6 +77,11 @@ struct fixed {
     _FORCE_INLINE_ fixed operator/(const fixed& p_other) const {
         return fixed(((int64_t)value << FRACTIONAL_BITS) / (int64_t)p_other.value);
     }
+
+    _FORCE_INLINE_ bool operator<=(const fixed &p_other) const {
+        return value <= p_other.value;
+    }
+
 };
 
 struct fixed_vector2 {
@@ -119,6 +124,23 @@ struct fixed_vector2 {
 	_FORCE_INLINE_ void operator-=(const fixed_vector2 &p_v) {
         x -= p_v.x;
         y -= p_v.y;
+    }
+
+};
+
+struct fixed_rect2 {
+    fixed_vector2 position;
+    fixed_vector2 size;
+
+    _FORCE_INLINE_ fixed_rect2(fixed_vector2 p_position, fixed_vector2 p_size) 
+        : position(p_position), size(p_size) {}
+
+    _FORCE_INLINE_ fixed_vector2 get_min() const {
+        return position - size;
+    }
+
+    _FORCE_INLINE_ fixed_vector2 get_max() const {
+        return position + size;
     }
 
 };

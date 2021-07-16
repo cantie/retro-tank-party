@@ -21,47 +21,41 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
 /*************************************************************************/
 
-#include "register_types.h"
+#ifndef SG_SHAPES_2D_INTERNAL_H
+#define SG_SHAPES_2D_INTERNAL_H
 
-#include <core/class_db.h>
-#include <core/engine.h>
+#include <core/resource.h>
 
-#include "./math/sg_fixed_singleton.h"
-#include "./math/sg_fixed_vector2.h"
-#include "./servers/sg_physics_2d_server.h"
-#include "./scene/2d/sg_area_2d.h"
-#include "./scene/2d/sg_collision_shape_2d.h"
-#include "./scene/resources/sg_shapes_2d.h"
+#include "sg_fixed_math_internal.h"
 
-#include "./editor/sg_fixed_math_editor_plugin.h"
-#include "./editor/sg_collision_shape_2d_editor_plugin.h"
+class SGShape2DInternal : public RID_Data {
+protected:
 
-static SGFixed *fixed_singleton;
-static SGPhysics2DServer *physics_server;
+    fixed_vector2 position;
 
-void register_sg_physics_2d_types() {
-    ClassDB::register_class<SGFixed>();
-    ClassDB::register_class<SGFixedVector2>();
+public:
 
-    ClassDB::register_class<SGCollisionShape2D>();
+    _FORCE_INLINE_ fixed_vector2 get_position() const { return position; }
+    _FORCE_INLINE_ void set_position(const fixed_vector2 &p_position) { position = p_position; }
 
-    ClassDB::register_class<SGArea2D>();
+    virtual fixed_rect2 get_bounds() const = 0;
 
-    ClassDB::register_virtual_class<SGShape2D>();
-    ClassDB::register_class<SGRectangleShape2D>();
+    SGShape2DInternal() {}
+    virtual ~SGShape2DInternal() {}
+};
 
-    fixed_singleton = memnew(SGFixed);
-    Engine::get_singleton()->add_singleton(Engine::Singleton("SGFixed", SGFixed::get_singleton()));
+class SGRectangle2DInternal : public SGShape2DInternal {
+protected:
 
-    physics_server = memnew(SGPhysics2DServer);
-    Engine::get_singleton()->add_singleton(Engine::Singleton("SGPhysics2DServer", SGPhysics2DServer::get_singleton()));
+    fixed_vector2 extents;
 
-#if TOOLS_ENABLED
-    EditorPlugins::add_by_type<SGFixedMathEditorPlugin>();
-    EditorPlugins::add_by_type<SGCollisionShape2DEditorPlugin>();
+public:
+
+    _FORCE_INLINE_ fixed_vector2 get_extents() const { return extents; }
+    _FORCE_INLINE_ void set_extents(const fixed_vector2 &p_extents) { extents = p_extents; }
+
+    virtual fixed_rect2 get_bounds() const;
+
+};
+
 #endif
-}
-
-void unregister_sg_physics_2d_types() {
-    memdelete(fixed_singleton);
-}

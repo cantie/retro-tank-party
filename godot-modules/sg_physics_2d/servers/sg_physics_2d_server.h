@@ -26,18 +26,26 @@
 
 #include <core/object.h>
 
+#include "../internal/sg_shapes_2d_internal.h"
+
 class SGPhysics2DServer : public Object {
     GDCLASS(SGPhysics2DServer, Object);
 
     static SGPhysics2DServer *singleton;
 
-    //mutable RID_Owner<
+    mutable RID_Owner<SGShape2DInternal> shape_owner;
 
 protected:
     static void _bind_methods();
 
 public:
     static SGPhysics2DServer *get_singleton();
+
+    RID create_rectangle_shape(int x, int y, int w, int h);
+    bool shape_overlaps(RID p_shape_one, RID p_shape_two);
+
+    SGPhysics2DServer();
+    ~SGPhysics2DServer();
 };
 
 #endif

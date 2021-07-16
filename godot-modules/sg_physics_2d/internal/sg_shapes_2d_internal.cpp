@@ -21,47 +21,8 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
 /*************************************************************************/
 
-#include "register_types.h"
+#include "sg_shapes_2d_internal.h"
 
-#include <core/class_db.h>
-#include <core/engine.h>
-
-#include "./math/sg_fixed_singleton.h"
-#include "./math/sg_fixed_vector2.h"
-#include "./servers/sg_physics_2d_server.h"
-#include "./scene/2d/sg_area_2d.h"
-#include "./scene/2d/sg_collision_shape_2d.h"
-#include "./scene/resources/sg_shapes_2d.h"
-
-#include "./editor/sg_fixed_math_editor_plugin.h"
-#include "./editor/sg_collision_shape_2d_editor_plugin.h"
-
-static SGFixed *fixed_singleton;
-static SGPhysics2DServer *physics_server;
-
-void register_sg_physics_2d_types() {
-    ClassDB::register_class<SGFixed>();
-    ClassDB::register_class<SGFixedVector2>();
-
-    ClassDB::register_class<SGCollisionShape2D>();
-
-    ClassDB::register_class<SGArea2D>();
-
-    ClassDB::register_virtual_class<SGShape2D>();
-    ClassDB::register_class<SGRectangleShape2D>();
-
-    fixed_singleton = memnew(SGFixed);
-    Engine::get_singleton()->add_singleton(Engine::Singleton("SGFixed", SGFixed::get_singleton()));
-
-    physics_server = memnew(SGPhysics2DServer);
-    Engine::get_singleton()->add_singleton(Engine::Singleton("SGPhysics2DServer", SGPhysics2DServer::get_singleton()));
-
-#if TOOLS_ENABLED
-    EditorPlugins::add_by_type<SGFixedMathEditorPlugin>();
-    EditorPlugins::add_by_type<SGCollisionShape2DEditorPlugin>();
-#endif
-}
-
-void unregister_sg_physics_2d_types() {
-    memdelete(fixed_singleton);
+fixed_rect2 SGRectangle2DInternal::get_bounds() const {
+    return fixed_rect2(position, extents);
 }
