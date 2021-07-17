@@ -160,6 +160,7 @@ var skip_ticks_after_sync_regained := 0
 var interpolation := false
 var rollback_debug_ticks := 0
 var debug_message_bytes := 700
+var debug_skip_nth_message := 0
 var log_state := false
 
 # In seconds, because we don't want it to be dependent on the network tick.
@@ -181,6 +182,7 @@ var _input_send_queue := []
 var _input_send_queue_start_tick: int
 var _interpolation_state := {}
 var _time_since_last_tick := 0.0
+var _debug_skip_nth_message_counter := 0
 var _logged_remote_state: Dictionary
 
 signal sync_started ()
@@ -340,6 +342,7 @@ func _reset() -> void:
 	_input_send_queue_start_tick = 1
 	_interpolation_state.clear()
 	_time_since_last_tick = 0.0
+	_debug_skip_nth_message_counter = 0
 	_logged_remote_state.clear()
 
 remote func _remote_start() -> void:
@@ -652,6 +655,13 @@ func _send_input_messages_to_peer(peer_id: int) -> void:
 		network_adaptor.send_input_tick(peer_id, bytes)
 
 func _send_input_messages_to_all_peers() -> void:
+	if debug_skip_nth_message > 1:
+		_debug_skip_nth_message_counter += 1
+		if _debug_skip_nth_message_counter >= debug_skip_nth_message:
+			print("[%s] Skipping message to simulate packet loss" % current_tick)
+			_debug_skip_nth_message_counter = 0
+			return
+	
 	for peer_id in peers:
 		_send_input_messages_to_peer(peer_id)
 
