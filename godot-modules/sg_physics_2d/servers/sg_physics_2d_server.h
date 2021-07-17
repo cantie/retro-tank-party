@@ -27,13 +27,17 @@
 #include <core/object.h>
 
 #include "../internal/sg_shapes_2d_internal.h"
+#include "../internal/sg_bodies_2d_internal.h"
 
 class SGPhysics2DServer : public Object {
     GDCLASS(SGPhysics2DServer, Object);
 
     static SGPhysics2DServer *singleton;
 
+    Vector<SGArea2DInternal *> temp_areas;
+
     mutable RID_Owner<SGShape2DInternal> shape_owner;
+    mutable RID_Owner<SGArea2DInternal> area_owner;
 
 protected:
     static void _bind_methods();
@@ -41,8 +45,10 @@ protected:
 public:
     static SGPhysics2DServer *get_singleton();
 
+    RID create_area();
     RID create_rectangle_shape(int x, int y, int w, int h);
-    bool shape_overlaps(RID p_shape_one, RID p_shape_two);
+    void area_add_shape(RID p_area, RID p_shape);
+    bool area_overlaps(RID p_area);
 
     SGPhysics2DServer();
     ~SGPhysics2DServer();

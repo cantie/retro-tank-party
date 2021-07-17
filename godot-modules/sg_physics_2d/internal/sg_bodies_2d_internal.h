@@ -21,33 +21,21 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
 /*************************************************************************/
 
-#ifndef SG_AREA_2D_H
-#define SG_AREA_2D_H
+#ifndef SG_BODIES_2D_INTERNAL_H
+#define SG_BODIES_2D_INTERNAL_H
 
-#include <scene/2d/node_2d.h>
+#include <core/vector.h>
 
-#include "../../math/sg_fixed_vector2.h"
+#include "sg_shapes_2d_internal.h"
 
-class SGArea2D : public Node2D {
-    GDCLASS(SGArea2D, Node2D);
-
-    int value;
-    Ref<SGFixedVector2> fixed_position;
-
-protected:
-    static void _bind_methods();
-    void _notifications(int p_what);
-
+class SGArea2DInternal : public RID_Data {
+    Vector<SGShape2DInternal *> shapes;
+    
 public:
+    void add_shape(SGShape2DInternal *p_shape);
+    void remove_shape(SGShape2DInternal *p_shape);
 
-    void set_fixed_position(const Ref<SGFixedVector2> &p_fixed_position);
-    Ref<SGFixedVector2> get_fixed_position();
-
-    void sync_to_physics();
-    bool overlaps_area();
-
-    SGArea2D();
-
+    bool overlaps_area(SGArea2DInternal *p_other_area);
 };
 
 #endif

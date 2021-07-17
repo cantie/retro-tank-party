@@ -21,33 +21,20 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
 /*************************************************************************/
 
-#ifndef SG_AREA_2D_H
-#define SG_AREA_2D_H
+#include "sg_bodies_2d_internal.h"
 
-#include <scene/2d/node_2d.h>
+void SGArea2DInternal::add_shape(SGShape2DInternal *p_shape) {
+    shapes.push_back(p_shape);
+}
 
-#include "../../math/sg_fixed_vector2.h"
+void SGArea2DInternal::remove_shape(SGShape2DInternal *p_shape) {
+    shapes.erase(p_shape);
+}
 
-class SGArea2D : public Node2D {
-    GDCLASS(SGArea2D, Node2D);
-
-    int value;
-    Ref<SGFixedVector2> fixed_position;
-
-protected:
-    static void _bind_methods();
-    void _notifications(int p_what);
-
-public:
-
-    void set_fixed_position(const Ref<SGFixedVector2> &p_fixed_position);
-    Ref<SGFixedVector2> get_fixed_position();
-
-    void sync_to_physics();
-    bool overlaps_area();
-
-    SGArea2D();
-
-};
-
-#endif
+bool SGArea2DInternal::overlaps_area(SGArea2DInternal *p_other_area) {
+    for (int i = 0; i < shapes.size(); i++) {
+        for (int j = 0; j < p_other_area->shapes.size(); j++) {
+            if (shapes[i].)
+        }
+    }
+}

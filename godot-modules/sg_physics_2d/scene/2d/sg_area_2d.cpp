@@ -23,14 +23,45 @@
 
 #include "sg_area_2d.h"
 
+#include <core/engine.h>
+
 void SGArea2D::_bind_methods() {
+    ClassDB::bind_method(D_METHOD("get_fixed_position"), &SGArea2D::get_fixed_position);
+    ClassDB::bind_method(D_METHOD("set_fixed_position", "fixed_position"), &SGArea2D::set_fixed_position);
+
+	ADD_PROPERTY(PropertyInfo(Variant::OBJECT, "fixed_position", PROPERTY_HINT_TYPE_STRING, "SGFixedVector2"), "set_fixed_position", "get_fixed_position");
 
 }
 
 void SGArea2D::_notifications(int p_what) {
+    /*
+    switch (p_what) {
+        case NOTIFICATION_TRANSFORM_CHANGED:
+            if (Engine::get_singleton()->is_editor_hint()) {
+                Transform2D xform = get_transform();
+                fixed_position->from_float(xform.get_origin());
+            }
+            break;
+    }
+    */
+}
+
+void SGArea2D::set_fixed_position(const Ref<SGFixedVector2> &p_fixed_position) {
+    fixed_position = p_fixed_position;
+}
+
+Ref<SGFixedVector2> SGArea2D::get_fixed_position() {
+    return fixed_position;
+}
+
+void SGArea2D::sync_to_physics() {
+
+}
+
+bool SGArea2D::overlaps_area() {
 
 }
 
 SGArea2D::SGArea2D() {
-
+    fixed_position = Ref<SGFixedVector2>(memnew(SGFixedVector2));
 }

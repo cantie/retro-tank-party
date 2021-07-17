@@ -43,6 +43,13 @@ void SGPhysics2DServer::_bind_methods() {
     ClassDB::bind_method(D_METHOD("shape_overlaps", "shape_one", "shape_two"), &SGPhysics2DServer::shape_overlaps);
 }
 
+RID SGPhysics2DServer::create_area() {
+    SGArea2DInternal *area = memnew(SGArea2DInternal);
+    temp_areas.push_back(area);
+    RID id = area_owner.make_rid(area);
+    return id;
+}
+
 RID SGPhysics2DServer::create_rectangle_shape(int x, int y, int w, int h) {
     SGRectangle2DInternal *rectangle = memnew(SGRectangle2DInternal);
     rectangle->set_position(fixed_vector2(fixed(x), fixed(y)));
@@ -52,6 +59,16 @@ RID SGPhysics2DServer::create_rectangle_shape(int x, int y, int w, int h) {
 	return id;
 }
 
+void SGPhysics2DServer::area_add_shape(RID p_area, RID p_shape) {
+    SGArea2DInternal *area = static_cast<SGArea2DInternal *>(p_area.get_data());
+    SGShape2DInternal *shape = static_cast<SGShape2DInternal *>(p_shape.get_data());
+
+    area->add_shape(shape);
+}
+
+
+
+/*
 bool SGPhysics2DServer::shape_overlaps(RID p_shape_one, RID p_shape_two) {
 
     SGRectangle2DInternal *rect1 = static_cast<SGRectangle2DInternal *>(p_shape_one.get_data());
@@ -65,3 +82,4 @@ bool SGPhysics2DServer::shape_overlaps(RID p_shape_one, RID p_shape_two) {
     return (min_two.x <= max_one.x) && (min_one.x <= max_two.x) && \
            (min_two.y <= max_one.y) && (min_one.y <= max_two.y);
 }
+*/

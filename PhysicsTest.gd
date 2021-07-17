@@ -8,4 +8,4 @@ func _ready() -> void:
 	print ("rect1 collides with rect2: %s" % SGPhysics2DServer.shape_overlaps(rect1, rect2))
 	print ("rect1 collides with rect3: %s" % SGPhysics2DServer.shape_overlaps(rect1, rect3))
 	
-	get_tree().quit()
+	#get_tree().quit()

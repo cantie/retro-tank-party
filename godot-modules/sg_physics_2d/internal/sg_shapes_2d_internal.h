@@ -40,6 +40,8 @@ public:
 
     virtual fixed_rect2 get_bounds() const = 0;
 
+    virtual bool overlaps_shape(SGShape2DInternal *p_shape) = 0;
+
     SGShape2DInternal() {}
     virtual ~SGShape2DInternal() {}
 };

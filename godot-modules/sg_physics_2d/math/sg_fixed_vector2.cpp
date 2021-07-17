@@ -37,6 +37,7 @@ void SGFixedVector2::_bind_methods() {
     ClassDB::bind_method(D_METHOD("sub", "other_vector"), &SGFixedVector2::sub);
     ClassDB::bind_method(D_METHOD("isub", "other_vector"), &SGFixedVector2::isub);
 
+    ClassDB::bind_method(D_METHOD("from_float", "float_vector"), &SGFixedVector2::from_float);
     ClassDB::bind_method(D_METHOD("to_float"), &SGFixedVector2::to_float);
 }
 
@@ -54,6 +55,11 @@ Ref<SGFixedVector2> SGFixedVector2::sub(const Ref<SGFixedVector2>& p_other) cons
 
 void SGFixedVector2::isub(const Ref<SGFixedVector2>& p_other) {
     value -= p_other->value;
+}
+
+void SGFixedVector2::from_float(Vector2 p_float_vector) {
+    value.x = fixed::from_float(p_float_vector.x);
+    value.y = fixed::from_float(p_float_vector.y);
 }
 
 Vector2 SGFixedVector2::to_float() const {

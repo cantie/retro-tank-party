@@ -51,6 +51,7 @@ public:
     Ref<SGFixedVector2> sub(const Ref<SGFixedVector2> &p_other) const;
     void isub(const Ref<SGFixedVector2>& p_other);
 
+    void from_float(Vector2 p_float_vector);
     Vector2 to_float() const;
 
     SGFixedVector2() { }
