@@ -31,6 +31,8 @@ func stop_network_adaptor(sync_manager) -> void:
 	message_queue.clear()
 
 func _on_OnlineMatch_webrtc_peer_added(webrtc_peer: WebRTCPeerConnection, player: OnlineMatch.Player) -> void:
+	print ("Peer added -- trying to re-establish the data channel")
+	
 	var peer_id := player.peer_id
 	
 	if data_channels.has(peer_id):
@@ -60,6 +62,7 @@ func send_input_tick(peer_id: int, msg: PoolByteArray) -> void:
 		if not message_queue.has(peer_id):
 			message_queue[peer_id] = []
 		message_queue[peer_id].append(msg)
+		print ("Queueing message")
 	else:
 		var data_channel: WebRTCDataChannel = data_channels[peer_id]
 		
@@ -74,6 +77,7 @@ func poll() -> void:
 	for peer_id in data_channels:
 		var data_channel: WebRTCDataChannel = data_channels[peer_id]
 		if data_channel.get_ready_state() != WebRTCDataChannel.STATE_OPEN:
+			print ("Ready state: %s" % data_channel.get_ready_state())
 			continue
 		
 		data_channel.poll()
