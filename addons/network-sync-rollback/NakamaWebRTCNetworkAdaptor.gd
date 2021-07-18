@@ -63,11 +63,9 @@ func send_input_tick(peer_id: int, msg: PoolByteArray) -> void:
 	else:
 		var data_channel: WebRTCDataChannel = data_channels[peer_id]
 		
-		print ("buffer: %s" % data_channel.get_buffered_amount())
-		
 		# Skip sending if the data channel is over the max buffered amount.
 		if max_buffered_amount > 0 and data_channel.get_buffered_amount() > max_buffered_amount:
-			print ("[%s] Skipping send because buffer is too full" % SyncManager.current_tick)
+			print ("[%s] Skipping send because buffer is too full (%s bytes)" % [SyncManager.current_tick, data_channel.get_buffered_amount()])
 			return
 		
 		data_channel.put_packet(msg)
