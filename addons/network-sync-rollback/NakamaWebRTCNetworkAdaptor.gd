@@ -4,6 +4,9 @@ extends "res://addons/network-sync-rollback/NetworkAdaptor.gd"
 
 const DATA_CHANNEL_ID := 42
 
+# If buffer exceeds this value, skip sending messages (except ping backs).
+var max_buffered_amount := 0
+
 var data_channels := {}
 var message_queue := {}
 
@@ -58,7 +61,16 @@ func send_input_tick(peer_id: int, msg: PoolByteArray) -> void:
 			message_queue[peer_id] = []
 		message_queue[peer_id].append(msg)
 	else:
-		data_channels[peer_id].put_packet(msg)
+		var data_channel: WebRTCDataChannel = data_channels[peer_id]
+		
+		print ("buffer: %s" % data_channel.get_buffered_amount())
+		
+		# Skip sending if the data channel is over the max buffered amount.
+		if max_buffered_amount > 0 and data_channel.get_buffered_amount() > max_buffered_amount:
+			print ("[%s] Skipping send because buffer is too full" % SyncManager.current_tick)
+			return
+		
+		data_channel.put_packet(msg)
 
 func poll() -> void:
 	for peer_id in data_channels:
@@ -72,6 +84,10 @@ func poll() -> void:
 		while data_channel.get_available_packet_count() > 0:
 			var msg = data_channel.get_packet()
 			emit_signal("received_input_tick", peer_id, msg)
+		
+		# Skip sending if the data channel is over the max buffered amount.
+		if max_buffered_amount > 0 and data_channel.get_buffered_amount() > max_buffered_amount:
+			continue
 		
 		# Send any queued messages.
 		if message_queue.has(peer_id):
