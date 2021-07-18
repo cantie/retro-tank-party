@@ -8,7 +8,6 @@ const DATA_CHANNEL_ID := 42
 var max_buffered_amount := 0
 
 var data_channels := {}
-var message_queue := {}
 
 func attach_network_adaptor(sync_manager) -> void:
 	if OnlineMatch:
@@ -25,10 +24,10 @@ func detach_network_adaptor(sync_manager) -> void:
 		OnlineMatch.disconnect("disconnected", self, '_on_OnlineMatch_disconnected')
 
 func start_network_adaptor(sync_manager) -> void:
-	message_queue.clear()
+	pass
 
 func stop_network_adaptor(sync_manager) -> void:
-	message_queue.clear()
+	pass
 
 func _on_OnlineMatch_webrtc_peer_added(webrtc_peer: WebRTCPeerConnection, player: OnlineMatch.Player) -> void:
 	print ("Peer added -- trying to re-establish the data channel")
@@ -50,20 +49,15 @@ func _on_OnlineMatch_webrtc_peer_added(webrtc_peer: WebRTCPeerConnection, player
 func _on_OnlineMatch_webrtc_peer_removed(webrtc_peer: WebRTCPeerConnection, player: OnlineMatch.Player) -> void:
 	var peer_id := player.peer_id
 	if data_channels.has(peer_id):
+		# Can this cause problems with re-establishing the connection?
 		data_channels[peer_id].close()
 		data_channels.erase(peer_id)
 
 func _on_OnlineMatch_disconnected() -> void:
 	data_channels.clear()
-	message_queue.clear()
 
 func send_input_tick(peer_id: int, msg: PoolByteArray) -> void:
-	if not data_channels.has(peer_id) or data_channels[peer_id].get_ready_state() != WebRTCDataChannel.STATE_OPEN:
-		if not message_queue.has(peer_id):
-			message_queue[peer_id] = []
-		message_queue[peer_id].append(msg)
-		print ("Queueing message")
-	else:
+	if data_channels.has(peer_id) and data_channels[peer_id].get_ready_state() == WebRTCDataChannel.STATE_OPEN:
 		var data_channel: WebRTCDataChannel = data_channels[peer_id]
 		
 		# Skip sending if the data channel is over the max buffered amount.
@@ -86,15 +80,3 @@ func poll() -> void:
 		while data_channel.get_available_packet_count() > 0:
 			var msg = data_channel.get_packet()
 			emit_signal("received_input_tick", peer_id, msg)
-		
-		# Skip sending if the data channel is over the max buffered amount.
-		if max_buffered_amount > 0 and data_channel.get_buffered_amount() > max_buffered_amount:
-			continue
-		
-		# Send any queued messages.
-		if message_queue.has(peer_id):
-			var messages_to_send = message_queue[peer_id]
-			if messages_to_send.size() > 0:
-				for msg in messages_to_send:
-					data_channel.put_packet(msg)
-				messages_to_send.clear()
