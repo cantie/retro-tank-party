@@ -204,8 +204,8 @@ signal tick_finished (is_rollback)
 signal scene_spawned (name, spawned_node, scene, data)
 
 func _ready() -> void:
-	get_tree().connect("network_peer_disconnected", self, "remove_peer")
-	get_tree().connect("server_disconnected", self, "stop")
+	#get_tree().connect("network_peer_disconnected", self, "remove_peer")
+	#get_tree().connect("server_disconnected", self, "stop")
 	
 	_ping_timer = Timer.new()
 	_ping_timer.name = "PingTimer"
