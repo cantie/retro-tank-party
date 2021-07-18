@@ -272,6 +272,15 @@ func get_player_names_by_peer_id() -> Dictionary:
 		result[players[session_id]['peer_id']] = players[session_id]['username']
 	return result
 
+func get_webrtc_peer(session_id: String) -> WebRTCPeerConnection:
+	return _webrtc_peers.get(session_id, null)
+
+func get_webrtc_peer_by_peer_id(peer_id: int) -> WebRTCPeerConnection:
+	var player = get_player_by_peer_id(peer_id)
+	if player:
+		return _webrtc_peers.get(player.session_id, null)
+	return null
+
 func _on_nakama_error(data) -> void:
 	print ("ERROR:")
 	print(data)

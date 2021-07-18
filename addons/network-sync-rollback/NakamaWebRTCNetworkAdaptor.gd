@@ -50,7 +50,7 @@ func _on_OnlineMatch_webrtc_peer_removed(webrtc_peer: WebRTCPeerConnection, play
 	var peer_id := player.peer_id
 	if data_channels.has(peer_id):
 		# Can this cause problems with re-establishing the connection?
-		data_channels[peer_id].close()
+		#data_channels[peer_id].close()
 		data_channels.erase(peer_id)
 
 func _on_OnlineMatch_disconnected() -> void:
@@ -70,8 +70,14 @@ func send_input_tick(peer_id: int, msg: PoolByteArray) -> void:
 func poll() -> void:
 	for peer_id in data_channels:
 		var data_channel: WebRTCDataChannel = data_channels[peer_id]
-		if data_channel.get_ready_state() != WebRTCDataChannel.STATE_OPEN:
+		var data_channel_state = data_channel.get_ready_state()
+		if data_channel_state != WebRTCDataChannel.STATE_OPEN:
 			print ("Ready state: %s" % data_channel.get_ready_state())
+			# Attempt to reconnect the data channel, if necessary.
+			if data_channel_state != WebRTCDataChannel.STATE_CONNECTING:
+				var player = OnlineMatch.get_player_by_peer_id(peer_id)
+				var webrtc_peer = OnlineMatch.get_webrtc_peer(player.session_id)
+				_on_OnlineMatch_webrtc_peer_added(webrtc_peer, player)
 			continue
 		
 		data_channel.poll()
