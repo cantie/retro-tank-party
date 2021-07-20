@@ -93,6 +93,8 @@ class RTPMessageSerializer extends SyncManager.MessageSerializer:
 func _ready() -> void:
 	var network_adaptor = NakamaWebRTCNetworkAdaptor.new()
 	network_adaptor.max_buffered_amount = 200
+	network_adaptor.max_skipped_input_in_a_row = 3
+	network_adaptor.max_packet_lifetime = 66
 	
 	SyncManager.network_adaptor = network_adaptor
 	SyncManager.message_serializer = RTPMessageSerializer.new()

@@ -6,6 +6,8 @@ const DATA_CHANNEL_ID := 42
 
 # If buffer exceeds this value, skip sending messages (except ping backs).
 var max_buffered_amount := 0
+# The max skipped input ticks in a row.
+var max_skipped_input_in_a_row := 1
 # The number of messages of history to check for duplicates.
 var max_duplicate_history := 10
 # The maximum packet lifetime for WebRTC to try to redeliver messages.
@@ -13,6 +15,9 @@ var max_packet_lifetime := 66
 
 var _data_channels := {}
 var _last_messages := {}
+
+var _last_skipped_tick := 0
+var _skipped_tick_count := 0
 
 func attach_network_adaptor(sync_manager) -> void:
 	if OnlineMatch:
@@ -71,8 +76,21 @@ func send_input_tick(peer_id: int, msg: PoolByteArray) -> void:
 		# in when SCTP's flow control turns on, and we want to wait until it
 		# turns back off before sending any more data.
 		if max_buffered_amount > 0 and data_channel.get_buffered_amount() > max_buffered_amount:
-			print ("[%s] Skipping send because buffer is too full (%s bytes)" % [SyncManager.current_tick, data_channel.get_buffered_amount()])
-			return
+			if _last_skipped_tick == SyncManager.current_tick:
+				# We don't need to output the message multiple times per tick.
+				return
+			
+			if _last_skipped_tick == SyncManager.current_tick - 1:
+				_skipped_tick_count += 1
+			else:
+				_skipped_tick_count = 0
+			
+			if _skipped_tick_count < max_skipped_input_in_a_row:
+				print ("[%s] Skipping send because buffer is too full (%s bytes)" % [SyncManager.current_tick, data_channel.get_buffered_amount()])
+				_last_skipped_tick = SyncManager.current_tick
+				return
+			else:
+				_skipped_tick_count = 0
 		
 		if not _last_messages.has(peer_id):
 			_last_messages[peer_id] = []
