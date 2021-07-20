@@ -72,7 +72,6 @@ func poll() -> void:
 		var data_channel: WebRTCDataChannel = data_channels[peer_id]
 		var data_channel_state = data_channel.get_ready_state()
 		if data_channel_state != WebRTCDataChannel.STATE_OPEN:
-			print ("Ready state: %s" % data_channel.get_ready_state())
 			# Attempt to reconnect the data channel, if necessary.
 			if data_channel_state != WebRTCDataChannel.STATE_CONNECTING:
 				var player = OnlineMatch.get_player_by_peer_id(peer_id)
