@@ -6,13 +6,10 @@ const DATA_CHANNEL_ID := 42
 
 # If buffer exceeds this value, skip sending messages (except ping backs).
 var max_buffered_amount := 0
+var max_duplicate_history := 10
 
 var _data_channels := {}
-var _last_message_sent_hash: int
-var _hashing_context: HashingContext
-
-func _init() -> void:
-	_hashing_context = HashingContext.new()
+var _last_messages := {}
 
 func attach_network_adaptor(sync_manager) -> void:
 	if OnlineMatch:
@@ -46,7 +43,7 @@ func _on_OnlineMatch_webrtc_peer_added(webrtc_peer: WebRTCPeerConnection, player
 		negotiated = true,
 		id = DATA_CHANNEL_ID,
 		#maxRetransmits = 0,
-		maxPacketLifeTime = 1000,
+		maxPacketLifeTime = 66,
 		ordered = false,
 	})
 	data_channel.write_mode = WebRTCDataChannel.WRITE_MODE_BINARY
@@ -74,15 +71,23 @@ func send_input_tick(peer_id: int, msg: PoolByteArray) -> void:
 			print ("[%s] Skipping send because buffer is too full (%s bytes)" % [SyncManager.current_tick, data_channel.get_buffered_amount()])
 			return
 		
+		if not _last_messages.has(peer_id):
+			_last_messages[peer_id] = []
+		var last_messages_for_peer = _last_messages[peer_id]
+		
 		# Avoid sending duplicate messages. We'll let WebRTC's reliability
 		# layer deal with making sure the message arrives, otherwise we can run
 		# afoul of SCTP's flow control algorithm.
 		var msg_hash = hash(msg)
-		if msg_hash != _last_message_sent_hash:
-			data_channel.put_packet(msg)
-			_last_message_sent_hash = msg_hash
-		else:
+		if msg_hash in last_messages_for_peer:
 			print ("Skipping duplicate message")
+			return
+		
+		data_channel.put_packet(msg)
+		
+		last_messages_for_peer.append(msg_hash)
+		while last_messages_for_peer.size() > max_duplicate_history:
+			last_messages_for_peer.pop_front()
 
 func poll() -> void:
 	for peer_id in _data_channels:
