@@ -6,7 +6,10 @@ const DATA_CHANNEL_ID := 42
 
 # If buffer exceeds this value, skip sending messages (except ping backs).
 var max_buffered_amount := 0
+# The number of messages of history to check for duplicates.
 var max_duplicate_history := 10
+# The maximum packet lifetime for WebRTC to try to redeliver messages.
+var max_packet_lifetime := 66
 
 var _data_channels := {}
 var _last_messages := {}
@@ -42,8 +45,7 @@ func _on_OnlineMatch_webrtc_peer_added(webrtc_peer: WebRTCPeerConnection, player
 	var data_channel = webrtc_peer.create_data_channel('SyncManager', {
 		negotiated = true,
 		id = DATA_CHANNEL_ID,
-		#maxRetransmits = 0,
-		maxPacketLifeTime = 66,
+		maxPacketLifeTime = max_packet_lifetime,
 		ordered = false,
 	})
 	data_channel.write_mode = WebRTCDataChannel.WRITE_MODE_BINARY
