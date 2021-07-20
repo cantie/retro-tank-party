@@ -48,6 +48,7 @@ func _on_OnlineMatch_webrtc_peer_added(webrtc_peer: WebRTCPeerConnection, player
 		maxPacketLifeTime = max_packet_lifetime,
 		ordered = false,
 	})
+	# @todo data_channel can be null if the peer has disconnected
 	data_channel.write_mode = WebRTCDataChannel.WRITE_MODE_BINARY
 	_data_channels[peer_id] = data_channel
 
@@ -82,7 +83,7 @@ func send_input_tick(peer_id: int, msg: PoolByteArray) -> void:
 		# afoul of SCTP's flow control algorithm.
 		var msg_hash = hash(msg)
 		if msg_hash in last_messages_for_peer:
-			print ("Skipping duplicate message")
+			print ("[%s] Skipping duplicate message" % [SyncManager.current_tick])
 			return
 		
 		data_channel.put_packet(msg)

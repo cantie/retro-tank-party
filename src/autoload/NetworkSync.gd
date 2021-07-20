@@ -92,7 +92,7 @@ class RTPMessageSerializer extends SyncManager.MessageSerializer:
 
 func _ready() -> void:
 	var network_adaptor = NakamaWebRTCNetworkAdaptor.new()
-	network_adaptor.max_buffered_amount = 100
+	network_adaptor.max_buffered_amount = 200
 	
 	SyncManager.network_adaptor = network_adaptor
 	SyncManager.message_serializer = RTPMessageSerializer.new()
@@ -101,7 +101,7 @@ func _ready() -> void:
 	#SyncManager.max_buffer_size = 20
 	SyncManager.debug_message_bytes = 600
 	SyncManager.max_input_frames_per_message = 20
-	SyncManager.max_messages_at_once = 1
+	SyncManager.max_messages_at_once = 2
 	SyncManager.debug_skip_nth_message = 0
 	SyncManager.interpolation = true
 	SyncManager.skip_ticks_after_sync_regained = 5
