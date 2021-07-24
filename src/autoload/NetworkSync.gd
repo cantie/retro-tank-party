@@ -91,16 +91,22 @@ class RTPMessageSerializer extends SyncManager.MessageSerializer:
 		return all_input
 
 func _ready() -> void:
-	SyncManager.network_adaptor = NakamaWebRTCNetworkAdaptor.new()
+	var network_adaptor = NakamaWebRTCNetworkAdaptor.new()
+	network_adaptor.max_buffered_amount = 200
+	network_adaptor.max_skipped_input_in_a_row = 3
+	network_adaptor.max_packet_lifetime = 66
+	
+	SyncManager.network_adaptor = network_adaptor
 	SyncManager.message_serializer = RTPMessageSerializer.new()
 	
 	# Tweak some settings
 	#SyncManager.max_buffer_size = 20
-	SyncManager.debug_message_bytes = 150
-	#SyncManager.max_input_frames_per_message = 5
-	#SyncManager.max_messages_at_once = 2
+	SyncManager.debug_message_bytes = 600
+	SyncManager.max_input_frames_per_message = 20
+	SyncManager.max_messages_at_once = 2
+	SyncManager.debug_skip_nth_message = 0
 	SyncManager.interpolation = true
-	SyncManager.skip_ticks_after_sync_regained = 2
+	SyncManager.skip_ticks_after_sync_regained = 5
 	#SyncManager.message_resend_frequency = (1.0 / Engine.iterations_per_second) / 2.0
 	
 	SyncManager.connect("state_loaded", self, "_on_SyncManager_state_loaded")

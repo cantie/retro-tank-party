@@ -80,7 +80,7 @@ func _on_MenuScreen_exit_pressed() -> void:
 
 #func _unhandled_input(event: InputEvent) -> void:
 #	# Trigger debugging action!
-#	if event.is_action_pressed("special_debug"):
+#	if event.is_action_pressed('special_debug'):
 #		print (" ** DEBUG ** FORCING WEBRTC CONNECTIONS TO CLOSE **")
 #		# Close all our peers to force a reconnect (to make sure it works).
 #		for session_id in OnlineMatch._webrtc_peers:

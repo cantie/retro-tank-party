@@ -4,8 +4,20 @@ extends "res://addons/network-sync-rollback/NetworkAdaptor.gd"
 
 const DATA_CHANNEL_ID := 42
 
-var data_channels := {}
-var message_queue := {}
+# If buffer exceeds this value, skip sending messages (except ping backs).
+var max_buffered_amount := 0
+# The max skipped input ticks in a row.
+var max_skipped_input_in_a_row := 1
+# The number of messages of history to check for duplicates.
+var max_duplicate_history := 10
+# The maximum packet lifetime for WebRTC to try to redeliver messages.
+var max_packet_lifetime := 66
+
+var _data_channels := {}
+var _last_messages := {}
+
+var _last_skipped_tick := 0
+var _skipped_tick_count := 0
 
 func attach_network_adaptor(sync_manager) -> void:
 	if OnlineMatch:
@@ -22,48 +34,92 @@ func detach_network_adaptor(sync_manager) -> void:
 		OnlineMatch.disconnect("disconnected", self, '_on_OnlineMatch_disconnected')
 
 func start_network_adaptor(sync_manager) -> void:
-	message_queue.clear()
+	pass
 
 func stop_network_adaptor(sync_manager) -> void:
-	message_queue.clear()
+	pass
 
 func _on_OnlineMatch_webrtc_peer_added(webrtc_peer: WebRTCPeerConnection, player: OnlineMatch.Player) -> void:
+	print ("Peer added -- trying to re-establish the data channel")
+	
 	var peer_id := player.peer_id
 	
-	if data_channels.has(peer_id):
-		data_channels.erase(peer_id)
+	if _data_channels.has(peer_id):
+		_data_channels.erase(peer_id)
 	
 	var data_channel = webrtc_peer.create_data_channel('SyncManager', {
 		negotiated = true,
 		id = DATA_CHANNEL_ID,
-		maxRetransmits = 0,
+		maxPacketLifeTime = max_packet_lifetime,
 		ordered = false,
 	})
+	# @todo data_channel can be null if the peer has disconnected
 	data_channel.write_mode = WebRTCDataChannel.WRITE_MODE_BINARY
-	data_channels[peer_id] = data_channel
+	_data_channels[peer_id] = data_channel
 
 func _on_OnlineMatch_webrtc_peer_removed(webrtc_peer: WebRTCPeerConnection, player: OnlineMatch.Player) -> void:
 	var peer_id := player.peer_id
-	if data_channels.has(peer_id):
-		data_channels[peer_id].close()
-		data_channels.erase(peer_id)
+	if _data_channels.has(peer_id):
+		# Can this cause problems with re-establishing the connection?
+		#_data_channels[peer_id].close()
+		_data_channels.erase(peer_id)
 
 func _on_OnlineMatch_disconnected() -> void:
-	data_channels.clear()
-	message_queue.clear()
+	_data_channels.clear()
 
 func send_input_tick(peer_id: int, msg: PoolByteArray) -> void:
-	if not data_channels.has(peer_id) or data_channels[peer_id].get_ready_state() != WebRTCDataChannel.STATE_OPEN:
-		if not message_queue.has(peer_id):
-			message_queue[peer_id] = []
-		message_queue[peer_id].append(msg)
-	else:
-		data_channels[peer_id].put_packet(msg)
+	if _data_channels.has(peer_id) and _data_channels[peer_id].get_ready_state() == WebRTCDataChannel.STATE_OPEN:
+		var data_channel: WebRTCDataChannel = _data_channels[peer_id]
+		
+		# Skip sending if the data channel is over the max buffered amount.
+		# Assuming the max_buffered_amount value is well tuned, this will kick
+		# in when SCTP's flow control turns on, and we want to wait until it
+		# turns back off before sending any more data.
+		if max_buffered_amount > 0 and data_channel.get_buffered_amount() > max_buffered_amount:
+			if _last_skipped_tick == SyncManager.current_tick:
+				# We don't need to output the message multiple times per tick.
+				return
+			
+			if _last_skipped_tick == SyncManager.current_tick - 1:
+				_skipped_tick_count += 1
+			else:
+				_skipped_tick_count = 0
+			
+			if _skipped_tick_count < max_skipped_input_in_a_row:
+				print ("[%s] Skipping send because buffer is too full (%s bytes)" % [SyncManager.current_tick, data_channel.get_buffered_amount()])
+				_last_skipped_tick = SyncManager.current_tick
+				return
+			else:
+				_skipped_tick_count = 0
+		
+		if not _last_messages.has(peer_id):
+			_last_messages[peer_id] = []
+		var last_messages_for_peer = _last_messages[peer_id]
+		
+		# Avoid sending duplicate messages. We'll let WebRTC's reliability
+		# layer deal with making sure the message arrives, otherwise we can run
+		# afoul of SCTP's flow control algorithm.
+		var msg_hash = hash(msg)
+		if msg_hash in last_messages_for_peer:
+			print ("[%s] Skipping duplicate message" % [SyncManager.current_tick])
+			return
+		
+		data_channel.put_packet(msg)
+		
+		last_messages_for_peer.append(msg_hash)
+		while last_messages_for_peer.size() > max_duplicate_history:
+			last_messages_for_peer.pop_front()
 
 func poll() -> void:
-	for peer_id in data_channels:
-		var data_channel: WebRTCDataChannel = data_channels[peer_id]
-		if data_channel.get_ready_state() != WebRTCDataChannel.STATE_OPEN:
+	for peer_id in _data_channels:
+		var data_channel: WebRTCDataChannel = _data_channels[peer_id]
+		var data_channel_state = data_channel.get_ready_state()
+		if data_channel_state != WebRTCDataChannel.STATE_OPEN:
+			# Attempt to reconnect the data channel, if necessary.
+			if data_channel_state != WebRTCDataChannel.STATE_CONNECTING:
+				var player = OnlineMatch.get_player_by_peer_id(peer_id)
+				var webrtc_peer = OnlineMatch.get_webrtc_peer(player.session_id)
+				_on_OnlineMatch_webrtc_peer_added(webrtc_peer, player)
 			continue
 		
 		data_channel.poll()
@@ -72,11 +128,3 @@ func poll() -> void:
 		while data_channel.get_available_packet_count() > 0:
 			var msg = data_channel.get_packet()
 			emit_signal("received_input_tick", peer_id, msg)
-		
-		# Send any queued messages.
-		if message_queue.has(peer_id):
-			var messages_to_send = message_queue[peer_id]
-			if messages_to_send.size() > 0:
-				for msg in messages_to_send:
-					data_channel.put_packet(msg)
-				messages_to_send.clear()
