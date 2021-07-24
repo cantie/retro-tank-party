@@ -57,6 +57,7 @@ public:
     _FORCE_INLINE_ void set_extents(const fixed_vector2 &p_extents) { extents = p_extents; }
 
     virtual fixed_rect2 get_bounds() const;
+    virtual bool overlaps_shape(SGShape2DInternal *p_shape);
 
 };
 

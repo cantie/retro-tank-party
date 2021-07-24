@@ -26,3 +26,7 @@
 fixed_rect2 SGRectangle2DInternal::get_bounds() const {
     return fixed_rect2(position, extents);
 }
+
+bool SGRectangle2DInternal::overlaps_shape(SGShape2DInternal *p_shape) {
+    return false;
+}

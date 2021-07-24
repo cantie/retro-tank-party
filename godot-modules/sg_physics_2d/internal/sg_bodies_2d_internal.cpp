@@ -34,7 +34,8 @@ void SGArea2DInternal::remove_shape(SGShape2DInternal *p_shape) {
 bool SGArea2DInternal::overlaps_area(SGArea2DInternal *p_other_area) {
     for (int i = 0; i < shapes.size(); i++) {
         for (int j = 0; j < p_other_area->shapes.size(); j++) {
-            if (shapes[i].)
+            //if (shapes[i].)
         }
     }
+    return false;
 }

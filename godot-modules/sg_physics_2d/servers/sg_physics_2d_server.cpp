@@ -40,7 +40,7 @@ SGPhysics2DServer *SGPhysics2DServer::get_singleton() {
 
 void SGPhysics2DServer::_bind_methods() {
     ClassDB::bind_method(D_METHOD("create_rectangle_shape", "x", "y", "w", "h"), &SGPhysics2DServer::create_rectangle_shape);
-    ClassDB::bind_method(D_METHOD("shape_overlaps", "shape_one", "shape_two"), &SGPhysics2DServer::shape_overlaps);
+    //ClassDB::bind_method(D_METHOD("shape_overlaps", "shape_one", "shape_two"), &SGPhysics2DServer::shape_overlaps);
 }
 
 RID SGPhysics2DServer::create_area() {

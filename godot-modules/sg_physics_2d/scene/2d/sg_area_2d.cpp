@@ -59,7 +59,7 @@ void SGArea2D::sync_to_physics() {
 }
 
 bool SGArea2D::overlaps_area() {
-
+    return false;
 }
 
 SGArea2D::SGArea2D() {
