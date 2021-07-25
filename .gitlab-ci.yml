@@ -20,7 +20,7 @@ build:
   script:
     # TODO: calculate hash of the godot directory
     # TODO: try to download existing build
-    - podman login --username="$GODOT_BUILD_REGISTRY_USERNAME" --password="$GODOT_BUILD_REGISTRY_PASSWORD"
+    - podman login "$PODMAN_OPTS" --username="$GODOT_BUILD_REGISTRY_USERNAME" --password="$GODOT_BUILD_REGISTRY_PASSWORD"
     - ./scripts/build-godot.sh godot build/godot linux-64
   artifacts:
     name: $EXPORT_NAME-$CI_JOB_NAME
