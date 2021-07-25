@@ -12,6 +12,19 @@ stages:
   - sign
   - deploy
 
+build:
+  image: registry.gitlab.com/snopek-games/godot-builder-docker:latest
+  stage: build
+  script:
+    # TODO: calculate hash of the godot directory
+    # TODO: try to download existing build
+    - podman login --username="$GODOT_BUILD_REGISTRY_USERNAME" --password="$GODOT_BUILD_REGISTRY_PASSWORD"
+    - ./scripts/build-godot.sh godot build/godot linux-64
+  artifacts:
+    name: $EXPORT_NAME-$CI_JOB_NAME
+    paths:
+      - build/godot/bin
+
 .export_before_script: &export_before_script
   before_script:
     - apt-get update
