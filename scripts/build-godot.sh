@@ -80,7 +80,9 @@ if [ -n "$GODOT_BUILD_REGISTRY" ]; then
 	IMAGE="$GODOT_BUILD_REGISTRY/$IMAGE"
 fi
 
+GODOT_BUILD_TAG=${GODOT_BUILD_TAG:-3.x-mono-6.12.0.147}
+
 PODMAN_OPTS=${PODMAN_OPTS:-}
 
-podman run --rm --systemd=false -v "$(realpath $BUILD_DIR):/build" -v "$(realpath $SOURCE_DIR):/src" -v "$(pwd)/scripts/godot:/scripts" -w /build -e NUM_CORES="$NUM_CORES" -e BITS="$BITS" -e MONO="$MONO" -e "SCONS_OPTS=$SCONS_OPTS" "$PODMAN_OPTS" "$IMAGE" /scripts/$CMD $BUILD_TYPE
+podman run --rm --systemd=false -v "$(realpath $BUILD_DIR):/build" -v "$(realpath $SOURCE_DIR):/src" -v "$(pwd)/scripts/godot:/scripts" -w /build -e NUM_CORES="$NUM_CORES" -e BITS="$BITS" -e MONO="$MONO" -e "SCONS_OPTS=$SCONS_OPTS" "$PODMAN_OPTS" "$IMAGE:$GODOT_BUILD_TAG" /scripts/$CMD $BUILD_TYPE
 

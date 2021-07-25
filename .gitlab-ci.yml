@@ -12,7 +12,7 @@ stages:
   - sign
   - deploy
 
-build:
+godot-export-templates:
   image: registry.gitlab.com/snopek-games/godot-builder-docker:latest
   stage: build
   variables:
@@ -22,6 +22,7 @@ build:
     # TODO: try to download existing build
     - podman login "$GODOT_BUILD_REGISTRY" "$PODMAN_OPTS" --username="$GODOT_BUILD_REGISTRY_USERNAME" --password="$GODOT_BUILD_REGISTRY_PASSWORD"
     - ./scripts/build-godot.sh godot build/godot linux-64
+	- touch build/godot/bin/.gdignore
   artifacts:
     name: $EXPORT_NAME-$CI_JOB_NAME
     paths:
