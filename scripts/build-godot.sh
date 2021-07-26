@@ -31,7 +31,9 @@ else
 	echo " !! WARNING: Reusing existing build directory !! "
 fi
 
-NUM_CORES=${NUM_CORES:-4}
+if [ -z "$NUM_CORES" ]; then
+	NUM_CORES=$(nproc --all)
+fi
 
 IMAGE=""
 CMD=""
