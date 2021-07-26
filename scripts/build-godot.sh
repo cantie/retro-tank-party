@@ -47,7 +47,7 @@ download_prebuilt_godot() {
 
 upload_godot() {
 	local archive=$(mktemp)
-	(cd "$BUILD_DIR/bin" && tar -czvf $archive) \
+	(cd "$BUILD_DIR/bin" && tar -czvf $archive *) \
 		|| die "Unable to create archive"
 	aws s3api put-object --bucket "$S3_BUCKET_NAME" --key "$S3_ARCHIVE_KEY" -linux --body $archive
 	local result=$?
