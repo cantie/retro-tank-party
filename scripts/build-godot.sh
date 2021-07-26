@@ -1,7 +1,7 @@
 #!/bin/bash
 
 SOURCE_DIR=${SOURCE_DIR:-godot}
-BUILD_DIR=${SOURCE_DIR:-build/godot}
+BUILD_DIR=${BUILD_DIR:-build/godot}
 
 die() {
 	echo "$@" > /dev/stderr
@@ -26,14 +26,6 @@ fi
 
 SOURCE_HASH=$(find godot -type f -print0 | sort -z | xargs -0 md5sum | md5sum)
 S3_ARCHIVE_KEY="$SOURCE_HASH-$BUILD_TYPE.tar.gz"
-
-# Main:
-if ! download_prebuilt_godot; then
-	build_godot \
-		|| die "Error building Godot"
-	upload_godot \
-		|| die "Error uploading archive to S3"
-fi
 
 #####
 # FUNCTIONS:
@@ -136,6 +128,18 @@ build_godot() {
 
 	PODMAN_OPTS=${PODMAN_OPTS:-}
 
-	return podman run --rm --systemd=false -v "$(realpath $BUILD_DIR):/build" -v "$(realpath $SOURCE_DIR):/src" -v "$(pwd)/scripts/godot:/scripts" -w /build -e NUM_CORES="$NUM_CORES" -e BITS="$BITS" -e MONO="$MONO" -e "SCONS_OPTS=$SCONS_OPTS" $PODMAN_OPTS "$IMAGE" /scripts/$CMD $BUILD_TYPE
+	podman run --rm --systemd=false -v "$(realpath $BUILD_DIR):/build" -v "$(realpath $SOURCE_DIR):/src" -v "$(pwd)/scripts/godot:/scripts" -w /build -e NUM_CORES="$NUM_CORES" -e BITS="$BITS" -e MONO="$MONO" -e "SCONS_OPTS=$SCONS_OPTS" $PODMAN_OPTS "$IMAGE" /scripts/$CMD $BUILD_TYPE
+	return $?
 }
+
+#####
+# MAIN:
+#####
+
+if ! download_prebuilt_godot; then
+	build_godot \
+		|| die "Error building Godot"
+	upload_godot \
+		|| die "Error uploading archive to S3"
+fi
 
