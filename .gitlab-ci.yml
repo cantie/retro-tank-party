@@ -15,6 +15,8 @@ stages:
 godot-export-templates:
   image: registry.gitlab.com/snopek-games/godot-builder-docker:latest
   stage: build
+  tags:
+    - cores-8
   variables:
     PODMAN_OPTS: "--storage-driver=vfs"
   script:
