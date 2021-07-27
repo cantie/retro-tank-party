@@ -16,7 +16,7 @@ build-godot:
   image: registry.gitlab.com/snopek-games/godot-builder-docker:latest
   stage: build
   tags:
-    - cores-16
+    - multicore
   variables:
     PODMAN_OPTS: "--storage-driver=vfs"
   script:
