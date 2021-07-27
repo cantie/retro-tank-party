@@ -24,8 +24,9 @@ if [ ! -f "$SOURCE_DIR/DOWNLOAD_URL" ]; then
 	die "Source directory is missing required DOWNLOAD_URL file"
 fi
 
-SOURCE_HASH=$(find godot -type f -print0 | sort -z | xargs -0 md5sum | md5sum)
+SOURCE_HASH=$(find godot -type f -print0 | sort -z | xargs -0 md5sum | md5sum | tr -d '[:space:]')
 S3_ARCHIVE_KEY="$SOURCE_HASH-$BUILD_TYPE.tar.gz"
+echo "S3_ARCHIVE_KEY: $S3_ARCHIVE_KEY"
 
 #####
 # FUNCTIONS:

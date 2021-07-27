@@ -24,8 +24,11 @@ godot-export-templates:
   parallel:
     matrix:
       - BUILD_TYPE: linux-64
+      - BUILD_TYPE: windows-64
+      - BUILD_TYPE: html5
   cache:
     paths:
+      - build/godot
       - /home/podman/.local/share/containers
   artifacts:
     name: $EXPORT_NAME-$CI_JOB_NAME
