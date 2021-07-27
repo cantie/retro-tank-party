@@ -23,6 +23,7 @@ godot-export-templates:
     - podman login "$GODOT_BUILD_REGISTRY" "$PODMAN_OPTS" --username="$GODOT_BUILD_REGISTRY_USERNAME" --password="$GODOT_BUILD_REGISTRY_PASSWORD"
     - ./scripts/build-godot.sh
     - touch build/godot/bin/.gdignore
+  dependencies: []
   parallel:
     matrix:
       - BUILD_TYPE: server-tools
@@ -55,6 +56,10 @@ windows:
 
     # Delete the debug version of the plugin.
     - rm -rf webrtc_debug/
+
+    # Change to our custom export template.
+    - ./scripts/update-export-setting.py export_presets.cfg preset.0.options custom_template/debug "\"$PWD/build/godot/bin/godot.windows.opt.64.exe\""
+    - ./scripts/update-export-setting.py export_presets.cfg preset.0.options custom_template/release "\"$PWD/build/godot/bin/godot.windows.opt.64.exe\""
 
     # Export!
     - mkdir -v -p build/windows
@@ -102,6 +107,10 @@ linux:
 
     # Delete the debug version of the plugin.
     - rm -rf webrtc_debug/
+
+    # Change to our custom export template.
+    - ./scripts/update-export-setting.py export_presets.cfg preset.1.options custom_template/debug "\"$PWD/build/godot/bin/godot.x11.opt.64\""
+    - ./scripts/update-export-setting.py export_presets.cfg preset.1.options custom_template/release "\"$PWD/build/godot/bin/godot.x11.opt.64\""
 
     # Export!
     - mkdir -v -p build/linux
@@ -173,10 +182,9 @@ web:
   <<: *export_before_script
   stage: export
   script:
-    # Get the custom template built with rollback changes.
-    - wget "https://www.dropbox.com/s/vop8xxkvdk79igq/godot.javascript.opt.zip?dl=1" -O ./build/templates/templates.zip
-    - ./scripts/update-export-setting.py export_presets.cfg preset.3.options custom_template/debug "\"$PWD/build/templates/templates.zip\""
-    - ./scripts/update-export-setting.py export_presets.cfg preset.3.options custom_template/release "\"$PWD/build/templates/templates.zip\""
+    # Change to our custom export template.
+    - ./scripts/update-export-setting.py export_presets.cfg preset.3.options custom_template/debug "\"$PWD/build/godot/bin/godot.javascript.opt.zip\""
+    - ./scripts/update-export-setting.py export_presets.cfg preset.3.options custom_template/release "\"$PWD/build/godot/bin/godot.javascript.opt.zip\""
 
     - mkdir -v -p build/web
     - build/godot/bin/godot_server.x11.opt.tools.64 -v --export "HTML5" ./build/web/index.html
