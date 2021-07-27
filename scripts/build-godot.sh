@@ -24,7 +24,7 @@ if [ ! -f "$SOURCE_DIR/DOWNLOAD_URL" ]; then
 	die "Source directory is missing required DOWNLOAD_URL file"
 fi
 
-SOURCE_HASH=$(find godot -type f -print0 | sort -z | xargs -0 md5sum | md5sum | tr -d '[:space:]')
+SOURCE_HASH=$(find $SOURCE_DIR -type f -print0 | sort -z | xargs -0 md5sum | md5sum | tr -d '[:space:]')
 S3_ARCHIVE_KEY="$SOURCE_HASH-$BUILD_TYPE.tar.gz"
 echo "S3_ARCHIVE_KEY: $S3_ARCHIVE_KEY"
 
@@ -50,7 +50,7 @@ upload_godot() {
 	local archive=$(mktemp)
 	(cd "$BUILD_DIR/bin" && tar -czvf $archive *) \
 		|| die "Unable to create archive"
-	aws s3api put-object --bucket "$S3_BUCKET_NAME" --key "$S3_ARCHIVE_KEY" -linux --body $archive
+	aws s3api put-object --bucket "$S3_BUCKET_NAME" --key "$S3_ARCHIVE_KEY" --body $archive
 	local result=$?
 	rm -f $archive
 	return $result
