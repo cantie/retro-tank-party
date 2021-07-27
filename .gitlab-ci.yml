@@ -19,6 +19,7 @@ build-godot:
     - multicore
   variables:
     PODMAN_OPTS: "--storage-driver=vfs"
+    SCONS_OPTS: "module_godotsteam_enabled=no"
   script:
     - podman login "$GODOT_BUILD_REGISTRY" "$PODMAN_OPTS" --username="$GODOT_BUILD_REGISTRY_USERNAME" --password="$GODOT_BUILD_REGISTRY_PASSWORD"
     - rm -rf build/godot/bin
