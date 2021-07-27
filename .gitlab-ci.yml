@@ -31,6 +31,7 @@ godot-export-templates:
       - BUILD_TYPE: windows-64
       - BUILD_TYPE: html5
   cache:
+    key: build-$CI_JOB_NAME
     paths:
       - build/godot
       - /home/podman/.local/share/containers
