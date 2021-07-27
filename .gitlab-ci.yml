@@ -67,8 +67,6 @@ windows:
   except:
     - steam
     - /^steam-.*$/
-  # Disable:
-  when: manual
 
 windows-signed:
   stage: sign
@@ -114,8 +112,6 @@ linux:
   except:
     - steam
     - /^steam-.*$/
-  # Disable:
-  when: manual
 
 macosx:
   <<: *export_before_script
