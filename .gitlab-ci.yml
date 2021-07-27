@@ -29,8 +29,11 @@ build-godot:
     - touch build/godot/bin/.gdignore
   dependencies: []
   rules:
+    - if: '$FORCE_BUILD_GODOT == "yes"'
+    - if: '$CI_COMMIT_MESSAGE =~ /\[build godot\]/'
     - changes:
-      - godot/
+      - godot/*
+      - godot/**/*
   parallel:
     matrix:
       - BUILD_TYPE: server-tools
@@ -48,9 +51,6 @@ build-godot:
 
 .export_before_script: &export_before_script
   before_script:
-    - apt-get update
-    - apt-get install -y --no-install-recommends ca-certificates unzip wget
-
     # Put in the production Nakama info
     - ./scripts/generate-build-variables.sh
 
