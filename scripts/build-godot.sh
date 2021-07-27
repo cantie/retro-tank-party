@@ -2,6 +2,7 @@
 
 SOURCE_DIR=${SOURCE_DIR:-godot}
 BUILD_DIR=${BUILD_DIR:-build/godot}
+CACHE_BUILD=${CACHE_BUILD:-yes}
 
 die() {
 	echo "$@" > /dev/stderr
@@ -12,8 +13,10 @@ if [ -z "$BUILD_TYPE" ]; then
 	die "The BUILD_TYPE environment variable must be set"
 fi
 
-if [ -z "$AWS_ACCESS_KEY_ID" -o -z "$AWS_SECRET_ACCESS_KEY" -o -z "$S3_BUCKET_NAME" ]; then
-	die "The AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY and S3_BUCKET_NAME environment variables must be set"
+if [ "$CACHE_BUILD" = "yes" ]; then
+	if [ -z "$AWS_ACCESS_KEY_ID" -o -z "$AWS_SECRET_ACCESS_KEY" -o -z "$S3_BUCKET_NAME" ]; then
+		die "The AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY and S3_BUCKET_NAME environment variables must be set"
+	fi
 fi
 
 if [ ! -d "$SOURCE_DIR" ]; then
@@ -79,6 +82,10 @@ build_godot() {
 	CMD=""
 
 	case "$BUILD_TYPE" in
+		server-tools|server)
+			IMAGE="godot-linux"
+			CMD="build-server.sh"
+			;;
 		linux-32|linux-64)
 			IMAGE="godot-linux"
 			CMD="build-linux.sh"
@@ -113,6 +120,13 @@ build_godot() {
 			;;
 	esac
 
+	TOOLS=""
+	case "$BUILD_TYPE" in
+		*-tools*)
+			TOOLS="yes"
+			;;
+	esac
+
 	SCONS_OPTS=${SCONS_OPTS:-}
 	if [ -d "$SOURCE_DIR/modules" ]; then
 		SCONS_OPTS="$SCONS_OPTS custom_modules=/src/modules"
@@ -129,7 +143,7 @@ build_godot() {
 
 	PODMAN_OPTS=${PODMAN_OPTS:-}
 
-	podman run --rm --systemd=false -v "$(realpath $BUILD_DIR):/build" -v "$(realpath $SOURCE_DIR):/src" -v "$(pwd)/scripts/godot:/scripts" -w /build -e NUM_CORES="$NUM_CORES" -e BITS="$BITS" -e MONO="$MONO" -e "SCONS_OPTS=$SCONS_OPTS" $PODMAN_OPTS "$IMAGE" /scripts/$CMD $BUILD_TYPE
+	podman run --rm --systemd=false -v "$(realpath $BUILD_DIR):/build" -v "$(realpath $SOURCE_DIR):/src" -v "$(pwd)/scripts/godot:/scripts" -w /build -e NUM_CORES="$NUM_CORES" -e BITS="$BITS" -e MONO="$MONO" -e TOOLS="$TOOLS" -e "SCONS_OPTS=$SCONS_OPTS" $PODMAN_OPTS "$IMAGE" /scripts/$CMD $BUILD_TYPE
 	return $?
 }
 
@@ -137,10 +151,15 @@ build_godot() {
 # MAIN:
 #####
 
-if ! download_prebuilt_godot; then
+if [ "$CACHE_BUILD" = "yes" ]; then
+	if ! download_prebuilt_godot; then
+		build_godot \
+			|| die "Error building Godot"
+		upload_godot \
+			|| die "Error uploading archive to S3"
+	fi
+else
 	build_godot \
 		|| die "Error building Godot"
-	upload_godot \
-		|| die "Error uploading archive to S3"
 fi
 
