@@ -6,6 +6,10 @@ GODOT_BUILD_DIR=${GODOT_BUILD_DIR:-build/godot}
 CACHE_BUILD=${CACHE_BUILD:-yes}
 DOWNLOAD_ONLY=${DOWNLOAD_ONLY:-no}
 
+if [ -n "$ARCHIVE_SUFFIX" ]; then
+	ARCHIVE_SUFFIX="-$ARCHIVE_SUFFIX"
+fi
+
 die() {
 	echo "$@" > /dev/stderr
 	exit 1
@@ -34,7 +38,7 @@ if [ ! -f "$GODOT_SOURCE_DIR/DOWNLOAD_URL" ]; then
 fi
 
 SOURCE_HASH=$(find $GODOT_SOURCE_DIR -type f -print0 | sort -z | xargs -0 md5sum | md5sum | tr -d '[:space:]')
-S3_ARCHIVE_KEY="$SOURCE_HASH-$BUILD_TYPE.tar.gz"
+S3_ARCHIVE_KEY="$SOURCE_HASH-$BUILD_TYPE$ARCHIVE_SUFFIX.tar.gz"
 
 #####
 # FUNCTIONS:
