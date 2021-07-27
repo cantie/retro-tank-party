@@ -1,10 +1,12 @@
-image: barichello/godot-ci:3.3.2
+image: registry.gitlab.com/snopek-games/godot-builder-docker:latest
 
 variables:
   EXPORT_NAME: retro-tank-party
   ITCHIO_NAME: dsnopek/retro-tank-party
   APPLICATION_NAME: "Retro Tank Party"
   APPLICATION_URL: "https://www.snopekgames.com"
+  GODOT_SOURCE_DIR: godot
+  GODOT_BUILD_DIR: build/godot
 
 stages:
   - build
@@ -26,6 +28,9 @@ build-godot:
     - ./scripts/build-godot.sh
     - touch build/godot/bin/.gdignore
   dependencies: []
+  rules:
+    - changes:
+      - godot/
   parallel:
     matrix:
       - BUILD_TYPE: server-tools
@@ -53,6 +58,9 @@ windows:
   <<: *export_before_script
   stage: export
   script:
+    - BUILD_TYPE=server-tools DOWNLOAD_ONLY=yes ./scripts/build-godot.sh
+    - BUILD_TYPE=windows-64   DOWNLOAD_ONLY=yes ./scripts/build-godot.sh
+
     # Pull in the WebRTC GDNative plugin
     - ./scripts/download-webrtc-plugin.sh windows release
 
@@ -66,12 +74,6 @@ windows:
     # Export!
     - mkdir -v -p build/windows
     - build/godot/bin/godot_server.x11.opt.tools.64 -v --export "Windows Desktop" ./build/windows/$EXPORT_NAME.exe
-  dependencies:
-    - "build-godot: [server-tools]"
-    - "build-godot: [windows-64]"
-  needs:
-    - "build-godot: [server-tools]"
-    - "build-godot: [windows-64]"
   artifacts:
     name: $EXPORT_NAME-$CI_JOB_NAME
     paths:
@@ -104,6 +106,9 @@ linux:
   <<: *export_before_script
   stage: export
   script:
+    - BUILD_TYPE=server-tools DOWNLOAD_ONLY=yes ./scripts/build-godot.sh
+    - BUILD_TYPE=linux-64     DOWNLOAD_ONLY=yes ./scripts/build-godot.sh
+
     # Pull in the WebRTC GDNative plugin
     - ./scripts/download-webrtc-plugin.sh linux release
 
@@ -117,12 +122,6 @@ linux:
     # Export!
     - mkdir -v -p build/linux
     - build/godot/bin/godot_server.x11.opt.tools.64 -v --export "Linux/X11" ./build/linux/$EXPORT_NAME.x86_64
-  dependencies:
-    - "build-godot: [server-tools]"
-    - "build-godot: [linux-64]"
-  needs:
-    - "build-godot: [server-tools]"
-    - "build-godot: [linux-64]"
   artifacts:
     name: $EXPORT_NAME-$CI_JOB_NAME
     paths:
@@ -184,18 +183,15 @@ web:
   <<: *export_before_script
   stage: export
   script:
+    - BUILD_TYPE=server-tools DOWNLOAD_ONLY=yes ./scripts/build-godot.sh
+    - BUILD_TYPE=html5        DOWNLOAD_ONLY=yes ./scripts/build-godot.sh
+
     # Change to our custom export template.
     - ./scripts/update-export-setting.py export_presets.cfg preset.3.options custom_template/debug "\"$PWD/build/godot/bin/godot.javascript.opt.zip\""
     - ./scripts/update-export-setting.py export_presets.cfg preset.3.options custom_template/release "\"$PWD/build/godot/bin/godot.javascript.opt.zip\""
 
     - mkdir -v -p build/web
     - build/godot/bin/godot_server.x11.opt.tools.64 -v --export "HTML5" ./build/web/index.html
-  dependencies:
-    - "build-godot: [server-tools]"
-    - "build-godot: [html5]"
-  needs:
-    - "build-godot: [server-tools]"
-    - "build-godot: [html5]"
   artifacts:
     name: $EXPORT_NAME-$CI_JOB_NAME
     paths:

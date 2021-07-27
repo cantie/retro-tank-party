@@ -1,13 +1,19 @@
 #!/bin/bash
 
-SOURCE_DIR=${SOURCE_DIR:-godot}
-BUILD_DIR=${BUILD_DIR:-build/godot}
+GODOT_SOURCE_DIR=${GODOT_SOURCE_DIR:-godot}
+GODOT_BUILD_DIR=${GODOT_BUILD_DIR:-build/godot}
+
 CACHE_BUILD=${CACHE_BUILD:-yes}
+DOWNLOAD_ONLY=${DOWNLOAD_ONLY:-no}
 
 die() {
 	echo "$@" > /dev/stderr
 	exit 1
 }
+
+if [ "$CACHE_BUILD" != yes -a "$DOWNLOAD_ONLY" = yes ]; then
+	die "Cannot set DOWNLOAD_ONLY to yes unless CACHE_BUILD is also yes"
+fi
 
 if [ -z "$BUILD_TYPE" ]; then
 	die "The BUILD_TYPE environment variable must be set"
@@ -19,17 +25,16 @@ if [ "$CACHE_BUILD" = "yes" ]; then
 	fi
 fi
 
-if [ ! -d "$SOURCE_DIR" ]; then
-	die "No such SOURCE_DIR diretory at $SOURCE_DIR"
+if [ ! -d "$GODOT_SOURCE_DIR" ]; then
+	die "No such GODOT_SOURCE_DIR diretory at $GODOT_SOURCE_DIR"
 fi
 
-if [ ! -f "$SOURCE_DIR/DOWNLOAD_URL" ]; then
+if [ ! -f "$GODOT_SOURCE_DIR/DOWNLOAD_URL" ]; then
 	die "Source directory is missing required DOWNLOAD_URL file"
 fi
 
-SOURCE_HASH=$(find $SOURCE_DIR -type f -print0 | sort -z | xargs -0 md5sum | md5sum | tr -d '[:space:]')
+SOURCE_HASH=$(find $GODOT_SOURCE_DIR -type f -print0 | sort -z | xargs -0 md5sum | md5sum | tr -d '[:space:]')
 S3_ARCHIVE_KEY="$SOURCE_HASH-$BUILD_TYPE.tar.gz"
-echo "S3_ARCHIVE_KEY: $S3_ARCHIVE_KEY"
 
 #####
 # FUNCTIONS:
@@ -38,9 +43,9 @@ echo "S3_ARCHIVE_KEY: $S3_ARCHIVE_KEY"
 download_prebuilt_godot() {
 	local archive=$(mktemp)
 	if aws s3api get-object --bucket "$S3_BUCKET_NAME" --key "$S3_ARCHIVE_KEY" $archive; then
-		mkdir -p "$BUILD_DIR/bin" \
-			|| die "Unable to create BUILD_DIR: $BUILD_DIR"
-		(cd $BUILD_DIR/bin && tar -xzvf $archive) \
+		mkdir -p "$GODOT_BUILD_DIR/bin" \
+			|| die "Unable to create GODOT_BUILD_DIR: $GODOT_BUILD_DIR"
+		(cd $GODOT_BUILD_DIR/bin && tar -xzvf $archive) \
 			|| die "Unable to extract pre-built archive from S3"
 		rm -f $archive
 		return 0
@@ -51,7 +56,7 @@ download_prebuilt_godot() {
 
 upload_godot() {
 	local archive=$(mktemp)
-	(cd "$BUILD_DIR/bin" && tar -czvf $archive *) \
+	(cd "$GODOT_BUILD_DIR/bin" && tar -czvf $archive *) \
 		|| die "Unable to create archive"
 	aws s3api put-object --bucket "$S3_BUCKET_NAME" --key "$S3_ARCHIVE_KEY" --body $archive
 	local result=$?
@@ -60,13 +65,13 @@ upload_godot() {
 }
 
 build_godot() {
-	DOWNLOAD_URL=$(cat "$SOURCE_DIR/DOWNLOAD_URL")
+	DOWNLOAD_URL=$(cat "$GODOT_SOURCE_DIR/DOWNLOAD_URL")
 
-	if [ ! -d "$BUILD_DIR" ]; then
-		mkdir "$BUILD_DIR" \
-			|| die "Unable to create BUILD_DIR: $BUILD_DIR"
+	if [ ! -d "$GODOT_BUILD_DIR" ]; then
+		mkdir "$GODOT_BUILD_DIR" \
+			|| die "Unable to create GODOT_BUILD_DIR: $GODOT_BUILD_DIR"
 
-		(cd "$BUILD_DIR" && curl -L "$DOWNLOAD_URL" | tar -xz --strip-components=1) \
+		(cd "$GODOT_BUILD_DIR" && curl -L "$DOWNLOAD_URL" | tar -xz --strip-components=1) \
 			|| die "Unable to download Godot source from DOWNLOAD_URL: $DOWNLOAD_URL"
 		
 		# TODO: apply any patches!
@@ -128,7 +133,7 @@ build_godot() {
 	esac
 
 	SCONS_OPTS=${SCONS_OPTS:-}
-	if [ -d "$SOURCE_DIR/modules" ]; then
+	if [ -d "$GODOT_SOURCE_DIR/modules" ]; then
 		SCONS_OPTS="$SCONS_OPTS custom_modules=/src/modules"
 	fi
 
@@ -143,7 +148,7 @@ build_godot() {
 
 	PODMAN_OPTS=${PODMAN_OPTS:-}
 
-	podman run --rm --systemd=false -v "$(realpath $BUILD_DIR):/build" -v "$(realpath $SOURCE_DIR):/src" -v "$(pwd)/scripts/godot:/scripts" -w /build -e NUM_CORES="$NUM_CORES" -e BITS="$BITS" -e MONO="$MONO" -e TOOLS="$TOOLS" -e "SCONS_OPTS=$SCONS_OPTS" $PODMAN_OPTS "$IMAGE" /scripts/$CMD $BUILD_TYPE
+	podman run --rm --systemd=false -v "$(realpath $GODOT_BUILD_DIR):/build" -v "$(realpath $GODOT_SOURCE_DIR):/src" -v "$(pwd)/scripts/godot:/scripts" -w /build -e NUM_CORES="$NUM_CORES" -e BITS="$BITS" -e MONO="$MONO" -e TOOLS="$TOOLS" -e "SCONS_OPTS=$SCONS_OPTS" $PODMAN_OPTS "$IMAGE" /scripts/$CMD $BUILD_TYPE
 	return $?
 }
 
@@ -151,7 +156,9 @@ build_godot() {
 # MAIN:
 #####
 
-if [ "$CACHE_BUILD" = "yes" ]; then
+if [ "$DOWNLOAD_ONLY" = "yes" ]; then
+	download_prebuilt_godot
+elif [ "$CACHE_BUILD" = "yes" ]; then
 	if ! download_prebuilt_godot; then
 		build_godot \
 			|| die "Error building Godot"
