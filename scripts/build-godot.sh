@@ -157,7 +157,8 @@ build_godot() {
 #####
 
 if [ "$DOWNLOAD_ONLY" = "yes" ]; then
-	download_prebuilt_godot
+	download_prebuilt_godot \
+		|| die "Unable to download archive"
 elif [ "$CACHE_BUILD" = "yes" ]; then
 	if ! download_prebuilt_godot; then
 		build_godot \
