@@ -29,6 +29,8 @@ build-godot:
     - touch build/godot/bin/.gdignore
   dependencies: []
   rules:
+    - if: '$CI_COMMIT_BRANCH == "steam" || $CI_COMMIT_BRANCH ~ /^steam-.*$/'
+      when: never
     - if: '$FORCE_BUILD_GODOT == "yes" || $CI_COMMIT_MESSAGE =~ /\[build godot\]/'
       variables:
         FORCE_REBUILD_GODOT: "yes"
@@ -63,10 +65,13 @@ build-godot-steam:
     - podman login "$GODOT_BUILD_REGISTRY" "$PODMAN_OPTS" --username="$GODOT_BUILD_REGISTRY_USERNAME" --password="$GODOT_BUILD_REGISTRY_PASSWORD"
     - rm -rf build/godot/bin
     - ./scripts/download-steam-sdk.sh public/ redistributable_bin/ godot/modules/godotsteam/sdk/
+    - ls godot/modules/godotsteam/sdk/
     - OVERWRITE_EXISTNG=yes ./scripts/build-godot.sh
     - touch build/godot/bin/.gdignore
   dependencies: []
   rules:
+    - if: '$CI_COMMIT_BRANCH != "master" && $CI_COMMIT_BRANCH != "steam" && $CI_COMMIT_BRANCH !~ /^steam-.*$/'
+      when: never
     - if: '$FORCE_BUILD_GODOT == "yes" || $CI_COMMIT_MESSAGE =~ /\[build godot\]/'
       variables:
         FORCE_REBUILD_GODOT: "yes"
@@ -404,6 +409,8 @@ macosx-steam:
     - master
     - steam
     - /^steam-.*$/
+  # Disable:
+  when: manual
 
 macosx-steam-signed:
   stage: sign
