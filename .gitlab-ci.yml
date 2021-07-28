@@ -60,7 +60,7 @@ build-godot-steam:
   variables:
     GODOT_ARCHIVE_SUFFIX: "steam"
     PODMAN_OPTS: "--storage-driver=vfs"
-    SCONS_OPTS: "module_godotsteam_enabled=yes"
+    SCONS_OPTS: "module_godotsteam_enabled=yes verbose=yes"
   script:
     - podman login "$GODOT_BUILD_REGISTRY" "$PODMAN_OPTS" --username="$GODOT_BUILD_REGISTRY_USERNAME" --password="$GODOT_BUILD_REGISTRY_PASSWORD"
     - rm -rf build/godot/bin
