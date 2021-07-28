@@ -49,6 +49,42 @@ build-godot:
     paths:
       - build/godot/bin
 
+build-godot-steam:
+  image: registry.gitlab.com/snopek-games/godot-builder-docker:latest
+  stage: build
+  tags:
+    - multicore
+  variables:
+    GODOT_ARCHIVE_SUFFIX: "steam"
+    PODMAN_OPTS: "--storage-driver=vfs"
+    SCONS_OPTS: "module_godotsteam_enabled=yes"
+  script:
+    - podman login "$GODOT_BUILD_REGISTRY" "$PODMAN_OPTS" --username="$GODOT_BUILD_REGISTRY_USERNAME" --password="$GODOT_BUILD_REGISTRY_PASSWORD"
+    - rm -rf build/godot/bin
+    - ./scripts/download-steam-sdk.sh public/ redistributable_bin/ godot/modules/godotsteam/sdk/
+    - OVERWRITE_EXISTNG=yes ./scripts/build-godot.sh
+    - touch build/godot/bin/.gdignore
+  dependencies: []
+  rules:
+    - if: '$FORCE_BUILD_GODOT == "yes"'
+    - if: '$CI_COMMIT_MESSAGE =~ /\[build godot\]/'
+    - changes:
+      - godot/*
+      - godot/**/*
+  parallel:
+    matrix:
+      - BUILD_TYPE: server-tools
+      - BUILD_TYPE: linux-64
+      - BUILD_TYPE: windows-64
+  cache:
+    key: "$CI_JOB_NAME-$CI_COMMIT_REF_SLUG"
+    paths:
+      - build/godot
+  artifacts:
+    name: $EXPORT_NAME-$CI_JOB_NAME
+    paths:
+      - build/godot/bin
+
 .export_before_script: &export_before_script
   before_script:
     # Put in the production Nakama info
@@ -270,7 +306,7 @@ windows-steam:
     # Export!
     - mkdir -v -p build/windows-steam
     - godot -v --export "Windows Desktop (Steam)" ./build/windows-steam/$EXPORT_NAME.exe
-    - ./scripts/download-steam-redistributables.sh win64/steam_api64.dll ./build/windows-steam/
+    - ./scripts/download-steam-sdk.sh redistributable_bin/win64/steam_api64.dll ./build/windows-steam/
   artifacts:
     name: $EXPORT_NAME-$CI_JOB_NAME
     paths:
@@ -321,7 +357,7 @@ linux-steam:
     # Export!
     - mkdir -v -p build/linux-steam
     - godot -v --export "Linux/X11 (Steam)" ./build/linux-steam/$EXPORT_NAME.x86_64
-    - ./scripts/download-steam-redistributables.sh linux64/libsteam_api.so ./build/linux-steam/
+    - ./scripts/download-steam-sdk.sh redistributable_bin/linux64/libsteam_api.so ./build/linux-steam/
   artifacts:
     name: $EXPORT_NAME-$CI_JOB_NAME
     paths:
@@ -356,7 +392,7 @@ macosx-steam:
     - >
       APP_PATH=$(find ./build/macosx-steam/ -name \*.app -print -quit);
       APP_NAME=$(basename "$APP_PATH");
-      ./scripts/download-steam-redistributables.sh osx/libsteam_api.dylib "./build/macosx-steam/$APP_NAME/Contents/MacOS/";
+      ./scripts/download-steam-sdk.sh redistributable_bin/osx/libsteam_api.dylib "./build/macosx-steam/$APP_NAME/Contents/MacOS/";
       rm -f "./build/macosx-steam/$APP_NAME/Contents/MacOS/steam_appid.txt";
   artifacts:
     name: $EXPORT_NAME-$CI_JOB_NAME
