@@ -5,6 +5,7 @@ GODOT_BUILD_DIR=${GODOT_BUILD_DIR:-build/godot}
 
 CACHE_BUILD=${CACHE_BUILD:-yes}
 DOWNLOAD_ONLY=${DOWNLOAD_ONLY:-no}
+OVERWRITE_EXISTING=${OVERWRITE_EXISTING:-no}
 
 if [ -n "$ARCHIVE_SUFFIX" ]; then
 	ARCHIVE_SUFFIX="-$ARCHIVE_SUFFIX"
@@ -71,9 +72,11 @@ upload_godot() {
 build_godot() {
 	DOWNLOAD_URL=$(cat "$GODOT_SOURCE_DIR/DOWNLOAD_URL")
 
-	if [ ! -d "$GODOT_BUILD_DIR" ]; then
-		mkdir "$GODOT_BUILD_DIR" \
-			|| die "Unable to create GODOT_BUILD_DIR: $GODOT_BUILD_DIR"
+	if [ ! -d "$GODOT_BUILD_DIR" -o "$OVERWRITE_EXISTNG" = "yes" ]; then
+		if [ ! -d "$GODOT_BUILD_DIR" ]; then
+			mkdir "$GODOT_BUILD_DIR" \
+				|| die "Unable to create GODOT_BUILD_DIR: $GODOT_BUILD_DIR"
+		fi
 
 		(cd "$GODOT_BUILD_DIR" && curl -L "$DOWNLOAD_URL" | tar -xz --strip-components=1) \
 			|| die "Unable to download Godot source from DOWNLOAD_URL: $DOWNLOAD_URL"
