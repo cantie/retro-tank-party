@@ -1,10 +1,9 @@
 
 # SCsub
 Import('env')
+Import('env_modules')
 
 module_path = Dir('.').srcnode().abspath
-
-env.Append(CPPPATH=["%s/sdk/public/" % module_path])
 
 # If compiling Linux
 if env["platform"]== "x11" or env["platform"] == "server":
@@ -40,5 +39,8 @@ elif env["platform"] == "osx":
 	env.Append(LIBS=["steam_api"])
 	env.Append(LIBPATH=['%s/sdk/redistributable_bin/osx' % module_path])
 
-env.add_source_files(env.modules_sources,"*.cpp")
+env_steam = env_modules.Clone()
+#env_steam.Append(CPPPATH=["%s/sdk/public/" % module_path])
+env_steam.Append(CPPPATH=["sdk/public/"])
+env_steam.add_source_files(env.modules_sources,"*.cpp")
 
