@@ -2,6 +2,7 @@
 
 GODOT_SOURCE_DIR=${GODOT_SOURCE_DIR:-godot}
 GODOT_BUILD_DIR=${GODOT_BUILD_DIR:-build/godot}
+FORCE_REBUILD_GODOT=${FORCE_REBUILD_GODOT:-no}
 
 CACHE_BUILD=${CACHE_BUILD:-yes}
 DOWNLOAD_ONLY=${DOWNLOAD_ONLY:-no}
@@ -167,7 +168,7 @@ if [ "$DOWNLOAD_ONLY" = "yes" ]; then
 	download_prebuilt_godot \
 		|| die "Unable to download archive"
 elif [ "$CACHE_BUILD" = "yes" ]; then
-	if ! download_prebuilt_godot; then
+	if [ "$FORCE_REBUILD_GODOT" = "yes" ] || !download_prebuilt_godot; then
 		build_godot \
 			|| die "Error building Godot"
 		upload_godot \
