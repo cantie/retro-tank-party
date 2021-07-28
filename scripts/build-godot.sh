@@ -168,7 +168,7 @@ if [ "$DOWNLOAD_ONLY" = "yes" ]; then
 	download_prebuilt_godot \
 		|| die "Unable to download archive"
 elif [ "$CACHE_BUILD" = "yes" ]; then
-	if [ "$FORCE_REBUILD_GODOT" = "yes" ] || !download_prebuilt_godot; then
+	if [ "$FORCE_REBUILD_GODOT" = "yes" ] || ! download_prebuilt_godot; then
 		build_godot \
 			|| die "Error building Godot"
 		upload_godot \
