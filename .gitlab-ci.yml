@@ -29,7 +29,7 @@ build-godot:
     - touch build/godot/bin/.gdignore
   dependencies: []
   rules:
-    - if: '$CI_COMMIT_BRANCH == "steam" || $CI_COMMIT_BRANCH ~ /^steam-.*$/'
+    - if: '$CI_COMMIT_BRANCH == "steam" || $CI_COMMIT_BRANCH =~ /^steam-.*$/'
       when: never
     - if: '$FORCE_BUILD_GODOT == "yes" || $CI_COMMIT_MESSAGE =~ /\[build godot\]/'
       variables:
