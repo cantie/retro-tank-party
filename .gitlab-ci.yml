@@ -297,22 +297,25 @@ itch:
 windows-steam:
   <<: *export_before_script
   stage: export
+  variables:
+    - GODOT_ARCHIVE_SUFFIX: "steam"
   script:
+    - BUILD_TYPE=server-tools DOWNLOAD_ONLY=yes ./scripts/build-godot.sh
+    - BUILD_TYPE=windows-64   DOWNLOAD_ONLY=yes ./scripts/build-godot.sh
+
     # Pull in the WebRTC GDNative plugin
     - ./scripts/download-webrtc-plugin.sh windows release
 
     # Delete the debug version of the plugin.
     - rm -rf webrtc_debug/
 
-    # Get the GodotSteam export templates.
-    - wget "https://www.dropbox.com/s/thuz1r1wu4l1jr4/windows-332-64bit.zip?dl=1" -O ./build/templates/templates.zip
-    - (cd ./build/templates && unzip templates.zip)
-    - ./scripts/update-export-setting.py export_presets.cfg preset.4.options custom_template/debug "\"$PWD/build/templates/windows-332-template-64bit.exe\""
-    - ./scripts/update-export-setting.py export_presets.cfg preset.4.options custom_template/release "\"$PWD/build/templates/windows-332-template-64bit.exe\""
+    # Change to our custom export template.
+    - ./scripts/update-export-setting.py export_presets.cfg preset.4.options custom_template/debug "\"$PWD/build/godot/bin/godot.windows.opt.64.exe\""
+    - ./scripts/update-export-setting.py export_presets.cfg preset.4.options custom_template/release "\"$PWD/build/godot/bin/godot.windows.opt.64.exe\""
 
     # Export!
     - mkdir -v -p build/windows-steam
-    - godot -v --export "Windows Desktop (Steam)" ./build/windows-steam/$EXPORT_NAME.exe
+    - build/godot/bin/godot_server.x11.opt.tools.64 -v --export "Windows Desktop (Steam)" ./build/windows-steam/$EXPORT_NAME.exe
     - ./scripts/download-steam-sdk.sh redistributable_bin/win64/steam_api64.dll ./build/windows-steam/
   artifacts:
     name: $EXPORT_NAME-$CI_JOB_NAME
@@ -348,22 +351,25 @@ windows-steam-signed:
 linux-steam:
   <<: *export_before_script
   stage: export
+  variables:
+    - GODOT_ARCHIVE_SUFFIX: "steam"
   script:
+    - BUILD_TYPE=server-tools DOWNLOAD_ONLY=yes ./scripts/build-godot.sh
+    - BUILD_TYPE=linux-64     DOWNLOAD_ONLY=yes ./scripts/build-godot.sh
+
     # Pull in the WebRTC GDNative plugin
     - ./scripts/download-webrtc-plugin.sh linux release
 
     # Delete the debug version of the plugin.
     - rm -rf webrtc_debug/
 
-    # Get the GodotSteam export templates.
-    - wget "https://www.dropbox.com/s/sl3kfbrxugmvmxd/linux-332-64bit.tar.gz?dl=1" -O ./build/templates/templates.tgz
-    - (cd ./build/templates && tar -xzvf templates.tgz)
-    - ./scripts/update-export-setting.py export_presets.cfg preset.5.options custom_template/debug "\"$PWD/build/templates/linux-332-template-64bit\""
-    - ./scripts/update-export-setting.py export_presets.cfg preset.5.options custom_template/release "\"$PWD/build/templates/linux-332-template-64bit\""
+    # Change to our custom export template.
+    - ./scripts/update-export-setting.py export_presets.cfg preset.5.options custom_template/debug "\"$PWD/build/godot/bin/godot.x11.opt.64\""
+    - ./scripts/update-export-setting.py export_presets.cfg preset.5.options custom_template/release "\"$PWD/build/godot/bin/godot.x11.opt.64\""
 
     # Export!
     - mkdir -v -p build/linux-steam
-    - godot -v --export "Linux/X11 (Steam)" ./build/linux-steam/$EXPORT_NAME.x86_64
+    - build/godot/bin/godot_server.x11.opt.tools.64 -v --export "Linux/X11 (Steam)" ./build/linux-steam/$EXPORT_NAME.x86_64
     - ./scripts/download-steam-sdk.sh redistributable_bin/linux64/libsteam_api.so ./build/linux-steam/
   artifacts:
     name: $EXPORT_NAME-$CI_JOB_NAME
