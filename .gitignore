@@ -7,6 +7,9 @@
 /steam_build_output/
 /rtp.code-workspace
 
+/godot/modules/godotsteam/sdk/public/
+/godot/modules/godotsteam/sdk/redistributable_bin/
+
 *.swp
 *.o
 *.pyc
