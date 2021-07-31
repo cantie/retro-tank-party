@@ -107,6 +107,10 @@ build_godot() {
 			IMAGE="godot-windows"
 			CMD="build-windows.sh"
 			;;
+		macosx-x86-64|macosx-arm64|macosx-universal)
+			IMAGE="godot-osx"
+			CMD="build-macosx.sh"
+			;;
 		html5)
 			IMAGE="godot-javascript"
 			CMD="build-html5.sh"
@@ -156,7 +160,7 @@ build_godot() {
 
 	PODMAN_OPTS=${PODMAN_OPTS:-}
 
-	podman run --rm --systemd=false -v "$(realpath $GODOT_BUILD_DIR):/build" -v "$(realpath $GODOT_SOURCE_DIR):/src" -v "$(pwd)/scripts/godot:/scripts" -w /build -e NUM_CORES="$NUM_CORES" -e BITS="$BITS" -e MONO="$MONO" -e TOOLS="$TOOLS" -e "SCONS_OPTS=$SCONS_OPTS" $PODMAN_OPTS "$IMAGE" /scripts/$CMD $BUILD_TYPE
+	podman run --rm --systemd=false -v "$(realpath $GODOT_BUILD_DIR):/build" -v "$(realpath $GODOT_SOURCE_DIR):/src" -v "$(pwd)/scripts/godot:/scripts" -w /build -e NUM_CORES="$NUM_CORES" -e BITS="$BITS" -e MONO="$MONO" -e TOOLS="$TOOLS" -e "SCONS_OPTS=$SCONS_OPTS" -e BUILD_TYPE=$BUILD_TYPE $PODMAN_OPTS "$IMAGE" /scripts/$CMD $BUILD_TYPE
 	return $?
 }
 
