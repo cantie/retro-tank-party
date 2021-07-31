@@ -91,6 +91,7 @@ build_godot() {
 		NUM_CORES=$(nproc --all)
 	fi
 
+	PRIVATE_IMAGE="no"
 	IMAGE=""
 	CMD=""
 
@@ -109,6 +110,7 @@ build_godot() {
 			;;
 		macosx-x86-64|macosx-arm64|macosx-universal)
 			IMAGE="godot-osx"
+			PRIVATE_IMAGE="yes"
 			CMD="build-macosx.sh"
 			;;
 		html5)
@@ -150,6 +152,9 @@ build_godot() {
 	fi
 
 	if [ -n "$GODOT_BUILD_REGISTRY" ]; then
+		if [ "$PRIVATE_IMAGE" = yes ]; then
+			IMAGE=$(echo "$IMAGE" | sed -e 's,^godot,godot-private,')
+		fi
 		# In the registry, godot-linux becomes godot/linux.
 		IMAGE=$(echo "$IMAGE" | sed -e 's,-,/,')
 		IMAGE="$GODOT_BUILD_REGISTRY/$IMAGE"
