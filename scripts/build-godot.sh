@@ -154,10 +154,10 @@ build_godot() {
 	if [ -n "$GODOT_BUILD_REGISTRY" ]; then
 		# In the registry, godot-linux becomes godot/linux.
 		IMAGE=$(echo "$IMAGE" | sed -e 's,-,/,')
+		IMAGE="$GODOT_BUILD_REGISTRY/$IMAGE"
 		if [ "$PRIVATE_IMAGE" = yes ]; then
 			IMAGE=$(echo "$IMAGE" | sed -e 's,/godot/,/godot-private/,')
 		fi
-		IMAGE="$GODOT_BUILD_REGISTRY/$IMAGE"
 	fi
 	if [ -n "$GODOT_BUILD_TAG" ]; then
 		IMAGE="$IMAGE:$GODOT_BUILD_TAG"
