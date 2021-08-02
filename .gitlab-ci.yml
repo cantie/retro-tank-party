@@ -23,7 +23,6 @@ build-godot:
     #PODMAN_OPTS: "--storage-driver=vfs"
     SCONS_OPTS: "module_godotsteam_enabled=no"
   script:
-    - podman info --debug
     - podman login "$GODOT_BUILD_REGISTRY" $PODMAN_OPTS --username="$GODOT_BUILD_REGISTRY_USERNAME" --password="$GODOT_BUILD_REGISTRY_PASSWORD"
     - rm -rf build/godot/bin
     - OVERWRITE_EXISTNG=yes ./scripts/build-godot.sh
@@ -195,8 +194,6 @@ macosx:
     # Export!
     - mkdir -v -p build/macosx
     - build/godot/bin/godot_server.x11.opt.tools.64 -v --export "Mac OSX" ./build/macosx/$EXPORT_NAME.zip
-    - ls ./build/macosx
-    - ls
 
     # Extract the zip file since GitLab CI will zip it up again.
     - (cd ./build/macosx && unzip -a $EXPORT_NAME.zip && rm $EXPORT_NAME.zip)
