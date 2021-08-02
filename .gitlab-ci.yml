@@ -84,6 +84,7 @@ build-godot-steam:
       - BUILD_TYPE: server-tools
       - BUILD_TYPE: linux-64
       - BUILD_TYPE: windows-64
+      - BUILD_TYPE: macosx-x86-64
   cache:
     key: "$CI_JOB_NAME-$CI_COMMIT_REF_SLUG"
     paths:
@@ -389,22 +390,25 @@ linux-steam:
 macosx-steam:
   <<: *export_before_script
   stage: export
+  variables:
+    GODOT_ARCHIVE_SUFFIX: "steam"
   script:
+    - BUILD_TYPE=server-tools  DOWNLOAD_ONLY=yes ./scripts/build-godot.sh
+    - BUILD_TYPE=macosx-x86-64 DOWNLOAD_ONLY=yes ./scripts/build-godot.sh
+
     # Pull in the WebRTC GDNative plugin
     - ./scripts/download-webrtc-plugin.sh macosx release
 
     # Delete the debug version of the plugin.
     - rm -rf webrtc_debug/
 
-    # Get the GodotSteam export templates.
-    - wget "https://www.dropbox.com/s/v59jzylu4dutsld/macos-332-x86_64.zip?dl=1" -O ./build/templates/templates.zip
-    - (cd ./build/templates && unzip templates.zip)
-    - ./scripts/update-export-setting.py export_presets.cfg preset.6.options custom_template/debug "\"$PWD/build/templates/osx.zip\""
-    - ./scripts/update-export-setting.py export_presets.cfg preset.6.options custom_template/release "\"$PWD/build/templates/osx.zip\""
+    # Change to our custom export template.
+    - ./scripts/update-export-setting.py export_presets.cfg preset.6.options custom_template/debug "\"$PWD/build/godot/bin/osx.zip\""
+    - ./scripts/update-export-setting.py export_presets.cfg preset.6.options custom_template/release "\"$PWD/build/godot/bin/osx.zip\""
 
     # Export!
     - mkdir -v -p build/macosx-steam
-    - godot -v --export "Mac OSX (Steam)" ./build/macosx-steam/$EXPORT_NAME.zip
+    - build/godot/bin/godot_server.x11.opt.tools.64 -v --export "Mac OSX (Steam)" ./build/macosx/$EXPORT_NAME.zip
 
     # Extract the zip file since GitLab CI will zip it up again.
     - (cd ./build/macosx-steam && unzip -a $EXPORT_NAME.zip && rm $EXPORT_NAME.zip)
