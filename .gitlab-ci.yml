@@ -425,8 +425,6 @@ macosx-steam:
     - master
     - steam
     - /^steam-.*$/
-  # Disable:
-  when: manual
 
 macosx-steam-signed:
   stage: sign
