@@ -52,46 +52,6 @@ build-godot:
     paths:
       - build/godot/bin
 
-build-godot-steam:
-  image: registry.gitlab.com/snopek-games/godot-builder-docker:latest
-  stage: build
-  tags:
-    - multicore
-  variables:
-    GODOT_ARCHIVE_SUFFIX: "steam"
-    SCONS_OPTS: "module_godotsteam_enabled=yes verbose=yes"
-  script:
-    - podman login "$GODOT_BUILD_REGISTRY" $PODMAN_OPTS --username="$GODOT_BUILD_REGISTRY_USERNAME" --password="$GODOT_BUILD_REGISTRY_PASSWORD"
-    - rm -rf build/godot/bin
-    - ./scripts/download-steam-sdk.sh public/ redistributable_bin/ godot/modules/godotsteam/sdk/
-    - ls godot/modules/godotsteam/sdk/
-    - OVERWRITE_EXISTNG=yes ./scripts/build-godot.sh
-    - touch build/godot/bin/.gdignore
-  dependencies: []
-  rules:
-    - if: '$CI_COMMIT_BRANCH != "master" && $CI_COMMIT_BRANCH != "steam" && $CI_COMMIT_BRANCH !~ /^steam-.*$/'
-      when: never
-    - if: '$FORCE_BUILD_GODOT == "yes" || $CI_COMMIT_MESSAGE =~ /\[build godot\]/'
-      variables:
-        FORCE_REBUILD_GODOT: "yes"
-    - changes:
-      - godot/*
-      - godot/**/*
-  parallel:
-    matrix:
-      - BUILD_TYPE: server-tools
-      - BUILD_TYPE: linux-64
-      - BUILD_TYPE: windows-64
-      - BUILD_TYPE: macosx-x86-64
-  cache:
-    key: "$CI_JOB_NAME-$CI_COMMIT_REF_SLUG"
-    paths:
-      - build/godot
-  artifacts:
-    name: $EXPORT_NAME-$CI_JOB_NAME
-    paths:
-      - build/godot/bin
-
 .export_before_script: &export_before_script
   before_script:
     # Put in the production Nakama info
@@ -298,6 +258,75 @@ itch:
     - butler push build/macosx-signed $ITCHIO_NAME:macosx-stable
   only:
     - master
+
+build-godot-steam:
+  image: registry.gitlab.com/snopek-games/godot-builder-docker:latest
+  stage: build
+  tags:
+    - multicore
+  variables:
+    GODOT_ARCHIVE_SUFFIX: "steam"
+    SCONS_OPTS: "module_godotsteam_enabled=yes verbose=yes"
+  script:
+    - podman login "$GODOT_BUILD_REGISTRY" $PODMAN_OPTS --username="$GODOT_BUILD_REGISTRY_USERNAME" --password="$GODOT_BUILD_REGISTRY_PASSWORD"
+    - rm -rf build/godot/bin
+    - ./scripts/download-steam-sdk.sh public/ redistributable_bin/ godot/modules/godotsteam/sdk/
+    - ls godot/modules/godotsteam/sdk/
+    - OVERWRITE_EXISTNG=yes ./scripts/build-godot.sh
+    - touch build/godot/bin/.gdignore
+  dependencies: []
+  rules:
+    - if: '$CI_COMMIT_BRANCH != "master" && $CI_COMMIT_BRANCH != "steam" && $CI_COMMIT_BRANCH !~ /^steam-.*$/'
+      when: never
+    - if: '$FORCE_BUILD_GODOT == "yes" || $CI_COMMIT_MESSAGE =~ /\[build godot\]/'
+      variables:
+        FORCE_REBUILD_GODOT: "yes"
+    - changes:
+      - godot/*
+      - godot/**/*
+  parallel:
+    matrix:
+      - BUILD_TYPE: server-tools
+      - BUILD_TYPE: linux-64
+      - BUILD_TYPE: macosx-x86-64
+  cache:
+    key: "$CI_JOB_NAME-$CI_COMMIT_REF_SLUG"
+    paths:
+      - build/godot
+  artifacts:
+    name: $EXPORT_NAME-$CI_JOB_NAME
+    paths:
+      - build/godot/bin
+
+build-godot-steam-windows:
+  image: registry.snopekgames.com/godot/msvc
+  stage: build
+  tags:
+    - windows-docker
+  variables:
+    GODOT_ARCHIVE_SUFFIX: "steam"
+    SCONS_OPTS: "module_godotsteam_enabled=yes verbose=yes"
+  script:
+    - echo "hi"
+    - dir
+  dependencies: []
+  rules:
+    - if: '$CI_COMMIT_BRANCH != "master" && $CI_COMMIT_BRANCH != "steam" && $CI_COMMIT_BRANCH !~ /^steam-.*$/'
+      when: never
+    - if: '$FORCE_BUILD_GODOT == "yes" || $CI_COMMIT_MESSAGE =~ /\[build godot\]/'
+      variables:
+        FORCE_REBUILD_GODOT: "yes"
+    - changes:
+      - godot/*
+      - godot/**/*
+  cache:
+    key: "$CI_JOB_NAME-$CI_COMMIT_REF_SLUG"
+    paths:
+      - build/godot
+  artifacts:
+    name: $EXPORT_NAME-$CI_JOB_NAME
+    paths:
+      - build/godot/bin
 
 windows-steam:
   <<: *export_before_script
