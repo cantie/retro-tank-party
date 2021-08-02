@@ -195,6 +195,7 @@ macosx:
     # Export!
     - mkdir -v -p build/macosx
     - build/godot/bin/godot_server.x11.opt.tools.64 godot -v --export "Mac OSX" ./build/macosx/$EXPORT_NAME.zip
+    - ls ./build/macosx
 
     # Extract the zip file since GitLab CI will zip it up again.
     - (cd ./build/macosx && unzip -a $EXPORT_NAME.zip && rm $EXPORT_NAME.zip)
