@@ -302,7 +302,7 @@ build-godot-steam-windows:
   image: registry.snopekgames.com/godot/msvc
   stage: build
   tags:
-    - windows
+    - windows-docker
   variables:
     GODOT_ARCHIVE_SUFFIX: "steam"
     SCONS_OPTS: "module_godotsteam_enabled=yes verbose=yes"
