@@ -302,13 +302,12 @@ build-godot-steam-windows:
   image: registry.snopekgames.com/godot/msvc
   stage: build
   tags:
-    - windows-docker
+    - windows
   variables:
     GODOT_ARCHIVE_SUFFIX: "steam"
     SCONS_OPTS: "module_godotsteam_enabled=yes verbose=yes"
   script:
-    - echo "hi"
-    - dir
+    - python scripts/build-msvc.py
   dependencies: []
   rules:
     - if: '$CI_COMMIT_BRANCH != "master" && $CI_COMMIT_BRANCH != "steam" && $CI_COMMIT_BRANCH !~ /^steam-.*$/'
