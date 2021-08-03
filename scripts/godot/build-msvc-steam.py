@@ -96,10 +96,22 @@ def main():
 
     prepare_godot_build_dir(godot_source_dir, godot_build_dir)
 
+    # @todo How to pull in the steam redistributables? Port that script to Python too?
+
+    num_cores = os.cpu_count()
+    scons_extra = ''
+
+    module_source_path = os.path.join(godot_source_dir, 'modules')
+    if os.path.exists(module_source_path):
+        scons_extra += ' custom_modules=' + os.path.abspath(module_source_path)
+
     oldcwd = os.getcwd()
     os.chdir(godot_build_dir)
-    os.system('scons')
+    exit_code = os.system(F"scons -j{num_cores} platform=windows target=release production=yes" + scons_extra)
     os.chdir(oldcwd)
+
+    if exit_code != 0:
+        raise BuildException("scons build failed!")
 
 if __name__ == '__main__': main()
 
