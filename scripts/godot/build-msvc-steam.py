@@ -169,7 +169,7 @@ def upload_build_artifact(s3_archive_key, artifact_directory):
         with open(temp_path, 'rb') as archive_fd:
             s3 = boto3.client('s3')
             s3.put_object(
-                Bucket=os.environ['S3_BUCKET_NAME'),
+                Bucket=os.environ['S3_BUCKET_NAME'],
                 Key=s3_archive_key,
                 Body=archive_fd,
             )
