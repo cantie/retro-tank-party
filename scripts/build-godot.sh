@@ -87,6 +87,7 @@ upload_godot() {
 	local archive=$(mktemp)
 	(cd "$GODOT_BUILD_DIR/bin" && tar -czvf $archive *) \
 		|| die "Unable to create archive"
+	echo aws s3api put-object --bucket "$S3_BUCKET_NAME" --key "$S3_ARCHIVE_KEY" --body $archive
 	aws s3api put-object --bucket "$S3_BUCKET_NAME" --key "$S3_ARCHIVE_KEY" --body $archive
 	local result=$?
 	rm -f $archive
