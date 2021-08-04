@@ -39,7 +39,30 @@ if [ ! -f "$GODOT_SOURCE_DIR/DOWNLOAD_URL" ]; then
 	die "Source directory is missing required DOWNLOAD_URL file"
 fi
 
-SOURCE_HASH=$(find $GODOT_SOURCE_DIR -type f -print0 | sort -z | xargs -0 md5sum | md5sum | tr -d '[:space:]')
+SOURCE_HASH=$(python << END
+def calculate_directory_hash(top_dir):
+    import os
+    import hashlib
+
+    filepaths = []
+    for (dirpath, dirnames, filenames) in os.walk(top_dir, False):
+        for filename in filenames:
+            filepath = os.path.join(dirpath, filename)
+            filepaths.append(filepath.replace('\\\\', '/'))
+
+    filepaths.sort()
+
+    hashes = []
+    for filepath in filepaths:
+        filehash = hashlib.md5(open(filepath, 'rb').read()).hexdigest()
+        hashes.append(filehash + "  " + filepath.replace('\\\\', '/'))
+
+    return hashlib.md5('\n'.join(hashes).encode('utf-8')).hexdigest()
+
+print (calculate_directory_hash('$GODOT_SOURCE_DIR'))
+END
+)
+
 S3_ARCHIVE_KEY="$SOURCE_HASH-$BUILD_TYPE$GODOT_ARCHIVE_SUFFIX.tar.gz"
 
 #####

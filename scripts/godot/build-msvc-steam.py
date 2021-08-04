@@ -1,14 +1,12 @@
 #!/usr/bin/env python3
 
 import os
-import hashlib
-import re
 
 class BuildException(Exception):
     pass
 
 def calculate_directory_hash(top_dir):
-    #presort_re = re.compile(r'_-\.')
+    import hashlib
 
     filepaths = []
     for (dirpath, dirnames, filenames) in os.walk(top_dir, False):
@@ -16,28 +14,14 @@ def calculate_directory_hash(top_dir):
             filepath = os.path.join(dirpath, filename)
             filepaths.append(filepath.replace('\\', '/'))
 
-
-    repl = ['_', '-', '.']
-    def sortkey(x):
-        #print (x)
-        x = x.lower()
-        for r in repl:
-            x = x.replace(r, '')
-        #print (x)
-        return x
-    
-    #filepaths.sort(key=lambda x: x.lower().replace('_', '~'))
-    filepaths.sort(key=sortkey)
-    #filepaths.sort(key=lambda x: x.lower())
+    filepaths.sort()
 
     hashes = []
     for filepath in filepaths:
         filehash = hashlib.md5(open(filepath, 'rb').read()).hexdigest()
         hashes.append(filehash + "  " + filepath.replace('\\', '/'))
 
-    #print ('\n'.join(hashes))
-    # The trailing dash is for compatibility with the shell version.
-    return hashlib.md5('\n'.join(hashes).encode('utf-8')).hexdigest() + '-'
+    return hashlib.md5('\n'.join(hashes).encode('utf-8')).hexdigest()
 
 def _download_as_temp_file(url):
     import tempfile
@@ -140,27 +124,7 @@ def prepare_godot_build_dir(godot_source_dir, godot_build_dir):
 
     download_and_extract(download_url, godot_build_dir, strip=1)
 
-def main():
-    godot_source_dir = os.environ.get('GODOT_SOURCE_DIR', 'godot')
-    godot_build_dir = os.environ.get('GODOT_BUILD_DIR', os.path.join('build', 'godot'))
-    force_rebuild_godot = os.environ.get('FORCE_REBUILD_GODOT', 'no')
-
-    godot_archive_suffix = os.environ.get('GODOT_ARCHIVE_SUFFIX', '')
-
-    if not os.path.exists(godot_source_dir):
-        pass
-
-    # @todo Not yet compatible with shell version.
-    source_hash = calculate_directory_hash(godot_source_dir)
-    #print(source_hash)
-
-    # @todo Can we seperate this from the more generic stuff in this script?
-    download_steam_sdk(os.path.join(godot_source_dir, 'modules', 'godotsteam', 'sdk'), ['public', 'redistributable_bin'])
-
-    prepare_godot_build_dir(godot_source_dir, godot_build_dir)
-
-    # @todo How to pull in the steam redistributables? Port that script to Python too?
-
+def build_godot(godot_source_dir, godot_build_dir):
     num_cores = os.cpu_count()
     scons_extra = ''
 
@@ -182,6 +146,52 @@ def main():
 
     if exit_code != 0:
         raise BuildException("scons build failed!")
+
+def upload_build_artifact(s3_archive_key, artifact_directory):
+    import boto3
+    import tarfile
+    import tempfile
+
+    for required_env in ['AWS_ACCESS_KEY_ID', 'AWS_SECRET_ACCESS_KEY', 'S3_BUCKET_NAME']:
+        if not required_env in os.environ:
+            raise BuildException("The following environment variables are required: AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, S3_BUCKET_NAME")
+
+    (temp_fd, temp_path) = tempfile.mkstemp('.tar.gz', 'godot-artifact-')
+    os.close(temp_fd)
+
+    try:
+        with tarfile.open(temp_path, 'w:gz') as archive:
+            for path in os.listdir(artifact_directory):
+                full_path = os.path.join(artifact_directory, path)
+                if os.path.isfile(full_path):
+                    archive.add(full_path, arcname=path)
+
+        with open(temp_path, 'rb') as archive_fd:
+            s3 = boto3.client('s3')
+            s3.put_object(
+                Bucket=os.environ['S3_BUCKET_NAME'),
+                Key=s3_archive_key,
+                Body=archive_fd,
+            )
+    finally:
+        os.remove(temp_path)
+
+def main():
+    godot_source_dir = os.environ.get('GODOT_SOURCE_DIR', 'godot')
+    godot_build_dir = os.environ.get('GODOT_BUILD_DIR', os.path.join('build', 'godot'))
+    force_rebuild_godot = os.environ.get('FORCE_REBUILD_GODOT', 'no')
+
+    godot_archive_suffix = os.environ.get('GODOT_ARCHIVE_SUFFIX', '')
+
+    source_hash = calculate_directory_hash(godot_source_dir)
+    s3_archive_key = source_hash + '-windows-msvc' + godot_archive_suffix + '.tar.gz'
+
+    # @todo Can we seperate this from the more generic stuff in this script?
+    download_steam_sdk(os.path.join(godot_source_dir, 'modules', 'godotsteam', 'sdk'), ['public', 'redistributable_bin'])
+
+    prepare_godot_build_dir(godot_source_dir, godot_build_dir)
+    build_godot(godot_source_dir, godot_build_dir)
+    upload_build_artifact(s3_archive_key, os.path.join(godot_build_dir, 'bin'))
 
 if __name__ == '__main__': main()
 
