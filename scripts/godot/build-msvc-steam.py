@@ -165,7 +165,7 @@ def main():
         if os.path.sep != '/':
             # scons wants this with UNIX-style path seperators.
             module_source_path_relative = module_source_path_relative.replace(os.path.sep, '/')
-        scons_extra += F" custom_modules='{module_source_path_relative}'"
+        scons_extra += F' "custom_modules={module_source_path_relative}"'
 
     print (F"SCONS EXTRA: {scons_extra}")
     oldcwd = os.getcwd()
