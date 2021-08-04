@@ -170,7 +170,7 @@ def main():
     print (F"SCONS EXTRA: {scons_extra}")
     oldcwd = os.getcwd()
     os.chdir(godot_build_dir)
-    exit_code = os.system(F"scons -j{num_cores} platform=windows target=release production=yes" + scons_extra)
+    exit_code = os.system(F"scons -j{num_cores} platform=windows target=release tools=no production=yes" + scons_extra)
     os.chdir(oldcwd)
 
     if exit_code != 0:
