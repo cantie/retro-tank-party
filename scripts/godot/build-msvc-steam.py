@@ -164,6 +164,7 @@ def main():
         module_source_path_relative = os.path.relpath(os.path.abspath(module_source_path), os.path.abspath(godot_build_dir))
         scons_extra += F" custom_modules='{module_source_path_relative}'"
 
+    print (F"SCONS EXTRA: {scons_extra}")
     oldcwd = os.getcwd()
     os.chdir(godot_build_dir)
     exit_code = os.system(F"scons -j{num_cores} platform=windows target=release production=yes" + scons_extra)
