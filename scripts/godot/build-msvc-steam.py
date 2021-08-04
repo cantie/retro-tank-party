@@ -161,11 +161,17 @@ def upload_build_artifact(s3_archive_key, artifact_directory):
     os.close(temp_fd)
 
     try:
+        print("Making archive with built artifacts...")
+        sys.stdout.flush()
+
         with tarfile.open(temp_path, 'w:gz') as archive:
             for path in os.listdir(artifact_directory):
                 full_path = os.path.join(artifact_directory, path)
                 if os.path.isfile(full_path):
                     archive.add(full_path, arcname=path)
+
+        print("Uploading archive to S3...")
+        sys.stdout.flush()
 
         with open(temp_path, 'rb') as archive_fd:
             s3 = boto3.client('s3')
@@ -182,7 +188,9 @@ def main():
     godot_build_dir = os.environ.get('GODOT_BUILD_DIR', os.path.join('build', 'godot'))
     force_rebuild_godot = os.environ.get('FORCE_REBUILD_GODOT', 'no')
 
-    godot_archive_suffix = os.environ.get('GODOT_ARCHIVE_SUFFIX', '')
+    godot_archive_suffix = ''
+    if 'GODOT_ARCHIVE_SUFFIX' in os.environ:
+        godot_archive_suffix = '-' + os.environ['GODOT_ARCHIVE_SUFFIX']
 
     source_hash = calculate_directory_hash(godot_source_dir)
     s3_archive_key = source_hash + '-windows-msvc' + godot_archive_suffix + '.tar.gz'

@@ -276,7 +276,6 @@ build-godot-steam:
     - touch build/godot/bin/.gdignore
   dependencies: []
   rules:
-    - when: manual
     - if: '$CI_COMMIT_BRANCH != "master" && $CI_COMMIT_BRANCH != "steam" && $CI_COMMIT_BRANCH !~ /^steam-.*$/'
       when: never
     - if: '$FORCE_BUILD_GODOT == "yes" || $CI_COMMIT_MESSAGE =~ /\[build godot\]/'
@@ -335,7 +334,7 @@ windows-steam:
     GODOT_ARCHIVE_SUFFIX: "steam"
   script:
     - BUILD_TYPE=server-tools DOWNLOAD_ONLY=yes ./scripts/build-godot.sh
-    - BUILD_TYPE=windows-64   DOWNLOAD_ONLY=yes ./scripts/build-godot.sh
+    - BUILD_TYPE=windows-msvc DOWNLOAD_ONLY=yes ./scripts/build-godot.sh
 
     # Pull in the WebRTC GDNative plugin
     - ./scripts/download-webrtc-plugin.sh windows release
