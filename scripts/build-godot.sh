@@ -39,7 +39,13 @@ if [ ! -f "$GODOT_SOURCE_DIR/DOWNLOAD_URL" ]; then
 	die "Source directory is missing required DOWNLOAD_URL file"
 fi
 
-SOURCE_HASH=$(python << END
+if which python3; then
+	PYTHON=python3
+else
+	PYTHON=python
+fi
+
+SOURCE_HASH=$($PYTHON << END
 def calculate_directory_hash(top_dir):
     import os
     import hashlib
