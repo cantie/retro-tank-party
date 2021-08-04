@@ -276,6 +276,7 @@ build-godot-steam:
     - touch build/godot/bin/.gdignore
   dependencies: []
   rules:
+    - when: manual
     - if: '$CI_COMMIT_BRANCH != "master" && $CI_COMMIT_BRANCH != "steam" && $CI_COMMIT_BRANCH !~ /^steam-.*$/'
       when: never
     - if: '$FORCE_BUILD_GODOT == "yes" || $CI_COMMIT_MESSAGE =~ /\[build godot\]/'
@@ -297,8 +298,6 @@ build-godot-steam:
     name: $EXPORT_NAME-$CI_JOB_NAME
     paths:
       - build/godot/bin
-  # Disable
-  when: manual
 
 build-godot-steam-windows:
   image: registry.snopekgames.com/godot/msvc
