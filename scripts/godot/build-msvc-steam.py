@@ -176,6 +176,7 @@ def main():
     os.chdir(godot_build_dir)
     scons_cmd = F"scons -j{num_cores} platform=windows target=release tools=no production=yes progress=no" + scons_extra
     print (F"Running {scons_cmd}...")
+    sys.stdout.flush()
     exit_code = os.system(scons_cmd)
     os.chdir(oldcwd)
 
