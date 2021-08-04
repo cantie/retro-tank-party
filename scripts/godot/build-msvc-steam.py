@@ -137,7 +137,7 @@ def prepare_godot_build_dir(godot_source_dir, godot_build_dir):
 
 def main():
     godot_source_dir = os.environ.get('GODOT_SOURCE_DIR', 'godot')
-    godot_build_dir = os.environ.get('GODOT_BUILD_DIR', 'build/godot')
+    godot_build_dir = os.environ.get('GODOT_BUILD_DIR', os.path.join('build', 'godot'))
     force_rebuild_godot = os.environ.get('FORCE_REBUILD_GODOT', 'no')
 
     godot_archive_suffix = os.environ.get('GODOT_ARCHIVE_SUFFIX', '')
@@ -161,7 +161,8 @@ def main():
 
     module_source_path = os.path.join(godot_source_dir, 'modules')
     if os.path.exists(module_source_path):
-        scons_extra += F" custom_modules='{os.path.abspath(module_source_path)}'"
+        module_source_path_relative = os.path.relpath(os.path.abspath(module_source_path), os.path.abspath(godot_build_dir))
+        scons_extra += F" custom_modules='{module_source_path_relative}'"
 
     oldcwd = os.getcwd()
     os.chdir(godot_build_dir)
