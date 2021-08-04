@@ -162,6 +162,9 @@ def main():
     module_source_path = os.path.join(godot_source_dir, 'modules')
     if os.path.exists(module_source_path):
         module_source_path_relative = os.path.relpath(os.path.abspath(module_source_path), os.path.abspath(godot_build_dir))
+        if os.path.sep != '/':
+            # scons wants this with UNIX-style path seperators.
+            module_source_path_relative = module_source_path_relative.replace(os.path.sep, '/')
         scons_extra += F" custom_modules='{module_source_path_relative}'"
 
     print (F"SCONS EXTRA: {scons_extra}")
