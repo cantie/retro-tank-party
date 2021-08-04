@@ -98,6 +98,11 @@ def download_steam_sdk(dest_dir, src_files):
     import shutil
     from tempfile import TemporaryDirectory
 
+    src_files = list(filter(lambda x: not os.path.exists(os.path.join(dest_dir, os.path.basename(x))), src_files))
+    if len(src_files) == 0:
+        print (" ** WARNING: all Steam SDK files already exist - skipping download")
+        return
+
     if not 'STEAM_SDK_URL' in os.environ:
         raise BuildException("The STEAM_SDK_URL must be set to use this script.")
     steam_sdk_url = os.environ['STEAM_SDK_URL']
@@ -169,7 +174,7 @@ def main():
 
     oldcwd = os.getcwd()
     os.chdir(godot_build_dir)
-    scons_cmd = F"scons -j{num_cores} platform=windows target=release tools=no production=yes" + scons_extra
+    scons_cmd = F"scons -j{num_cores} platform=windows target=release tools=no production=yes progress=no" + scons_extra
     print (F"Running {scons_cmd}...")
     exit_code = os.system(scons_cmd)
     os.chdir(oldcwd)
