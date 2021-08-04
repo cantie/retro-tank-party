@@ -297,6 +297,8 @@ build-godot-steam:
     name: $EXPORT_NAME-$CI_JOB_NAME
     paths:
       - build/godot/bin
+  # Disable
+  when: manual
 
 build-godot-steam-windows:
   image: registry.snopekgames.com/godot/msvc
