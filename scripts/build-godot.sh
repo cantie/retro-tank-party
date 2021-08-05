@@ -45,6 +45,8 @@ else
 	PYTHON=python
 fi
 
+$PYTHON --version
+
 SOURCE_HASH=$($PYTHON << END
 def calculate_directory_hash(top_dir):
     import os
