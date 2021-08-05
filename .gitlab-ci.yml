@@ -274,6 +274,7 @@ build-godot-steam:
     - rm -rf build/godot/bin
   dependencies: []
   rules:
+    - when: manual
     - if: '$CI_COMMIT_BRANCH != "master" && $CI_COMMIT_BRANCH != "steam" && $CI_COMMIT_BRANCH !~ /^steam-.*$/'
       when: never
     - if: '$FORCE_BUILD_GODOT == "yes" || $CI_COMMIT_MESSAGE =~ /\[build godot\]/'
@@ -301,7 +302,7 @@ build-godot-steam-windows:
     GODOT_ARCHIVE_SUFFIX: "steam"
     SCONS_OPTS: "module_godotsteam_enabled=yes verbose=yes"
   script:
-    - "C:\\Program Files (x86)\\Microsoft Visual Studio\\2019\\BuildTools\\VC\\Auxiliary\\Build\\vcvars64.bat"
+    - '"C:\Program Files (x86)\Microsoft Visual Studio\2019\BuildTools\VC\Auxiliary\Build\vcvars64.bat"'
     - python scripts/godot/build-msvc-steam.py
   dependencies: []
   rules:
