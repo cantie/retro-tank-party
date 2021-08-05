@@ -184,6 +184,8 @@ def upload_build_artifact(s3_archive_key, artifact_directory):
         os.remove(temp_path)
 
 def main():
+    import shutil
+
     godot_source_dir = os.environ.get('GODOT_SOURCE_DIR', 'godot')
     godot_build_dir = os.environ.get('GODOT_BUILD_DIR', os.path.join('build', 'godot'))
     force_rebuild_godot = os.environ.get('FORCE_REBUILD_GODOT', 'no')
@@ -201,6 +203,9 @@ def main():
     prepare_godot_build_dir(godot_source_dir, godot_build_dir)
     build_godot(godot_source_dir, godot_build_dir)
     upload_build_artifact(s3_archive_key, os.path.join(godot_build_dir, 'bin'))
+
+    # Remove the 'bin' directory so it's not saved in the cache.
+    shutil.rmtree(os.path.join(godot_build_dir, 'bin'))
 
 if __name__ == '__main__': main()
 

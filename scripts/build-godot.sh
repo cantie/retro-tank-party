@@ -55,10 +55,12 @@ def calculate_directory_hash(top_dir):
     filepaths = []
     for (dirpath, dirnames, filenames) in os.walk(top_dir, False):
         for filename in filenames:
+			#(fileroot, fileext) = os.path.splitext(filename)
             filepath = os.path.join(dirpath, filename)
             filepaths.append(filepath.replace('\\\\', '/'))
 
     filepaths.sort()
+    #print (filepaths)
 
     hashes = []
     for filepath in filepaths:
@@ -72,6 +74,7 @@ END
 )
 
 S3_ARCHIVE_KEY="$SOURCE_HASH-$BUILD_TYPE$GODOT_ARCHIVE_SUFFIX.tar.gz"
+echo "S3_ARCHIVE_KEY: $S3_ARCHIVE_KEY"
 
 #####
 # FUNCTIONS:
