@@ -436,8 +436,7 @@ macosx-steam:
 
     # Export!
     - mkdir -v -p build/macosx-steam
-    - build/godot/bin/godot_server.x11.opt.tools.64 -v --export "Mac OSX (Steam)" ./build/macosx/$EXPORT_NAME.zip
-    - ls build/macosx-steam
+    - build/godot/bin/godot_server.x11.opt.tools.64 -v --export "Mac OSX (Steam)" ./build/macosx-steam/$EXPORT_NAME.zip
 
     # Extract the zip file since GitLab CI will zip it up again.
     - (cd ./build/macosx-steam && unzip -a $EXPORT_NAME.zip && rm $EXPORT_NAME.zip)
