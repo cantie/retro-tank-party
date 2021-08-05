@@ -263,7 +263,7 @@ build-godot-steam:
     - multicore
   variables:
     GODOT_ARCHIVE_SUFFIX: "steam"
-    SCONS_OPTS: "module_godotsteam_enabled=yes verbose=yes"
+    SCONS_OPTS: "module_godotsteam_enabled=yes"
   script:
     - export SOURCE_HASH=$(python3 scripts/godot/calculate-hash.py godot)
     - podman login "$GODOT_BUILD_REGISTRY" $PODMAN_OPTS --username="$GODOT_BUILD_REGISTRY_USERNAME" --password="$GODOT_BUILD_REGISTRY_PASSWORD"
@@ -300,7 +300,7 @@ build-godot-steam-windows:
     - windows-docker
   variables:
     GODOT_ARCHIVE_SUFFIX: "steam"
-    SCONS_OPTS: "module_godotsteam_enabled=yes verbose=yes"
+    SCONS_OPTS: "module_godotsteam_enabled=yes"
   script:
     - '& "C:\Program Files (x86)\Microsoft Visual Studio\2019\BuildTools\VC\Auxiliary\Build\vcvars64.bat"'
     - python scripts/godot/build-msvc-steam.py
