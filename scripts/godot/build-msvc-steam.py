@@ -205,6 +205,9 @@ def main():
     source_hash = calculate_directory_hash(godot_source_dir)
     s3_archive_key = source_hash + '-windows-msvc' + godot_archive_suffix + '.tar.gz'
 
+    print (F"S3_ARCHIVE_KEY: {s3_archive_key}")
+    sys.stdout.flush()
+
     prepare_godot_build_dir(godot_source_dir, godot_build_dir)
     build_godot(godot_source_dir, godot_build_dir)
     upload_build_artifact(s3_archive_key, os.path.join(godot_build_dir, 'bin'))
