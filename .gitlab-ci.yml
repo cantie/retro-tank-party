@@ -47,10 +47,6 @@ build-godot:
     key: "$CI_JOB_NAME-$CI_COMMIT_REF_SLUG"
     paths:
       - build/godot
-  artifacts:
-    name: $EXPORT_NAME-$CI_JOB_NAME
-    paths:
-      - build/godot/bin
 
 .export_before_script: &export_before_script
   before_script:
@@ -293,10 +289,6 @@ build-godot-steam:
     key: "$CI_JOB_NAME-$CI_COMMIT_REF_SLUG"
     paths:
       - build/godot
-  artifacts:
-    name: $EXPORT_NAME-$CI_JOB_NAME
-    paths:
-      - build/godot/bin
 
 build-godot-steam-windows:
   image: registry.snopekgames.com/godot/msvc
@@ -322,10 +314,6 @@ build-godot-steam-windows:
     key: "$CI_JOB_NAME-$CI_COMMIT_REF_SLUG"
     paths:
       - build/godot
-  artifacts:
-    name: $EXPORT_NAME-$CI_JOB_NAME
-    paths:
-      - build/godot/bin
 
 windows-steam:
   <<: *export_before_script
