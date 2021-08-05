@@ -170,7 +170,7 @@ def upload_build_artifact(s3_archive_key, artifact_directory):
                 if os.path.isfile(full_path):
                     archive.add(full_path, arcname=path)
 
-        print("Uploading archive to S3...")
+        print(F"Uploading archive to S3: {s3_archive_key}")
         sys.stdout.flush()
 
         with open(temp_path, 'rb') as archive_fd:

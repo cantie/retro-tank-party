@@ -327,6 +327,9 @@ windows-steam:
     - BUILD_TYPE=server-tools DOWNLOAD_ONLY=yes ./scripts/build-godot.sh
     - BUILD_TYPE=windows-msvc DOWNLOAD_ONLY=yes ./scripts/build-godot.sh
 
+    # The steam library is needed to run our server-tools version of Godot too.
+    - cp godot/modules/godotsteam/sdk/redistributable_bin/linux64/libsteam_api.so build/godot/bin/
+
     # Pull in the WebRTC GDNative plugin
     - ./scripts/download-webrtc-plugin.sh windows release
 
@@ -382,6 +385,9 @@ linux-steam:
     - BUILD_TYPE=server-tools DOWNLOAD_ONLY=yes ./scripts/build-godot.sh
     - BUILD_TYPE=linux-64     DOWNLOAD_ONLY=yes ./scripts/build-godot.sh
 
+    # The steam library is needed to run our server-tools version of Godot too.
+    - cp godot/modules/godotsteam/sdk/redistributable_bin/linux64/libsteam_api.so build/godot/bin/
+
     # Pull in the WebRTC GDNative plugin
     - ./scripts/download-webrtc-plugin.sh linux release
 
@@ -414,6 +420,9 @@ macosx-steam:
     - ./scripts/download-steam-sdk.sh public/ redistributable_bin/ godot/modules/godotsteam/sdk/
     - BUILD_TYPE=server-tools  DOWNLOAD_ONLY=yes ./scripts/build-godot.sh
     - BUILD_TYPE=macosx-x86-64 DOWNLOAD_ONLY=yes ./scripts/build-godot.sh
+
+    # The steam library is needed to run our server-tools version of Godot too.
+    - cp godot/modules/godotsteam/sdk/redistributable_bin/linux64/libsteam_api.so build/godot/bin/
 
     # Pull in the WebRTC GDNative plugin
     - ./scripts/download-webrtc-plugin.sh macosx release
