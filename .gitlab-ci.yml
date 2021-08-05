@@ -275,7 +275,6 @@ build-godot-steam:
     - rm -rf build/godot/bin
   dependencies: []
   rules:
-    - when: manual
     - if: '$CI_COMMIT_BRANCH != "master" && $CI_COMMIT_BRANCH != "steam" && $CI_COMMIT_BRANCH !~ /^steam-.*$/'
       when: never
     - if: '$FORCE_BUILD_GODOT == "yes" || $CI_COMMIT_MESSAGE =~ /\[build godot\]/'
@@ -346,7 +345,7 @@ windows-steam:
     # Export!
     - mkdir -v -p build/windows-steam
     - build/godot/bin/godot_server.x11.opt.tools.64 -v --export "Windows Desktop (Steam)" ./build/windows-steam/$EXPORT_NAME.exe
-    - godot/modules/godotsteam/sdk/redistributable_bin/win64/steam_api64.dll ./build/windows-steam/
+    - cp godot/modules/godotsteam/sdk/redistributable_bin/win64/steam_api64.dll ./build/windows-steam/
   artifacts:
     name: $EXPORT_NAME-$CI_JOB_NAME
     paths:
