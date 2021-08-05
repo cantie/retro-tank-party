@@ -20,12 +20,12 @@ def calculate_directory_hash(top_dir):
     hashes = []
     for filepath in filepaths:
         (fileroot, fileext) = os.path.splitext(filepath)
-        if fileext in ['.dll', '.lib', '.so', '.dylib']:
-            filemode = 'rb'
-        else:
-            filemode = 'rt'
-        filehash = hashlib.md5(open(filepath, filemode).read()).hexdigest()
-        hashes.append(filehash + "  " + filepath.replace('\\', '/'))
+        try:
+            data = open(filepath, 'rt').read().encode('utf-8')
+        except UnicodeError:
+            data = open(filepath, 'rb').read()
+        filehash = hashlib.md5(data).hexdigest()
+        hashes.append(filehash + "  " + filepath)
 
     return hashlib.md5('\n'.join(hashes).encode('utf-8')).hexdigest()
 
@@ -199,14 +199,14 @@ def main():
     if 'GODOT_ARCHIVE_SUFFIX' in os.environ:
         godot_archive_suffix = '-' + os.environ['GODOT_ARCHIVE_SUFFIX']
 
-    # @todo Can we seperate this from the more generic stuff in this script?
-    download_steam_sdk(os.path.join(godot_source_dir, 'modules', 'godotsteam', 'sdk'), ['public', 'redistributable_bin'])
-
     source_hash = calculate_directory_hash(godot_source_dir)
     s3_archive_key = source_hash + '-windows-msvc' + godot_archive_suffix + '.tar.gz'
 
     print (F"S3_ARCHIVE_KEY: {s3_archive_key}")
     sys.stdout.flush()
+
+    # @todo Can we seperate this from the more generic stuff in this script?
+    download_steam_sdk(os.path.join(godot_source_dir, 'modules', 'godotsteam', 'sdk'), ['public', 'redistributable_bin'])
 
     prepare_godot_build_dir(godot_source_dir, godot_build_dir)
     build_godot(godot_source_dir, godot_build_dir)
