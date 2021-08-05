@@ -102,7 +102,7 @@ upload_godot() {
 build_godot() {
 	DOWNLOAD_URL=$(cat "$GODOT_SOURCE_DIR/DOWNLOAD_URL")
 
-	if [ ! -d "$GODOT_BUILD_DIR" -o "$OVERWRITE_EXISTNG" = "yes" ]; then
+	if [ ! -d "$GODOT_BUILD_DIR" -o "$OVERWRITE_EXISTING" = "yes" ]; then
 		if [ ! -d "$GODOT_BUILD_DIR" ]; then
 			mkdir "$GODOT_BUILD_DIR" \
 				|| die "Unable to create GODOT_BUILD_DIR: $GODOT_BUILD_DIR"
