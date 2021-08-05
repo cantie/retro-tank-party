@@ -20,7 +20,7 @@ def calculate_directory_hash(top_dir):
     hashes = []
     for filepath in filepaths:
         (fileroot, fileext) = os.path.splitext(filepath)
-        if fileexit in ['.dll', '.lib', '.so', '.dylib']:
+        if fileext in ['.dll', '.lib', '.so', '.dylib']:
             filemode = 'rb'
         else:
             filemode = 'rt'
