@@ -194,11 +194,11 @@ def main():
     if 'GODOT_ARCHIVE_SUFFIX' in os.environ:
         godot_archive_suffix = '-' + os.environ['GODOT_ARCHIVE_SUFFIX']
 
-    source_hash = calculate_directory_hash(godot_source_dir)
-    s3_archive_key = source_hash + '-windows-msvc' + godot_archive_suffix + '.tar.gz'
-
     # @todo Can we seperate this from the more generic stuff in this script?
     download_steam_sdk(os.path.join(godot_source_dir, 'modules', 'godotsteam', 'sdk'), ['public', 'redistributable_bin'])
+
+    source_hash = calculate_directory_hash(godot_source_dir)
+    s3_archive_key = source_hash + '-windows-msvc' + godot_archive_suffix + '.tar.gz'
 
     prepare_godot_build_dir(godot_source_dir, godot_build_dir)
     build_godot(godot_source_dir, godot_build_dir)

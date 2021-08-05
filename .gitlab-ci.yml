@@ -323,6 +323,7 @@ windows-steam:
   variables:
     GODOT_ARCHIVE_SUFFIX: "steam"
   script:
+    - ./scripts/download-steam-sdk.sh public/ redistributable_bin/ godot/modules/godotsteam/sdk/
     - BUILD_TYPE=server-tools DOWNLOAD_ONLY=yes ./scripts/build-godot.sh
     - BUILD_TYPE=windows-msvc DOWNLOAD_ONLY=yes ./scripts/build-godot.sh
 
@@ -339,7 +340,7 @@ windows-steam:
     # Export!
     - mkdir -v -p build/windows-steam
     - build/godot/bin/godot_server.x11.opt.tools.64 -v --export "Windows Desktop (Steam)" ./build/windows-steam/$EXPORT_NAME.exe
-    - ./scripts/download-steam-sdk.sh redistributable_bin/win64/steam_api64.dll ./build/windows-steam/
+    - godot/modules/godotsteam/sdk/redistributable_bin/win64/steam_api64.dll ./build/windows-steam/
   artifacts:
     name: $EXPORT_NAME-$CI_JOB_NAME
     paths:
@@ -377,6 +378,7 @@ linux-steam:
   variables:
     GODOT_ARCHIVE_SUFFIX: "steam"
   script:
+    - ./scripts/download-steam-sdk.sh public/ redistributable_bin/ godot/modules/godotsteam/sdk/
     - BUILD_TYPE=server-tools DOWNLOAD_ONLY=yes ./scripts/build-godot.sh
     - BUILD_TYPE=linux-64     DOWNLOAD_ONLY=yes ./scripts/build-godot.sh
 
@@ -393,7 +395,7 @@ linux-steam:
     # Export!
     - mkdir -v -p build/linux-steam
     - build/godot/bin/godot_server.x11.opt.tools.64 -v --export "Linux/X11 (Steam)" ./build/linux-steam/$EXPORT_NAME.x86_64
-    - ./scripts/download-steam-sdk.sh redistributable_bin/linux64/libsteam_api.so ./build/linux-steam/
+    - cp godot/modules/godotsteam/sdk/redistributable_bin/linux64/libsteam_api.so ./build/linux-steam/
   artifacts:
     name: $EXPORT_NAME-$CI_JOB_NAME
     paths:
@@ -409,6 +411,7 @@ macosx-steam:
   variables:
     GODOT_ARCHIVE_SUFFIX: "steam"
   script:
+    - ./scripts/download-steam-sdk.sh public/ redistributable_bin/ godot/modules/godotsteam/sdk/
     - BUILD_TYPE=server-tools  DOWNLOAD_ONLY=yes ./scripts/build-godot.sh
     - BUILD_TYPE=macosx-x86-64 DOWNLOAD_ONLY=yes ./scripts/build-godot.sh
 
@@ -431,7 +434,7 @@ macosx-steam:
     - >
       APP_PATH=$(find ./build/macosx-steam/ -name \*.app -print -quit);
       APP_NAME=$(basename "$APP_PATH");
-      ./scripts/download-steam-sdk.sh redistributable_bin/osx/libsteam_api.dylib "./build/macosx-steam/$APP_NAME/Contents/MacOS/";
+      cp godot/modules/godotsteam/sdk/redistributable_bin/osx/libsteam_api.dylib "./build/macosx-steam/$APP_NAME/Contents/MacOS/";
       rm -f "./build/macosx-steam/$APP_NAME/Contents/MacOS/steam_appid.txt";
   artifacts:
     name: $EXPORT_NAME-$CI_JOB_NAME
