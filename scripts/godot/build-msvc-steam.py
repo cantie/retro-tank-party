@@ -19,7 +19,12 @@ def calculate_directory_hash(top_dir):
 
     hashes = []
     for filepath in filepaths:
-        filehash = hashlib.md5(open(filepath, 'rb').read()).hexdigest()
+        (fileroot, fileext) = os.path.splitext(filepath)
+        if fileexit in ['.dll', '.lib', '.so', '.dylib']:
+            filemode = 'rb'
+        else:
+            filemode = 'rt'
+        filehash = hashlib.md5(open(filepath, filemode).read()).hexdigest()
         hashes.append(filehash + "  " + filepath.replace('\\', '/'))
 
     return hashlib.md5('\n'.join(hashes).encode('utf-8')).hexdigest()
