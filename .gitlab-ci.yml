@@ -265,7 +265,7 @@ build-godot-steam:
     GODOT_ARCHIVE_SUFFIX: "steam"
     SCONS_OPTS: "module_godotsteam_enabled=yes"
   script:
-    - export SOURCE_HASH=$(python3 scripts/godot/calculate-hash.py godot)
+    - export GODOT_SOURCE_HASH=$(python3 scripts/godot/calculate-hash.py godot)
     - podman login "$GODOT_BUILD_REGISTRY" $PODMAN_OPTS --username="$GODOT_BUILD_REGISTRY_USERNAME" --password="$GODOT_BUILD_REGISTRY_PASSWORD"
     - rm -rf build/godot/bin
     - ./scripts/download-steam-sdk.sh public/ redistributable_bin/ godot/modules/godotsteam/sdk/
