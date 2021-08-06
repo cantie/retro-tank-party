@@ -212,14 +212,20 @@ web-review:
   needs:
     - web
   script:
-    - rm -rf review
-    - cp -r build/web review
-  artifacts:
-    paths:
-      - review
+    # Stash SSH key info.
+    - mkdir -p ~/.ssh
+    - echo "$SSH_DEPLOY_KEY" >> ~/.ssh/id_rsa
+    - echo "$SSH_KNOWN_HOSTS" >> ~/.ssh/known_hosts
+    - chmod 0700 ~/.ssh
+    - chmod 0600 ~/.ssh/id_rsa
+    - chmod 0644 ~/.ssh/known_hosts
+
+    # Push build up to the server.
+    - sudo python -m pip install paramiko
+    - scripts/upload-build.sh build/web buildbot registry.snopekgames.com "/app/registry/static/cached/builds/$CI_PROJECT_NAME/$CI_COMMIT_REF_NAME"
   environment:
     name: "review/$CI_COMMIT_REF_NAME"
-    url: "https://$CI_PROJECT_NAMESPACE.gitlab.io/-/$CI_PROJECT_NAME/-/jobs/$CI_JOB_ID/artifacts/review/index.html"
+    url: "https://static.snopekgames.com/cached/builds/$CI_PROJECT_NAME/$CI_COMMIT_REF_NAME/index.html"
   except:
     - devel
     - master
