@@ -308,7 +308,6 @@ build-godot-steam-windows:
     GODOT_ARCHIVE_SUFFIX: "steam"
     SCONS_OPTS: "module_godotsteam_enabled=yes"
   script:
-    - '& "C:\Program Files (x86)\Microsoft Visual Studio\2019\BuildTools\VC\Auxiliary\Build\vcvars64.bat"'
     - python scripts/godot/build-msvc-steam.py
   dependencies: []
   rules:
