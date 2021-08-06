@@ -222,7 +222,7 @@ web-review:
 
     # Push build up to the server.
     - sudo python -m pip install paramiko
-    - scripts/upload-build.sh build/web buildbot registry.snopekgames.com "/app/registry/static/cached/builds/$CI_PROJECT_NAME/$CI_COMMIT_REF_NAME"
+    - scripts/upload-build.py build/web buildbot registry.snopekgames.com "/app/registry/static/cached/builds/$CI_PROJECT_NAME/$CI_COMMIT_REF_NAME"
   environment:
     name: "review/$CI_COMMIT_REF_NAME"
     url: "https://static.snopekgames.com/cached/builds/$CI_PROJECT_NAME/$CI_COMMIT_REF_NAME/index.html"
