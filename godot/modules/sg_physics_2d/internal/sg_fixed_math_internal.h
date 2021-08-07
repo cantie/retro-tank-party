@@ -74,8 +74,17 @@ struct fixed {
         return fixed((int32_t)(temp >> FRACTIONAL_BITS));
     }
 
+    _FORCE_INLINE_ void operator*=(const fixed& p_other) {
+        int64_t temp = value * p_other.value;
+        value = (int32_t)(temp >> FRACTIONAL_BITS);
+    }
+
     _FORCE_INLINE_ fixed operator/(const fixed& p_other) const {
         return fixed(((int64_t)value << FRACTIONAL_BITS) / (int64_t)p_other.value);
+    }
+
+    _FORCE_INLINE_ void operator/=(const fixed& p_other) {
+        value = (int32_t)(((int64_t)value << FRACTIONAL_BITS) / (int64_t)p_other.value);
     }
 
     _FORCE_INLINE_ bool operator<=(const fixed &p_other) const {
@@ -124,6 +133,49 @@ struct fixed_vector2 {
 	_FORCE_INLINE_ void operator-=(const fixed_vector2 &p_v) {
         x -= p_v.x;
         y -= p_v.y;
+    }
+	_FORCE_INLINE_ fixed_vector2 operator*(const fixed_vector2 &p_v) const {
+        return fixed_vector2(x * p_v.x, y * p_v.y);
+    }
+	_FORCE_INLINE_ void operator*=(const fixed_vector2 &p_v) {
+        x *= p_v.x;
+        y *= p_v.y;
+    }
+	_FORCE_INLINE_ fixed_vector2 operator/(const fixed_vector2 &p_v) const {
+        return fixed_vector2(x / p_v.x, y / p_v.y);
+    }
+	_FORCE_INLINE_ void operator/=(const fixed_vector2 &p_v) {
+        x /= p_v.x;
+        y /= p_v.y;
+    }
+
+	_FORCE_INLINE_ fixed_vector2 operator+(const fixed &p_v) const {
+        return fixed_vector2(x + p_v, y + p_v);
+    }
+	_FORCE_INLINE_ void operator+=(const fixed &p_v) {
+        x += p_v;
+        y += p_v;
+    }
+	_FORCE_INLINE_ fixed_vector2 operator-(const fixed &p_v) const {
+        return fixed_vector2(x - p_v, y - p_v);
+    }
+	_FORCE_INLINE_ void operator-=(const fixed &p_v) {
+        x -= p_v;
+        y -= p_v;
+    }
+	_FORCE_INLINE_ fixed_vector2 operator*(const fixed &p_v) const {
+        return fixed_vector2(x * p_v, y * p_v);
+    }
+	_FORCE_INLINE_ void operator*=(const fixed &p_v) {
+        x *= p_v;
+        y *= p_v;
+    }
+	_FORCE_INLINE_ fixed_vector2 operator/(const fixed &p_v) const {
+        return fixed_vector2(x / p_v, y / p_v);
+    }
+	_FORCE_INLINE_ void operator/=(const fixed &p_v) {
+        x /= p_v;
+        y /= p_v;
     }
 
 };

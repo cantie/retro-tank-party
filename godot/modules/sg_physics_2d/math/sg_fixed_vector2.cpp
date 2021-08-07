@@ -33,9 +33,22 @@ void SGFixedVector2::_bind_methods() {
 	ADD_PROPERTY(PropertyInfo(Variant::INT, "y", PROPERTY_HINT_NONE), "set_y", "get_y");
 
     ClassDB::bind_method(D_METHOD("add", "other_vector"), &SGFixedVector2::add);
-    ClassDB::bind_method(D_METHOD("iadd" "other_vector"), &SGFixedVector2::iadd);
+    ClassDB::bind_method(D_METHOD("iadd", "other_vector"), &SGFixedVector2::iadd);
     ClassDB::bind_method(D_METHOD("sub", "other_vector"), &SGFixedVector2::sub);
     ClassDB::bind_method(D_METHOD("isub", "other_vector"), &SGFixedVector2::isub);
+    ClassDB::bind_method(D_METHOD("mul", "other_vector"), &SGFixedVector2::mul);
+    ClassDB::bind_method(D_METHOD("imul", "other_vector"), &SGFixedVector2::imul);
+    ClassDB::bind_method(D_METHOD("div", "other_vector"), &SGFixedVector2::div);
+    ClassDB::bind_method(D_METHOD("idiv", "other_vector"), &SGFixedVector2::idiv);
+
+    ClassDB::bind_method(D_METHOD("addf", "fixed_value"), &SGFixedVector2::addf);
+    ClassDB::bind_method(D_METHOD("iaddf" "fixed_value"), &SGFixedVector2::iaddf);
+    ClassDB::bind_method(D_METHOD("subf", "fixed_value"), &SGFixedVector2::subf);
+    ClassDB::bind_method(D_METHOD("isubf", "fixed_value"), &SGFixedVector2::isubf);
+    ClassDB::bind_method(D_METHOD("mulf", "fixed_value"), &SGFixedVector2::mulf);
+    ClassDB::bind_method(D_METHOD("imulf", "fixed_value"), &SGFixedVector2::imulf);
+    ClassDB::bind_method(D_METHOD("divf", "fixed_value"), &SGFixedVector2::divf);
+    ClassDB::bind_method(D_METHOD("idivf", "fixed_value"), &SGFixedVector2::idivf);
 
     ClassDB::bind_method(D_METHOD("from_float", "float_vector"), &SGFixedVector2::from_float);
     ClassDB::bind_method(D_METHOD("to_float"), &SGFixedVector2::to_float);
@@ -55,6 +68,54 @@ Ref<SGFixedVector2> SGFixedVector2::sub(const Ref<SGFixedVector2>& p_other) cons
 
 void SGFixedVector2::isub(const Ref<SGFixedVector2>& p_other) {
     value -= p_other->value;
+}
+
+Ref<SGFixedVector2> SGFixedVector2::mul(const Ref<SGFixedVector2>& p_other) const {
+    return Ref<SGFixedVector2>(memnew(SGFixedVector2(value * p_other->value)));
+}
+
+void SGFixedVector2::imul(const Ref<SGFixedVector2>& p_other) {
+    value *= p_other->value;
+}
+
+Ref<SGFixedVector2> SGFixedVector2::div(const Ref<SGFixedVector2>& p_other) const {
+    return Ref<SGFixedVector2>(memnew(SGFixedVector2(value / p_other->value)));
+}
+
+void SGFixedVector2::idiv(const Ref<SGFixedVector2>& p_other) {
+    value /= p_other->value;
+}
+
+Ref<SGFixedVector2> SGFixedVector2::addf(int p_other) const {
+    return Ref<SGFixedVector2>(memnew(SGFixedVector2(value + fixed(p_other))));
+}
+
+void SGFixedVector2::iaddf(int p_other) {
+    value += fixed(p_other);
+}
+
+Ref<SGFixedVector2> SGFixedVector2::subf(int p_other) const {
+    return Ref<SGFixedVector2>(memnew(SGFixedVector2(value - fixed(p_other))));
+}
+
+void SGFixedVector2::isubf(int p_other) {
+    value -= fixed(p_other);
+}
+
+Ref<SGFixedVector2> SGFixedVector2::mulf(int p_other) const {
+    return Ref<SGFixedVector2>(memnew(SGFixedVector2(value * fixed(p_other))));
+}
+
+void SGFixedVector2::imulf(int p_other) {
+    value *= fixed(p_other);
+}
+
+Ref<SGFixedVector2> SGFixedVector2::divf(int p_other) const {
+    return Ref<SGFixedVector2>(memnew(SGFixedVector2(value / fixed(p_other))));
+}
+
+void SGFixedVector2::idivf(int p_other) {
+    value /= fixed(p_other);
 }
 
 void SGFixedVector2::from_float(Vector2 p_float_vector) {

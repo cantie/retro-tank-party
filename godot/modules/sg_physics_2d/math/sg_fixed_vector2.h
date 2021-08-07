@@ -45,11 +45,23 @@ public:
     _FORCE_INLINE_ int get_y() const { return value.y.value; }
     _FORCE_INLINE_ void set_y(int p_y) { value.y.value = p_y; }
 
-
     Ref<SGFixedVector2> add(const Ref<SGFixedVector2> &p_other) const;
     void iadd(const Ref<SGFixedVector2>& p_other);
     Ref<SGFixedVector2> sub(const Ref<SGFixedVector2> &p_other) const;
     void isub(const Ref<SGFixedVector2>& p_other);
+    Ref<SGFixedVector2> mul(const Ref<SGFixedVector2> &p_other) const;
+    void imul(const Ref<SGFixedVector2>& p_other);
+    Ref<SGFixedVector2> div(const Ref<SGFixedVector2> &p_other) const;
+    void idiv(const Ref<SGFixedVector2>& p_other);
+
+    Ref<SGFixedVector2> addf(int p_fixed) const;
+    void iaddf(int p_fixed);
+    Ref<SGFixedVector2> subf(int p_fixed) const;
+    void isubf(int p_fixed);
+    Ref<SGFixedVector2> mulf(int p_fixed) const;
+    void imulf(int p_fixed);
+    Ref<SGFixedVector2> divf(int p_fixed) const;
+    void idivf(int p_fixed);
 
     void from_float(Vector2 p_float_vector);
     Vector2 to_float() const;

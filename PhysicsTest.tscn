@@ -25,8 +25,6 @@ shape = SubResource( 1 )
 
 [node name="Character" type="SGArea2D" parent="."]
 position = Vector2( 230, 367 )
-fixed_position = Object(SGFixedVector2,"x":0,"y":0,"script":null)
-
 script = ExtResource( 2 )
 
 [node name="SGCollisionShape2D" type="SGCollisionShape2D" parent="Character"]
