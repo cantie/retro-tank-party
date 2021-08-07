@@ -31,12 +31,14 @@
 class SGArea2D : public Node2D {
     GDCLASS(SGArea2D, Node2D);
 
-    int value;
     Ref<SGFixedVector2> fixed_position;
+    bool updating_position;
 
 protected:
     static void _bind_methods();
-    void _notifications(int p_what);
+    void _notification(int p_what);
+
+	virtual void _changed_callback(Object *p_changed, const char *p_prop) override;
 
 public:
 

@@ -16,8 +16,8 @@ extents = Object(SGFixedVector2,"x":25600,"y":25600,"script":null)
 script = ExtResource( 1 )
 
 [node name="Area" type="SGArea2D" parent="."]
-position = Vector2( 666, 368 )
-fixed_position = Object(SGFixedVector2,"x":0,"y":0,"script":null)
+position = Vector2( 100, 100 )
+fixed_position = Object(SGFixedVector2,"x":512000,"y":512000,"script":null)
 
 
 [node name="SGCollisionShape2D" type="SGCollisionShape2D" parent="Area"]
@@ -25,6 +25,8 @@ shape = SubResource( 1 )
 
 [node name="Character" type="SGArea2D" parent="."]
 position = Vector2( 230, 367 )
+fixed_position = Object(SGFixedVector2,"x":0,"y":0,"script":null)
+
 script = ExtResource( 2 )
 
 [node name="SGCollisionShape2D" type="SGCollisionShape2D" parent="Character"]
