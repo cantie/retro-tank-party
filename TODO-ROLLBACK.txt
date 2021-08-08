@@ -4,9 +4,12 @@ TODO
 MILESTONE 1:
 
  - Initial implementation of deterministic physics
-   o Sync from fixed_position to position (from position to fixed_position in the editor)
-   o Edit rectangle shape in Godot editor
+   o Implement sync to the physics engine
    o Do super basic collision checking
+   o Make a FixedNode2D class that descends from Node2D
+     - Add a check to make sure that no Node2D parents move from the origin when syncing
+	   to physics engine
+   o Edit rectangle shape in Godot editor
    o Unit tests!
 
 MILESTONE 2 (internal cleanup):
