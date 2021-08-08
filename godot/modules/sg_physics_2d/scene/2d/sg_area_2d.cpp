@@ -33,23 +33,11 @@ void SGArea2D::_bind_methods() {
 
 }
 
-void SGArea2D::_notification(int p_what) {
-    /*
-    switch (p_what) {
-        case NOTIFICATION_TRANSFORM_CHANGED:
-            if (Engine::get_singleton()->is_editor_hint() && !updating_position) {
-                Transform2D xform = get_transform();
-                fixed_position->from_float(xform.get_origin());
-            }
-            break;
-    }
-    */
-}
-
 void SGArea2D::_changed_callback(Object *p_changed, const char *p_prop) {
     if (!updating_position && strcmp(p_prop, "position") == 0) {
-        Transform2D xform = get_transform();
-        fixed_position->from_float(xform.get_origin());
+        fixed_position->from_float(get_position());
+        set_fixed_position(fixed_position);
+        _change_notify("fixed_position");
     }
 }
 
@@ -58,6 +46,7 @@ void SGArea2D::set_fixed_position(const Ref<SGFixedVector2> &p_fixed_position) {
     updating_position = true;
     set_position(fixed_position->to_float());
     updating_position = false;
+    _change_notify("fixed_position");
 }
 
 Ref<SGFixedVector2> SGArea2D::get_fixed_position() {

@@ -36,12 +36,10 @@ class SGArea2D : public Node2D {
 
 protected:
     static void _bind_methods();
-    void _notification(int p_what);
 
 	virtual void _changed_callback(Object *p_changed, const char *p_prop) override;
 
 public:
-
     void set_fixed_position(const Ref<SGFixedVector2> &p_fixed_position);
     Ref<SGFixedVector2> get_fixed_position();
 
