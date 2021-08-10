@@ -21,20 +21,15 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
 /*************************************************************************/
 
-#include "sg_area_2d.h"
+#include "sg_collision_object_2d.h"
 
 #include <core/engine.h>
 
-void SGArea2D::_bind_methods() {
+void SGCollisionObject2D::_bind_methods() {
 }
 
-void SGArea2D::sync_to_physics() {
-
+void SGCollisionObject2D::sync_to_physics() {
 }
 
-bool SGArea2D::overlaps_area() {
-    return false;
-}
-
-SGArea2D::SGArea2D() {
+SGCollisionObject2D::SGCollisionObject2D() {
 }

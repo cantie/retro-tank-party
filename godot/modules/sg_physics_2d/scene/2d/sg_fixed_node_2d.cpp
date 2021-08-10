@@ -21,20 +21,41 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
 /*************************************************************************/
 
-#include "sg_area_2d.h"
+#include "sg_fixed_node_2d.h"
 
 #include <core/engine.h>
 
-void SGArea2D::_bind_methods() {
+void SGFixedNode2D::_bind_methods() {
+    ClassDB::bind_method(D_METHOD("get_fixed_position"), &SGFixedNode2D::get_fixed_position);
+    ClassDB::bind_method(D_METHOD("set_fixed_position", "fixed_position"), &SGFixedNode2D::set_fixed_position);
+
+	ADD_PROPERTY(PropertyInfo(Variant::OBJECT, "fixed_position", PROPERTY_HINT_TYPE_STRING, "SGFixedVector2"), "set_fixed_position", "get_fixed_position");
 }
 
-void SGArea2D::sync_to_physics() {
-
+void SGFixedNode2D::_changed_callback(Object *p_changed, const char *p_prop) {
+    if (!updating_position && strcmp(p_prop, "position") == 0) {
+        fixed_position->from_float(get_position());
+        set_fixed_position(fixed_position);
+    }
 }
 
-bool SGArea2D::overlaps_area() {
-    return false;
+void SGFixedNode2D::set_fixed_position(const Ref<SGFixedVector2> &p_fixed_position) {
+    fixed_position = p_fixed_position;
+    updating_position = true;
+    set_position(fixed_position->to_float());
+    updating_position = false;
+    _change_notify("fixed_position");
 }
 
-SGArea2D::SGArea2D() {
+Ref<SGFixedVector2> SGFixedNode2D::get_fixed_position() {
+    return fixed_position;
+}
+
+SGFixedNode2D::SGFixedNode2D() 
+    : fixed_position(Ref<SGFixedVector2>(memnew(SGFixedVector2))),
+      updating_position(false)
+{
+    if (Engine::get_singleton()->is_editor_hint()) {
+        add_change_receptor(this);
+    }
 }

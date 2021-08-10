@@ -21,20 +21,24 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
 /*************************************************************************/
 
-#include "sg_area_2d.h"
+#ifndef SG_COLLISION_OBJECT_2D_H
+#define SG_COLLISION_OBJECT_2D_H
 
-#include <core/engine.h>
+#include "sg_fixed_node_2d.h"
 
-void SGArea2D::_bind_methods() {
-}
+#include "../../math/sg_fixed_vector2.h"
 
-void SGArea2D::sync_to_physics() {
+class SGCollisionObject2D : public SGFixedNode2D {
+    GDCLASS(SGCollisionObject2D, SGFixedNode2D);
 
-}
+protected:
+    static void _bind_methods();
 
-bool SGArea2D::overlaps_area() {
-    return false;
-}
+public:
+    virtual void sync_to_physics();
 
-SGArea2D::SGArea2D() {
-}
+    SGCollisionObject2D();
+
+};
+
+#endif

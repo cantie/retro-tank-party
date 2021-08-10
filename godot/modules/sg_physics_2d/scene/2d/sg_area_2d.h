@@ -24,26 +24,18 @@
 #ifndef SG_AREA_2D_H
 #define SG_AREA_2D_H
 
-#include <scene/2d/node_2d.h>
+#include "sg_collision_object_2d.h"
 
 #include "../../math/sg_fixed_vector2.h"
 
-class SGArea2D : public Node2D {
-    GDCLASS(SGArea2D, Node2D);
-
-    Ref<SGFixedVector2> fixed_position;
-    bool updating_position;
+class SGArea2D : public SGCollisionObject2D {
+    GDCLASS(SGArea2D, SGCollisionObject2D);
 
 protected:
     static void _bind_methods();
 
-	virtual void _changed_callback(Object *p_changed, const char *p_prop) override;
-
 public:
-    void set_fixed_position(const Ref<SGFixedVector2> &p_fixed_position);
-    Ref<SGFixedVector2> get_fixed_position();
-
-    void sync_to_physics();
+    virtual void sync_to_physics() override;
     bool overlaps_area();
 
     SGArea2D();

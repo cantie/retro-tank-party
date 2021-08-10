@@ -21,20 +21,30 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
 /*************************************************************************/
 
-#include "sg_area_2d.h"
+#ifndef SG_FIXED_NODE_2D_H
+#define SG_FIXED_NODE_2D_H
 
-#include <core/engine.h>
+#include <scene/2d/node_2d.h>
 
-void SGArea2D::_bind_methods() {
-}
+#include "../../math/sg_fixed_vector2.h"
 
-void SGArea2D::sync_to_physics() {
+class SGFixedNode2D : public Node2D {
+    GDCLASS(SGFixedNode2D, Node2D);
 
-}
+    Ref<SGFixedVector2> fixed_position;
+    bool updating_position;
 
-bool SGArea2D::overlaps_area() {
-    return false;
-}
+protected:
+    static void _bind_methods();
 
-SGArea2D::SGArea2D() {
-}
+	virtual void _changed_callback(Object *p_changed, const char *p_prop) override;
+
+public:
+    void set_fixed_position(const Ref<SGFixedVector2> &p_fixed_position);
+    Ref<SGFixedVector2> get_fixed_position();
+
+    SGFixedNode2D();
+
+};
+
+#endif
