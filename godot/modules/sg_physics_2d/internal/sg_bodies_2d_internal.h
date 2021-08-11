@@ -28,8 +28,8 @@
 
 #include "sg_shapes_2d_internal.h"
 
-class SGArea2DInternal : public RID_Data {
-    Vector<SGShape2DInternal *> shapes;
+class SGArea2DInternal {
+    List<SGShape2DInternal *> shapes;
     
 public:
     void add_shape(SGShape2DInternal *p_shape);

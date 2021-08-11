@@ -48,27 +48,37 @@ void SGCollisionShape2D::_notification(int p_what) {
             break;
         
         case NOTIFICATION_PARENTED:
-            // @todo Implement this for real
-            /*
-            if (collision_object.is_valid() && shape.is_valid()) {
-                collision_object->remove_shape(shape);
+            collision_object = Object::cast_to<SGCollisionObject2D>(get_parent());
+            if (collision_object && shape.is_valid()) {
+                collision_object->add_shape(shape->get_shape_internal());
             }
-            collision_object = get_parent();
-            collision_object->add_shape(shape);
-            */
             break;
+        
+        case NOTIFICATION_UNPARENTED:
+            if (collision_object && shape.is_valid()) {
+                collision_object->remove_shape(shape->get_shape_internal());
+                collision_object = nullptr;
+            }
+            break;
+
     }
 }
 
 void SGCollisionShape2D::set_shape(const Ref<SGShape2D> &p_shape) {
     if (shape.is_valid()) {
         shape->disconnect("changed", this, "_shape_changed");
+        if (collision_object) {
+            collision_object->remove_shape(p_shape->get_shape_internal());
+        }
     }
 
     shape = p_shape;
 
     if (shape.is_valid()) {
         shape->connect("changed", this, "_shape_changed");
+        if (collision_object) {
+            collision_object->add_shape(shape->get_shape_internal());
+        }
     }
 
     update();

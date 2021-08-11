@@ -28,11 +28,19 @@
 
 #include "../../math/sg_fixed_vector2.h"
 
+class SGShape2DInternal;
+
 class SGCollisionObject2D : public SGFixedNode2D {
     GDCLASS(SGCollisionObject2D, SGFixedNode2D);
 
+    friend class SGCollisionShape2D;
+
 protected:
+
     static void _bind_methods();
+
+    virtual void add_shape(SGShape2DInternal *p_shape) = 0;
+    virtual void remove_shape(SGShape2DInternal *p_shape) = 0;
 
 public:
     virtual String get_configuration_warning() const override;

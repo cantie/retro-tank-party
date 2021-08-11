@@ -28,7 +28,6 @@
 
 #include "./math/sg_fixed_singleton.h"
 #include "./math/sg_fixed_vector2.h"
-#include "./servers/sg_physics_2d_server.h"
 #include "./scene/2d/sg_area_2d.h"
 #include "./scene/2d/sg_collision_shape_2d.h"
 #include "./scene/resources/sg_shapes_2d.h"
@@ -37,7 +36,6 @@
 #include "./editor/sg_collision_shape_2d_editor_plugin.h"
 
 static SGFixed *fixed_singleton;
-static SGPhysics2DServer *physics_server;
 
 void register_sg_physics_2d_types() {
     ClassDB::register_class<SGFixed>();
@@ -52,9 +50,6 @@ void register_sg_physics_2d_types() {
 
     fixed_singleton = memnew(SGFixed);
     Engine::get_singleton()->add_singleton(Engine::Singleton("SGFixed", SGFixed::get_singleton()));
-
-    physics_server = memnew(SGPhysics2DServer);
-    Engine::get_singleton()->add_singleton(Engine::Singleton("SGPhysics2DServer", SGPhysics2DServer::get_singleton()));
 
 #if TOOLS_ENABLED
     EditorPlugins::add_by_type<SGFixedMathEditorPlugin>();

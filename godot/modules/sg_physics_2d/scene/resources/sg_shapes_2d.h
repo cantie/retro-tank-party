@@ -28,18 +28,23 @@
 
 #include "../../math/sg_fixed_vector2.h"
 
+class SGShape2DInternal;
+
 class SGShape2D : public Resource {
 	GDCLASS(SGShape2D, Resource);
 	OBJ_SAVE_TYPE(SGShape2D);
 
-    RID shape;
+    friend class SGCollisionShape2D;
+    
+    SGShape2DInternal *shape;
 
 protected:
     static void _bind_methods();
 
-    SGShape2D(const RID &p_shape);
+    inline SGShape2DInternal *get_shape_internal() const { return shape; }
+
+    SGShape2D(SGShape2DInternal *shape);
 public:
-    virtual RID get_rid() const;
 
     virtual void draw(const RID &p_to_rid, const Color &p_color) = 0;
 

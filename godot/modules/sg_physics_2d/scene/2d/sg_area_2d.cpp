@@ -25,10 +25,21 @@
 
 #include <core/engine.h>
 
+#include "../../internal/sg_bodies_2d_internal.h"
+#include "../../internal/sg_shapes_2d_internal.h"
+
 void SGArea2D::_bind_methods() {
 }
 
-void SGArea2D::sync_to_physics() {
+void SGArea2D::add_shape(SGShape2DInternal *p_shape) {
+    area->add_shape(p_shape);
+}
+
+void SGArea2D::remove_shape(SGShape2DInternal *p_shape) {
+    area->remove_shape(p_shape);
+}
+
+void SGArea2D::sync_to_physics_engine() {
 
 }
 
@@ -37,4 +48,9 @@ bool SGArea2D::overlaps_area() {
 }
 
 SGArea2D::SGArea2D() {
+    area = memnew(SGArea2DInternal);
+}
+
+SGArea2D::~SGArea2D() {
+    memdelete(area);
 }

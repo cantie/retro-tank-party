@@ -25,26 +25,23 @@
 
 #include <servers/visual_server.h>
 
-#include "../../servers/sg_physics_2d_server.h"
+#include "../../internal/sg_shapes_2d_internal.h"
 
 void SGShape2D::_bind_methods() {
-    ClassDB::bind_method(D_METHOD("get_rid"), &SGShape2D::get_rid);
 }
 
-RID SGShape2D::get_rid() const {
-    return shape;
-}
-
-SGShape2D::SGShape2D(const RID &p_shape) {
+SGShape2D::SGShape2D(SGShape2DInternal *p_shape) {
     shape = p_shape;
 }
 
 SGShape2D::~SGShape2D() {
-    SGPhysics2DServer::get_singleton()->free_rid(shape);
+    if (shape) {
+        memdelete(shape);
+    }
 }
 
 SGRectangleShape2D::SGRectangleShape2D() :
-    SGShape2D(SGPhysics2DServer::get_singleton()->create_rectangle_shape(0, 0, 10240, 10240)),
+    SGShape2D(memnew(SGRectangle2DInternal(fixed(10240), fixed(10240)))),
     extents(Ref<SGFixedVector2>(memnew(SGFixedVector2(fixed_vector2(fixed(10240), fixed(10240))))))
 {
 }

@@ -28,7 +28,7 @@
 
 #include "sg_fixed_math_internal.h"
 
-class SGShape2DInternal : public RID_Data {
+class SGShape2DInternal {
 protected:
 
     fixed_vector2 position;
@@ -58,6 +58,10 @@ public:
 
     virtual fixed_rect2 get_bounds() const;
     virtual bool overlaps_shape(SGShape2DInternal *p_shape);
+
+    SGRectangle2DInternal(fixed p_extents_w, fixed p_extents_h) {
+        set_extents(fixed_vector2(p_extents_w, p_extents_h));
+    }
 
 };
 

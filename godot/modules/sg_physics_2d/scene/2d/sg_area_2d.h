@@ -28,17 +28,25 @@
 
 #include "../../math/sg_fixed_vector2.h"
 
+class SGArea2DInternal;
+
 class SGArea2D : public SGCollisionObject2D {
     GDCLASS(SGArea2D, SGCollisionObject2D);
+
+    SGArea2DInternal *area;
 
 protected:
     static void _bind_methods();
 
+    void add_shape(SGShape2DInternal *p_shape) override;
+    void remove_shape(SGShape2DInternal *p_shape) override;
+
 public:
-    virtual void sync_to_physics() override;
+    virtual void sync_to_physics_engine() override;
     bool overlaps_area();
 
     SGArea2D();
+    ~SGArea2D();
 
 };
 

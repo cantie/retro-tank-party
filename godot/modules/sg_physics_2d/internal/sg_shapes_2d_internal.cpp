@@ -30,3 +30,19 @@ fixed_rect2 SGRectangle2DInternal::get_bounds() const {
 bool SGRectangle2DInternal::overlaps_shape(SGShape2DInternal *p_shape) {
     return false;
 }
+
+/*
+bool SGPhysics2DServer::shape_overlaps(RID p_shape_one, RID p_shape_two) {
+
+    SGRectangle2DInternal *rect1 = static_cast<SGRectangle2DInternal *>(p_shape_one.get_data());
+    SGRectangle2DInternal *rect2 = static_cast<SGRectangle2DInternal *>(p_shape_two.get_data());
+
+    fixed_vector2 min_one = rect1->get_bounds().get_min();
+    fixed_vector2 max_one = rect1->get_bounds().get_max();
+    fixed_vector2 min_two = rect2->get_bounds().get_min();
+    fixed_vector2 max_two = rect2->get_bounds().get_max();
+
+    return (min_two.x <= max_one.x) && (min_one.x <= max_two.x) && \
+           (min_two.y <= max_one.y) && (min_one.y <= max_two.y);
+}
+*/
