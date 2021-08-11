@@ -36,6 +36,9 @@ public:
     void remove_shape(SGShape2DInternal *p_shape);
 
     bool overlaps_area(SGArea2DInternal *p_other_area);
+
+    SGArea2DInternal();
+    ~SGArea2DInternal();
 };
 
 #endif

@@ -21,35 +21,38 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
 /*************************************************************************/
 
-#include "sg_bodies_2d_internal.h"
-
 #include "sg_world_2d_internal.h"
 
-void SGArea2DInternal::add_shape(SGShape2DInternal *p_shape) {
+SGWorld2DInternal *SGWorld2DInternal::singleton = NULL;
+
+SGWorld2DInternal *SGWorld2DInternal::get_singleton() {
+    return singleton;
+}
+
+/*
+void SGWorld2DInternal::add_area(SGArea2DInternal *p_area) {
+    areas.push_back(p_area);
+}
+
+void SGWorld2DInternal::remove_area(SGArea2DInternal *p_area) {
+    areas.erase(p_area);
+}
+*/
+
+void SGWorld2DInternal::add_shape(SGShape2DInternal *p_shape) {
     shapes.push_back(p_shape);
-    SGWorld2DInternal::get_singleton()->add_shape(p_shape);
 }
 
-void SGArea2DInternal::remove_shape(SGShape2DInternal *p_shape) {
+void SGWorld2DInternal::remove_shape(SGShape2DInternal *p_shape) {
     shapes.erase(p_shape);
-    SGWorld2DInternal::get_singleton()->remove_shape(p_shape);
 }
 
-bool SGArea2DInternal::overlaps_area(SGArea2DInternal *p_other_area) {
-    for (int i = 0; i < shapes.size(); i++) {
-        for (int j = 0; j < p_other_area->shapes.size(); j++) {
-            // Test change for CI.
-            //if (shapes[i].)
-        }
-    }
-    return false;
-}
-
-SGArea2DInternal::SGArea2DInternal() 
+SGWorld2DInternal::SGWorld2DInternal()
 //    : shapes(List<SGShape2DInternal *>())
 {
+    singleton = this;
 }
 
-SGArea2DInternal::~SGArea2DInternal() {
-
+SGWorld2DInternal::~SGWorld2DInternal() {
+    singleton = nullptr;
 }

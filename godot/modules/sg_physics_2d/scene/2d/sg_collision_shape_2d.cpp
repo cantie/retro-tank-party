@@ -57,8 +57,8 @@ void SGCollisionShape2D::_notification(int p_what) {
         case NOTIFICATION_UNPARENTED:
             if (collision_object && shape.is_valid()) {
                 collision_object->remove_shape(shape->get_shape_internal());
-                collision_object = nullptr;
             }
+            collision_object = nullptr;
             break;
 
     }
@@ -90,4 +90,11 @@ Ref<SGShape2D> SGCollisionShape2D::get_shape() {
 
 void SGCollisionShape2D::_shape_changed() {
     update();
+}
+
+SGCollisionShape2D::SGCollisionShape2D() {
+    collision_object = nullptr;
+}
+
+SGCollisionShape2D::~SGCollisionShape2D() {
 }

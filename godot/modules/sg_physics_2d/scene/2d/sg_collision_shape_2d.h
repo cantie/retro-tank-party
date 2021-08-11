@@ -47,8 +47,8 @@ public:
 
     void _shape_changed();
 
-    SGCollisionShape2D() {};
-    ~SGCollisionShape2D() {};
+    SGCollisionShape2D();
+    ~SGCollisionShape2D();
 
 };
 
