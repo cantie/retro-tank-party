@@ -32,15 +32,18 @@ class SGShape2D : public Resource {
 	GDCLASS(SGShape2D, Resource);
 	OBJ_SAVE_TYPE(SGShape2D);
 
+    RID shape;
+
 protected:
     static void _bind_methods();
 
+    SGShape2D(const RID &p_shape);
 public:
+    virtual RID get_rid() const;
 
     virtual void draw(const RID &p_to_rid, const Color &p_color) = 0;
 
-    SGShape2D() {};
-    virtual ~SGShape2D() {};
+    virtual ~SGShape2D();
 };
 
 

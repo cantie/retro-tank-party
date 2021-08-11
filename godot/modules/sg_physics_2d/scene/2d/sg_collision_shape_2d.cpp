@@ -46,6 +46,17 @@ void SGCollisionShape2D::_notification(int p_what) {
             }
 
             break;
+        
+        case NOTIFICATION_PARENTED:
+            // @todo Implement this for real
+            /*
+            if (collision_object.is_valid() && shape.is_valid()) {
+                collision_object->remove_shape(shape);
+            }
+            collision_object = get_parent();
+            collision_object->add_shape(shape);
+            */
+            break;
     }
 }
 

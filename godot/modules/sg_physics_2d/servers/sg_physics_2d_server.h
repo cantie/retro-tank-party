@@ -50,6 +50,8 @@ public:
     void area_add_shape(RID p_area, RID p_shape);
     bool area_overlaps(RID p_area);
 
+    void free_rid(RID p_rid);
+
     SGPhysics2DServer();
     ~SGPhysics2DServer();
 };

@@ -35,7 +35,9 @@ protected:
     static void _bind_methods();
 
 public:
-    virtual void sync_to_physics();
+    virtual String get_configuration_warning() const override;
+
+    virtual void sync_to_physics_engine();
 
     SGCollisionObject2D();
 

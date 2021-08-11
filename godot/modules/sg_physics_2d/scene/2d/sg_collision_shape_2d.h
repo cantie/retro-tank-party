@@ -26,6 +26,7 @@
 
 #include <scene/2d/node_2d.h>
 
+#include "sg_collision_object_2d.h"
 #include "../resources/sg_shapes_2d.h"
 
 class SGCollisionShape2D : public Node2D {
@@ -33,6 +34,7 @@ class SGCollisionShape2D : public Node2D {
     GDCLASS(SGCollisionShape2D, Node2D);
 
     Ref<SGShape2D> shape;
+    Ref<SGCollisionObject2D> collision_object;
 
 protected:
     static void _bind_methods();

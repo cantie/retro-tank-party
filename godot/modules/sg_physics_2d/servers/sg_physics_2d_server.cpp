@@ -39,7 +39,10 @@ SGPhysics2DServer *SGPhysics2DServer::get_singleton() {
 }
 
 void SGPhysics2DServer::_bind_methods() {
+    ClassDB::bind_method(D_METHOD("free_rid", "rid"), &SGPhysics2DServer::free_rid);
+    ClassDB::bind_method(D_METHOD("create_area"), &SGPhysics2DServer::create_area);
     ClassDB::bind_method(D_METHOD("create_rectangle_shape", "x", "y", "w", "h"), &SGPhysics2DServer::create_rectangle_shape);
+    ClassDB::bind_method(D_METHOD("area_add_shape", "area", "shape"), &SGPhysics2DServer::area_add_shape);
     //ClassDB::bind_method(D_METHOD("shape_overlaps", "shape_one", "shape_two"), &SGPhysics2DServer::shape_overlaps);
 }
 
@@ -66,7 +69,18 @@ void SGPhysics2DServer::area_add_shape(RID p_area, RID p_shape) {
     area->add_shape(shape);
 }
 
-
+void SGPhysics2DServer::free_rid(RID p_rid) {
+    if (shape_owner.owns(p_rid)) {
+        SGShape2DInternal *shape = shape_owner.get(p_rid);
+        shape_owner.free(p_rid);
+        memdelete(shape);
+    }
+    else if (area_owner.owns(p_rid)) {
+        SGArea2DInternal *area = area_owner.get(p_rid);
+        area_owner.free(p_rid);
+        memdelete(area);
+    }
+}
 
 /*
 bool SGPhysics2DServer::shape_overlaps(RID p_shape_one, RID p_shape_two) {
