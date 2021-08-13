@@ -42,7 +42,7 @@ protected:
     void remove_shape(SGShape2DInternal *p_shape) override;
 
 public:
-    bool overlaps_area();
+    Array get_overlapping_areas() const;
 
     SGArea2D();
     ~SGArea2D();

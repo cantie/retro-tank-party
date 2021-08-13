@@ -31,6 +31,14 @@ void SGCollisionObject2D::_bind_methods() {
     ClassDB::bind_method(D_METHOD("sync_to_physics_engine"), &SGCollisionObject2D::sync_to_physics_engine);
 }
 
+void SGCollisionObject2D::_notification(int p_what) {
+    switch (p_what) {
+        case NOTIFICATION_READY:
+            sync_to_physics_engine();
+            break;
+    }
+}
+
 String SGCollisionObject2D::get_configuration_warning() const {
     String warning = SGFixedNode2D::get_configuration_warning();
 
@@ -52,7 +60,12 @@ String SGCollisionObject2D::get_configuration_warning() const {
 }
 
 void SGCollisionObject2D::sync_to_physics_engine() const {
-    // @todo loop over children, find SGCollisionShape2D objects and call sync_to_physics_engin()
+    for (int i = 0; i < get_child_count(); i++) {
+        SGCollisionShape2D *shape = Object::cast_to<SGCollisionShape2D>(get_child(i));
+        if (shape) {
+            shape->sync_to_physics_engine();
+        }
+    }
 }
 
 SGCollisionObject2D::SGCollisionObject2D() {

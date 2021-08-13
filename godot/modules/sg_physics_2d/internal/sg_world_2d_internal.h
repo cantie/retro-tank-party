@@ -30,7 +30,7 @@ class SGArea2DInternal;
 class SGShape2DInternal;
 
 class SGWorld2DInternal {
-    //List<SGArea2DInternal *> areas;
+    List<SGArea2DInternal *> areas;
     List<SGShape2DInternal *> shapes;
 
     static SGWorld2DInternal *singleton;
@@ -38,10 +38,12 @@ class SGWorld2DInternal {
 public:
     static SGWorld2DInternal *get_singleton();
 
-    //void add_area(SGArea2DInternal *p_area);
-    //void remove_area(SGArea2DInternal *p_area);
+    void add_area(SGArea2DInternal *p_area);
+    void remove_area(SGArea2DInternal *p_area);
     void add_shape(SGShape2DInternal *p_shape);
     void remove_shape(SGShape2DInternal *p_shape);
+
+    List<SGArea2DInternal *> *get_overlapping_areas(SGArea2DInternal *p_area) const;
 
     SGWorld2DInternal();
     ~SGWorld2DInternal();

@@ -38,6 +38,7 @@ class SGCollisionObject2D : public SGFixedNode2D {
 protected:
 
     static void _bind_methods();
+    void _notification(int p_what);
 
     virtual void add_shape(SGShape2DInternal *p_shape) = 0;
     virtual void remove_shape(SGShape2DInternal *p_shape) = 0;

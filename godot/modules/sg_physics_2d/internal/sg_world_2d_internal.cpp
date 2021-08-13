@@ -23,13 +23,15 @@
 
 #include "sg_world_2d_internal.h"
 
+#include "sg_bodies_2d_internal.h"
+#include "sg_shapes_2d_internal.h"
+
 SGWorld2DInternal *SGWorld2DInternal::singleton = NULL;
 
 SGWorld2DInternal *SGWorld2DInternal::get_singleton() {
     return singleton;
 }
 
-/*
 void SGWorld2DInternal::add_area(SGArea2DInternal *p_area) {
     areas.push_back(p_area);
 }
@@ -37,7 +39,6 @@ void SGWorld2DInternal::add_area(SGArea2DInternal *p_area) {
 void SGWorld2DInternal::remove_area(SGArea2DInternal *p_area) {
     areas.erase(p_area);
 }
-*/
 
 void SGWorld2DInternal::add_shape(SGShape2DInternal *p_shape) {
     shapes.push_back(p_shape);
@@ -47,8 +48,24 @@ void SGWorld2DInternal::remove_shape(SGShape2DInternal *p_shape) {
     shapes.erase(p_shape);
 }
 
+List<SGArea2DInternal *> *SGWorld2DInternal::get_overlapping_areas(SGArea2DInternal *p_area) const {
+    List<SGArea2DInternal *> *ret = memnew(List<SGArea2DInternal *>);
+
+    for (const List<SGArea2DInternal *>::Element *E = areas.front(); E; E = E->next()) {
+        SGArea2DInternal *other_area = E->get();
+        if (other_area == p_area) {
+            continue;
+        }
+
+        if (p_area->overlaps(other_area)) {
+            ret->push_back(other_area);
+        }
+    }
+
+    return ret;
+}
+
 SGWorld2DInternal::SGWorld2DInternal()
-//    : shapes(List<SGShape2DInternal *>())
 {
     singleton = this;
 }

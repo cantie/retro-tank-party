@@ -28,12 +28,19 @@
 
 #include "sg_fixed_math_internal.h"
 
+class SGArea2DInternal;
+
 class SGShape2DInternal {
 protected:
+    friend class SGArea2DInternal;
 
     fixed_vector2 position;
+    SGArea2DInternal *owner;
+
+    _FORCE_INLINE_ void set_owner(SGArea2DInternal *p_owner) { owner = p_owner; }
 
 public:
+    _FORCE_INLINE_ SGArea2DInternal *get_owner() const { return owner; }
 
     _FORCE_INLINE_ fixed_vector2 get_position() const { return position; }
     _FORCE_INLINE_ void set_position(const fixed_vector2 &p_position) { position = p_position; }

@@ -30,13 +30,20 @@
 
 class SGArea2DInternal {
     List<SGShape2DInternal *> shapes;
+    void *data;
     
 public:
     void add_shape(SGShape2DInternal *p_shape);
     void remove_shape(SGShape2DInternal *p_shape);
-    const List<SGShape2DInternal *> &get_shapes() const;
 
-    bool overlaps_area(SGArea2DInternal *p_other_area);
+    _FORCE_INLINE_ const List<SGShape2DInternal *> &get_shapes() const {
+        return shapes;
+    }
+
+    _FORCE_INLINE_ void set_data(void *p_data) { data = p_data; }
+    _FORCE_INLINE_ void *get_data() const { return data; }
+
+    bool overlaps(SGArea2DInternal *p_other_area) const;
 
     SGArea2DInternal();
     ~SGArea2DInternal();
