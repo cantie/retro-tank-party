@@ -52,6 +52,8 @@ void SGFixedVector2::_bind_methods() {
 
     ClassDB::bind_method(D_METHOD("from_float", "float_vector"), &SGFixedVector2::from_float);
     ClassDB::bind_method(D_METHOD("to_float"), &SGFixedVector2::to_float);
+
+	ADD_SIGNAL(MethodInfo("changed"));
 }
 
 Ref<SGFixedVector2> SGFixedVector2::add(const Ref<SGFixedVector2>& p_other) const {
@@ -60,6 +62,7 @@ Ref<SGFixedVector2> SGFixedVector2::add(const Ref<SGFixedVector2>& p_other) cons
 
 void SGFixedVector2::iadd(const Ref<SGFixedVector2>& p_other) {
     value += p_other->value;
+    emit_signal("changed");
 }
 
 Ref<SGFixedVector2> SGFixedVector2::sub(const Ref<SGFixedVector2>& p_other) const {
@@ -68,6 +71,7 @@ Ref<SGFixedVector2> SGFixedVector2::sub(const Ref<SGFixedVector2>& p_other) cons
 
 void SGFixedVector2::isub(const Ref<SGFixedVector2>& p_other) {
     value -= p_other->value;
+    emit_signal("changed");
 }
 
 Ref<SGFixedVector2> SGFixedVector2::mul(const Ref<SGFixedVector2>& p_other) const {
@@ -76,6 +80,7 @@ Ref<SGFixedVector2> SGFixedVector2::mul(const Ref<SGFixedVector2>& p_other) cons
 
 void SGFixedVector2::imul(const Ref<SGFixedVector2>& p_other) {
     value *= p_other->value;
+    emit_signal("changed");
 }
 
 Ref<SGFixedVector2> SGFixedVector2::div(const Ref<SGFixedVector2>& p_other) const {
@@ -84,6 +89,7 @@ Ref<SGFixedVector2> SGFixedVector2::div(const Ref<SGFixedVector2>& p_other) cons
 
 void SGFixedVector2::idiv(const Ref<SGFixedVector2>& p_other) {
     value /= p_other->value;
+    emit_signal("changed");
 }
 
 Ref<SGFixedVector2> SGFixedVector2::addf(int p_other) const {
@@ -92,6 +98,7 @@ Ref<SGFixedVector2> SGFixedVector2::addf(int p_other) const {
 
 void SGFixedVector2::iaddf(int p_other) {
     value += fixed(p_other);
+    emit_signal("changed");
 }
 
 Ref<SGFixedVector2> SGFixedVector2::subf(int p_other) const {
@@ -100,6 +107,7 @@ Ref<SGFixedVector2> SGFixedVector2::subf(int p_other) const {
 
 void SGFixedVector2::isubf(int p_other) {
     value -= fixed(p_other);
+    emit_signal("changed");
 }
 
 Ref<SGFixedVector2> SGFixedVector2::mulf(int p_other) const {
@@ -108,6 +116,7 @@ Ref<SGFixedVector2> SGFixedVector2::mulf(int p_other) const {
 
 void SGFixedVector2::imulf(int p_other) {
     value *= fixed(p_other);
+    emit_signal("changed");
 }
 
 Ref<SGFixedVector2> SGFixedVector2::divf(int p_other) const {
@@ -116,11 +125,13 @@ Ref<SGFixedVector2> SGFixedVector2::divf(int p_other) const {
 
 void SGFixedVector2::idivf(int p_other) {
     value /= fixed(p_other);
+    emit_signal("changed");
 }
 
 void SGFixedVector2::from_float(Vector2 p_float_vector) {
     value.x = fixed::from_float(p_float_vector.x);
     value.y = fixed::from_float(p_float_vector.y);
+    emit_signal("changed");
 }
 
 Vector2 SGFixedVector2::to_float() const {

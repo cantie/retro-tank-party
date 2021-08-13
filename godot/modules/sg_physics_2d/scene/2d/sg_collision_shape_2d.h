@@ -28,10 +28,11 @@
 
 #include "sg_collision_object_2d.h"
 #include "../resources/sg_shapes_2d.h"
+#include "sg_fixed_node_2d.h"
 
-class SGCollisionShape2D : public Node2D {
+class SGCollisionShape2D : public SGFixedNode2D {
 
-    GDCLASS(SGCollisionShape2D, Node2D);
+    GDCLASS(SGCollisionShape2D, SGFixedNode2D);
 
     SGCollisionObject2D *collision_object;
     Ref<SGShape2D> shape;
@@ -46,6 +47,8 @@ public:
     Ref<SGShape2D> get_shape();
 
     void _shape_changed();
+
+    void sync_to_physics_engine() const;
 
     SGCollisionShape2D();
     ~SGCollisionShape2D();

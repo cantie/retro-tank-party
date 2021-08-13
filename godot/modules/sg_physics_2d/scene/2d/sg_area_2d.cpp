@@ -39,10 +39,6 @@ void SGArea2D::remove_shape(SGShape2DInternal *p_shape) {
     area->remove_shape(p_shape);
 }
 
-void SGArea2D::sync_to_physics_engine() {
-
-}
-
 bool SGArea2D::overlaps_area() {
     return false;
 }

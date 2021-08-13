@@ -66,6 +66,8 @@ public:
     void from_float(Vector2 p_float_vector);
     Vector2 to_float() const;
 
+    inline fixed_vector2 get_internal() const { return value; }
+
     SGFixedVector2() { }
     SGFixedVector2(const fixed_vector2& p_internal_vector) {
         value = p_internal_vector;

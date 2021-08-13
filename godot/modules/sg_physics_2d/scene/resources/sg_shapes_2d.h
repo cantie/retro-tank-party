@@ -45,6 +45,7 @@ protected:
 
     SGShape2D(SGShape2DInternal *shape);
 public:
+    virtual void sync_to_physics_engine(fixed_vector2 global_position) const = 0;
 
     virtual void draw(const RID &p_to_rid, const Color &p_color) = 0;
 
@@ -64,6 +65,8 @@ protected:
 public:
     void set_extents(const Ref<SGFixedVector2>& p_extents);
 	Ref<SGFixedVector2> get_extents();
+
+    virtual void sync_to_physics_engine(fixed_vector2 global_position) const;
 
     virtual void draw(const RID &p_to_rid, const Color &p_color) override;
 

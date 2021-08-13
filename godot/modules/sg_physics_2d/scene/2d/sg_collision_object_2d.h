@@ -45,7 +45,7 @@ protected:
 public:
     virtual String get_configuration_warning() const override;
 
-    virtual void sync_to_physics_engine();
+    virtual void sync_to_physics_engine() const;
 
     SGCollisionObject2D();
 

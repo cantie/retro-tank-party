@@ -24,8 +24,8 @@ fixed_position = Object(SGFixedVector2,"x":630784,"y":367616,"script":null)
 shape = SubResource( 1 )
 
 [node name="Character" type="SGArea2D" parent="."]
-position = Vector2( 285, 360 )
-fixed_position = Object(SGFixedVector2,"x":291840,"y":368640,"script":null)
+position = Vector2( 335, 348 )
+fixed_position = Object(SGFixedVector2,"x":343040,"y":356352,"script":null)
 
 script = ExtResource( 2 )
 

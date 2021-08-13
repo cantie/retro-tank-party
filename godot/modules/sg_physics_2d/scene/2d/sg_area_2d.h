@@ -42,7 +42,6 @@ protected:
     void remove_shape(SGShape2DInternal *p_shape) override;
 
 public:
-    virtual void sync_to_physics_engine() override;
     bool overlaps_area();
 
     SGArea2D();

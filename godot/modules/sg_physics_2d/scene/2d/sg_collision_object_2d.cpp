@@ -51,7 +51,8 @@ String SGCollisionObject2D::get_configuration_warning() const {
     return warning;
 }
 
-void SGCollisionObject2D::sync_to_physics_engine() {
+void SGCollisionObject2D::sync_to_physics_engine() const {
+    // @todo loop over children, find SGCollisionShape2D objects and call sync_to_physics_engin()
 }
 
 SGCollisionObject2D::SGCollisionObject2D() {

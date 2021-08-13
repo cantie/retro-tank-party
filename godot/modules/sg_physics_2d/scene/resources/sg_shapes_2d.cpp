@@ -65,6 +65,11 @@ Ref<SGFixedVector2> SGRectangleShape2D::get_extents() {
     return extents;
 }
 
+void SGRectangleShape2D::sync_to_physics_engine(fixed_vector2 global_position) const {
+    SGRectangle2DInternal* internal = (SGRectangle2DInternal *)get_shape_internal();
+    internal->set_position(global_position);
+}
+
 void SGRectangleShape2D::draw(const RID &p_to_rid, const Color &p_color) {
     Size2 float_extents = extents->to_float();
 

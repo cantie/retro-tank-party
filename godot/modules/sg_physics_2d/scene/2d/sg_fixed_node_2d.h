@@ -39,9 +39,13 @@ protected:
 
 	virtual void _changed_callback(Object *p_changed, const char *p_prop) override;
 
+    fixed_vector2 get_global_fixed_position() const;
+
 public:
     void set_fixed_position(const Ref<SGFixedVector2> &p_fixed_position);
     Ref<SGFixedVector2> get_fixed_position();
+
+    void _fixed_position_changed();
 
     SGFixedNode2D();
 

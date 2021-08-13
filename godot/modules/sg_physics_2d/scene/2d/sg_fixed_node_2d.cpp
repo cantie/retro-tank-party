@@ -28,6 +28,7 @@
 void SGFixedNode2D::_bind_methods() {
     ClassDB::bind_method(D_METHOD("get_fixed_position"), &SGFixedNode2D::get_fixed_position);
     ClassDB::bind_method(D_METHOD("set_fixed_position", "fixed_position"), &SGFixedNode2D::set_fixed_position);
+    ClassDB::bind_method(D_METHOD("_fixed_position_changed"), &SGFixedNode2D::_fixed_position_changed);
 
 	ADD_PROPERTY(PropertyInfo(Variant::OBJECT, "fixed_position", PROPERTY_HINT_TYPE_STRING, "SGFixedVector2"), "set_fixed_position", "get_fixed_position");
 }
@@ -37,6 +38,10 @@ void SGFixedNode2D::_changed_callback(Object *p_changed, const char *p_prop) {
         fixed_position->from_float(get_position());
         set_fixed_position(fixed_position);
     }
+}
+
+void SGFixedNode2D::_fixed_position_changed() {
+    set_fixed_position(fixed_position);
 }
 
 void SGFixedNode2D::set_fixed_position(const Ref<SGFixedVector2> &p_fixed_position) {
@@ -51,6 +56,14 @@ Ref<SGFixedVector2> SGFixedNode2D::get_fixed_position() {
     return fixed_position;
 }
 
+fixed_vector2 SGFixedNode2D::get_global_fixed_position() const {
+    SGFixedNode2D *fixed_parent = dynamic_cast<SGFixedNode2D *>(get_parent());
+    if (fixed_parent) {
+        return fixed_parent->get_fixed_position()->get_internal() + fixed_position->get_internal();
+    }
+    return fixed_position->get_internal();
+}
+
 SGFixedNode2D::SGFixedNode2D() 
     : fixed_position(Ref<SGFixedVector2>(memnew(SGFixedVector2))),
       updating_position(false)
@@ -58,4 +71,6 @@ SGFixedNode2D::SGFixedNode2D()
     if (Engine::get_singleton()->is_editor_hint()) {
         add_change_receptor(this);
     }
+
+    fixed_position->connect("changed", this, "_fixed_position_changed");
 }

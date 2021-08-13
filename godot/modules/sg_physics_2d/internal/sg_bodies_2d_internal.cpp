@@ -35,6 +35,10 @@ void SGArea2DInternal::remove_shape(SGShape2DInternal *p_shape) {
     SGWorld2DInternal::get_singleton()->remove_shape(p_shape);
 }
 
+const List<SGShape2DInternal *> &SGArea2DInternal::get_shapes() const {
+    return shapes;
+}
+
 bool SGArea2DInternal::overlaps_area(SGArea2DInternal *p_other_area) {
     for (int i = 0; i < shapes.size(); i++) {
         for (int j = 0; j < p_other_area->shapes.size(); j++) {
