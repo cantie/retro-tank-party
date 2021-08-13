@@ -40,10 +40,17 @@ protected:
 public:
 
     _FORCE_INLINE_ int get_x() const { return value.x.value; }
-    _FORCE_INLINE_ void set_x(int p_x) { value.x.value = p_x; }
-
     _FORCE_INLINE_ int get_y() const { return value.y.value; }
-    _FORCE_INLINE_ void set_y(int p_y) { value.y.value = p_y; }
+
+    void set_x(int p_x) {
+        value.x.value = p_x;
+        emit_signal("changed");
+    }
+
+    void set_y(int p_y) {
+        value.y.value = p_y;
+        emit_signal("changed");
+    }
 
     Ref<SGFixedVector2> add(const Ref<SGFixedVector2> &p_other) const;
     void iadd(const Ref<SGFixedVector2>& p_other);
@@ -66,7 +73,9 @@ public:
     void from_float(Vector2 p_float_vector);
     Vector2 to_float() const;
 
-    inline fixed_vector2 get_internal() const { return value; }
+    // Won't trigger the "changed" signal. Meant only for internal use.
+    _FORCE_INLINE_ fixed_vector2 get_internal() const { return value; }
+    _FORCE_INLINE_ void set_internal(fixed_vector2 p_value) { value = p_value; }
 
     SGFixedVector2() { }
     SGFixedVector2(const fixed_vector2& p_internal_vector) {

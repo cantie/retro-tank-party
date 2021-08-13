@@ -45,7 +45,7 @@ void SGFixedNode2D::_fixed_position_changed() {
 }
 
 void SGFixedNode2D::set_fixed_position(const Ref<SGFixedVector2> &p_fixed_position) {
-    fixed_position = p_fixed_position;
+    fixed_position->set_internal(p_fixed_position->get_internal());
     updating_position = true;
     set_position(fixed_position->to_float());
     updating_position = false;
@@ -68,9 +68,9 @@ SGFixedNode2D::SGFixedNode2D()
     : fixed_position(Ref<SGFixedVector2>(memnew(SGFixedVector2))),
       updating_position(false)
 {
+    fixed_position->connect("changed", this, "_fixed_position_changed");
+
     if (Engine::get_singleton()->is_editor_hint()) {
         add_change_receptor(this);
     }
-
-    fixed_position->connect("changed", this, "_fixed_position_changed");
 }

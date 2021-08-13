@@ -4,14 +4,9 @@ TODO
 MILESTONE 1:
 
  - Initial implementation of deterministic physics
-   o SGFixedVector2 should emit changed signal - for some reason ClassDB doesn't think this signal exists
-   o SGFixedVector2.iadd() should update the SGFixedNode2D's position
-   o Implement sync to the physics engine
-   o Do super basic collision checking
-   o Make a FixedNode2D class that descends from Node2D
-     - Add a check to make sure that no Node2D parents move from the origin when syncing
-	   to physics engine
    o Edit rectangle shape in Godot editor
+   o Implement rotation and scale (probably need a FixedTransform2D)
+   o Implement more collision shapes
    o Unit tests!
 
 MILESTONE 2 (internal cleanup):
