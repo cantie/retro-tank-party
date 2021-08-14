@@ -4,7 +4,6 @@ TODO
 MILESTONE 1:
 
  - Initial implementation of deterministic physics
-   o Edit rectangle shape in Godot editor
    o Implement rotation and scale (probably need a FixedTransform2D)
    o Implement more collision shapes
    o Unit tests!
