@@ -25,6 +25,7 @@
 #define SG_FIXED_MATH_INTERNAL_H
 
 #include <core/typedefs.h>
+#include <core/math/math_funcs.h>
 
 struct fixed {
     int32_t value;
@@ -89,6 +90,10 @@ struct fixed {
 
     _FORCE_INLINE_ bool operator<=(const fixed &p_other) const {
         return value <= p_other.value;
+    }
+
+    _FORCE_INLINE_ fixed abs() const {
+        return fixed(Math::abs(value));
     }
 
 };
@@ -176,6 +181,10 @@ struct fixed_vector2 {
 	_FORCE_INLINE_ void operator/=(const fixed &p_v) {
         x /= p_v;
         y /= p_v;
+    }
+
+    _FORCE_INLINE_ fixed_vector2 abs() const {
+        return fixed_vector2(x.abs(), y.abs());
     }
 
 };

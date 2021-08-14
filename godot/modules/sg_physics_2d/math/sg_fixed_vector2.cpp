@@ -128,6 +128,10 @@ void SGFixedVector2::idivf(int p_other) {
     emit_signal("changed");
 }
 
+Ref<SGFixedVector2> SGFixedVector2::abs() const {
+    return Ref<SGFixedVector2>(memnew(SGFixedVector2(value.abs())));
+}
+
 void SGFixedVector2::from_float(Vector2 p_float_vector) {
     value.x = fixed::from_float(p_float_vector.x);
     value.y = fixed::from_float(p_float_vector.y);

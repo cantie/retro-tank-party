@@ -70,6 +70,8 @@ public:
     Ref<SGFixedVector2> divf(int p_fixed) const;
     void idivf(int p_fixed);
 
+    Ref<SGFixedVector2> abs() const;
+
     void from_float(Vector2 p_float_vector);
     Vector2 to_float() const;
 

@@ -32,15 +32,37 @@ class SGCollisionShape2D;
 class SGCollisionShape2DEditor : public Control {
     GDCLASS(SGCollisionShape2DEditor, Control);
 
+    enum ShapeType {
+        RECTANGLE_SHAPE,
+        CIRCLE_SHAPE,
+    };
+
     EditorNode *editor;
     UndoRedo *undo_redo;
     CanvasItemEditor *canvas_item_editor = NULL;
     SGCollisionShape2D *node = NULL;
 
+    Vector<Point2> handles;
+
+    int shape_type;
+    int edit_handle;
+    bool pressed;
+    Variant original;
+
+    Variant get_handle_value(int idx) const;
+    void set_handle(int idx, Point2 &p_point);
+    void commit_handle(int idx, Variant &p_org);
+
+    void _get_current_shape_type();
+
 protected:
-    //static void _bind_methods();
+    void _notification(int p_what);
+    void _node_removed(Node *p_node);
+    static void _bind_methods();
 
 public:
+    bool forward_canvas_gui_input(const Ref<InputEvent> &p_event);
+    void forward_canvas_draw_over_viewport(Control *p_overlay);
     void edit(Node *p_node);
 
     SGCollisionShape2DEditor(EditorNode *p_editor);
@@ -50,9 +72,12 @@ class SGCollisionShape2DEditorPlugin : public EditorPlugin {
     GDCLASS(SGCollisionShape2DEditorPlugin, EditorPlugin);
 
     EditorNode *editor;
-    SGCollisionShape2DEditor *collision_shape2d_editor_plugin;
+    SGCollisionShape2DEditor *collision_shape2d_editor;
 
 public:
+	virtual bool forward_canvas_gui_input(const Ref<InputEvent> &p_event) { return collision_shape2d_editor->forward_canvas_gui_input(p_event); }
+	virtual void forward_canvas_draw_over_viewport(Control *p_overlay) { collision_shape2d_editor->forward_canvas_draw_over_viewport(p_overlay); }
+
     virtual String get_name() const { return "SGCollisionShape2D"; }
     bool has_main_screen() const { return false; }
     virtual bool handles(Object *p_obj);
