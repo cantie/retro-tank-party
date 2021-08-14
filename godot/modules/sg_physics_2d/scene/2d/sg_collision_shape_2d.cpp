@@ -36,16 +36,28 @@ void SGCollisionShape2D::_bind_methods() {
 
 void SGCollisionShape2D::_notification(int p_what) {
     switch (p_what) {
-        case NOTIFICATION_DRAW:
+        case NOTIFICATION_DRAW: {
             if (!Engine::get_singleton()->is_editor_hint() && !get_tree()->is_debugging_collisions_hint()) {
-                return;
+                break;
             }
 
-            if (shape.is_valid()) {
-                shape->draw(get_canvas_item(), Color(0.9f, 0.7f, 0.7f));
+            if (!shape.is_valid()) {
+                break;
             }
 
-            break;
+            Color draw_col = get_tree()->get_debug_collisions_color();
+            /*
+            if (disabled) {
+                float g = draw_col.get_v();
+                draw_col.r = g;
+                draw_col.g = g;
+                draw_col.b = g;
+                draw_col.a *= 0.5;
+            }
+            */
+
+            shape->draw(get_canvas_item(), draw_col);
+        } break;
         
         case NOTIFICATION_PARENTED:
             collision_object = Object::cast_to<SGCollisionObject2D>(get_parent());
