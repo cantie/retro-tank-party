@@ -78,11 +78,11 @@ public:
 	virtual bool forward_canvas_gui_input(const Ref<InputEvent> &p_event) { return collision_shape2d_editor->forward_canvas_gui_input(p_event); }
 	virtual void forward_canvas_draw_over_viewport(Control *p_overlay) { collision_shape2d_editor->forward_canvas_draw_over_viewport(p_overlay); }
 
-    virtual String get_name() const { return "SGCollisionShape2D"; }
-    bool has_main_screen() const { return false; }
-    virtual bool handles(Object *p_obj);
-    virtual void edit(Object *p_obj);
-    virtual void make_visible(bool visible);
+    virtual String get_name() const override { return "SGCollisionShape2D"; }
+    bool has_main_screen() const override { return false; }
+    virtual bool handles(Object *p_obj) const override;
+    virtual void edit(Object *p_obj) override;
+    virtual void make_visible(bool visible) override;
 
     SGCollisionShape2DEditorPlugin(EditorNode *p_editor);
     ~SGCollisionShape2DEditorPlugin();

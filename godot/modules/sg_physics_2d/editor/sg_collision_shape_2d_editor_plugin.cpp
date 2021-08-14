@@ -34,7 +34,7 @@ Variant SGCollisionShape2DEditor::get_handle_value(int idx) const {
             Ref<SGRectangleShape2D> rectangle = node->get_shape();
 
             if (idx < 3) {
-                return rectangle->get_extents()->abs()->to_float();
+                return rectangle->get_extents()->abs();
             }
         } break;
     }
@@ -59,6 +59,7 @@ void SGCollisionShape2DEditor::set_handle(int idx, Point2 &p_point) {
                     extents->from_float(p_point);
                     break;
             }
+            rectangle->set_extents(extents->abs());
 
             canvas_item_editor->update_viewport();
         } break;
@@ -214,7 +215,7 @@ void SGCollisionShape2DEditor::forward_canvas_draw_over_viewport(Control *p_over
 
     Transform2D gt = canvas_item_editor->get_canvas_transform() * node->get_global_transform();
 
-    Ref<Texture> h = get_icon("EditorHandle", "EditorIcon");
+    Ref<Texture> h = get_icon("EditorHandle", "EditorIcons");
     Vector2 size = h->get_size() * 0.5;
 
     handles.clear();
@@ -267,7 +268,7 @@ SGCollisionShape2DEditor::SGCollisionShape2DEditor(EditorNode *p_editor) {
     pressed = false;
 }
 
-bool SGCollisionShape2DEditorPlugin::handles(Object *p_obj) {
+bool SGCollisionShape2DEditorPlugin::handles(Object *p_obj) const {
     SGCollisionShape2D *node = Object::cast_to<SGCollisionShape2D>(p_obj);
     return (bool)node;
 }

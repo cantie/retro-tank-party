@@ -44,6 +44,7 @@ SGRectangleShape2D::SGRectangleShape2D() :
     SGShape2D(memnew(SGRectangle2DInternal(fixed(10240), fixed(10240)))),
     extents(Ref<SGFixedVector2>(memnew(SGFixedVector2(fixed_vector2(fixed(10240), fixed(10240))))))
 {
+    extents->connect("changed", this, "emit_changed");
 }
 
 SGRectangleShape2D::~SGRectangleShape2D() {
@@ -57,7 +58,8 @@ void SGRectangleShape2D::_bind_methods() {
 }
 
 void SGRectangleShape2D::set_extents(const Ref<SGFixedVector2>& p_extents) {
-    extents = p_extents;
+    extents->set_internal(p_extents->get_internal());
+    _change_notify("extents");
     emit_changed();
 }
 
@@ -77,6 +79,7 @@ void SGRectangleShape2D::draw(const RID &p_to_rid, const Color &p_color) {
 	VisualServer::get_singleton()->canvas_item_add_rect(p_to_rid, Rect2(-float_extents, float_extents * 2.0), p_color);
 
     // Draw an outlined rectangle to make individual shapes easier to distinguish.
+    /*
     Vector<Vector2> stroke_points;
     stroke_points.resize(5);
     stroke_points.write[0] = -float_extents;
@@ -92,4 +95,5 @@ void SGRectangleShape2D::draw(const RID &p_to_rid, const Color &p_color) {
     }
 
     VisualServer::get_singleton()->canvas_item_add_polyline(p_to_rid, stroke_points, stroke_colors, 1.0, true);
+    */
 }

@@ -55,7 +55,7 @@ void register_sg_physics_2d_types() {
 
     world_singleton = memnew(SGWorld2DInternal);
 
-#if TOOLS_ENABLED
+#ifdef TOOLS_ENABLED
     EditorPlugins::add_by_type<SGFixedMathEditorPlugin>();
     EditorPlugins::add_by_type<SGCollisionShape2DEditorPlugin>();
 #endif
