@@ -5,6 +5,9 @@ MILESTONE 1:
 
  - Initial implementation of deterministic physics
    o Implement rotation and scale (probably need a FixedTransform2D)
+     - Use fixed_transform2d internally to FixedNode2D - add rotation and scale properties
+     - SGShape2DInternal should have a fixed_transform2d instead of position
+     - Implement collision between oriented rectangles
    o Implement more collision shapes
    o Unit tests!
 
