@@ -49,6 +49,15 @@ public:
     int mul(int p_fixed_one, int p_fixed_two) const;
     int div(int p_fixed_one, int p_fixed_two) const;
 
+    int sin(int p_fixed_value) const;
+    int cos(int p_fixed_value) const;
+    int tan(int p_fixed_value) const;
+    int asin(int p_fixed_value) const;
+    int acos(int p_fixed_value) const;
+    int atan(int p_fixed_value) const;
+    int atan2(int p_fixed_y_value, int p_fixed_x_value) const;
+    int sqrt(int p_fixed_value) const;
+
     Ref<SGFixedVector2> vector2(int p_fixed_x, int p_fixed_y) const;
 
     SGFixed();

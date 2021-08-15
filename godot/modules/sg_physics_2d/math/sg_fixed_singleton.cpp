@@ -43,10 +43,20 @@ SGFixed *SGFixed::get_singleton() {
 void SGFixed::_bind_methods() {
     ClassDB::bind_method(D_METHOD("from_int", "int_value"), &SGFixed::from_int);
     ClassDB::bind_method(D_METHOD("from_float", "float_value"), &SGFixed::from_float);
-    ClassDB::bind_method(D_METHOD("to_int"), &SGFixed::to_int);
-    ClassDB::bind_method(D_METHOD("to_float"), &SGFixed::to_float);
+    ClassDB::bind_method(D_METHOD("to_int", "fixed_value"), &SGFixed::to_int);
+    ClassDB::bind_method(D_METHOD("to_float", "fixed_value"), &SGFixed::to_float);
     ClassDB::bind_method(D_METHOD("mul", "fixed_one", "fixed_two"), &SGFixed::mul);
     ClassDB::bind_method(D_METHOD("div", "fixed_one", "fixed_two"), &SGFixed::div);
+
+    ClassDB::bind_method(D_METHOD("sin", "fixed_value"), &SGFixed::sin);
+    ClassDB::bind_method(D_METHOD("cos", "fixed_value"), &SGFixed::cos);
+    ClassDB::bind_method(D_METHOD("tan", "fixed_value"), &SGFixed::tan);
+    ClassDB::bind_method(D_METHOD("asin", "fixed_value"), &SGFixed::asin);
+    ClassDB::bind_method(D_METHOD("acos", "fixed_value"), &SGFixed::acos);
+    ClassDB::bind_method(D_METHOD("atan", "fixed_value"), &SGFixed::atan);
+    ClassDB::bind_method(D_METHOD("atan2", "fixed_y_value", "fixed_x_value"), &SGFixed::atan2);
+    ClassDB::bind_method(D_METHOD("sqrt", "fixed_value"), &SGFixed::sqrt);
+
     ClassDB::bind_method(D_METHOD("vector2", "fixed_x", "fixed_y"), &SGFixed::vector2);
 }
 
@@ -72,6 +82,38 @@ int SGFixed::mul(int p_fixed_one, int p_fixed_two) const {
 
 int SGFixed::div(int p_fixed_one, int p_fixed_two) const {
     return (fixed(p_fixed_one) / fixed(p_fixed_two)).value;
+}
+
+int SGFixed::sin(int p_fixed_value) const {
+    return fixed(p_fixed_value).sin().to_int();
+}
+
+int SGFixed::cos(int p_fixed_value) const {
+    return fixed(p_fixed_value).cos().to_int();
+}
+
+int SGFixed::tan(int p_fixed_value) const {
+    return fixed(p_fixed_value).tan().to_int();
+}
+
+int SGFixed::asin(int p_fixed_value) const {
+    return fixed(p_fixed_value).asin().to_int();
+}
+
+int SGFixed::acos(int p_fixed_value) const {
+    return fixed(p_fixed_value).acos().to_int();
+}
+
+int SGFixed::atan(int p_fixed_value) const {
+    return fixed(p_fixed_value).atan().to_int();
+}
+
+int SGFixed::atan2(int p_fixed_y_value, int p_fixed_x_value) const {
+    return fixed(p_fixed_y_value).atan2(fixed(p_fixed_x_value)).to_int();
+}
+
+int SGFixed::sqrt(int p_fixed_value) const {
+    return fixed(p_fixed_value).sqrt().to_int();
 }
 
 Ref<SGFixedVector2> SGFixed::vector2(int p_fixed_x, int p_fixed_y) const {
