@@ -41,7 +41,7 @@ SGShape2D::~SGShape2D() {
 }
 
 SGRectangleShape2D::SGRectangleShape2D() :
-    SGShape2D(memnew(SGRectangle2DInternal(fixed(10240), fixed(10240)))),
+    SGShape2D(memnew(SGRectangle2DInternal(fixed(655360), fixed(655360)))),
     extents(Ref<SGFixedVector2>(memnew(SGFixedVector2(fixed_vector2(fixed(10240), fixed(10240))))))
 {
     extents->connect("changed", this, "emit_changed");
