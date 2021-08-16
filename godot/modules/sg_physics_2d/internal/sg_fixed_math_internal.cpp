@@ -113,6 +113,10 @@ void fixed_transform2d::rotate(fixed p_phi) {
     *this = fixed_transform2d(p_phi, fixed_vector2()) * (*this);
 }
 
+fixed fixed_transform2d::get_rotation() const {
+    return elements[0].y.atan2(elements[0].x);
+}
+
 void fixed_transform2d::set_rotation(fixed p_rot) {
     fixed_vector2 scale = get_scale();
     fixed cr = p_rot.cos();

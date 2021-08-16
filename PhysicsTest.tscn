@@ -19,15 +19,21 @@ script = ExtResource( 1 )
 position = Vector2( 763, 367 )
 fixed_position = Object(SGFixedVector2,"x":50003968,"y":24051712,"script":null)
 
+fixed_scale = Object(SGFixedVector2,"x":65536,"y":65536,"script":null)
+
 
 [node name="SGCollisionShape2D" type="SGCollisionShape2D" parent="Area"]
 fixed_position = Object(SGFixedVector2,"x":0,"y":0,"script":null)
 
+fixed_scale = Object(SGFixedVector2,"x":65536,"y":65536,"script":null)
+
 shape = SubResource( 1 )
 
 [node name="Character" type="SGArea2D" parent="."]
-position = Vector2( 499, 366 )
-fixed_position = Object(SGFixedVector2,"x":32702464,"y":23986176,"script":null)
+position = Vector2( 500, 367 )
+fixed_position = Object(SGFixedVector2,"x":32768000,"y":24051712,"script":null)
+
+fixed_scale = Object(SGFixedVector2,"x":65536,"y":65536,"script":null)
 
 script = ExtResource( 2 )
 
@@ -35,6 +41,9 @@ script = ExtResource( 2 )
 texture = ExtResource( 3 )
 
 [node name="SGCollisionShape2D" type="SGCollisionShape2D" parent="Character"]
+scale = Vector2( 1e-05, 1e-05 )
 fixed_position = Object(SGFixedVector2,"x":0,"y":0,"script":null)
+
+fixed_scale = Object(SGFixedVector2,"x":0,"y":0,"script":null)
 
 shape = SubResource( 2 )
