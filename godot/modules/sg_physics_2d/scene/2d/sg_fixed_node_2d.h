@@ -31,8 +31,12 @@
 class SGFixedNode2D : public Node2D {
     GDCLASS(SGFixedNode2D, Node2D);
 
+    fixed_transform2d fixed_transform;
     Ref<SGFixedVector2> fixed_position;
-    bool updating_position;
+    Ref<SGFixedVector2> fixed_scale;
+    int fixed_rotation;
+
+    bool updating_transform;
 
 protected:
     static void _bind_methods();
@@ -41,14 +45,21 @@ protected:
 
     fixed_vector2 get_global_fixed_position() const;
 
+    void _fixed_position_changed();
+    void _fixed_scale_changed();
+
 public:
     void set_fixed_position(const Ref<SGFixedVector2> &p_fixed_position);
     Ref<SGFixedVector2> get_fixed_position();
 
-    void _fixed_position_changed();
+    void set_fixed_scale(const Ref<SGFixedVector2> &p_fixed_scale);
+    Ref<SGFixedVector2> get_fixed_scale();
+
+    void set_fixed_rotation(int p_fixed_rotation);
+    int get_fixed_rotation() const;
 
     SGFixedNode2D();
-
+    ~SGFixedNode2D();
 };
 
 #endif
