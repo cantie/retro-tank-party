@@ -21,20 +21,29 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
 /*************************************************************************/
 
+#ifndef SG_COLLISION_DETECTOR_2D_INTERNAL_H
+#define SG_COLLISION_DETECTOR_2D_INTERNAL_H
+
+#include "sg_fixed_math_internal.h"
 #include "sg_shapes_2d_internal.h"
 
-#include "sg_collision_detector_2d_internal.h"
+class SGCollisionDetector2DInternal {
+public:
 
-fixed_rect2 SGRectangle2DInternal::get_bounds() const {
-    return fixed_rect2(transform.get_origin(), extents * transform.get_scale());
-}
+    struct Interval {
+        fixed min;
+        fixed max;
+    };
 
-bool SGRectangle2DInternal::overlaps_shape(SGShape2DInternal *p_shape) {
-    SGRectangle2DInternal *other_rect = dynamic_cast<SGRectangle2DInternal *>(p_shape);
-    if (!other_rect) {
-        return false;
-    }
+    static Interval get_interval(const fixed_rect2 &aabb, const fixed_vector2 &axis);
 
-    //return SGCollisionDetector2DInternal::AABB_overlaps_AABB(get_bounds(), other_rect->get_bounds());
-    return SGCollisionDetector2DInternal::AABB_overlaps_AABB_SAT(get_bounds(), other_rect->get_bounds());
-}
+    static bool overlaps_on_axis(const fixed_rect2 &aabb1, const fixed_rect2 &aabb2, const fixed_vector2 &axis);
+
+    static bool AABB_overlaps_AABB(const fixed_rect2 &aabb1, const fixed_rect2 &aabb2);
+    static bool AABB_overlaps_AABB_SAT(const fixed_rect2 &aabb1, const fixed_rect2 &aabb2);
+    static bool AABB_overlaps_Rectangle(const fixed_rect2 &aabb, SGRectangle2DInternal *rectangle);
+
+};
+
+#endif
+

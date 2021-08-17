@@ -1,0 +1,88 @@
+/*************************************************************************/
+/* Copyright (c) 2021 David Snopek                                       */
+/*                                                                       */
+/* Permission is hereby granted, free of charge, to any person obtaining */
+/* a copy of this software and associated documentation files (the       */
+/* "Software"), to deal in the Software without restriction, including   */
+/* without limitation the rights to use, copy, modify, merge, publish,   */
+/* distribute, sublicense, and/or sell copies of the Software, and to    */
+/* permit persons to whom the Software is furnished to do so, subject to */
+/* the following conditions:                                             */
+/*                                                                       */
+/* The above copyright notice and this permission notice shall be        */
+/* included in all copies or substantial portions of the Software.       */
+/*                                                                       */
+/* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,       */
+/* EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF    */
+/* MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.*/
+/* IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY  */
+/* CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,  */
+/* TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE     */
+/* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
+/*************************************************************************/
+
+#include "sg_collision_detector_2d_internal.h"
+
+using Interval = SGCollisionDetector2DInternal::Interval;
+
+Interval SGCollisionDetector2DInternal::get_interval(const fixed_rect2 &aabb, const fixed_vector2 &axis) {
+    Interval result;
+
+    fixed_vector2 min = aabb.get_min();
+    fixed_vector2 max = aabb.get_max();
+
+    fixed_vector2 verts[] = {
+        fixed_vector2(min.x, min.y), fixed_vector2(max.x, min.y),
+        fixed_vector2(min.x, max.y), fixed_vector2(max.x, max.y),
+    };
+
+    result.min = result.max = axis.dot(verts[0]);
+    for (int i = 1; i < 4; i++) {
+        fixed projection = axis.dot(verts[i]);
+        if (projection < result.min) {
+            result.min = projection;
+        }
+        if (projection > result.max) {
+            result.max = projection;
+        }
+    }
+
+    return result;
+}
+
+bool SGCollisionDetector2DInternal::overlaps_on_axis(const fixed_rect2 &aabb1, const fixed_rect2 &aabb2, const fixed_vector2 &axis) {
+    Interval i1 = get_interval(aabb1, axis);
+    Interval i2 = get_interval(aabb2, axis);
+    return ((i2.min <= i1.max) && (i1.min <= i2.max));
+}
+
+bool SGCollisionDetector2DInternal::AABB_overlaps_AABB(const fixed_rect2 &aabb1, const fixed_rect2 &aabb2) {
+    fixed_vector2 min_one = aabb1.get_min();
+    fixed_vector2 max_one = aabb1.get_max();
+    fixed_vector2 min_two = aabb2.get_min();
+    fixed_vector2 max_two = aabb2.get_max();
+
+    return (min_two.x <= max_one.x) && (min_one.x <= max_two.x) && \
+           (min_two.y <= max_one.y) && (min_one.y <= max_two.y);
+}
+
+bool SGCollisionDetector2DInternal::AABB_overlaps_AABB_SAT(const fixed_rect2 &aabb1, const fixed_rect2 &aabb2) {
+    fixed_vector2 axes[] = {
+        fixed_vector2(fixed::ONE, fixed::ZERO),
+        fixed_vector2(fixed::ZERO, fixed::ONE),
+    };
+
+    for (int i = 0; i < 2; i++) {
+        if (!overlaps_on_axis(aabb1, aabb2, axes[i])) {
+            // Axis of seperation found! They don't overlap.
+            return false;
+        }
+    }
+
+    // No axis of seperation found, they overlap.
+    return true;
+}
+
+bool SGCollisionDetector2DInternal::AABB_overlaps_Rectangle(const fixed_rect2 &aabb, SGRectangle2DInternal *rectangle) {
+    return false;
+}
