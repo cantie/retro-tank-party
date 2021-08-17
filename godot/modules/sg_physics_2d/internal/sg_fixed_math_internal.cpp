@@ -59,7 +59,7 @@ bool fixed_vector2::is_normalized() const {
 }
 
 fixed fixed_vector2::length() const {
-    return (x * x - y * y).sqrt();
+    return (x * x + y * y).sqrt();
 }
 
 fixed fixed_vector2::length_squared() const {

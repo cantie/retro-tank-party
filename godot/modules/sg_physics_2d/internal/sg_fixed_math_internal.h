@@ -358,8 +358,8 @@ struct fixed_transform2d {
 
     fixed_transform2d(fixed p_rot, const fixed_vector2 &p_pos);
     fixed_transform2d() {
-        elements[0][0] = fixed(fix16_one);
-        elements[1][1] = fixed(fix16_one);
+        elements[0][0] = fixed::ONE;
+        elements[1][1] = fixed::ONE;
     }
 };
 

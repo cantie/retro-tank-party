@@ -24,7 +24,7 @@
 #include "sg_shapes_2d_internal.h"
 
 fixed_rect2 SGRectangle2DInternal::get_bounds() const {
-    return fixed_rect2(position, extents);
+    return fixed_rect2(transform.get_origin(), extents * transform.get_scale());
 }
 
 bool SGRectangle2DInternal::overlaps_shape(SGShape2DInternal *p_shape) {
@@ -33,10 +33,13 @@ bool SGRectangle2DInternal::overlaps_shape(SGShape2DInternal *p_shape) {
         return false;
     }
 
-    fixed_vector2 min_one = get_bounds().get_min();
-    fixed_vector2 max_one = get_bounds().get_max();
-    fixed_vector2 min_two = other_rect->get_bounds().get_min();
-    fixed_vector2 max_two = other_rect->get_bounds().get_max();
+    fixed_rect2 rect1 = get_bounds();
+    fixed_rect2 rect2 = other_rect->get_bounds();
+
+    fixed_vector2 min_one = rect1.get_min();
+    fixed_vector2 max_one = rect1.get_max();
+    fixed_vector2 min_two = rect2.get_min();
+    fixed_vector2 max_two = rect2.get_max();
 
     return (min_two.x <= max_one.x) && (min_one.x <= max_two.x) && \
            (min_two.y <= max_one.y) && (min_one.y <= max_two.y);

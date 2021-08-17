@@ -59,12 +59,12 @@ void SGFixedNode2D::_changed_callback(Object *p_changed, const char *p_prop) {
     }
 }
 
-fixed_vector2 SGFixedNode2D::get_global_fixed_position() const {
+fixed_transform2d SGFixedNode2D::get_global_fixed_transform() const {
     SGFixedNode2D *fixed_parent = dynamic_cast<SGFixedNode2D *>(get_parent());
     if (fixed_parent) {
-        return fixed_parent->get_fixed_position()->get_internal() + fixed_position->get_internal();
+        return fixed_parent->get_global_fixed_transform() * fixed_transform;
     }
-    return fixed_position->get_internal();
+    return fixed_transform;
 }
 
 void SGFixedNode2D::_fixed_position_changed() {

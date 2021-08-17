@@ -43,7 +43,7 @@ protected:
 
 	virtual void _changed_callback(Object *p_changed, const char *p_prop) override;
 
-    fixed_vector2 get_global_fixed_position() const;
+    fixed_transform2d get_global_fixed_transform() const;
 
     void _fixed_position_changed();
     void _fixed_scale_changed();

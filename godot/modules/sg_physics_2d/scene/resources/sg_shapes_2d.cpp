@@ -67,9 +67,9 @@ Ref<SGFixedVector2> SGRectangleShape2D::get_extents() {
     return extents;
 }
 
-void SGRectangleShape2D::sync_to_physics_engine(fixed_vector2 global_position) const {
+void SGRectangleShape2D::sync_to_physics_engine(const fixed_transform2d &p_global_transform) const {
     SGRectangle2DInternal* internal = (SGRectangle2DInternal *)get_shape_internal();
-    internal->set_position(global_position);
+    internal->set_transform(p_global_transform);
     internal->set_extents(extents->get_internal());
 }
 

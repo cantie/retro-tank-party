@@ -34,7 +34,7 @@ class SGShape2DInternal {
 protected:
     friend class SGArea2DInternal;
 
-    fixed_vector2 position;
+    fixed_transform2d transform;
     SGArea2DInternal *owner;
 
     _FORCE_INLINE_ void set_owner(SGArea2DInternal *p_owner) { owner = p_owner; }
@@ -42,10 +42,10 @@ protected:
 public:
     _FORCE_INLINE_ SGArea2DInternal *get_owner() const { return owner; }
 
-    _FORCE_INLINE_ fixed_vector2 get_position() const { return position; }
-    _FORCE_INLINE_ void set_position(const fixed_vector2 &p_position) { position = p_position; }
+    _FORCE_INLINE_ fixed_transform2d get_position() const { return transform; }
+    _FORCE_INLINE_ void set_transform(const fixed_transform2d &p_transform) { transform = p_transform; }
 
-    virtual fixed_rect2 get_bounds() const = 0;
+    //virtual fixed_rect2 get_bounds() const = 0;
 
     virtual bool overlaps_shape(SGShape2DInternal *p_shape) = 0;
 
@@ -63,7 +63,7 @@ public:
     _FORCE_INLINE_ fixed_vector2 get_extents() const { return extents; }
     _FORCE_INLINE_ void set_extents(const fixed_vector2 &p_extents) { extents = p_extents; }
 
-    virtual fixed_rect2 get_bounds() const;
+    fixed_rect2 get_bounds() const;
     virtual bool overlaps_shape(SGShape2DInternal *p_shape);
 
     SGRectangle2DInternal(fixed p_extents_w, fixed p_extents_h) {
