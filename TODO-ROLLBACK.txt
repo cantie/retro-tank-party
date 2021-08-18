@@ -4,13 +4,12 @@ TODO
 MILESTONE 1:
 
  - Initial implementation of deterministic physics
-   o Clean up code for collision detection
  - Implement more collision shapes
    o Circle
-   o Ray cast
  - move_and_slide()
  - Attempt to put in game
    o Collision masks
+ - Ray cast
  - Broadphase
  - Unit tests!
    o Reintroduce the physics server to allow testing in GDScript?
