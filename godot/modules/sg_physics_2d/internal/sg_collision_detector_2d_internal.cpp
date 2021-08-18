@@ -50,9 +50,48 @@ Interval SGCollisionDetector2DInternal::get_interval(const fixed_rect2 &aabb, co
     return result;
 }
 
+Interval SGCollisionDetector2DInternal::get_interval(const SGRectangle2DInternal &rectangle, const fixed_vector2 &axis) {
+    fixed_rect2 bounds = rectangle.get_bounds();
+
+    fixed_vector2 min = bounds.get_min();
+    fixed_vector2 max = bounds.get_max();
+
+    // @todo This isn't quite right, because bounds will already include the scale, which will get double applied in a moment.
+    fixed_vector2 verts[] = {
+        fixed_vector2(min.x, min.y), fixed_vector2(max.x, min.y),
+        fixed_vector2(min.x, max.y), fixed_vector2(max.x, max.y),
+    };
+
+    for (int i = 0; i < 4; i++) {
+        verts[i] = rectangle.get_transform().xform(verts[i] - bounds.position);
+    }
+
+    // @todo We can reuse the above verts for all the axes.
+
+    Interval result;
+    result.min = result.max = axis.dot(verts[0]);
+    for (int i = 1; i < 4; i++) {
+        fixed projection = axis.dot(verts[i]);
+        if (projection < result.min) {
+            result.min = projection;
+        }
+        if (projection > result.max) {
+            result.max = projection;
+        }
+    }
+
+    return result;
+}
+
 bool SGCollisionDetector2DInternal::overlaps_on_axis(const fixed_rect2 &aabb1, const fixed_rect2 &aabb2, const fixed_vector2 &axis) {
     Interval i1 = get_interval(aabb1, axis);
     Interval i2 = get_interval(aabb2, axis);
+    return ((i2.min <= i1.max) && (i1.min <= i2.max));
+}
+
+bool SGCollisionDetector2DInternal::overlaps_on_axis(const fixed_rect2 &aabb, const SGRectangle2DInternal &rectangle, const fixed_vector2 &axis) {
+    Interval i1 = get_interval(aabb, axis);
+    Interval i2 = get_interval(rectangle, axis);
     return ((i2.min <= i1.max) && (i1.min <= i2.max));
 }
 
@@ -83,6 +122,30 @@ bool SGCollisionDetector2DInternal::AABB_overlaps_AABB_SAT(const fixed_rect2 &aa
     return true;
 }
 
-bool SGCollisionDetector2DInternal::AABB_overlaps_Rectangle(const fixed_rect2 &aabb, SGRectangle2DInternal *rectangle) {
-    return false;
+bool SGCollisionDetector2DInternal::AABB_overlaps_Rectangle(const fixed_rect2 &aabb, const SGRectangle2DInternal &rectangle) {
+    fixed_vector2 axes[] = {
+        fixed_vector2(fixed::ONE, fixed::ZERO),
+        fixed_vector2(fixed::ZERO, fixed::ONE),
+        rectangle.get_transform().xform(fixed_vector2(rectangle.get_extents().x, fixed::ZERO)).normalized(),
+        rectangle.get_transform().xform(fixed_vector2(fixed::ZERO, rectangle.get_extents().y)).normalized(),
+    };
+
+    for (int i = 0; i < 4; i++) {
+        if (!overlaps_on_axis(aabb, rectangle, axes[i])) {
+            return false;
+        }
+    }
+
+    return true;
+}
+
+bool SGCollisionDetector2DInternal::Rectangle_overlaps_Rectangle(const SGRectangle2DInternal &rectangle1, const SGRectangle2DInternal &rectangle2) {
+    // Convert first rectangle into its own local space.
+    fixed_rect2 aabb(fixed_vector2(), rectangle1.get_extents());
+
+    // Transform the second rectangle into the local space of the first.
+    SGRectangle2DInternal localized_rectangle2(rectangle2.get_extents());
+    localized_rectangle2.set_transform(rectangle1.get_transform().affine_inverse() * rectangle2.get_transform());
+
+    return AABB_overlaps_Rectangle(aabb, localized_rectangle2);
 }

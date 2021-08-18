@@ -36,5 +36,7 @@ bool SGRectangle2DInternal::overlaps_shape(SGShape2DInternal *p_shape) {
     }
 
     //return SGCollisionDetector2DInternal::AABB_overlaps_AABB(get_bounds(), other_rect->get_bounds());
-    return SGCollisionDetector2DInternal::AABB_overlaps_AABB_SAT(get_bounds(), other_rect->get_bounds());
+    //return SGCollisionDetector2DInternal::AABB_overlaps_AABB_SAT(get_bounds(), other_rect->get_bounds());
+    //return SGCollisionDetector2DInternal::AABB_overlaps_Rectangle(get_bounds(), *other_rect);
+    return SGCollisionDetector2DInternal::Rectangle_overlaps_Rectangle(*this, *other_rect);
 }

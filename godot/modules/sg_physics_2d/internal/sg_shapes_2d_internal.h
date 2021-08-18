@@ -42,7 +42,7 @@ protected:
 public:
     _FORCE_INLINE_ SGArea2DInternal *get_owner() const { return owner; }
 
-    _FORCE_INLINE_ fixed_transform2d get_position() const { return transform; }
+    _FORCE_INLINE_ fixed_transform2d get_transform() const { return transform; }
     _FORCE_INLINE_ void set_transform(const fixed_transform2d &p_transform) { transform = p_transform; }
 
     //virtual fixed_rect2 get_bounds() const = 0;
@@ -66,8 +66,11 @@ public:
     fixed_rect2 get_bounds() const;
     virtual bool overlaps_shape(SGShape2DInternal *p_shape);
 
+    SGRectangle2DInternal(fixed_vector2 p_extents) {
+        extents = p_extents;
+    }
     SGRectangle2DInternal(fixed p_extents_w, fixed p_extents_h) {
-        set_extents(fixed_vector2(p_extents_w, p_extents_h));
+        extents = fixed_vector2(p_extents_w, p_extents_h);
     }
 
 };

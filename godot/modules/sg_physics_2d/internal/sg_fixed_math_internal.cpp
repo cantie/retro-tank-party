@@ -94,7 +94,7 @@ void fixed_transform2d::affine_invert() {
 #ifdef MATH_CHECKS
     ERR_FAIL_COND(det == 0);
 #endif
-    fixed idet = fixed(fix16_one) / det;
+    fixed idet = fixed::ONE / det;
 
     SWAP(elements[0][0], elements[1][1]);
     elements[0] *= fixed_vector2(idet, -idet);

@@ -163,7 +163,7 @@ struct fixed_vector2 {
 	_FORCE_INLINE_ fixed_vector2(fixed p_x, fixed p_y) 
         : x(p_x), y(p_y) {}
 	_FORCE_INLINE_ fixed_vector2()
-        : x(fixed(0)), y(fixed(0)) {}
+        : x(fixed::ZERO), y(fixed::ZERO) {}
     
 	_FORCE_INLINE_ fixed &operator[](int p_idx) {
 		return p_idx ? y : x;

@@ -16,11 +16,13 @@ extents = Object(SGFixedVector2,"x":2097152,"y":2097152,"script":null)
 script = ExtResource( 1 )
 
 [node name="Area" type="SGArea2D" parent="."]
-position = Vector2( 763, 367 )
-fixed_position = Object(SGFixedVector2,"x":50003968,"y":24051712,"script":null)
+position = Vector2( 679, 257 )
+rotation = -0.785675
+fixed_position = Object(SGFixedVector2,"x":44498948,"y":16842752,"script":null)
 
 fixed_scale = Object(SGFixedVector2,"x":65536,"y":65536,"script":null)
 
+fixed_rotation = -51490
 
 [node name="SGCollisionShape2D" type="SGCollisionShape2D" parent="Area"]
 fixed_position = Object(SGFixedVector2,"x":0,"y":0,"script":null)
@@ -30,11 +32,13 @@ fixed_scale = Object(SGFixedVector2,"x":65536,"y":65536,"script":null)
 shape = SubResource( 1 )
 
 [node name="Character" type="SGArea2D" parent="."]
-position = Vector2( 500, 367 )
-fixed_position = Object(SGFixedVector2,"x":32768000,"y":24051712,"script":null)
+position = Vector2( 506, 367 )
+rotation = -0.867859
+fixed_position = Object(SGFixedVector2,"x":33161216,"y":24051714,"script":null)
 
 fixed_scale = Object(SGFixedVector2,"x":65536,"y":65536,"script":null)
 
+fixed_rotation = -56876
 script = ExtResource( 2 )
 
 [node name="Sprite" type="Sprite" parent="Character"]

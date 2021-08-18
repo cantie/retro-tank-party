@@ -36,12 +36,15 @@ public:
     };
 
     static Interval get_interval(const fixed_rect2 &aabb, const fixed_vector2 &axis);
+    static Interval get_interval(const SGRectangle2DInternal &rectangle, const fixed_vector2 &axis);
 
     static bool overlaps_on_axis(const fixed_rect2 &aabb1, const fixed_rect2 &aabb2, const fixed_vector2 &axis);
+    static bool overlaps_on_axis(const fixed_rect2 &aabb, const SGRectangle2DInternal &rectangle, const fixed_vector2 &axis);
 
     static bool AABB_overlaps_AABB(const fixed_rect2 &aabb1, const fixed_rect2 &aabb2);
     static bool AABB_overlaps_AABB_SAT(const fixed_rect2 &aabb1, const fixed_rect2 &aabb2);
-    static bool AABB_overlaps_Rectangle(const fixed_rect2 &aabb, SGRectangle2DInternal *rectangle);
+    static bool AABB_overlaps_Rectangle(const fixed_rect2 &aabb, const SGRectangle2DInternal &rectangle);
+    static bool Rectangle_overlaps_Rectangle(const SGRectangle2DInternal &rectangle1, const SGRectangle2DInternal &rectangle2);
 
 };
 
