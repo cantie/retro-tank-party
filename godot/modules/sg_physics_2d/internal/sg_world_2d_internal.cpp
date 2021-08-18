@@ -25,6 +25,7 @@
 
 #include "sg_bodies_2d_internal.h"
 #include "sg_shapes_2d_internal.h"
+#include "sg_collision_detector_2d_internal.h"
 
 SGWorld2DInternal *SGWorld2DInternal::singleton = NULL;
 
@@ -48,6 +49,31 @@ void SGWorld2DInternal::remove_shape(SGShape2DInternal *p_shape) {
     shapes.erase(p_shape);
 }
 
+bool SGWorld2DInternal::overlaps(SGArea2DInternal *p_area1, SGArea2DInternal *p_area2) const {
+    for (const List<SGShape2DInternal *>::Element *S1 = p_area1->get_shapes().front(); S1; S1 = S1->next()) {
+        for (const List<SGShape2DInternal *>::Element *S2 = p_area2->get_shapes().front(); S2; S2 = S2->next()) {
+            if (overlaps(S1->get(), S2->get())) {
+                return true;
+            }
+        }
+    }
+
+    return false;
+}
+
+bool SGWorld2DInternal::overlaps(SGShape2DInternal *p_shape1, SGShape2DInternal *p_shape2) const {
+    using ShapeType = SGShape2DInternal::ShapeType;
+
+    ShapeType shape1_type = p_shape1->get_shape_type();
+    ShapeType shape2_type = p_shape2->get_shape_type();
+
+    if (shape1_type == ShapeType::SHAPE_RECTANGLE && shape2_type == ShapeType::SHAPE_RECTANGLE) {
+        return SGCollisionDetector2DInternal::Rectangle_overlaps_Rectangle(*((SGRectangle2DInternal *)p_shape1), *((SGRectangle2DInternal *)p_shape2));
+    }
+
+    return false;
+}
+
 List<SGArea2DInternal *> *SGWorld2DInternal::get_overlapping_areas(SGArea2DInternal *p_area) const {
     List<SGArea2DInternal *> *ret = memnew(List<SGArea2DInternal *>);
 
@@ -57,7 +83,7 @@ List<SGArea2DInternal *> *SGWorld2DInternal::get_overlapping_areas(SGArea2DInter
             continue;
         }
 
-        if (p_area->overlaps(other_area)) {
+        if (overlaps(p_area, other_area)) {
             ret->push_back(other_area);
         }
     }

@@ -31,25 +31,33 @@
 class SGArea2DInternal;
 
 class SGShape2DInternal {
+public:
+
+    enum ShapeType {
+        SHAPE_RECTANGLE,
+        SHAPE_CIRCLE,
+    };
+
 protected:
     friend class SGArea2DInternal;
 
+    ShapeType shape_type;
     fixed_transform2d transform;
     SGArea2DInternal *owner;
 
     _FORCE_INLINE_ void set_owner(SGArea2DInternal *p_owner) { owner = p_owner; }
 
 public:
-    _FORCE_INLINE_ SGArea2DInternal *get_owner() const { return owner; }
+    _FORCE_INLINE_ ShapeType get_shape_type() const { return shape_type; }
 
     _FORCE_INLINE_ fixed_transform2d get_transform() const { return transform; }
     _FORCE_INLINE_ void set_transform(const fixed_transform2d &p_transform) { transform = p_transform; }
 
-    //virtual fixed_rect2 get_bounds() const = 0;
+    _FORCE_INLINE_ SGArea2DInternal *get_owner() const { return owner; }
 
-    virtual bool overlaps_shape(SGShape2DInternal *p_shape) = 0;
-
-    SGShape2DInternal() {}
+    SGShape2DInternal(ShapeType p_shape_type) {
+        shape_type = p_shape_type;
+    }
     virtual ~SGShape2DInternal() {}
 };
 
@@ -59,20 +67,18 @@ protected:
     fixed_vector2 extents;
 
 public:
-
     _FORCE_INLINE_ fixed_vector2 get_extents() const { return extents; }
     _FORCE_INLINE_ void set_extents(const fixed_vector2 &p_extents) { extents = p_extents; }
 
     fixed_rect2 get_bounds() const;
-    virtual bool overlaps_shape(SGShape2DInternal *p_shape);
 
-    SGRectangle2DInternal(fixed_vector2 p_extents) {
+    SGRectangle2DInternal(fixed_vector2 p_extents) 
+        : SGShape2DInternal(SHAPE_RECTANGLE) 
+    {
         extents = p_extents;
     }
-    SGRectangle2DInternal(fixed p_extents_w, fixed p_extents_h) {
-        extents = fixed_vector2(p_extents_w, p_extents_h);
-    }
-
+    SGRectangle2DInternal(fixed p_extents_w, fixed p_extents_h) 
+        : SGRectangle2DInternal(fixed_vector2(p_extents_w, p_extents_h)) { }
 };
 
 #endif

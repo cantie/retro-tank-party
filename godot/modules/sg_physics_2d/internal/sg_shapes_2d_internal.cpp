@@ -23,20 +23,6 @@
 
 #include "sg_shapes_2d_internal.h"
 
-#include "sg_collision_detector_2d_internal.h"
-
 fixed_rect2 SGRectangle2DInternal::get_bounds() const {
     return fixed_rect2(transform.get_origin(), extents * transform.get_scale());
-}
-
-bool SGRectangle2DInternal::overlaps_shape(SGShape2DInternal *p_shape) {
-    SGRectangle2DInternal *other_rect = dynamic_cast<SGRectangle2DInternal *>(p_shape);
-    if (!other_rect) {
-        return false;
-    }
-
-    //return SGCollisionDetector2DInternal::AABB_overlaps_AABB(get_bounds(), other_rect->get_bounds());
-    //return SGCollisionDetector2DInternal::AABB_overlaps_AABB_SAT(get_bounds(), other_rect->get_bounds());
-    //return SGCollisionDetector2DInternal::AABB_overlaps_Rectangle(get_bounds(), *other_rect);
-    return SGCollisionDetector2DInternal::Rectangle_overlaps_Rectangle(*this, *other_rect);
 }

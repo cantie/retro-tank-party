@@ -43,8 +43,6 @@ public:
     _FORCE_INLINE_ void set_data(void *p_data) { data = p_data; }
     _FORCE_INLINE_ void *get_data() const { return data; }
 
-    bool overlaps(SGArea2DInternal *p_other_area) const;
-
     SGArea2DInternal();
     ~SGArea2DInternal();
 };

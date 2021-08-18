@@ -43,6 +43,9 @@ public:
     void add_shape(SGShape2DInternal *p_shape);
     void remove_shape(SGShape2DInternal *p_shape);
 
+    bool overlaps(SGArea2DInternal *p_area1, SGArea2DInternal *p_area2) const;
+    bool overlaps(SGShape2DInternal *p_shape1, SGShape2DInternal *p_shape2) const;
+
     List<SGArea2DInternal *> *get_overlapping_areas(SGArea2DInternal *p_area) const;
 
     SGWorld2DInternal();
