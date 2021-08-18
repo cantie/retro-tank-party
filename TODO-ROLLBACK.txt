@@ -4,21 +4,18 @@ TODO
 MILESTONE 1:
 
  - Initial implementation of deterministic physics
-   o Implement rotation and scale (probably need a FixedTransform2D)
-     - Implement collision between oriented rectangles
-   o Implement more collision shapes
-   o Unit tests!
-     - Reintroduce the physics server to allow testing in GDScript?
+   o Clean up code for collision detection
+ - Implement more collision shapes
+   o Circle
+   o Ray cast
+ - move_and_slide()
+ - Attempt to put in game
+   o Collision masks
+ - Broadphase
+ - Unit tests!
+   o Reintroduce the physics server to allow testing in GDScript?
 
-MILESTONE 2 (internal cleanup):
-
- - Profile our rollbacks so we can see how close we are to the frame budget
- - Move ping and other RPCs out of SyncManager and into NetworkAdaptor - will hepl with unit tests
- - Add some unit tests to verify internal behavior of SyncManager
- - Setup the debug_rollback_ticks to compare the save states with the original save states so we can know the exact same things happened
- - Switch to storing state before starting the next tick? This would ensure that deferred stuff would happen...
-
-MILESTOE 3 (finish porting all the things):
+MILESTOE 2 (finish porting all the things):
 
  - Fix Railgun
  - Re-implement abilities
@@ -26,6 +23,14 @@ MILESTOE 3 (finish porting all the things):
  - Figure out how to handle physics
  - Figure out how to handle sound!
  - Implement spectators
+
+MILESTONE 3 (internal cleanup):
+
+ - Profile our rollbacks so we can see how close we are to the frame budget
+ - Move ping and other RPCs out of SyncManager and into NetworkAdaptor - will hepl with unit tests
+ - Add some unit tests to verify internal behavior of SyncManager
+ - Setup the debug_rollback_ticks to compare the save states with the original save states so we can know the exact same things happened
+ - Switch to storing state before starting the next tick? This would ensure that deferred stuff would happen...
 
 BEFORE RELEASE:
 
