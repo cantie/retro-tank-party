@@ -1,11 +1,8 @@
 TODO
 ====
 
-MILESTONE 1:
+MILESTONE 1 (physics):
 
- - Initial implementation of deterministic physics
- - Implement more collision shapes
-   o Circle
  - move_and_slide()
  - Attempt to put in game
    o Collision masks
