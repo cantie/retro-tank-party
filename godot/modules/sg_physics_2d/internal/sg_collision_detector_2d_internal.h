@@ -30,6 +30,10 @@
 class SGCollisionDetector2DInternal {
 public:
 
+    //
+    // Rectangles
+    //
+
     struct Interval {
         fixed min;
         fixed max;
@@ -45,6 +49,14 @@ public:
     static bool AABB_overlaps_AABB_SAT(const fixed_rect2 &aabb1, const fixed_rect2 &aabb2);
     static bool AABB_overlaps_Rectangle(const fixed_rect2 &aabb, const SGRectangle2DInternal &rectangle);
     static bool Rectangle_overlaps_Rectangle(const SGRectangle2DInternal &rectangle1, const SGRectangle2DInternal &rectangle2);
+
+    //
+    // Circles
+    //
+
+    static bool Circle_overlaps_Circle(const SGCircle2DInternal &circle1, const SGCircle2DInternal &circle2);
+    static bool Circle_overlaps_AABB(const SGCircle2DInternal &circle, const fixed_rect2 &aabb);
+    static bool Circle_overlaps_Rectangle(const SGCircle2DInternal &circle, const SGRectangle2DInternal &rectangle);
 
 };
 

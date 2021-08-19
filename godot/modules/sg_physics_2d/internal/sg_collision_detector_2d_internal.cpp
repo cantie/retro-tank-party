@@ -149,3 +149,38 @@ bool SGCollisionDetector2DInternal::Rectangle_overlaps_Rectangle(const SGRectang
 
     return AABB_overlaps_Rectangle(aabb, localized_rectangle2);
 }
+
+bool SGCollisionDetector2DInternal::Circle_overlaps_Circle(const SGCircle2DInternal &circle1, const SGCircle2DInternal &circle2) {
+    fixed_vector2 line = circle2.get_transform().get_origin() - circle1.get_transform().get_origin();
+
+    // We only multiply by the scale.x because we don't support non-uniform scaling.
+    fixed combined_radius = (circle1.get_radius() * circle1.get_transform().get_scale().x) + (circle2.get_radius() * circle2.get_transform().get_scale().x);
+
+    return line.length_squared() <= combined_radius * combined_radius;
+}
+
+bool SGCollisionDetector2DInternal::Circle_overlaps_AABB(const SGCircle2DInternal &circle, const fixed_rect2 &aabb) {
+    fixed_vector2 min = aabb.get_min();
+    fixed_vector2 max = aabb.get_max();
+
+    fixed_vector2 closest_point = circle.get_transform().get_origin();
+    closest_point.x = CLAMP(closest_point.x, min.x, max.x);
+    closest_point.y = CLAMP(closest_point.y, min.y, max.y);
+
+    fixed_vector2 line = closest_point - circle.get_transform().get_origin();
+    // We only multiply by the scale.x because we don't support non-uniform scaling.
+    fixed radius = circle.get_radius() * circle.get_transform().get_scale().x;
+
+    return line.length_squared() <= radius * radius;
+}
+
+bool SGCollisionDetector2DInternal::Circle_overlaps_Rectangle(const SGCircle2DInternal &circle, const SGRectangle2DInternal &rectangle) {
+    // Convert first rectangle into its own local space.
+    fixed_rect2 aabb(fixed_vector2(), rectangle.get_extents());
+
+    // Transform the circle into the local space of the rectangle.
+    SGCircle2DInternal localized_circle(circle.get_radius());
+    localized_circle.set_transform(rectangle.get_transform().affine_inverse() * circle.get_transform());
+
+    return Circle_overlaps_AABB(localized_circle, aabb);
+}

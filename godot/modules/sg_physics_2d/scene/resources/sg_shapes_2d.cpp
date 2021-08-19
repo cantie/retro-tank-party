@@ -98,11 +98,9 @@ int SGCircleShape2D::get_radius() const {
 }
 
 void SGCircleShape2D::sync_to_physics_engine(const fixed_transform2d &p_global_transform) const {
-    /*
     SGCircle2DInternal* internal = (SGCircle2DInternal *)get_shape_internal();
     internal->set_transform(p_global_transform);
-    internal->set_radius(radius);
-    */
+    internal->set_radius(fixed(radius));
 }
 
 void SGCircleShape2D::draw(const RID &p_to_rid, const Color &p_color) {
@@ -120,7 +118,7 @@ void SGCircleShape2D::draw(const RID &p_to_rid, const Color &p_color) {
 }
 
 SGCircleShape2D::SGCircleShape2D() :
-    SGShape2D(memnew(SGRectangle2DInternal(fixed(655360), fixed(655360)))),
+    SGShape2D(memnew(SGCircle2DInternal(fixed(655360)))),
     radius(655360)
 {
 }

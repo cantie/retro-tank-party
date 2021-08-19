@@ -81,4 +81,20 @@ public:
         : SGRectangle2DInternal(fixed_vector2(p_extents_w, p_extents_h)) { }
 };
 
+class SGCircle2DInternal : public SGShape2DInternal {
+protected:
+
+    fixed radius;
+
+public:
+    _FORCE_INLINE_ fixed get_radius() const { return radius; }
+    _FORCE_INLINE_ void set_radius(const fixed &p_radius) { radius = p_radius; }
+
+    SGCircle2DInternal(fixed p_radius)
+        : SGShape2DInternal(SHAPE_CIRCLE)
+    {
+        radius = p_radius;
+    }
+};
+
 #endif
