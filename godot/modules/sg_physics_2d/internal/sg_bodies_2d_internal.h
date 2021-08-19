@@ -28,7 +28,8 @@
 
 #include "sg_shapes_2d_internal.h"
 
-class SGArea2DInternal {
+class SGCollisionObject2DInternal {
+
     List<SGShape2DInternal *> shapes;
     void *data;
     
@@ -43,8 +44,33 @@ public:
     _FORCE_INLINE_ void set_data(void *p_data) { data = p_data; }
     _FORCE_INLINE_ void *get_data() const { return data; }
 
+    SGCollisionObject2DInternal();
+    virtual ~SGCollisionObject2DInternal();
+
+};
+
+class SGArea2DInternal : public SGCollisionObject2DInternal {
+public:
     SGArea2DInternal();
     ~SGArea2DInternal();
+};
+
+class SGBody2DInternal : public SGCollisionObject2DInternal {
+public:
+
+    enum BodyType {
+        BODY_STATIC,
+        BODY_KINEMATIC,
+    };
+
+protected:
+    BodyType type;
+
+public:
+    _FORCE_INLINE_ BodyType get_type() const { return type; }
+
+    SGBody2DInternal(BodyType p_type);
+    ~SGBody2DInternal();
 };
 
 #endif

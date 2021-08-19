@@ -25,23 +25,38 @@
 
 #include "sg_world_2d_internal.h"
 
-void SGArea2DInternal::add_shape(SGShape2DInternal *p_shape) {
+void SGCollisionObject2DInternal::add_shape(SGShape2DInternal *p_shape) {
     p_shape->set_owner(this);
     shapes.push_back(p_shape);
     SGWorld2DInternal::get_singleton()->add_shape(p_shape);
 }
 
-void SGArea2DInternal::remove_shape(SGShape2DInternal *p_shape) {
+void SGCollisionObject2DInternal::remove_shape(SGShape2DInternal *p_shape) {
     p_shape->set_owner(nullptr);
     shapes.erase(p_shape);
     SGWorld2DInternal::get_singleton()->remove_shape(p_shape);
 }
 
-SGArea2DInternal::SGArea2DInternal() {
+SGCollisionObject2DInternal::SGCollisionObject2DInternal() {
     data = nullptr;
+}
+
+SGCollisionObject2DInternal::~SGCollisionObject2DInternal() {
+}
+
+SGArea2DInternal::SGArea2DInternal() {
     SGWorld2DInternal::get_singleton()->add_area(this);
 }
 
 SGArea2DInternal::~SGArea2DInternal() {
     SGWorld2DInternal::get_singleton()->remove_area(this);
+}
+
+SGBody2DInternal::SGBody2DInternal(BodyType p_type) {
+    type = p_type;
+    SGWorld2DInternal::get_singleton()->add_body(this);
+}
+
+SGBody2DInternal::~SGBody2DInternal() {
+    SGWorld2DInternal::get_singleton()->remove_body(this);
 }

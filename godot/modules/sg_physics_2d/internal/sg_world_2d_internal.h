@@ -27,10 +27,13 @@
 #include <core/object.h>
 
 class SGArea2DInternal;
+class SGBody2DInternal;
+class SGCollisionObject2DInternal;
 class SGShape2DInternal;
 
 class SGWorld2DInternal {
     List<SGArea2DInternal *> areas;
+    List<SGBody2DInternal *> bodies;
     List<SGShape2DInternal *> shapes;
 
     static SGWorld2DInternal *singleton;
@@ -40,10 +43,12 @@ public:
 
     void add_area(SGArea2DInternal *p_area);
     void remove_area(SGArea2DInternal *p_area);
+    void add_body(SGBody2DInternal *p_body);
+    void remove_body(SGBody2DInternal *p_body);
     void add_shape(SGShape2DInternal *p_shape);
     void remove_shape(SGShape2DInternal *p_shape);
 
-    bool overlaps(SGArea2DInternal *p_area1, SGArea2DInternal *p_area2) const;
+    bool overlaps(SGCollisionObject2DInternal *p_object1, SGCollisionObject2DInternal *p_object2) const;
     bool overlaps(SGShape2DInternal *p_shape1, SGShape2DInternal *p_shape2) const;
 
     List<SGArea2DInternal *> *get_overlapping_areas(SGArea2DInternal *p_area) const;

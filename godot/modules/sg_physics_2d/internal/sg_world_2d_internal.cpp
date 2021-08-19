@@ -41,6 +41,14 @@ void SGWorld2DInternal::remove_area(SGArea2DInternal *p_area) {
     areas.erase(p_area);
 }
 
+void SGWorld2DInternal::add_body(SGBody2DInternal *p_body) {
+    bodies.push_back(p_body);
+}
+
+void SGWorld2DInternal::remove_body(SGBody2DInternal *p_body) {
+    bodies.erase(p_body);
+}
+
 void SGWorld2DInternal::add_shape(SGShape2DInternal *p_shape) {
     shapes.push_back(p_shape);
 }
@@ -49,9 +57,9 @@ void SGWorld2DInternal::remove_shape(SGShape2DInternal *p_shape) {
     shapes.erase(p_shape);
 }
 
-bool SGWorld2DInternal::overlaps(SGArea2DInternal *p_area1, SGArea2DInternal *p_area2) const {
-    for (const List<SGShape2DInternal *>::Element *S1 = p_area1->get_shapes().front(); S1; S1 = S1->next()) {
-        for (const List<SGShape2DInternal *>::Element *S2 = p_area2->get_shapes().front(); S2; S2 = S2->next()) {
+bool SGWorld2DInternal::overlaps(SGCollisionObject2DInternal *p_object1, SGCollisionObject2DInternal *p_object2) const {
+    for (const List<SGShape2DInternal *>::Element *S1 = p_object1->get_shapes().front(); S1; S1 = S1->next()) {
+        for (const List<SGShape2DInternal *>::Element *S2 = p_object2->get_shapes().front(); S2; S2 = S2->next()) {
             if (overlaps(S1->get(), S2->get())) {
                 return true;
             }

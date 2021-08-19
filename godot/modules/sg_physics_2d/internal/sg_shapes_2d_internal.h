@@ -28,7 +28,7 @@
 
 #include "sg_fixed_math_internal.h"
 
-class SGArea2DInternal;
+class SGCollisionObject2DInternal;
 
 class SGShape2DInternal {
 public:
@@ -39,13 +39,13 @@ public:
     };
 
 protected:
-    friend class SGArea2DInternal;
+    friend class SGCollisionObject2DInternal;
 
     ShapeType shape_type;
     fixed_transform2d transform;
-    SGArea2DInternal *owner;
+    SGCollisionObject2DInternal *owner;
 
-    _FORCE_INLINE_ void set_owner(SGArea2DInternal *p_owner) { owner = p_owner; }
+    _FORCE_INLINE_ void set_owner(SGCollisionObject2DInternal *p_owner) { owner = p_owner; }
 
 public:
     _FORCE_INLINE_ ShapeType get_shape_type() const { return shape_type; }
@@ -53,7 +53,7 @@ public:
     _FORCE_INLINE_ fixed_transform2d get_transform() const { return transform; }
     _FORCE_INLINE_ void set_transform(const fixed_transform2d &p_transform) { transform = p_transform; }
 
-    _FORCE_INLINE_ SGArea2DInternal *get_owner() const { return owner; }
+    _FORCE_INLINE_ SGCollisionObject2DInternal *get_owner() const { return owner; }
 
     SGShape2DInternal(ShapeType p_shape_type) {
         shape_type = p_shape_type;
