@@ -4,6 +4,7 @@ TODO
 MILESTONE 1 (physics):
 
  - move_and_slide()
+   o Seperate the transform for areas/bodies from the shapes, to make it easier to move them
  - Attempt to put in game
    o Collision masks
  - Ray cast
