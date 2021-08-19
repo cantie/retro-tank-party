@@ -25,26 +25,20 @@
 
 #include <core/engine.h>
 
-#include "../../internal/sg_world_2d_internal.h"
+#include "sg_static_body_2d.h"
+#include "sg_kinematic_body_2d.h"
 #include "../../internal/sg_bodies_2d_internal.h"
-#include "../../internal/sg_shapes_2d_internal.h"
+#include "../../internal/sg_world_2d_internal.h"
 
 void SGArea2D::_bind_methods() {
     ClassDB::bind_method(D_METHOD("get_overlapping_areas"), &SGArea2D::get_overlapping_areas);
-}
-
-void SGArea2D::add_shape(SGShape2DInternal *p_shape) {
-    area->add_shape(p_shape);
-}
-
-void SGArea2D::remove_shape(SGShape2DInternal *p_shape) {
-    area->remove_shape(p_shape);
+    ClassDB::bind_method(D_METHOD("get_overlapping_bodies"), &SGArea2D::get_overlapping_bodies);
 }
 
 Array SGArea2D::get_overlapping_areas() const {
     Array ret;
 
-    List<SGArea2DInternal *> *overlapping_areas = SGWorld2DInternal::get_singleton()->get_overlapping_areas(area);
+    List<SGArea2DInternal *> *overlapping_areas = SGWorld2DInternal::get_singleton()->get_overlapping_areas((SGArea2DInternal *)internal);
     for (List<SGArea2DInternal *>::Element *E = overlapping_areas->front(); E; E = E->next()) {
         SGArea2D *overlapping_area = Object::cast_to<SGArea2D>((Object *)E->get()->get_data());
         if (overlapping_area) {
@@ -56,11 +50,28 @@ Array SGArea2D::get_overlapping_areas() const {
     return ret;
 }
 
-SGArea2D::SGArea2D() {
-    area = memnew(SGArea2DInternal);
-    area->set_data(this);
+Array SGArea2D::get_overlapping_bodies() const {
+    Array ret;
+
+    List<SGBody2DInternal *> *overlapping_bodies = SGWorld2DInternal::get_singleton()->get_overlapping_bodies((SGArea2DInternal *)internal);
+    for (List<SGBody2DInternal *>::Element *E = overlapping_bodies->front(); E; E = E->next()) {
+        SGBody2DInternal *overlapping_body = E->get();
+        if (overlapping_body->get_type() == SGBody2DInternal::BODY_STATIC) {
+            ret.push_back((SGStaticBody2D *)overlapping_body->get_data());
+        }
+        else if (overlapping_body->get_type() == SGBody2DInternal::BODY_KINEMATIC) {
+            ret.push_back((SGKinematicBody2D *)overlapping_body->get_data());
+        }
+    }
+    memdelete(overlapping_bodies);
+
+    return ret;
+}
+
+SGArea2D::SGArea2D()
+    : SGCollisionObject2D(memnew(SGArea2DInternal))
+{
 }
 
 SGArea2D::~SGArea2D() {
-    memdelete(area);
 }

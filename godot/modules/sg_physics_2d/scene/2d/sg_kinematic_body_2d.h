@@ -21,25 +21,22 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
 /*************************************************************************/
 
-#ifndef SG_AREA_2D_H
-#define SG_AREA_2D_H
+#ifndef SG_KINEMATIC_BODY_2D_H
+#define SG_KINEMATIC_BODY_2D_H
 
 #include "sg_collision_object_2d.h"
 
-#include "../../math/sg_fixed_vector2.h"
-
-class SGArea2D : public SGCollisionObject2D {
-    GDCLASS(SGArea2D, SGCollisionObject2D);
+class SGKinematicBody2D : public SGCollisionObject2D {
+    GDCLASS(SGKinematicBody2D, SGCollisionObject2D);
 
 protected:
     static void _bind_methods();
 
 public:
-    Array get_overlapping_areas() const;
-    Array get_overlapping_bodies() const;
+    Ref<SGFixedVector2> move_and_slide(const Ref<SGFixedVector2> &p_linear_velocity);
 
-    SGArea2D();
-    ~SGArea2D();
+    SGKinematicBody2D();
+    ~SGKinematicBody2D();
 
 };
 

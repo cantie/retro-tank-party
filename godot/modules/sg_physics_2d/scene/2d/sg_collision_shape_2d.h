@@ -24,11 +24,9 @@
 #ifndef SG_COLLISION_SHAPE_2D_H
 #define SG_COLLISION_SHAPE_2D_H
 
-#include <scene/2d/node_2d.h>
-
+#include "sg_fixed_node_2d.h"
 #include "sg_collision_object_2d.h"
 #include "../resources/sg_shapes_2d.h"
-#include "sg_fixed_node_2d.h"
 
 class SGCollisionShape2D : public SGFixedNode2D {
 

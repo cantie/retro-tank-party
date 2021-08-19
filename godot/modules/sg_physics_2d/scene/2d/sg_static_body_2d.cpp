@@ -21,26 +21,17 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
 /*************************************************************************/
 
-#ifndef SG_AREA_2D_H
-#define SG_AREA_2D_H
+#include "sg_static_body_2d.h"
 
-#include "sg_collision_object_2d.h"
+#include "../../internal/sg_bodies_2d_internal.h"
 
-#include "../../math/sg_fixed_vector2.h"
+void SGStaticBody2D::_bind_methods() {
+}
 
-class SGArea2D : public SGCollisionObject2D {
-    GDCLASS(SGArea2D, SGCollisionObject2D);
+SGStaticBody2D::SGStaticBody2D()
+    : SGCollisionObject2D(memnew(SGBody2DInternal(SGBody2DInternal::BodyType::BODY_STATIC)))
+{
+}
 
-protected:
-    static void _bind_methods();
-
-public:
-    Array get_overlapping_areas() const;
-    Array get_overlapping_bodies() const;
-
-    SGArea2D();
-    ~SGArea2D();
-
-};
-
-#endif
+SGStaticBody2D::~SGStaticBody2D() {
+}

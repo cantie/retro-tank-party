@@ -21,26 +21,23 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
 /*************************************************************************/
 
-#ifndef SG_AREA_2D_H
-#define SG_AREA_2D_H
+#include "sg_kinematic_body_2d.h"
 
-#include "sg_collision_object_2d.h"
+#include "../../internal/sg_bodies_2d_internal.h"
 
-#include "../../math/sg_fixed_vector2.h"
+void SGKinematicBody2D::_bind_methods() {
+    ClassDB::bind_method(D_METHOD("move_and_slide", "linear_velocity"), &SGKinematicBody2D::move_and_slide);
+}
 
-class SGArea2D : public SGCollisionObject2D {
-    GDCLASS(SGArea2D, SGCollisionObject2D);
+Ref<SGFixedVector2> SGKinematicBody2D::move_and_slide(const Ref<SGFixedVector2> &linear_velocity) {
+    Ref<SGFixedVector2> result = Ref<SGFixedVector2>(memnew(SGFixedVector2));
+    return result;
+}
 
-protected:
-    static void _bind_methods();
+SGKinematicBody2D::SGKinematicBody2D()
+    : SGCollisionObject2D(memnew(SGBody2DInternal(SGBody2DInternal::BodyType::BODY_KINEMATIC)))
+{
+}
 
-public:
-    Array get_overlapping_areas() const;
-    Array get_overlapping_bodies() const;
-
-    SGArea2D();
-    ~SGArea2D();
-
-};
-
-#endif
+SGKinematicBody2D::~SGKinematicBody2D() {
+}

@@ -108,6 +108,19 @@ List<SGArea2DInternal *> *SGWorld2DInternal::get_overlapping_areas(SGArea2DInter
     return ret;
 }
 
+List<SGBody2DInternal *> *SGWorld2DInternal::get_overlapping_bodies(SGArea2DInternal *p_area) const {
+    List<SGBody2DInternal *> *ret = memnew(List<SGBody2DInternal *>);
+
+    for (const List<SGBody2DInternal *>::Element *E = bodies.front(); E; E = E->next()) {
+        SGBody2DInternal *other_body = E->get();
+        if (overlaps(p_area, other_body)) {
+            ret->push_back(other_body);
+        }
+    }
+
+    return ret;
+}
+
 SGWorld2DInternal::SGWorld2DInternal()
 {
     singleton = this;

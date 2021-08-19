@@ -26,6 +26,7 @@
 #include <core/engine.h>
 
 #include "sg_collision_shape_2d.h"
+#include "../../internal/sg_bodies_2d_internal.h"
 
 void SGCollisionObject2D::_bind_methods() {
     ClassDB::bind_method(D_METHOD("sync_to_physics_engine"), &SGCollisionObject2D::sync_to_physics_engine);
@@ -37,6 +38,14 @@ void SGCollisionObject2D::_notification(int p_what) {
             sync_to_physics_engine();
             break;
     }
+}
+
+void SGCollisionObject2D::add_shape(SGShape2DInternal *p_shape) {
+    internal->add_shape(p_shape);
+}
+
+void SGCollisionObject2D::remove_shape(SGShape2DInternal *p_shape) {
+    internal->remove_shape(p_shape);
 }
 
 String SGCollisionObject2D::get_configuration_warning() const {
@@ -68,5 +77,11 @@ void SGCollisionObject2D::sync_to_physics_engine() const {
     }
 }
 
-SGCollisionObject2D::SGCollisionObject2D() {
+SGCollisionObject2D::SGCollisionObject2D(SGCollisionObject2DInternal *p_internal) {
+    internal = p_internal;
+    internal->set_data(this);
+}
+
+SGCollisionObject2D::~SGCollisionObject2D() {
+    memdelete(internal);
 }

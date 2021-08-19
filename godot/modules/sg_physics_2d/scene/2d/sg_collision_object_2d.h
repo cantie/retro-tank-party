@@ -29,6 +29,7 @@
 #include "../../math/sg_fixed_vector2.h"
 
 class SGShape2DInternal;
+class SGCollisionObject2DInternal;
 
 class SGCollisionObject2D : public SGFixedNode2D {
     GDCLASS(SGCollisionObject2D, SGFixedNode2D);
@@ -36,19 +37,21 @@ class SGCollisionObject2D : public SGFixedNode2D {
     friend class SGCollisionShape2D;
 
 protected:
+    SGCollisionObject2DInternal *internal;
 
     static void _bind_methods();
     void _notification(int p_what);
 
-    virtual void add_shape(SGShape2DInternal *p_shape) = 0;
-    virtual void remove_shape(SGShape2DInternal *p_shape) = 0;
+    void add_shape(SGShape2DInternal *p_shape);
+    void remove_shape(SGShape2DInternal *p_shape);
 
 public:
     virtual String get_configuration_warning() const override;
 
     virtual void sync_to_physics_engine() const;
 
-    SGCollisionObject2D();
+    SGCollisionObject2D(SGCollisionObject2DInternal *p_internal);
+    ~SGCollisionObject2D();
 
 };
 
