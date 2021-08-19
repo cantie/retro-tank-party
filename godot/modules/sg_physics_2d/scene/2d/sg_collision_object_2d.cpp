@@ -69,6 +69,7 @@ String SGCollisionObject2D::get_configuration_warning() const {
 }
 
 void SGCollisionObject2D::sync_to_physics_engine() const {
+    internal->set_transform(get_global_fixed_transform());
     for (int i = 0; i < get_child_count(); i++) {
         SGCollisionShape2D *shape = Object::cast_to<SGCollisionShape2D>(get_child(i));
         if (shape) {

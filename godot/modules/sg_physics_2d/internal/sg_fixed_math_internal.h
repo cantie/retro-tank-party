@@ -361,6 +361,11 @@ struct fixed_transform2d {
         elements[0][0] = fixed::ONE;
         elements[1][1] = fixed::ONE;
     }
+    /*
+    fixed_transform2d(const fixed_transform2d& p_other) {
+        memcpy(&elements, &p_other.elements, sizeof(elements));
+    }
+    */
 };
 
 fixed_vector2 fixed_transform2d::basis_xform(const fixed_vector2 &p_vec) const {

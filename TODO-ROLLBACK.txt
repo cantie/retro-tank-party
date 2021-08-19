@@ -4,7 +4,6 @@ TODO
 MILESTONE 1 (physics):
 
  - move_and_slide()
-   o Seperate the transform for areas/bodies from the shapes, to make it easier to move them
    o Add "player controls" to the PhysicsTest (or maybe clone it and make a new scene?)
  - Attempt to put in game
    o Collision masks
@@ -15,6 +14,7 @@ MILESTONE 1 (physics):
  - Code clean-up
    o Break all classes up into their own files?
    o Rename the fixed_* classes to be camel case?
+   o Port over more of Vector2's methods?
 
 MILESTOE 2 (finish porting all the things):
 

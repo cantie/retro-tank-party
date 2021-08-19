@@ -43,20 +43,31 @@ protected:
 
     ShapeType shape_type;
     fixed_transform2d transform;
+    mutable fixed_transform2d global_transform;
+    mutable bool global_xform_dirty;
     SGCollisionObject2DInternal *owner;
 
-    _FORCE_INLINE_ void set_owner(SGCollisionObject2DInternal *p_owner) { owner = p_owner; }
+    _FORCE_INLINE_ void set_owner(SGCollisionObject2DInternal *p_owner) {
+        owner = p_owner;
+        global_xform_dirty = true;
+    }
 
 public:
     _FORCE_INLINE_ ShapeType get_shape_type() const { return shape_type; }
 
+    _FORCE_INLINE_ void set_transform(const fixed_transform2d &p_transform) {
+        transform = p_transform;
+        global_xform_dirty = true;
+    }
     _FORCE_INLINE_ fixed_transform2d get_transform() const { return transform; }
-    _FORCE_INLINE_ void set_transform(const fixed_transform2d &p_transform) { transform = p_transform; }
+    fixed_transform2d get_global_transform() const;
 
     _FORCE_INLINE_ SGCollisionObject2DInternal *get_owner() const { return owner; }
 
     SGShape2DInternal(ShapeType p_shape_type) {
         shape_type = p_shape_type;
+        global_xform_dirty = false;
+        owner = nullptr;
     }
     virtual ~SGShape2DInternal() {}
 };

@@ -23,6 +23,19 @@
 
 #include "sg_shapes_2d_internal.h"
 
+#include "sg_bodies_2d_internal.h"
+
+fixed_transform2d SGShape2DInternal::get_global_transform() const {
+    if (!owner) {
+        return transform;
+    }
+    if (global_xform_dirty) {
+        global_transform = owner->get_transform() * transform;
+        global_xform_dirty = false;
+    }
+    return global_transform;
+}
+
 fixed_rect2 SGRectangle2DInternal::get_bounds() const {
     return fixed_rect2(transform.get_origin(), extents * transform.get_scale());
 }
