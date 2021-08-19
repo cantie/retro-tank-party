@@ -37,6 +37,14 @@ Variant SGCollisionShape2DEditor::get_handle_value(int idx) const {
                 return rectangle->get_extents()->abs();
             }
         } break;
+
+        case CIRCLE_SHAPE: {
+            Ref<SGCircleShape2D> circle = node->get_shape();
+
+            if (idx == 0) {
+                return circle->get_radius();
+            }
+        } break;
     }
 
     return Variant();
@@ -63,6 +71,13 @@ void SGCollisionShape2DEditor::set_handle(int idx, Point2 &p_point) {
 
             canvas_item_editor->update_viewport();
         } break;
+
+        case CIRCLE_SHAPE: {
+            Ref<SGCircleShape2D> circle = node->get_shape();
+            circle->set_radius(fixed::from_float(p_point.length()).value);
+
+            canvas_item_editor->update_viewport();
+        } break;
     }
 }
 
@@ -76,6 +91,15 @@ void SGCollisionShape2DEditor::commit_handle(int idx, Variant &p_org) {
             undo_redo->add_do_method(rectangle.ptr(), "set_extents", rectangle->get_extents());
             undo_redo->add_do_method(canvas_item_editor, "update_viewport");
             undo_redo->add_undo_method(rectangle.ptr(), "set_extents", p_org);
+            undo_redo->add_undo_method(canvas_item_editor, "update_viewport");
+        } break;
+
+        case CIRCLE_SHAPE: {
+            Ref<SGCircleShape2D> circle = node->get_shape();
+
+            undo_redo->add_do_method(circle.ptr(), "set_radius", circle->get_radius());
+            undo_redo->add_do_method(canvas_item_editor, "update_viewport");
+            undo_redo->add_undo_method(circle.ptr(), "set_radius", p_org);
             undo_redo->add_undo_method(canvas_item_editor, "update_viewport");
         } break;
     }
@@ -96,6 +120,9 @@ void SGCollisionShape2DEditor::_get_current_shape_type() {
 
     if (Object::cast_to<SGRectangleShape2D>(*shape)) {
         shape_type = RECTANGLE_SHAPE;
+    }
+    else if (Object::cast_to<SGCircleShape2D>(*shape)) {
+        shape_type = CIRCLE_SHAPE;
     }
     else {
         shape_type = -1;
@@ -233,6 +260,15 @@ void SGCollisionShape2DEditor::forward_canvas_draw_over_viewport(Control *p_over
             p_overlay->draw_texture(h, gt.xform(handles[0]) - size);
             p_overlay->draw_texture(h, gt.xform(handles[1]) - size);
             p_overlay->draw_texture(h, gt.xform(handles[2]) - size);
+        } break;
+
+        case CIRCLE_SHAPE: {
+            Ref<SGCircleShape2D> shape = node->get_shape();
+
+            handles.resize(1);
+            handles.write[0] = Point2(fixed(shape->get_radius()).to_float(), 0);
+
+            p_overlay->draw_texture(h, gt.xform(handles[0]) - size);
         } break;
     }
 }

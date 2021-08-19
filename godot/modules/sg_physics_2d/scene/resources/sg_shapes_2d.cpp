@@ -40,16 +40,6 @@ SGShape2D::~SGShape2D() {
     }
 }
 
-SGRectangleShape2D::SGRectangleShape2D() :
-    SGShape2D(memnew(SGRectangle2DInternal(fixed(655360), fixed(655360)))),
-    extents(Ref<SGFixedVector2>(memnew(SGFixedVector2(fixed_vector2(fixed(10240), fixed(10240))))))
-{
-    extents->connect("changed", this, "emit_changed");
-}
-
-SGRectangleShape2D::~SGRectangleShape2D() {
-}
-
 void SGRectangleShape2D::_bind_methods() {
     ClassDB::bind_method(D_METHOD("get_extents"), &SGRectangleShape2D::get_extents);
     ClassDB::bind_method(D_METHOD("set_extents", "extents"), &SGRectangleShape2D::set_extents);
@@ -77,23 +67,63 @@ void SGRectangleShape2D::draw(const RID &p_to_rid, const Color &p_color) {
     Size2 float_extents = extents->to_float();
 
 	VisualServer::get_singleton()->canvas_item_add_rect(p_to_rid, Rect2(-float_extents, float_extents * 2.0), p_color);
+}
 
-    // Draw an outlined rectangle to make individual shapes easier to distinguish.
+SGRectangleShape2D::SGRectangleShape2D() :
+    SGShape2D(memnew(SGRectangle2DInternal(fixed(655360), fixed(655360)))),
+    extents(Ref<SGFixedVector2>(memnew(SGFixedVector2(fixed_vector2(fixed(655360), fixed(655360))))))
+{
+    extents->connect("changed", this, "emit_changed");
+}
+
+SGRectangleShape2D::~SGRectangleShape2D() {
+}
+
+
+void SGCircleShape2D::_bind_methods() {
+    ClassDB::bind_method(D_METHOD("get_radius"), &SGCircleShape2D::get_radius);
+    ClassDB::bind_method(D_METHOD("set_radius", "radius"), &SGCircleShape2D::set_radius);
+
+	ADD_PROPERTY(PropertyInfo(Variant::INT, "radius"), "set_radius", "get_radius");
+}
+
+void SGCircleShape2D::set_radius(int p_radius) {
+    radius = fixed(p_radius);
+    _change_notify("extents");
+    emit_changed();
+}
+
+int SGCircleShape2D::get_radius() const {
+    return radius.value;
+}
+
+void SGCircleShape2D::sync_to_physics_engine(const fixed_transform2d &p_global_transform) const {
     /*
-    Vector<Vector2> stroke_points;
-    stroke_points.resize(5);
-    stroke_points.write[0] = -float_extents;
-    stroke_points.write[1] = Vector2(float_extents.x, -float_extents.y);
-    stroke_points.write[2] = float_extents;
-    stroke_points.write[3] = Vector2(-float_extents.x, float_extents.y);
-    stroke_points.write[4] = -float_extents;
-
-    Vector<Color> stroke_colors;
-    stroke_colors.resize(5);
-    for (int i = 0; i < 5; i++) {
-        stroke_colors.write[i] = p_color;
-    }
-
-    VisualServer::get_singleton()->canvas_item_add_polyline(p_to_rid, stroke_points, stroke_colors, 1.0, true);
+    SGCircle2DInternal* internal = (SGCircle2DInternal *)get_shape_internal();
+    internal->set_transform(p_global_transform);
+    internal->set_radius(radius);
     */
+}
+
+void SGCircleShape2D::draw(const RID &p_to_rid, const Color &p_color) {
+    float float_radius = radius.to_float();
+
+	Vector<Vector2> points;
+	for (int i = 0; i < 24; i++) {
+
+		points.push_back(Vector2(Math::cos(i * Math_PI * 2 / 24.0), Math::sin(i * Math_PI * 2 / 24.0)) * float_radius);
+	}
+
+	Vector<Color> col;
+	col.push_back(p_color);
+	VisualServer::get_singleton()->canvas_item_add_polygon(p_to_rid, points, col);
+}
+
+SGCircleShape2D::SGCircleShape2D() :
+    SGShape2D(memnew(SGRectangle2DInternal(fixed(655360), fixed(655360)))),
+    radius(655360)
+{
+}
+
+SGCircleShape2D::~SGCircleShape2D() {
 }

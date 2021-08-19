@@ -52,7 +52,6 @@ public:
     virtual ~SGShape2D();
 };
 
-
 class SGRectangleShape2D : public SGShape2D {
 	GDCLASS(SGRectangleShape2D, SGShape2D);
 	OBJ_SAVE_TYPE(SGRectangleShape2D);
@@ -72,6 +71,27 @@ public:
 
     SGRectangleShape2D();
     ~SGRectangleShape2D();
+};
+
+class SGCircleShape2D : public SGShape2D {
+	GDCLASS(SGCircleShape2D, SGShape2D);
+	OBJ_SAVE_TYPE(SGCircleShape2D);
+
+    fixed radius;
+
+protected:
+    static void _bind_methods();
+
+public:
+    void set_radius(int p_radius);
+	int get_radius() const;
+
+    virtual void sync_to_physics_engine(const fixed_transform2d &p_global_position) const override;
+
+    virtual void draw(const RID &p_to_rid, const Color &p_color) override;
+
+    SGCircleShape2D();
+    ~SGCircleShape2D();
 };
 
 #endif
