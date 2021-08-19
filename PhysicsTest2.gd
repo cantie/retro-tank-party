@@ -1,0 +1,23 @@
+extends Node2D
+
+onready var character = $Character
+
+var rotation_speed = SGFixed.from_float(0.1)
+var velocity = SGFixed.vector2(0, 0)
+
+func _physics_process(delta: float) -> void:
+	if Input.is_action_pressed("player1_turn_left"):
+		character.fixed_rotation -= rotation_speed
+	elif Input.is_action_pressed("player1_turn_right"):
+		character.fixed_rotation += rotation_speed
+	
+	velocity.y = 0
+	velocity.x = 0
+	if Input.is_action_pressed("player1_forward"):
+		velocity.x = 65536
+	elif Input.is_action_pressed("player1_backward"):
+		velocity.x = -65536
+	
+	if velocity.x != 0:
+		velocity.rotate(character.fixed_rotation)
+		character.move_and_slide(velocity)

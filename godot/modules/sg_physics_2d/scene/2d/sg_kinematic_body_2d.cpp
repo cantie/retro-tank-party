@@ -26,11 +26,21 @@
 #include "../../internal/sg_bodies_2d_internal.h"
 
 void SGKinematicBody2D::_bind_methods() {
+    ClassDB::bind_method(D_METHOD("move_and_collide", "linear_velocity"), &SGKinematicBody2D::move_and_collide);
     ClassDB::bind_method(D_METHOD("move_and_slide", "linear_velocity"), &SGKinematicBody2D::move_and_slide);
+}
+
+bool SGKinematicBody2D::move_and_collide(const Ref<SGFixedVector2> &linear_velocity) {
+    // @todo actually implement this!
+    return false;
 }
 
 Ref<SGFixedVector2> SGKinematicBody2D::move_and_slide(const Ref<SGFixedVector2> &linear_velocity) {
     Ref<SGFixedVector2> result = Ref<SGFixedVector2>(memnew(SGFixedVector2));
+
+    // Temp: Just move it for now.
+    get_fixed_position()->iadd(linear_velocity);
+
     return result;
 }
 

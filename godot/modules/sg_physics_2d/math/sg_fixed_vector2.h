@@ -72,6 +72,9 @@ public:
 
     Ref<SGFixedVector2> abs() const;
 
+    void rotate(int p_rotation);
+    Ref<SGFixedVector2> rotated(int p_rotation) const;
+
     void from_float(Vector2 p_float_vector);
     Vector2 to_float() const;
 

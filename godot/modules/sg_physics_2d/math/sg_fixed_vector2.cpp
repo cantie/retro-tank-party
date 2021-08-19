@@ -50,6 +50,8 @@ void SGFixedVector2::_bind_methods() {
     ClassDB::bind_method(D_METHOD("divf", "fixed_value"), &SGFixedVector2::divf);
     ClassDB::bind_method(D_METHOD("idivf", "fixed_value"), &SGFixedVector2::idivf);
 
+    ClassDB::bind_method(D_METHOD("rotate", "radians"), &SGFixedVector2::rotate);
+
     ClassDB::bind_method(D_METHOD("from_float", "float_vector"), &SGFixedVector2::from_float);
     ClassDB::bind_method(D_METHOD("to_float"), &SGFixedVector2::to_float);
 
@@ -130,6 +132,11 @@ void SGFixedVector2::idivf(int p_other) {
 
 Ref<SGFixedVector2> SGFixedVector2::abs() const {
     return Ref<SGFixedVector2>(memnew(SGFixedVector2(value.abs())));
+}
+
+void SGFixedVector2::rotate(int p_rotation) {
+    value = value.rotated(fixed(p_rotation));
+    emit_signal("changed");
 }
 
 void SGFixedVector2::from_float(Vector2 p_float_vector) {

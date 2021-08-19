@@ -33,6 +33,7 @@ protected:
     static void _bind_methods();
 
 public:
+    bool move_and_collide(const Ref<SGFixedVector2> &p_linear_velocity);
     Ref<SGFixedVector2> move_and_slide(const Ref<SGFixedVector2> &p_linear_velocity);
 
     SGKinematicBody2D();

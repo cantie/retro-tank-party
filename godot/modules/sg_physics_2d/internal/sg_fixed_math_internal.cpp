@@ -39,6 +39,17 @@ bool fixed_vector2::operator!=(const fixed_vector2 &p_v) const {
     return x != p_v.x || y != p_v.y;
 }
 
+fixed fixed_vector2::angle() const {
+    return y.atan2(x);
+}
+
+fixed_vector2 fixed_vector2::rotated(fixed p_rotation) const {
+	fixed_vector2 v;
+	v.set_rotation(angle() + p_rotation);
+	v *= length();
+	return v;
+}
+
 void fixed_vector2::normalize() {
     fixed l = x * x + y * y;
     if (l != fixed::ZERO) {

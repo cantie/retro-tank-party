@@ -233,12 +233,21 @@ struct fixed_vector2 {
     bool operator==(const fixed_vector2 &p_v) const;
     bool operator!=(const fixed_vector2 &p_v) const;
 
+	fixed angle() const;
+
+	void set_rotation(fixed p_radians) {
+		x = p_radians.cos();
+		y = p_radians.sin();
+	}
+
     _FORCE_INLINE_ fixed_vector2 abs() const {
         return fixed_vector2(x.abs(), y.abs());
     }
     _FORCE_INLINE_ fixed_vector2 operator-() const {
         return fixed_vector2(-x, -y);
     }
+
+    fixed_vector2 rotated(fixed p_rotation) const;
 
     void normalize();
     fixed_vector2 normalized() const;
