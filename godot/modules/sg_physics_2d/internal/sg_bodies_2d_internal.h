@@ -36,7 +36,7 @@ class SGCollisionObject2DInternal {
     
 public:
     _FORCE_INLINE_ fixed_transform2d get_transform() const { return transform; }
-    _FORCE_INLINE_ void set_transform(const fixed_transform2d &p_transform) { transform = p_transform; }
+    void set_transform(const fixed_transform2d &p_transform);
 
     void add_shape(SGShape2DInternal *p_shape);
     void remove_shape(SGShape2DInternal *p_shape);

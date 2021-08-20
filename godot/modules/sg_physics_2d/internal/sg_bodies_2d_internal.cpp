@@ -25,6 +25,13 @@
 
 #include "sg_world_2d_internal.h"
 
+void SGCollisionObject2DInternal::set_transform(const fixed_transform2d &p_transform) {
+    transform = p_transform;
+    for (List<SGShape2DInternal *>::Element *E = shapes.front(); E; E = E->next()) {
+        E->get()->global_xform_dirty = true;
+    }
+}
+
 void SGCollisionObject2DInternal::add_shape(SGShape2DInternal *p_shape) {
     p_shape->set_owner(this);
     shapes.push_back(p_shape);

@@ -45,6 +45,8 @@ protected:
     void add_shape(SGShape2DInternal *p_shape);
     void remove_shape(SGShape2DInternal *p_shape);
 
+    void sync_from_physics_engine();
+
 public:
     virtual String get_configuration_warning() const override;
 

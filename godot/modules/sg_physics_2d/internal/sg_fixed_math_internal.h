@@ -38,6 +38,7 @@ struct fixed {
 
     static const fixed ZERO;
     static const fixed ONE;
+    static const fixed HALF;
     static const fixed NEG_ONE;
     static const fixed EPSILON;
 

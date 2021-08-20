@@ -28,8 +28,12 @@
 
 #include "../../math/sg_fixed_vector2.h"
 
+class SGCollisionObject2D;
+
 class SGFixedNode2D : public Node2D {
     GDCLASS(SGFixedNode2D, Node2D);
+
+    friend SGCollisionObject2D;
 
     fixed_transform2d fixed_transform;
     Ref<SGFixedVector2> fixed_position;
@@ -45,6 +49,8 @@ protected:
 
     _FORCE_INLINE_ fixed_transform2d get_fixed_transform() const { return fixed_transform; }
     fixed_transform2d get_global_fixed_transform() const;
+
+    void update_fixed_transform(const fixed_transform2d &p_transform);
 
     void _fixed_position_changed();
     void _fixed_scale_changed();

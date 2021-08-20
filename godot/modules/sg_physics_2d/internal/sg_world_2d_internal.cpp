@@ -91,30 +91,34 @@ bool SGWorld2DInternal::overlaps(SGShape2DInternal *p_shape1, SGShape2DInternal 
     return false;
 }
 
-List<SGArea2DInternal *> *SGWorld2DInternal::get_overlapping_areas(SGArea2DInternal *p_area) const {
+List<SGArea2DInternal *> *SGWorld2DInternal::get_overlapping_areas(SGCollisionObject2DInternal *p_object) const {
     List<SGArea2DInternal *> *ret = memnew(List<SGArea2DInternal *>);
 
     for (const List<SGArea2DInternal *>::Element *E = areas.front(); E; E = E->next()) {
-        SGArea2DInternal *other_area = E->get();
-        if (other_area == p_area) {
+        SGArea2DInternal *other = E->get();
+        if (other == p_object) {
             continue;
         }
 
-        if (overlaps(p_area, other_area)) {
-            ret->push_back(other_area);
+        if (overlaps(p_object, other)) {
+            ret->push_back(other);
         }
     }
 
     return ret;
 }
 
-List<SGBody2DInternal *> *SGWorld2DInternal::get_overlapping_bodies(SGArea2DInternal *p_area) const {
+List<SGBody2DInternal *> *SGWorld2DInternal::get_overlapping_bodies(SGCollisionObject2DInternal *p_object) const {
     List<SGBody2DInternal *> *ret = memnew(List<SGBody2DInternal *>);
 
     for (const List<SGBody2DInternal *>::Element *E = bodies.front(); E; E = E->next()) {
-        SGBody2DInternal *other_body = E->get();
-        if (overlaps(p_area, other_body)) {
-            ret->push_back(other_body);
+        SGBody2DInternal *other = E->get();
+        if (other == p_object) {
+            continue;
+        }
+
+        if (overlaps(p_object, other)) {
+            ret->push_back(other);
         }
     }
 

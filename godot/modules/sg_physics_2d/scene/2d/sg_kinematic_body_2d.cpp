@@ -24,6 +24,7 @@
 #include "sg_kinematic_body_2d.h"
 
 #include "../../internal/sg_bodies_2d_internal.h"
+#include "../../internal/sg_world_2d_internal.h"
 
 void SGKinematicBody2D::_bind_methods() {
     ClassDB::bind_method(D_METHOD("move_and_collide", "linear_velocity"), &SGKinematicBody2D::move_and_collide);
@@ -31,8 +32,54 @@ void SGKinematicBody2D::_bind_methods() {
 }
 
 bool SGKinematicBody2D::move_and_collide(const Ref<SGFixedVector2> &linear_velocity) {
-    // @todo actually implement this!
-    return false;
+    SGWorld2DInternal *world = SGWorld2DInternal::get_singleton();
+
+    List<SGBody2DInternal *> *overlapping_bodies;
+
+    // Move the body the full amount.
+    fixed_transform2d original_transform = internal->get_transform();
+    fixed_transform2d test_transform = original_transform;
+    test_transform.set_origin(original_transform.get_origin() + linear_velocity->get_internal());
+    internal->set_transform(test_transform);
+
+    // Check if we're colliding. If not, sync from physics engine and bail.
+    overlapping_bodies = world->get_overlapping_bodies(internal);
+    if (overlapping_bodies->size() == 0) {
+        memdelete(overlapping_bodies);
+        sync_from_physics_engine();
+        return false;
+    }
+    
+    List<SGBody2DInternal *> *last_overlapping_bodies = overlapping_bodies;
+
+    // Use binary search to find the point at which we collide, and the point just before that.
+    fixed low = fixed::ZERO;
+    fixed hi = fixed::ONE;
+    for (int i = 0; i < 8; i++) {
+        fixed cur = (low + hi) * fixed::HALF;
+        internal->set_transform(original_transform.translated(linear_velocity->get_internal() * cur));
+        overlapping_bodies = world->get_overlapping_bodies(internal);
+        if (overlapping_bodies->size() > 0) {
+            hi = cur;
+
+            // Update the last overlapping bodies.
+            memdelete(last_overlapping_bodies);
+            last_overlapping_bodies = overlapping_bodies;
+        }
+        else {
+            low = cur;
+            memdelete(overlapping_bodies);
+        }
+    }
+
+    fixed_transform2d final_transform = original_transform.translated(linear_velocity->get_internal() * low);
+    internal->set_transform(final_transform);
+    sync_from_physics_engine();
+
+    // @todo Find the shapes that collided so we can get the collision normal.
+    memdelete(last_overlapping_bodies);
+
+    return true;
 }
 
 Ref<SGFixedVector2> SGKinematicBody2D::move_and_slide(const Ref<SGFixedVector2> &linear_velocity) {

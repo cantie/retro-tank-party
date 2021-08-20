@@ -68,6 +68,19 @@ String SGCollisionObject2D::get_configuration_warning() const {
     return warning;
 }
 
+void SGCollisionObject2D::sync_from_physics_engine() {
+    fixed_transform2d physics_transform = internal->get_transform();
+
+    SGFixedNode2D *fixed_parent = Object::cast_to<SGFixedNode2D>(get_parent());
+    if (!fixed_parent) {
+        update_fixed_transform(physics_transform);
+        return;
+    }
+
+    fixed_transform2d parent_transform = fixed_parent->get_global_fixed_transform();
+    update_fixed_transform(parent_transform.affine_inverse() * physics_transform);
+}
+
 void SGCollisionObject2D::sync_to_physics_engine() const {
     internal->set_transform(get_global_fixed_transform());
     for (int i = 0; i < get_child_count(); i++) {

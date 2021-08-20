@@ -51,8 +51,8 @@ public:
     bool overlaps(SGCollisionObject2DInternal *p_object1, SGCollisionObject2DInternal *p_object2) const;
     bool overlaps(SGShape2DInternal *p_shape1, SGShape2DInternal *p_shape2) const;
 
-    List<SGArea2DInternal *> *get_overlapping_areas(SGArea2DInternal *p_area) const;
-    List<SGBody2DInternal *> *get_overlapping_bodies(SGArea2DInternal *p_area) const;
+    List<SGArea2DInternal *> *get_overlapping_areas(SGCollisionObject2DInternal *p_object) const;
+    List<SGBody2DInternal *> *get_overlapping_bodies(SGCollisionObject2DInternal *p_object) const;
 
     SGWorld2DInternal();
     ~SGWorld2DInternal();

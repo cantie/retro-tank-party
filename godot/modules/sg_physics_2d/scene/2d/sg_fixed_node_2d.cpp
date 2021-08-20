@@ -67,6 +67,16 @@ fixed_transform2d SGFixedNode2D::get_global_fixed_transform() const {
     return fixed_transform;
 }
 
+void SGFixedNode2D::update_fixed_transform(const fixed_transform2d &p_transform) {
+    fixed_transform = p_transform;
+    fixed_position->set_internal(fixed_transform.get_origin());
+    fixed_scale->set_internal(fixed_transform.get_scale());
+    fixed_rotation = fixed_transform.get_rotation().value;
+    set_fixed_position(fixed_position);
+    set_fixed_scale(fixed_scale);
+    set_fixed_rotation(fixed_rotation);
+}
+
 void SGFixedNode2D::_fixed_position_changed() {
     set_fixed_position(fixed_position);
 }

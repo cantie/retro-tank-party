@@ -25,8 +25,9 @@
 
 const fixed fixed::ZERO = fixed(0);
 const fixed fixed::ONE  = fixed(fix16_one);
-const fixed fixed::NEG_ONE  = fixed(-fix16_one);
+const fixed fixed::NEG_ONE = fixed(-fix16_one);
 const fixed fixed::EPSILON = fixed(fix16_eps);
+const fixed fixed::HALF = fixed(32768);
 
 // Tolerate more precision error than normal.
 const fixed fixed_vector2::FIXED_UNIT_EPSILON = fixed(65);

@@ -11,6 +11,7 @@ func _physics_process(delta: float) -> void:
 		character.fixed_rotation -= rotation_speed
 	elif Input.is_action_pressed("player1_turn_right"):
 		character.fixed_rotation += rotation_speed
+	character.sync_to_physics_engine()
 	
 	velocity.y = 0
 	velocity.x = 0
@@ -22,12 +23,14 @@ func _physics_process(delta: float) -> void:
 	if velocity.x != 0:
 		velocity.imulf(65536*6)
 		velocity.rotate(character.fixed_rotation)
-		character.move_and_slide(velocity)
+		#character.move_and_slide(velocity)
+		if character.move_and_collide(velocity):
+			print("COLLIDES!")
 	else:
 		character.sync_to_physics_engine()
 	
-	var overlapping_bodies = area.get_overlapping_bodies()
-	if overlapping_bodies.size() > 0 && overlapping_bodies[0] == character:
-		character.modulate = Color(1.0, 0.0, 0.0, 1.0)
-	else:
-		character.modulate = Color(1.0, 1.0, 1.0, 1.0)
+	#var overlapping_bodies = area.get_overlapping_bodies()
+	#if overlapping_bodies.size() > 0 && overlapping_bodies[0] == character:
+	#	character.modulate = Color(1.0, 0.0, 0.0, 1.0)
+	#else:
+	#	character.modulate = Color(1.0, 1.0, 1.0, 1.0)
