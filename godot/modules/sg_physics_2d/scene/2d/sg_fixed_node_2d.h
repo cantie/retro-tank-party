@@ -52,6 +52,8 @@ protected:
 
     void update_fixed_transform(const fixed_transform2d &p_transform);
 
+    void _set_fixed_position(const fixed_vector2 &p_fixed_position);
+
     void _fixed_position_changed();
     void _fixed_scale_changed();
 

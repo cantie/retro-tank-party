@@ -46,7 +46,7 @@ bool SGKinematicBody2D::move_and_collide(const Ref<SGFixedVector2> &linear_veloc
     overlapping_bodies = world->get_overlapping_bodies(internal);
     if (overlapping_bodies->size() == 0) {
         memdelete(overlapping_bodies);
-        sync_from_physics_engine();
+        _set_fixed_position(test_transform.get_origin());
         return false;
     }
     
@@ -57,7 +57,9 @@ bool SGKinematicBody2D::move_and_collide(const Ref<SGFixedVector2> &linear_veloc
     fixed hi = fixed::ONE;
     for (int i = 0; i < 8; i++) {
         fixed cur = (low + hi) * fixed::HALF;
-        internal->set_transform(original_transform.translated(linear_velocity->get_internal() * cur));
+        fixed_vector2 test_velocity = linear_velocity->get_internal() * cur;
+        test_transform.set_origin(original_transform.get_origin() + test_velocity);
+        internal->set_transform(test_transform);
         overlapping_bodies = world->get_overlapping_bodies(internal);
         if (overlapping_bodies->size() > 0) {
             hi = cur;
@@ -68,13 +70,10 @@ bool SGKinematicBody2D::move_and_collide(const Ref<SGFixedVector2> &linear_veloc
         }
         else {
             low = cur;
+            _set_fixed_position(get_fixed_position()->get_internal() + test_velocity);
             memdelete(overlapping_bodies);
         }
     }
-
-    fixed_transform2d final_transform = original_transform.translated(linear_velocity->get_internal() * low);
-    internal->set_transform(final_transform);
-    sync_from_physics_engine();
 
     // @todo Find the shapes that collided so we can get the collision normal.
     memdelete(last_overlapping_bodies);
