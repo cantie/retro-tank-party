@@ -37,5 +37,6 @@ fixed_transform2d SGShape2DInternal::get_global_transform() const {
 }
 
 fixed_rect2 SGRectangle2DInternal::get_bounds() const {
-    return fixed_rect2(transform.get_origin(), extents * transform.get_scale());
+    fixed_transform2d t = get_global_transform();
+    return fixed_rect2(t.get_origin(), extents * t.get_scale());
 }

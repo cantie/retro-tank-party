@@ -151,10 +151,13 @@ bool SGCollisionDetector2DInternal::Rectangle_overlaps_Rectangle(const SGRectang
 }
 
 bool SGCollisionDetector2DInternal::Circle_overlaps_Circle(const SGCircle2DInternal &circle1, const SGCircle2DInternal &circle2) {
-    fixed_vector2 line = circle2.get_global_transform().get_origin() - circle1.get_global_transform().get_origin();
+    fixed_transform2d t1 = circle1.get_global_transform();
+    fixed_transform2d t2 = circle2.get_global_transform();
+
+    fixed_vector2 line = t2.get_origin() - t1.get_origin();
 
     // We only multiply by the scale.x because we don't support non-uniform scaling.
-    fixed combined_radius = (circle1.get_radius() * circle1.get_global_transform().get_scale().x) + (circle2.get_radius() * circle2.get_global_transform().get_scale().x);
+    fixed combined_radius = (circle1.get_radius() * t1.get_scale().x) + (circle2.get_radius() * t2.get_scale().x);
 
     return line.length_squared() <= combined_radius * combined_radius;
 }
@@ -163,13 +166,15 @@ bool SGCollisionDetector2DInternal::Circle_overlaps_AABB(const SGCircle2DInterna
     fixed_vector2 min = aabb.get_min();
     fixed_vector2 max = aabb.get_max();
 
-    fixed_vector2 closest_point = circle.get_global_transform().get_origin();
+    fixed_transform2d t = circle.get_global_transform();
+
+    fixed_vector2 closest_point = t.get_origin();
     closest_point.x = CLAMP(closest_point.x, min.x, max.x);
     closest_point.y = CLAMP(closest_point.y, min.y, max.y);
 
-    fixed_vector2 line = closest_point - circle.get_global_transform().get_origin();
+    fixed_vector2 line = closest_point - t.get_origin();
     // We only multiply by the scale.x because we don't support non-uniform scaling.
-    fixed radius = circle.get_radius() * circle.get_global_transform().get_scale().x;
+    fixed radius = circle.get_radius() * t.get_scale().x;
 
     return line.length_squared() <= radius * radius;
 }
