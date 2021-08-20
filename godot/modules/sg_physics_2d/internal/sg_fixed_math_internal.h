@@ -255,6 +255,7 @@ struct fixed_vector2 {
 
     fixed length() const;
     fixed length_squared() const;
+    int64_t length_squared_64() const;
 
     fixed dot(const fixed_vector2 &p_other) const;
     fixed cross(const fixed_vector2 &p_other) const;

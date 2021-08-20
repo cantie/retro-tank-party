@@ -77,6 +77,12 @@ fixed fixed_vector2::length_squared() const {
     return x * x + y * y;
 }
 
+int64_t fixed_vector2::length_squared_64() const {
+    int64_t x_squared = (int64_t)x.value * (int64_t)x.value;
+    int64_t y_squared = (int64_t)y.value * (int64_t)y.value;
+    return x_squared + y_squared;
+}
+
 fixed fixed_vector2::dot(const fixed_vector2 &p_other) const {
     return x * p_other.x + y * p_other.y;
 }

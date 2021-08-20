@@ -155,11 +155,12 @@ bool SGCollisionDetector2DInternal::Circle_overlaps_Circle(const SGCircle2DInter
     fixed_transform2d t2 = circle2.get_global_transform();
 
     fixed_vector2 line = t2.get_origin() - t1.get_origin();
-
+    // We need to use 64-bit integer math so we don't overflow 32-bits with
+    // all these big squared values.
     // We only multiply by the scale.x because we don't support non-uniform scaling.
-    fixed combined_radius = (circle1.get_radius() * t1.get_scale().x) + (circle2.get_radius() * t2.get_scale().x);
 
-    return line.length_squared() <= combined_radius * combined_radius;
+    int64_t combined_radius = (int64_t)circle1.get_radius().value * (int64_t)t1.get_scale().x.value + (int64_t)circle2.get_radius().value * (int64_t)t2.get_scale().x.value;
+    return line.length_squared_64() <= combined_radius;
 }
 
 bool SGCollisionDetector2DInternal::Circle_overlaps_AABB(const SGCircle2DInternal &circle, const fixed_rect2 &aabb) {
@@ -172,11 +173,14 @@ bool SGCollisionDetector2DInternal::Circle_overlaps_AABB(const SGCircle2DInterna
     closest_point.x = CLAMP(closest_point.x, min.x, max.x);
     closest_point.y = CLAMP(closest_point.y, min.y, max.y);
 
-    fixed_vector2 line = closest_point - t.get_origin();
+    fixed_vector2 line = t.get_origin() - closest_point;
     // We only multiply by the scale.x because we don't support non-uniform scaling.
     fixed radius = circle.get_radius() * t.get_scale().x;
 
-    return line.length_squared() <= radius * radius;
+    // We need to use 64-bit integer math so we don't overflow 32-bits with
+    // all these big squared values.
+    int64_t radius_squared_64 = (int64_t)radius.value * (int64_t)radius.value;
+    return line.length_squared_64() <= radius_squared_64;
 }
 
 bool SGCollisionDetector2DInternal::Circle_overlaps_Rectangle(const SGCircle2DInternal &circle, const SGRectangle2DInternal &rectangle) {

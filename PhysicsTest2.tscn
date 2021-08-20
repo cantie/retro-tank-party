@@ -1,4 +1,4 @@
-[gd_scene load_steps=5 format=2]
+[gd_scene load_steps=6 format=2]
 
 [ext_resource path="res://PhysicsTest2.gd" type="Script" id=1]
 [ext_resource path="res://icon.png" type="Texture" id=3]
@@ -7,7 +7,10 @@
 extents = Object(SGFixedVector2,"x":3276800,"y":3276800,"script":null)
 
 
-[sub_resource type="SGRectangleShape2D" id=2]
+[sub_resource type="SGCircleShape2D" id=2]
+radius = 3635322
+
+[sub_resource type="SGRectangleShape2D" id=3]
 extents = Object(SGFixedVector2,"x":2097152,"y":2097152,"script":null)
 
 
@@ -39,6 +42,16 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
+[node name="Circle" type="SGCollisionShape2D" parent="Area"]
+position = Vector2( -297, 86 )
+rotation = -0.781479
+fixed_position = Object(SGFixedVector2,"x":-19464196,"y":5636096,"script":null)
+
+fixed_scale = Object(SGFixedVector2,"x":65536,"y":65536,"script":null)
+
+fixed_rotation = -51215
+shape = SubResource( 2 )
+
 [node name="Character" type="SGKinematicBody2D" parent="."]
 position = Vector2( 581, 374 )
 rotation = -1.57079
@@ -57,4 +70,4 @@ fixed_position = Object(SGFixedVector2,"x":0,"y":0,"script":null)
 
 fixed_scale = Object(SGFixedVector2,"x":65536,"y":65536,"script":null)
 
-shape = SubResource( 2 )
+shape = SubResource( 3 )
