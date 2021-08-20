@@ -1,6 +1,7 @@
 extends Node2D
 
 onready var character = $Character
+onready var area = $Area
 
 var rotation_speed = SGFixed.from_float(0.1)
 var velocity = SGFixed.vector2(0, 0)
@@ -19,5 +20,14 @@ func _physics_process(delta: float) -> void:
 		velocity.x = -65536
 	
 	if velocity.x != 0:
+		velocity.imulf(65536*6)
 		velocity.rotate(character.fixed_rotation)
 		character.move_and_slide(velocity)
+	else:
+		character.sync_to_physics_engine()
+	
+	var overlapping_bodies = area.get_overlapping_bodies()
+	if overlapping_bodies.size() > 0 && overlapping_bodies[0] == character:
+		character.modulate = Color(1.0, 0.0, 0.0, 1.0)
+	else:
+		character.modulate = Color(1.0, 1.0, 1.0, 1.0)

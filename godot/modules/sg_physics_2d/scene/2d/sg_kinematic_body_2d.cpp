@@ -40,6 +40,7 @@ Ref<SGFixedVector2> SGKinematicBody2D::move_and_slide(const Ref<SGFixedVector2> 
 
     // Temp: Just move it for now.
     get_fixed_position()->iadd(linear_velocity);
+    sync_to_physics_engine();
 
     return result;
 }
