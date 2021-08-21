@@ -4,7 +4,8 @@ TODO
 MILESTONE 1 (physics):
 
  - move_and_slide()
-   o Add "player controls" to the PhysicsTest (or maybe clone it and make a new scene?)
+   o We should pass in a "result object" by reference to get collision data
+   o SGArea2D should directly implement get_overlapping_areas()/get_overlapping_bodies() so it can directly create the Array objects
  - Attempt to put in game
    o Collision masks
  - Ray cast

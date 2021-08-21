@@ -26,6 +26,8 @@
 
 #include <core/object.h>
 
+#include "sg_fixed_math_internal.h"
+
 class SGArea2DInternal;
 class SGBody2DInternal;
 class SGCollisionObject2DInternal;
@@ -39,7 +41,19 @@ class SGWorld2DInternal {
     static SGWorld2DInternal *singleton;
 
 public:
+    struct OverlapInfo {
+        SGShape2DInternal *shape;
+        fixed_vector2 seperation;
+
+        OverlapInfo() {
+            shape = nullptr;
+        }
+    };
+
     static SGWorld2DInternal *get_singleton();
+
+    _FORCE_INLINE_ const List<SGBody2DInternal *> &get_bodies() const { return bodies; }
+    _FORCE_INLINE_ const List<SGArea2DInternal *> &get_areas() const { return areas; }
 
     void add_area(SGArea2DInternal *p_area);
     void remove_area(SGArea2DInternal *p_area);
@@ -48,8 +62,10 @@ public:
     void add_shape(SGShape2DInternal *p_shape);
     void remove_shape(SGShape2DInternal *p_shape);
 
-    bool overlaps(SGCollisionObject2DInternal *p_object1, SGCollisionObject2DInternal *p_object2) const;
-    bool overlaps(SGShape2DInternal *p_shape1, SGShape2DInternal *p_shape2) const;
+    bool overlaps(SGCollisionObject2DInternal *p_object1, SGCollisionObject2DInternal *p_object2, OverlapInfo *p_info = nullptr) const;
+    bool overlaps(SGShape2DInternal *p_shape1, SGShape2DInternal *p_shape2, OverlapInfo *p_info = nullptr) const;
+
+    bool get_best_overlapping_body(SGCollisionObject2DInternal *p_object, OverlapInfo *p_info = nullptr) const;
 
     List<SGArea2DInternal *> *get_overlapping_areas(SGCollisionObject2DInternal *p_object) const;
     List<SGBody2DInternal *> *get_overlapping_bodies(SGCollisionObject2DInternal *p_object) const;

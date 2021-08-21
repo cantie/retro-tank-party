@@ -26,6 +26,8 @@
 
 #include "sg_collision_object_2d.h"
 
+class SGKinematicCollision2D;
+
 class SGKinematicBody2D : public SGCollisionObject2D {
     GDCLASS(SGKinematicBody2D, SGCollisionObject2D);
 
@@ -33,12 +35,43 @@ protected:
     static void _bind_methods();
 
 public:
-    bool move_and_collide(const Ref<SGFixedVector2> &p_linear_velocity);
+    struct Collision {
+        SGCollisionObject2D *collider;
+        // @todo How can we get the shape in here?
+        fixed_vector2 normal;
+        fixed_vector2 remainder;
+    };
+
+    bool move_and_collide(const fixed_vector2 &p_linear_velocity, Collision &p_collision);
     Ref<SGFixedVector2> move_and_slide(const Ref<SGFixedVector2> &p_linear_velocity);
+
+    Ref<SGKinematicCollision2D> _move(const Ref<SGFixedVector2> &p_linear_velocity);
 
     SGKinematicBody2D();
     ~SGKinematicBody2D();
 
+};
+
+class SGKinematicCollision2D : public Reference {
+	GDCLASS(SGKinematicCollision2D, Reference);
+
+	friend class SGKinematicBody2D;
+
+	SGKinematicBody2D::Collision collision;
+    Ref<SGFixedVector2> normal;
+    Ref<SGFixedVector2> remainder;
+
+    void set_collision(const SGKinematicBody2D::Collision &p_collision);
+
+protected:
+	static void _bind_methods();
+
+public:
+    Object *get_collider() const;
+    Ref<SGFixedVector2> get_normal() const;
+    Ref<SGFixedVector2> get_remainder() const;
+
+	SGKinematicCollision2D();
 };
 
 #endif

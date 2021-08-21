@@ -57,10 +57,10 @@ void SGWorld2DInternal::remove_shape(SGShape2DInternal *p_shape) {
     shapes.erase(p_shape);
 }
 
-bool SGWorld2DInternal::overlaps(SGCollisionObject2DInternal *p_object1, SGCollisionObject2DInternal *p_object2) const {
+bool SGWorld2DInternal::overlaps(SGCollisionObject2DInternal *p_object1, SGCollisionObject2DInternal *p_object2, SGWorld2DInternal::OverlapInfo *p_info) const {
     for (const List<SGShape2DInternal *>::Element *S1 = p_object1->get_shapes().front(); S1; S1 = S1->next()) {
         for (const List<SGShape2DInternal *>::Element *S2 = p_object2->get_shapes().front(); S2; S2 = S2->next()) {
-            if (overlaps(S1->get(), S2->get())) {
+            if (overlaps(S1->get(), S2->get(), p_info)) {
                 return true;
             }
         }
@@ -69,23 +69,53 @@ bool SGWorld2DInternal::overlaps(SGCollisionObject2DInternal *p_object1, SGColli
     return false;
 }
 
-bool SGWorld2DInternal::overlaps(SGShape2DInternal *p_shape1, SGShape2DInternal *p_shape2) const {
+bool SGWorld2DInternal::overlaps(SGShape2DInternal *p_shape1, SGShape2DInternal *p_shape2, SGWorld2DInternal::OverlapInfo *p_info) const {
     using ShapeType = SGShape2DInternal::ShapeType;
 
     ShapeType shape1_type = p_shape1->get_shape_type();
     ShapeType shape2_type = p_shape2->get_shape_type();
 
+    SGCollisionDetector2DInternal::OverlapInfo collision_info;
+    SGCollisionDetector2DInternal::OverlapInfo *collision_info_ptr = p_info ? &collision_info : nullptr;
+
+    bool overlapping = false;
+    bool swap = false;
+
     if (shape1_type == ShapeType::SHAPE_RECTANGLE && shape2_type == ShapeType::SHAPE_RECTANGLE) {
-        return SGCollisionDetector2DInternal::Rectangle_overlaps_Rectangle(*((SGRectangle2DInternal *)p_shape1), *((SGRectangle2DInternal *)p_shape2));
+        overlapping = SGCollisionDetector2DInternal::Rectangle_overlaps_Rectangle(*((SGRectangle2DInternal *)p_shape1), *((SGRectangle2DInternal *)p_shape2), collision_info_ptr);
     }
     else if (shape1_type == ShapeType::SHAPE_CIRCLE && shape2_type == ShapeType::SHAPE_CIRCLE) {
-        return SGCollisionDetector2DInternal::Circle_overlaps_Circle(*((SGCircle2DInternal *)p_shape1), *((SGCircle2DInternal *)p_shape2));
+        overlapping = SGCollisionDetector2DInternal::Circle_overlaps_Circle(*((SGCircle2DInternal *)p_shape1), *((SGCircle2DInternal *)p_shape2), collision_info_ptr);
     }
     else if (shape1_type == ShapeType::SHAPE_CIRCLE && shape2_type == ShapeType::SHAPE_RECTANGLE) {
-        return SGCollisionDetector2DInternal::Circle_overlaps_Rectangle(*((SGCircle2DInternal *)p_shape1), *((SGRectangle2DInternal *)p_shape2));
+        overlapping = SGCollisionDetector2DInternal::Circle_overlaps_Rectangle(*((SGCircle2DInternal *)p_shape1), *((SGRectangle2DInternal *)p_shape2), collision_info_ptr);
     }
     else if (shape1_type == ShapeType::SHAPE_RECTANGLE && shape2_type == ShapeType::SHAPE_CIRCLE) {
-        return SGCollisionDetector2DInternal::Circle_overlaps_Rectangle(*((SGCircle2DInternal *)p_shape2), *((SGRectangle2DInternal *)p_shape1));
+        overlapping = SGCollisionDetector2DInternal::Circle_overlaps_Rectangle(*((SGCircle2DInternal *)p_shape2), *((SGRectangle2DInternal *)p_shape1), collision_info_ptr);
+        swap = true;
+    }
+
+    if (overlapping && p_info) {
+        // Make sure the info is from the perspective of the first shape.
+        p_info->shape = swap ? p_shape1 : p_shape2;
+        p_info->seperation = swap ? -collision_info.seperation : collision_info.seperation;
+    }
+
+    return overlapping;
+}
+
+bool SGWorld2DInternal::get_best_overlapping_body(SGCollisionObject2DInternal *p_object, SGWorld2DInternal::OverlapInfo *p_info) const {
+    for (const List<SGBody2DInternal *>::Element *E = bodies.front(); E; E = E->next()) {
+        SGBody2DInternal *other = E->get();
+        if (other == p_object) {
+            continue;
+        }
+
+        if (overlaps(p_object, other, p_info)) {
+            // @todo We should return the info for the collision with the deepest penetration.
+            // For now, just return the info for the first overlapping shape.
+            return true;
+        }
     }
 
     return false;

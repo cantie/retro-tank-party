@@ -27,56 +27,49 @@
 #include "../../internal/sg_world_2d_internal.h"
 
 void SGKinematicBody2D::_bind_methods() {
-    ClassDB::bind_method(D_METHOD("move_and_collide", "linear_velocity"), &SGKinematicBody2D::move_and_collide);
+    ClassDB::bind_method(D_METHOD("move_and_collide", "linear_velocity"), &SGKinematicBody2D::_move);
     ClassDB::bind_method(D_METHOD("move_and_slide", "linear_velocity"), &SGKinematicBody2D::move_and_slide);
 }
 
-bool SGKinematicBody2D::move_and_collide(const Ref<SGFixedVector2> &linear_velocity) {
+bool SGKinematicBody2D::move_and_collide(const fixed_vector2 &p_linear_velocity, SGKinematicBody2D::Collision &p_collision) {
     SGWorld2DInternal *world = SGWorld2DInternal::get_singleton();
-
-    List<SGBody2DInternal *> *overlapping_bodies;
+    SGWorld2DInternal::OverlapInfo overlap_info;
 
     // Move the body the full amount.
     fixed_transform2d original_transform = internal->get_transform();
     fixed_transform2d test_transform = original_transform;
-    test_transform.set_origin(original_transform.get_origin() + linear_velocity->get_internal());
+    fixed_vector2 destination = original_transform.get_origin() + p_linear_velocity;
+    test_transform.set_origin(destination);
     internal->set_transform(test_transform);
 
     // Check if we're colliding. If not, sync from physics engine and bail.
-    overlapping_bodies = world->get_overlapping_bodies(internal);
-    if (overlapping_bodies->size() == 0) {
-        memdelete(overlapping_bodies);
+    if (!world->get_best_overlapping_body(internal, &overlap_info)) {
         _set_fixed_position(test_transform.get_origin());
         return false;
     }
     
-    List<SGBody2DInternal *> *last_overlapping_bodies = overlapping_bodies;
-
     // Use binary search to find the point at which we collide, and the point just before that.
     fixed low = fixed::ZERO;
     fixed hi = fixed::ONE;
     for (int i = 0; i < 8; i++) {
         fixed cur = (low + hi) * fixed::HALF;
-        fixed_vector2 test_velocity = linear_velocity->get_internal() * cur;
+        fixed_vector2 test_velocity = p_linear_velocity * cur;
         test_transform.set_origin(original_transform.get_origin() + test_velocity);
         internal->set_transform(test_transform);
-        overlapping_bodies = world->get_overlapping_bodies(internal);
-        if (overlapping_bodies->size() > 0) {
+        if (world->get_best_overlapping_body(internal, &overlap_info)) {
             hi = cur;
-
-            // Update the last overlapping bodies.
-            memdelete(last_overlapping_bodies);
-            last_overlapping_bodies = overlapping_bodies;
         }
         else {
             low = cur;
             _set_fixed_position(get_fixed_position()->get_internal() + test_velocity);
-            memdelete(overlapping_bodies);
         }
     }
 
-    // @todo Find the shapes that collided so we can get the collision normal.
-    memdelete(last_overlapping_bodies);
+    // At this point, the overlap_info will contain info about the collision at 'hi'
+    // which is what we want to store in p_collision.
+    p_collision.collider = Object::cast_to<SGCollisionObject2D>((Object *)overlap_info.shape->get_owner()->get_data());
+    p_collision.normal = overlap_info.seperation.normalized();
+    p_collision.remainder = destination - get_fixed_position()->get_internal();
 
     return true;
 }
@@ -91,10 +84,53 @@ Ref<SGFixedVector2> SGKinematicBody2D::move_and_slide(const Ref<SGFixedVector2> 
     return result;
 }
 
+Ref<SGKinematicCollision2D> SGKinematicBody2D::_move(const Ref<SGFixedVector2> &p_linear_velocity) {
+    SGKinematicBody2D::Collision collision;
+    if (move_and_collide(p_linear_velocity->get_internal(), collision)) {
+        Ref<SGKinematicCollision2D> result = Ref<SGKinematicCollision2D>(memnew(SGKinematicCollision2D));
+        result->set_collision(collision);
+        return result;
+    }
+    return Ref<SGKinematicCollision2D>();
+}
+
 SGKinematicBody2D::SGKinematicBody2D()
     : SGCollisionObject2D(memnew(SGBody2DInternal(SGBody2DInternal::BodyType::BODY_KINEMATIC)))
 {
 }
 
 SGKinematicBody2D::~SGKinematicBody2D() {
+}
+
+void SGKinematicCollision2D::set_collision(const SGKinematicBody2D::Collision &p_collision) {
+    collision = p_collision;
+    normal->set_internal(collision.normal);
+    remainder->set_internal(collision.remainder);
+}
+
+void SGKinematicCollision2D::_bind_methods() {
+    ClassDB::bind_method(D_METHOD("get_collider"), &SGKinematicCollision2D::get_collider);
+    ClassDB::bind_method(D_METHOD("get_normal"), &SGKinematicCollision2D::get_normal);
+    ClassDB::bind_method(D_METHOD("get_remainder"), &SGKinematicCollision2D::get_remainder);
+
+	ADD_PROPERTY(PropertyInfo(Variant::OBJECT, "collider"), "", "get_collider");
+	ADD_PROPERTY(PropertyInfo(Variant::OBJECT, "normal", PROPERTY_HINT_TYPE_STRING, "SGFixedVector2"), "", "get_normal");
+	ADD_PROPERTY(PropertyInfo(Variant::OBJECT, "remainder", PROPERTY_HINT_TYPE_STRING, "SGFixedVector2"), "", "get_remainder");
+}
+
+Object *SGKinematicCollision2D::get_collider() const {
+    return collision.collider;
+}
+
+Ref<SGFixedVector2> SGKinematicCollision2D::get_normal() const {
+    return normal;
+}
+
+Ref<SGFixedVector2> SGKinematicCollision2D::get_remainder() const {
+    return remainder;
+}
+
+SGKinematicCollision2D::SGKinematicCollision2D() {
+    normal = Ref<SGFixedVector2>(memnew(SGFixedVector2));
+    remainder = Ref<SGFixedVector2>(memnew(SGFixedVector2));
 }

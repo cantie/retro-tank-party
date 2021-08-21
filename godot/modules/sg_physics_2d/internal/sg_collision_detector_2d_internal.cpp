@@ -95,7 +95,7 @@ bool SGCollisionDetector2DInternal::overlaps_on_axis(const fixed_rect2 &aabb, co
     return ((i2.min <= i1.max) && (i1.min <= i2.max));
 }
 
-bool SGCollisionDetector2DInternal::AABB_overlaps_AABB(const fixed_rect2 &aabb1, const fixed_rect2 &aabb2) {
+bool SGCollisionDetector2DInternal::AABB_overlaps_AABB(const fixed_rect2 &aabb1, const fixed_rect2 &aabb2, OverlapInfo *p_info) {
     fixed_vector2 min_one = aabb1.get_min();
     fixed_vector2 max_one = aabb1.get_max();
     fixed_vector2 min_two = aabb2.get_min();
@@ -105,7 +105,7 @@ bool SGCollisionDetector2DInternal::AABB_overlaps_AABB(const fixed_rect2 &aabb1,
            (min_two.y <= max_one.y) && (min_one.y <= max_two.y);
 }
 
-bool SGCollisionDetector2DInternal::AABB_overlaps_AABB_SAT(const fixed_rect2 &aabb1, const fixed_rect2 &aabb2) {
+bool SGCollisionDetector2DInternal::AABB_overlaps_AABB_SAT(const fixed_rect2 &aabb1, const fixed_rect2 &aabb2, OverlapInfo *p_info) {
     fixed_vector2 axes[] = {
         fixed_vector2(fixed::ONE, fixed::ZERO),
         fixed_vector2(fixed::ZERO, fixed::ONE),
@@ -122,7 +122,7 @@ bool SGCollisionDetector2DInternal::AABB_overlaps_AABB_SAT(const fixed_rect2 &aa
     return true;
 }
 
-bool SGCollisionDetector2DInternal::AABB_overlaps_Rectangle(const fixed_rect2 &aabb, const SGRectangle2DInternal &rectangle) {
+bool SGCollisionDetector2DInternal::AABB_overlaps_Rectangle(const fixed_rect2 &aabb, const SGRectangle2DInternal &rectangle, OverlapInfo *p_info) {
     fixed_vector2 axes[] = {
         fixed_vector2(fixed::ONE, fixed::ZERO),
         fixed_vector2(fixed::ZERO, fixed::ONE),
@@ -139,7 +139,7 @@ bool SGCollisionDetector2DInternal::AABB_overlaps_Rectangle(const fixed_rect2 &a
     return true;
 }
 
-bool SGCollisionDetector2DInternal::Rectangle_overlaps_Rectangle(const SGRectangle2DInternal &rectangle1, const SGRectangle2DInternal &rectangle2) {
+bool SGCollisionDetector2DInternal::Rectangle_overlaps_Rectangle(const SGRectangle2DInternal &rectangle1, const SGRectangle2DInternal &rectangle2, OverlapInfo *p_info) {
     // Convert first rectangle into its own local space.
     fixed_rect2 aabb(fixed_vector2(), rectangle1.get_extents());
 
@@ -150,7 +150,7 @@ bool SGCollisionDetector2DInternal::Rectangle_overlaps_Rectangle(const SGRectang
     return AABB_overlaps_Rectangle(aabb, localized_rectangle2);
 }
 
-bool SGCollisionDetector2DInternal::Circle_overlaps_Circle(const SGCircle2DInternal &circle1, const SGCircle2DInternal &circle2) {
+bool SGCollisionDetector2DInternal::Circle_overlaps_Circle(const SGCircle2DInternal &circle1, const SGCircle2DInternal &circle2, OverlapInfo *p_info) {
     fixed_transform2d t1 = circle1.get_global_transform();
     fixed_transform2d t2 = circle2.get_global_transform();
 
@@ -160,10 +160,16 @@ bool SGCollisionDetector2DInternal::Circle_overlaps_Circle(const SGCircle2DInter
     // We only multiply by the scale.x because we don't support non-uniform scaling.
 
     int64_t combined_radius = (int64_t)circle1.get_radius().value * (int64_t)t1.get_scale().x.value + (int64_t)circle2.get_radius().value * (int64_t)t2.get_scale().x.value;
-    return line.length_squared_64() <= combined_radius;
+    bool overlapping = line.length_squared_64() <= combined_radius;
+
+    if (overlapping && p_info) {
+        p_info->seperation = line;
+    }
+
+    return overlapping;
 }
 
-bool SGCollisionDetector2DInternal::Circle_overlaps_AABB(const SGCircle2DInternal &circle, const fixed_rect2 &aabb) {
+bool SGCollisionDetector2DInternal::Circle_overlaps_AABB(const SGCircle2DInternal &circle, const fixed_rect2 &aabb, OverlapInfo *p_info) {
     fixed_vector2 min = aabb.get_min();
     fixed_vector2 max = aabb.get_max();
 
@@ -180,10 +186,16 @@ bool SGCollisionDetector2DInternal::Circle_overlaps_AABB(const SGCircle2DInterna
     // We need to use 64-bit integer math so we don't overflow 32-bits with
     // all these big squared values.
     int64_t radius_squared_64 = (int64_t)radius.value * (int64_t)radius.value;
-    return line.length_squared_64() <= radius_squared_64;
+    bool overlapping = line.length_squared_64() <= radius_squared_64;
+
+    if (overlapping && p_info) {
+        p_info->seperation = line;
+    }
+
+    return overlapping;
 }
 
-bool SGCollisionDetector2DInternal::Circle_overlaps_Rectangle(const SGCircle2DInternal &circle, const SGRectangle2DInternal &rectangle) {
+bool SGCollisionDetector2DInternal::Circle_overlaps_Rectangle(const SGCircle2DInternal &circle, const SGRectangle2DInternal &rectangle, OverlapInfo *p_info) {
     // Convert first rectangle into its own local space.
     fixed_rect2 aabb(fixed_vector2(), rectangle.get_extents());
 
@@ -191,5 +203,12 @@ bool SGCollisionDetector2DInternal::Circle_overlaps_Rectangle(const SGCircle2DIn
     SGCircle2DInternal localized_circle(circle.get_radius());
     localized_circle.set_transform(rectangle.get_global_transform().affine_inverse() * circle.get_global_transform());
 
-    return Circle_overlaps_AABB(localized_circle, aabb);
+    bool overlapping = Circle_overlaps_AABB(localized_circle, aabb, p_info);
+
+    if (overlapping && p_info) {
+        // Transform the seperation vector back into global space.
+        p_info->seperation = rectangle.get_global_transform().xform(p_info->seperation);
+    }
+
+    return overlapping;
 }
