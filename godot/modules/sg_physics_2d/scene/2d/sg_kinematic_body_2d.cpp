@@ -68,7 +68,8 @@ bool SGKinematicBody2D::move_and_collide(const fixed_vector2 &p_linear_velocity,
     // At this point, the overlap_info will contain info about the collision at 'hi'
     // which is what we want to store in p_collision.
     p_collision.collider = Object::cast_to<SGCollisionObject2D>((Object *)overlap_info.shape->get_owner()->get_data());
-    p_collision.normal = overlap_info.seperation.normalized();
+    //p_collision.normal = overlap_info.seperation.normalized();
+    p_collision.normal = overlap_info.seperation;
     p_collision.remainder = destination - get_fixed_position()->get_internal();
 
     return true;
