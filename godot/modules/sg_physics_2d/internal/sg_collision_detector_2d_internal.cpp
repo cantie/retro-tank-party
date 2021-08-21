@@ -160,7 +160,7 @@ bool SGCollisionDetector2DInternal::Circle_overlaps_Circle(const SGCircle2DInter
     // We only multiply by the scale.x because we don't support non-uniform scaling.
 
     int64_t combined_radius = (int64_t)circle1.get_radius().value * (int64_t)t1.get_scale().x.value + (int64_t)circle2.get_radius().value * (int64_t)t2.get_scale().x.value;
-    bool overlapping = line.length_squared_64() <= combined_radius;
+    bool overlapping = (line.length_squared_64() <= combined_radius);
 
     if (overlapping && p_info) {
         p_info->seperation = line;
@@ -186,7 +186,7 @@ bool SGCollisionDetector2DInternal::Circle_overlaps_AABB(const SGCircle2DInterna
     // We need to use 64-bit integer math so we don't overflow 32-bits with
     // all these big squared values.
     int64_t radius_squared_64 = (int64_t)radius.value * (int64_t)radius.value;
-    bool overlapping = line.length_squared_64() <= radius_squared_64;
+    bool overlapping = (line.length_squared_64() <= radius_squared_64);
 
     if (overlapping && p_info) {
         p_info->seperation = line;
