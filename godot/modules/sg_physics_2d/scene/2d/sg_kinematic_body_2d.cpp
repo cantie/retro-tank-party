@@ -53,15 +53,15 @@ bool SGKinematicBody2D::move_and_collide(const fixed_vector2 &p_linear_velocity,
     fixed hi = fixed::ONE;
     for (int i = 0; i < 8; i++) {
         fixed cur = (low + hi) * fixed::HALF;
-        fixed_vector2 test_velocity = p_linear_velocity * cur;
-        test_transform.set_origin(original_transform.get_origin() + test_velocity);
+        fixed_vector2 test_position = original_transform.get_origin() + (p_linear_velocity * cur);
+        test_transform.set_origin(test_position);
         internal->set_transform(test_transform);
         if (world->get_best_overlapping_body(internal, &overlap_info)) {
             hi = cur;
         }
         else {
             low = cur;
-            _set_fixed_position(get_fixed_position()->get_internal() + test_velocity);
+            _set_fixed_position(test_position);
         }
     }
 
