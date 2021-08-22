@@ -75,30 +75,30 @@ bool SGWorld2DInternal::overlaps(SGShape2DInternal *p_shape1, SGShape2DInternal 
     ShapeType shape1_type = p_shape1->get_shape_type();
     ShapeType shape2_type = p_shape2->get_shape_type();
 
-    SGCollisionDetector2DInternal::OverlapInfo collision_info;
-    SGCollisionDetector2DInternal::OverlapInfo *collision_info_ptr = p_info ? &collision_info : nullptr;
+    SGCollisionDetector2DInternal::OverlapInfo overlap_info;
+    SGCollisionDetector2DInternal::OverlapInfo *overlap_info_ptr = p_info ? &overlap_info : nullptr;
 
     bool overlapping = false;
     bool swap = false;
 
     if (shape1_type == ShapeType::SHAPE_RECTANGLE && shape2_type == ShapeType::SHAPE_RECTANGLE) {
-        overlapping = SGCollisionDetector2DInternal::Rectangle_overlaps_Rectangle(*((SGRectangle2DInternal *)p_shape1), *((SGRectangle2DInternal *)p_shape2), collision_info_ptr);
+        overlapping = SGCollisionDetector2DInternal::Rectangle_overlaps_Rectangle(*((SGRectangle2DInternal *)p_shape1), *((SGRectangle2DInternal *)p_shape2), overlap_info_ptr);
     }
     else if (shape1_type == ShapeType::SHAPE_CIRCLE && shape2_type == ShapeType::SHAPE_CIRCLE) {
-        overlapping = SGCollisionDetector2DInternal::Circle_overlaps_Circle(*((SGCircle2DInternal *)p_shape1), *((SGCircle2DInternal *)p_shape2), collision_info_ptr);
+        overlapping = SGCollisionDetector2DInternal::Circle_overlaps_Circle(*((SGCircle2DInternal *)p_shape1), *((SGCircle2DInternal *)p_shape2), overlap_info_ptr);
     }
     else if (shape1_type == ShapeType::SHAPE_CIRCLE && shape2_type == ShapeType::SHAPE_RECTANGLE) {
-        overlapping = SGCollisionDetector2DInternal::Circle_overlaps_Rectangle(*((SGCircle2DInternal *)p_shape1), *((SGRectangle2DInternal *)p_shape2), collision_info_ptr);
+        overlapping = SGCollisionDetector2DInternal::Circle_overlaps_Rectangle(*((SGCircle2DInternal *)p_shape1), *((SGRectangle2DInternal *)p_shape2), overlap_info_ptr);
     }
     else if (shape1_type == ShapeType::SHAPE_RECTANGLE && shape2_type == ShapeType::SHAPE_CIRCLE) {
-        overlapping = SGCollisionDetector2DInternal::Circle_overlaps_Rectangle(*((SGCircle2DInternal *)p_shape2), *((SGRectangle2DInternal *)p_shape1), collision_info_ptr);
+        overlapping = SGCollisionDetector2DInternal::Circle_overlaps_Rectangle(*((SGCircle2DInternal *)p_shape2), *((SGRectangle2DInternal *)p_shape1), overlap_info_ptr);
         swap = true;
     }
 
     if (overlapping && p_info) {
         // Make sure the info is from the perspective of the first shape.
         p_info->shape = swap ? p_shape1 : p_shape2;
-        p_info->seperation = swap ? -collision_info.seperation : collision_info.seperation;
+        p_info->seperation = swap ? -overlap_info.separation : overlap_info.separation;
     }
 
     return overlapping;

@@ -160,6 +160,7 @@ struct fixed_vector2 {
     };
 
     static const fixed FIXED_UNIT_EPSILON;
+    static const fixed_vector2 ZERO;
 
 	_FORCE_INLINE_ fixed_vector2(fixed p_x, fixed p_y) 
         : x(p_x), y(p_y) {}

@@ -32,6 +32,8 @@ const fixed fixed::HALF = fixed(32768);
 // Tolerate more precision error than normal.
 const fixed fixed_vector2::FIXED_UNIT_EPSILON = fixed(65);
 
+const fixed_vector2 fixed_vector2::ZERO = fixed_vector2(fixed::ZERO, fixed::ZERO);
+
 bool fixed_vector2::operator==(const fixed_vector2 &p_v) const {
     return x == p_v.x && y == p_v.y;
 }
