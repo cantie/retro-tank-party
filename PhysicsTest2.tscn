@@ -25,12 +25,10 @@ fixed_scale = Object(SGFixedVector2,"x":65536,"y":65536,"script":null)
 
 
 [node name="Rectangle" type="SGCollisionShape2D" parent="Area"]
-rotation = -0.781479
 fixed_position = Object(SGFixedVector2,"x":0,"y":0,"script":null)
 
 fixed_scale = Object(SGFixedVector2,"x":65536,"y":65536,"script":null)
 
-fixed_rotation = -51215
 shape = SubResource( 1 )
 
 [node name="ColorRect" type="ColorRect" parent="Area/Rectangle"]

@@ -28,7 +28,7 @@
 
 void SGKinematicBody2D::_bind_methods() {
     ClassDB::bind_method(D_METHOD("move_and_collide", "linear_velocity"), &SGKinematicBody2D::_move);
-    ClassDB::bind_method(D_METHOD("move_and_slide", "linear_velocity"), &SGKinematicBody2D::move_and_slide);
+    ClassDB::bind_method(D_METHOD("move_and_slide", "linear_velocity", "max_slides"), &SGKinematicBody2D::move_and_slide, DEFVAL(4));
 }
 
 bool SGKinematicBody2D::move_and_collide(const fixed_vector2 &p_linear_velocity, SGKinematicBody2D::Collision &p_collision) {
@@ -69,19 +69,30 @@ bool SGKinematicBody2D::move_and_collide(const fixed_vector2 &p_linear_velocity,
     // which is what we want to store in p_collision.
     p_collision.collider = Object::cast_to<SGCollisionObject2D>((Object *)overlap_info.shape->get_owner()->get_data());
     p_collision.normal = overlap_info.seperation.normalized();
-    p_collision.remainder = destination - get_fixed_position()->get_internal();
+    p_collision.remainder = p_linear_velocity.normalized() * (p_linear_velocity.length() * (fixed::ONE - low));
 
     return true;
 }
 
-Ref<SGFixedVector2> SGKinematicBody2D::move_and_slide(const Ref<SGFixedVector2> &linear_velocity) {
-    Ref<SGFixedVector2> result = Ref<SGFixedVector2>(memnew(SGFixedVector2));
+Ref<SGFixedVector2> SGKinematicBody2D::move_and_slide(const Ref<SGFixedVector2> &p_linear_velocity, int p_max_slides) {
+    fixed_vector2 motion = p_linear_velocity->get_internal();
 
-    // Temp: Just move it for now.
-    get_fixed_position()->iadd(linear_velocity);
-    sync_to_physics_engine();
+    while (p_max_slides) {
+        Collision collision;
 
-    return result;
+        if (!move_and_collide(motion, collision)) {
+            break;
+        }
+        motion = collision.remainder.slide(collision.normal);
+
+        if (motion == fixed_vector2::ZERO) {
+            break;
+        }
+
+        p_max_slides--;
+    }
+
+    return Ref<SGFixedVector2>(memnew(SGFixedVector2(motion)));
 }
 
 Ref<SGKinematicCollision2D> SGKinematicBody2D::_move(const Ref<SGFixedVector2> &p_linear_velocity) {

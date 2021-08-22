@@ -43,7 +43,7 @@ public:
     };
 
     bool move_and_collide(const fixed_vector2 &p_linear_velocity, Collision &p_collision);
-    Ref<SGFixedVector2> move_and_slide(const Ref<SGFixedVector2> &p_linear_velocity);
+    Ref<SGFixedVector2> move_and_slide(const Ref<SGFixedVector2> &p_linear_velocity, int p_max_slides);
 
     Ref<SGKinematicCollision2D> _move(const Ref<SGFixedVector2> &p_linear_velocity);
 

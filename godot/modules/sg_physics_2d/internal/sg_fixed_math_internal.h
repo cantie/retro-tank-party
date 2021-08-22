@@ -264,6 +264,10 @@ struct fixed_vector2 {
 
     _FORCE_INLINE_ static fixed_vector2 linear_interpolate(const fixed_vector2 &p_a, const fixed_vector2 &p_b, fixed p_weight);
 
+    fixed_vector2 slide(const fixed_vector2 &p_normal) const;
+    fixed_vector2 bounce(const fixed_vector2 &p_normal) const;
+    fixed_vector2 reflect(const fixed_vector2 &p_normal) const;
+
     bool is_equal_approx(const fixed_vector2 &p_v) const;
 };
 

@@ -94,6 +94,19 @@ fixed fixed_vector2::cross(const fixed_vector2 &p_other) const {
     return x * p_other.y - y * p_other.x;
 }
 
+fixed_vector2 fixed_vector2::slide(const fixed_vector2 &p_normal) const {
+    return *this - p_normal * this->dot(p_normal);
+}
+
+fixed_vector2 fixed_vector2::bounce(const fixed_vector2 &p_normal) const {
+    return -reflect(p_normal);
+}
+
+fixed_vector2 fixed_vector2::reflect(const fixed_vector2 &p_normal) const {
+    // 131072 = 2.0
+    return p_normal * fixed(131072) * this->dot(p_normal) - *this;
+}
+
 bool fixed_vector2::is_equal_approx(const fixed_vector2 &p_v) const {
     return fixed::is_equal_approx(x, p_v.x) && fixed::is_equal_approx(y, p_v.y);
 }

@@ -23,13 +23,13 @@ func _physics_process(delta: float) -> void:
 	if velocity.x != 0:
 		velocity.imulf(65536*6)
 		velocity.rotate(character.fixed_rotation)
-		#character.move_and_slide(velocity)
-		var collision = character.move_and_collide(velocity)
-		if collision:
-			print("COLLIDES!")
-			print (collision.collider)
-			print ("normal: %s" % collision.normal.to_float())
-			print ("remainder: %s" % collision.remainder.to_float())
+		#var collision = character.move_and_collide(velocity)
+		#if collision:
+		#	print("COLLIDES!")
+		#	print (collision.collider)
+		#	print ("normal: %s" % collision.normal.to_float())
+		#	print ("remainder: %s" % collision.remainder.to_float())
+		character.move_and_slide(velocity)
 	else:
 		character.sync_to_physics_engine()
 	
