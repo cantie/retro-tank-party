@@ -25,7 +25,8 @@ fixed_scale = Object(SGFixedVector2,"x":65536,"y":65536,"script":null)
 
 
 [node name="Rectangle" type="SGCollisionShape2D" parent="Area"]
-fixed_position = Object(SGFixedVector2,"x":0,"y":0,"script":null)
+position = Vector2( -97.0001, -6 )
+fixed_position = Object(SGFixedVector2,"x":-6356996,"y":-393216,"script":null)
 
 fixed_scale = Object(SGFixedVector2,"x":65536,"y":65536,"script":null)
 

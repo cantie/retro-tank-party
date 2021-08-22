@@ -48,6 +48,7 @@ public:
 
     static bool overlaps_on_axis(const fixed_rect2 &aabb1, const fixed_rect2 &aabb2, const fixed_vector2 &axis, fixed &separation);
     static bool overlaps_on_axis(const fixed_rect2 &aabb, const SGRectangle2DInternal &rectangle, const fixed_vector2 &axis, fixed &separation);
+    static bool overlaps_on_axis(const SGRectangle2DInternal &rectangle1, const SGRectangle2DInternal &rectangle2, const fixed_vector2 &axis, fixed &separation);
 
     static bool AABB_overlaps_AABB(const fixed_rect2 &aabb1, const fixed_rect2 &aabb2, OverlapInfo *p_info = nullptr);
     static bool AABB_overlaps_AABB_SAT(const fixed_rect2 &aabb1, const fixed_rect2 &aabb2, OverlapInfo *p_info = nullptr);

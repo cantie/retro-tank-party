@@ -37,6 +37,32 @@ const fixed fixed_vector2::FIXED_UNIT_EPSILON = fixed(65);
 
 const fixed_vector2 fixed_vector2::ZERO = fixed_vector2(fixed::ZERO, fixed::ZERO);
 
+/**
+ * Copied from https://en.wikipedia.org/wiki/Methods_of_computing_square_roots#Binary_numeral_system_.28base_2.29
+ * but modified to use 64-bit numbers.
+ */
+static int64_t fix16_sqrt_64(int64_t num) {
+    int64_t res = 0;
+    int64_t bit = 1LL << 62;
+
+    while (bit > num) {
+        bit >>= 2;
+    }
+    
+    while (bit != 0) {
+        if (num >= res + bit) {
+            num -= res + bit;
+            res = (res >> 1) + bit;
+        }
+        else {
+            res >>= 1;
+        }
+        bit >>= 2;
+    }
+
+    return res;
+}
+
 bool fixed_vector2::operator==(const fixed_vector2 &p_v) const {
     return x == p_v.x && y == p_v.y;
 }
@@ -57,9 +83,15 @@ fixed_vector2 fixed_vector2::rotated(fixed p_rotation) const {
 }
 
 void fixed_vector2::normalize() {
-    fixed l = x * x + y * y;
+    // If a fixed value is less than 256, then squaring it can become 0,
+    // causing this method to break with small values. Since only direction
+    // matters, we can increase the vector's magnitude to avoid this.
+    if (x.value < 256 || y.value < 256) {
+        x.value *= 256;
+        y.value *= 256;
+    }
+    fixed l = length();
     if (l != fixed::ZERO) {
-        l = l.sqrt();
         x /= l;
         y /= l;
     }
@@ -76,7 +108,7 @@ bool fixed_vector2::is_normalized() const {
 }
 
 fixed fixed_vector2::length() const {
-    return (x * x + y * y).sqrt();
+    return fixed(fix16_sqrt_64(length_squared_64()));
 }
 
 fixed fixed_vector2::length_squared() const {

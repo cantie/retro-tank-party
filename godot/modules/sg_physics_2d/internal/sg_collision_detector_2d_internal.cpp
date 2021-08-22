@@ -119,6 +119,24 @@ bool SGCollisionDetector2DInternal::overlaps_on_axis(const fixed_rect2 &aabb, co
     return false;
 }
 
+bool SGCollisionDetector2DInternal::overlaps_on_axis(const SGRectangle2DInternal &rectangle1, const SGRectangle2DInternal &rectangle2, const fixed_vector2 &axis, fixed &separation) {
+    Interval i1 = get_interval(rectangle1, axis);
+    Interval i2 = get_interval(rectangle2, axis);
+
+    fixed d1 = i1.max - i2.min;
+    fixed d2 = i2.max - i1.min;
+    if (d1 >= fixed::ZERO && d2 >= fixed::ZERO) {
+        separation = (d1 < d2) ? d1 : d2;
+        // Attempt to make the seperation relative to aabb.
+        if (i1.min < i2.min) {
+            separation = -separation;
+        }
+        return true;
+    }
+
+    return false;
+}
+
 bool SGCollisionDetector2DInternal::AABB_overlaps_AABB(const fixed_rect2 &aabb1, const fixed_rect2 &aabb2, OverlapInfo *p_info) {
     fixed_vector2 min_one = aabb1.get_min();
     fixed_vector2 max_one = aabb1.get_max();
@@ -192,23 +210,40 @@ bool SGCollisionDetector2DInternal::AABB_overlaps_Rectangle(const fixed_rect2 &a
 }
 
 bool SGCollisionDetector2DInternal::Rectangle_overlaps_Rectangle(const SGRectangle2DInternal &rectangle1, const SGRectangle2DInternal &rectangle2, OverlapInfo *p_info) {
-    // Convert first rectangle into its own local space.
-    fixed_rect2 aabb(fixed_vector2(), rectangle1.get_extents());
+    fixed_transform2d rt1 = rectangle1.get_global_transform();
+    rt1.set_origin(fixed_vector2::ZERO);
+    fixed_transform2d rt2 = rectangle2.get_global_transform();
+    rt2.set_origin(fixed_vector2::ZERO);
 
-    // Transform the second rectangle into the local space of the first.
-    fixed_transform2d t = rectangle1.get_global_transform();
-    SGRectangle2DInternal localized_rectangle2(rectangle2.get_extents());
-    localized_rectangle2.set_transform(t.affine_inverse() * rectangle2.get_global_transform());
+    fixed_vector2 axes[] = {
+        rt1.xform(fixed_vector2(rectangle1.get_extents().x, fixed::ZERO)).normalized(),
+        rt1.xform(fixed_vector2(fixed::ZERO, rectangle1.get_extents().y)).normalized(),
+        rt2.xform(fixed_vector2(rectangle2.get_extents().x, fixed::ZERO)).normalized(),
+        rt2.xform(fixed_vector2(fixed::ZERO, rectangle2.get_extents().y)).normalized(),
+    };
 
-    bool overlapping = AABB_overlaps_Rectangle(aabb, localized_rectangle2, p_info);
+    fixed separation_component;
+    fixed_vector2 best_separation_vector;
 
-    if (overlapping && p_info) {
-        // Transform the separation vector back into global space (but don't translate
-        // because this is relative vector).
-        p_info->separation = t.xform(p_info->separation) - t.elements[2];
+    for (int i = 0; i < 4; i++) {
+        if (overlaps_on_axis(rectangle1, rectangle2, axes[i], separation_component)) {
+            fixed_vector2 separation_vector = (axes[i] * separation_component);
+            if (best_separation_vector == fixed_vector2::ZERO || separation_vector.length() < best_separation_vector.length()) {
+                best_separation_vector = separation_vector;
+            }
+        }
+        else {
+            // Axis of separation found! They don't overlap.
+            return false;
+        }
+    }
+    // No axis of separation found, they overlap!
+
+    if (p_info) {
+        p_info->separation = best_separation_vector;
     }
 
-    return overlapping;
+    return true;
 }
 
 bool SGCollisionDetector2DInternal::Circle_overlaps_Circle(const SGCircle2DInternal &circle1, const SGCircle2DInternal &circle2, OverlapInfo *p_info) {
