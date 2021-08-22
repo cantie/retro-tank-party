@@ -35,6 +35,28 @@ bool SGKinematicBody2D::move_and_collide(const fixed_vector2 &p_linear_velocity,
     SGWorld2DInternal *world = SGWorld2DInternal::get_singleton();
     SGWorld2DInternal::OverlapInfo overlap_info;
 
+    // First, get our body unstuck, if it's stuck.
+    bool stuck = world->get_best_overlapping_body(internal, &overlap_info);
+    if (stuck) {
+        for (int i = 0; i < 4; i++) {
+            fixed_transform2d t = internal->get_transform();
+            t.set_origin(t.get_origin() + overlap_info.seperation);
+            internal->set_transform(t);
+
+            stuck = world->get_best_overlapping_body(internal, &overlap_info);
+            if (!stuck) {
+                break;
+            }
+        }
+    }
+    if (stuck) {
+        // We can't really continue. Bail with some sort of reasonable values.
+        p_collision.collider = Object::cast_to<SGCollisionObject2D>((Object *)overlap_info.shape->get_owner()->get_data());
+        p_collision.normal = fixed_vector2::ZERO;
+        p_collision.remainder = p_linear_velocity;
+        return true;
+    }
+
     // Move the body the full amount.
     fixed_transform2d original_transform = internal->get_transform();
     fixed_transform2d test_transform = original_transform;
