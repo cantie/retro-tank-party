@@ -39,7 +39,10 @@ struct fixed {
     static const fixed ZERO;
     static const fixed ONE;
     static const fixed HALF;
+    static const fixed TWO;
     static const fixed NEG_ONE;
+    static const fixed PI;
+    static const fixed PI_DIV_4;
     static const fixed EPSILON;
 
     static _FORCE_INLINE_ fixed from_int(int p_int_value) {

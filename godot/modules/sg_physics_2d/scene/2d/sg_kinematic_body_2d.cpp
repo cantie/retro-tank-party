@@ -69,7 +69,7 @@ bool SGKinematicBody2D::move_and_collide(const fixed_vector2 &p_linear_velocity,
     // which is what we want to store in p_collision.
     p_collision.collider = Object::cast_to<SGCollisionObject2D>((Object *)overlap_info.shape->get_owner()->get_data());
     p_collision.normal = overlap_info.seperation.normalized();
-    p_collision.remainder = p_linear_velocity.normalized() * (p_linear_velocity.length() * (fixed::ONE - low));
+    p_collision.remainder = p_linear_velocity - (p_linear_velocity * low);
 
     return true;
 }
@@ -81,11 +81,13 @@ Ref<SGFixedVector2> SGKinematicBody2D::move_and_slide(const Ref<SGFixedVector2> 
         Collision collision;
 
         if (!move_and_collide(motion, collision)) {
+            // No collision, so we're good - bail!
             break;
         }
         motion = collision.remainder.slide(collision.normal);
 
         if (motion == fixed_vector2::ZERO) {
+            // No remaining motion, so we're good - bail!
             break;
         }
 
