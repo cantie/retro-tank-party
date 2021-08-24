@@ -4,7 +4,6 @@ TODO
 MILESTONE 1 (physics):
 
  - move_and_slide()
-   o We should pass in a "result object" by reference to get collision data
    o SGArea2D should directly implement get_overlapping_areas()/get_overlapping_bodies() so it can directly create the Array objects
  - Attempt to put in game
    o Collision masks
@@ -38,6 +37,9 @@ BEFORE RELEASE:
 
  - Implement a way to kick problematic peers, rather than 
  - Smooth out our frame skipping so we don't do it all at once
+ - Document and release stuff that was created:
+   o Rollback addon
+   o Physics engine
 
 BACKLOG:
 
