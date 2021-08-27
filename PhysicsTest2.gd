@@ -8,10 +8,12 @@ var velocity = SGFixed.vector2(0, 0)
 
 func _physics_process(delta: float) -> void:
 	if Input.is_action_pressed("player1_turn_left"):
-		character.fixed_rotation -= rotation_speed
+		#character.fixed_rotation -= rotation_speed
+		character.rotate_and_slide(-rotation_speed)
 	elif Input.is_action_pressed("player1_turn_right"):
-		character.fixed_rotation += rotation_speed
-	character.sync_to_physics_engine()
+		#character.fixed_rotation += rotation_speed
+		character.rotate_and_slide(rotation_speed)
+	#character.sync_to_physics_engine()
 	
 	velocity.y = 0
 	velocity.x = 0

@@ -29,6 +29,7 @@
 void SGKinematicBody2D::_bind_methods() {
     ClassDB::bind_method(D_METHOD("move_and_collide", "linear_velocity"), &SGKinematicBody2D::_move);
     ClassDB::bind_method(D_METHOD("move_and_slide", "linear_velocity", "max_slides"), &SGKinematicBody2D::move_and_slide, DEFVAL(4));
+    ClassDB::bind_method(D_METHOD("rotate_and_slide", "rotation", "max_slides"), &SGKinematicBody2D::rotate_and_slide, DEFVAL(4));
 }
 
 bool SGKinematicBody2D::move_and_collide(const fixed_vector2 &p_linear_velocity, SGKinematicBody2D::Collision &p_collision) {
@@ -117,6 +118,36 @@ Ref<SGFixedVector2> SGKinematicBody2D::move_and_slide(const Ref<SGFixedVector2> 
     }
 
     return Ref<SGFixedVector2>(memnew(SGFixedVector2(motion)));
+}
+
+bool SGKinematicBody2D::rotate_and_slide(int p_rotation, int p_max_slides) {
+    fixed rotation = fixed(p_rotation);
+
+    SGWorld2DInternal *world = SGWorld2DInternal::get_singleton();
+    SGWorld2DInternal::OverlapInfo overlap_info;
+
+    // @todo Can't we do this by manipulating the underlying transform?
+    set_fixed_rotation(get_fixed_rotation() + p_rotation);
+    sync_to_physics_engine();
+
+    bool stuck = world->get_best_overlapping_body(internal, &overlap_info);
+    if (stuck) {
+        for (int i = 0; i < p_max_slides; i++) {
+            fixed_transform2d t = internal->get_transform();
+            t.set_origin(t.get_origin() + overlap_info.seperation);
+            update_fixed_transform(t);
+            internal->set_transform(get_global_fixed_transform());
+
+            stuck = world->get_best_overlapping_body(internal, &overlap_info);
+            if (!stuck) {
+                break;
+            }
+        }
+    }
+
+    sync_from_physics_engine();
+
+    return stuck;
 }
 
 Ref<SGKinematicCollision2D> SGKinematicBody2D::_move(const Ref<SGFixedVector2> &p_linear_velocity) {
