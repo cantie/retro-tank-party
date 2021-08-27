@@ -36,6 +36,9 @@ class SGCollisionObject2D : public SGFixedNode2D {
 
     friend class SGCollisionShape2D;
 
+    uint32_t collision_layer;
+    uint32_t collision_mask;
+
 protected:
     SGCollisionObject2DInternal *internal;
 
@@ -51,6 +54,15 @@ public:
     virtual String get_configuration_warning() const override;
 
     virtual void sync_to_physics_engine() const;
+
+    uint32_t get_collision_layer() const;
+    void set_collision_layer(uint32_t p_collision_layer);
+
+    uint32_t get_collision_mask() const;
+    void set_collision_mask(uint32_t p_collision_mask);
+
+    void set_collision_layer_bit(int p_bit, bool p_value);
+    void set_collision_mask_bit(int p_bit, bool p_value);
 
     SGCollisionObject2D(SGCollisionObject2DInternal *p_internal);
     ~SGCollisionObject2D();

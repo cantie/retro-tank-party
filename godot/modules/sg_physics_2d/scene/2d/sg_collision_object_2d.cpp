@@ -30,6 +30,18 @@
 
 void SGCollisionObject2D::_bind_methods() {
     ClassDB::bind_method(D_METHOD("sync_to_physics_engine"), &SGCollisionObject2D::sync_to_physics_engine);
+
+    ClassDB::bind_method(D_METHOD("get_collision_layer"), &SGCollisionObject2D::get_collision_layer);
+    ClassDB::bind_method(D_METHOD("set_collision_layer", "collision_layer"), &SGCollisionObject2D::set_collision_layer);
+    ClassDB::bind_method(D_METHOD("get_collision_mask"), &SGCollisionObject2D::get_collision_mask);
+    ClassDB::bind_method(D_METHOD("set_collision_mask", "collision_mask"), &SGCollisionObject2D::set_collision_mask);
+
+    ClassDB::bind_method(D_METHOD("set_collision_layer_bit", "bit", "value"), &SGCollisionObject2D::set_collision_layer_bit);
+    ClassDB::bind_method(D_METHOD("set_collision_mask_bit", "bit", "value"), &SGCollisionObject2D::set_collision_mask_bit);
+
+	ADD_GROUP("Collision", "collision_");
+	ADD_PROPERTY(PropertyInfo(Variant::INT, "collision_layer", PROPERTY_HINT_LAYERS_2D_PHYSICS), "set_collision_layer", "get_collision_layer");
+	ADD_PROPERTY(PropertyInfo(Variant::INT, "collision_mask", PROPERTY_HINT_LAYERS_2D_PHYSICS), "set_collision_mask", "get_collision_mask");
 }
 
 void SGCollisionObject2D::_notification(int p_what) {
@@ -91,9 +103,53 @@ void SGCollisionObject2D::sync_to_physics_engine() const {
     }
 }
 
+uint32_t SGCollisionObject2D::get_collision_layer() const {
+    return collision_layer;
+}
+
+void SGCollisionObject2D::set_collision_layer(uint32_t p_collision_layer) {
+    collision_layer = p_collision_layer;
+    internal->set_collision_layer(collision_layer);
+    _change_notify("collision_layer");
+}
+
+uint32_t SGCollisionObject2D::get_collision_mask() const {
+    return collision_mask;
+}
+void SGCollisionObject2D::set_collision_mask(uint32_t p_collision_mask) {
+    collision_mask = p_collision_mask;
+    internal->set_collision_mask(collision_mask);
+    _change_notify("collision_mask");
+}
+
+void SGCollisionObject2D::set_collision_layer_bit(int p_bit, bool p_value) {
+    uint32_t l = collision_layer;
+    if (p_value) {
+        l |= (1 << p_bit);
+    }
+    else {
+        l &= ~(1 << p_bit);
+    }
+    set_collision_layer(l);
+}
+
+void SGCollisionObject2D::set_collision_mask_bit(int p_bit, bool p_value) {
+    uint32_t m = collision_mask;
+    if (p_value) {
+        m |= (1 << p_bit);
+    }
+    else {
+        m &= ~(1 << p_bit);
+    }
+    set_collision_mask(m);
+}
+
 SGCollisionObject2D::SGCollisionObject2D(SGCollisionObject2DInternal *p_internal) {
     internal = p_internal;
     internal->set_data(this);
+
+    collision_layer = 1;
+    collision_mask = 1;
 }
 
 SGCollisionObject2D::~SGCollisionObject2D() {

@@ -111,6 +111,10 @@ bool SGWorld2DInternal::get_best_overlapping_body(SGCollisionObject2DInternal *p
             continue;
         }
 
+        if (!p_object->test_collision_layers(other)) {
+            continue;
+        }
+
         if (overlaps(p_object, other, p_info)) {
             // @todo We should return the info for the collision with the deepest penetration.
             // For now, just return the info for the first overlapping shape.
@@ -130,6 +134,10 @@ List<SGArea2DInternal *> *SGWorld2DInternal::get_overlapping_areas(SGCollisionOb
             continue;
         }
 
+        if (!p_object->test_collision_layers(other)) {
+            continue;
+        }
+
         if (overlaps(p_object, other)) {
             ret->push_back(other);
         }
@@ -144,6 +152,10 @@ List<SGBody2DInternal *> *SGWorld2DInternal::get_overlapping_bodies(SGCollisionO
     for (const List<SGBody2DInternal *>::Element *E = bodies.front(); E; E = E->next()) {
         SGBody2DInternal *other = E->get();
         if (other == p_object) {
+            continue;
+        }
+
+        if (!p_object->test_collision_layers(other)) {
             continue;
         }
 

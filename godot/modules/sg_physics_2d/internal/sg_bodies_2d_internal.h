@@ -33,6 +33,9 @@ class SGCollisionObject2DInternal {
     fixed_transform2d transform;
     List<SGShape2DInternal *> shapes;
     void *data;
+
+    uint32_t collision_layer;
+    uint32_t collision_mask;
     
 public:
     _FORCE_INLINE_ fixed_transform2d get_transform() const { return transform; }
@@ -47,6 +50,16 @@ public:
 
     _FORCE_INLINE_ void set_data(void *p_data) { data = p_data; }
     _FORCE_INLINE_ void *get_data() const { return data; }
+
+    _FORCE_INLINE_ void set_collision_layer(uint32_t p_collision_layer) { collision_layer = p_collision_layer; }
+    _FORCE_INLINE_ uint32_t get_collision_layer() const { return collision_layer; }
+
+    _FORCE_INLINE_ void set_collision_mask(uint32_t p_collision_mask) { collision_mask = p_collision_mask; }
+    _FORCE_INLINE_ uint32_t get_collision_mask() const { return collision_mask; }
+
+    _FORCE_INLINE_ bool test_collision_layers(SGCollisionObject2DInternal *p_other) const {
+        return (collision_layer & p_other->collision_mask) || (p_other->collision_layer & collision_mask);
+    }
 
     SGCollisionObject2DInternal();
     virtual ~SGCollisionObject2DInternal();

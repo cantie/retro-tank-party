@@ -46,6 +46,8 @@ void SGCollisionObject2DInternal::remove_shape(SGShape2DInternal *p_shape) {
 
 SGCollisionObject2DInternal::SGCollisionObject2DInternal() {
     data = nullptr;
+    collision_layer = 1;
+    collision_mask = 1;
 }
 
 SGCollisionObject2DInternal::~SGCollisionObject2DInternal() {
