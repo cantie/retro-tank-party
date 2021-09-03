@@ -6,7 +6,6 @@ MILESTONE 1 (physics):
  - move_and_slide()
    o SGArea2D should directly implement get_overlapping_areas()/get_overlapping_bodies() so it can directly create the Array objects
  - Attempt to put in game
-   o Collision masks
  - Ray cast
  - Broadphase
  - Unit tests!

@@ -52,6 +52,12 @@ public:
         emit_signal("changed");
     }
 
+    void clear() {
+        value.x.value = 0;
+        value.y.value = 0;
+        emit_signal("changed");
+    }
+
     Ref<SGFixedVector2> add(const Ref<SGFixedVector2> &p_other) const;
     void iadd(const Ref<SGFixedVector2>& p_other);
     Ref<SGFixedVector2> sub(const Ref<SGFixedVector2> &p_other) const;

@@ -32,8 +32,8 @@ func _physics_process(delta: float) -> void:
 		#	print ("normal: %s" % collision.normal.to_float())
 		#	print ("remainder: %s" % collision.remainder.to_float())
 		character.move_and_slide(velocity)
-	else:
-		character.sync_to_physics_engine()
+	#else:
+	#	character.sync_to_physics_engine()
 	
 	#var overlapping_bodies = area.get_overlapping_bodies()
 	#if overlapping_bodies.size() > 0 && overlapping_bodies[0] == character:

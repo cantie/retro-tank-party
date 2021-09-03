@@ -51,12 +51,20 @@ rotation = 0.172487
 
 [node name="TreeBig14" parent="Objects" instance=ExtResource( 8 )]
 position = Vector2( 1336, 1075 )
+fixed_position = Object(SGFixedVector2,"x":87556096,"y":70451200,"script":null)
+
+fixed_scale = Object(SGFixedVector2,"x":65536,"y":65536,"script":null)
+
 
 [node name="TreeSmall" parent="Objects" instance=ExtResource( 7 )]
 position = Vector2( 101, 1089 )
 
 [node name="TreeBig" parent="Objects" instance=ExtResource( 8 )]
 position = Vector2( 41, 1130 )
+fixed_position = Object(SGFixedVector2,"x":2686976,"y":74055680,"script":null)
+
+fixed_scale = Object(SGFixedVector2,"x":65536,"y":65536,"script":null)
+
 
 [node name="CrateMetal" parent="Objects" instance=ExtResource( 9 )]
 position = Vector2( 74, 1004 )
@@ -71,15 +79,27 @@ position = Vector2( 1353, 25 )
 
 [node name="TreeBig2" parent="Objects" instance=ExtResource( 8 )]
 position = Vector2( 643, -21 )
+fixed_position = Object(SGFixedVector2,"x":42139648,"y":-1376256,"script":null)
+
+fixed_scale = Object(SGFixedVector2,"x":65536,"y":65536,"script":null)
+
 
 [node name="TreeBig3" parent="Objects" instance=ExtResource( 8 )]
 position = Vector2( 732, 17 )
+fixed_position = Object(SGFixedVector2,"x":47972352,"y":1114112,"script":null)
+
+fixed_scale = Object(SGFixedVector2,"x":65536,"y":65536,"script":null)
+
 
 [node name="TreeSmall3" parent="Objects" instance=ExtResource( 7 )]
 position = Vector2( 1009, 12 )
 
 [node name="TreeBig4" parent="Objects" instance=ExtResource( 8 )]
 position = Vector2( 44, 509 )
+fixed_position = Object(SGFixedVector2,"x":2883584,"y":33357824,"script":null)
+
+fixed_scale = Object(SGFixedVector2,"x":65536,"y":65536,"script":null)
+
 
 [node name="TreeSmall4" parent="Objects" instance=ExtResource( 7 )]
 position = Vector2( 108, 448 )
@@ -89,12 +109,20 @@ position = Vector2( 129, 492 )
 
 [node name="TreeBig5" parent="Objects" instance=ExtResource( 8 )]
 position = Vector2( 369, 1146 )
+fixed_position = Object(SGFixedVector2,"x":24182784,"y":75104256,"script":null)
+
+fixed_scale = Object(SGFixedVector2,"x":65536,"y":65536,"script":null)
+
 
 [node name="TreeSmall6" parent="Objects" instance=ExtResource( 7 )]
 position = Vector2( 413, 1072 )
 
 [node name="TreeBig6" parent="Objects" instance=ExtResource( 8 )]
 position = Vector2( 695, 1630 )
+fixed_position = Object(SGFixedVector2,"x":45547520,"y":106823680,"script":null)
+
+fixed_scale = Object(SGFixedVector2,"x":65536,"y":65536,"script":null)
+
 
 [node name="TreeSmall7" parent="Objects" instance=ExtResource( 7 )]
 position = Vector2( 768, 1651 )
@@ -115,7 +143,12 @@ position = Vector2( 1820, 1251 )
 
 [node name="TreeBig7" parent="Objects" instance=ExtResource( 8 )]
 position = Vector2( 474, 357 )
-rotation = -0.411866
+rotation = -0.411865
+fixed_position = Object(SGFixedVector2,"x":31064064,"y":23396352,"script":null)
+
+fixed_scale = Object(SGFixedVector2,"x":65536,"y":65536,"script":null)
+
+fixed_rotation = -26992
 
 [node name="TreeSmall9" parent="Objects" instance=ExtResource( 7 )]
 position = Vector2( 560, 365 )
@@ -127,15 +160,27 @@ rotation = -0.634788
 
 [node name="TreeBig8" parent="Objects" instance=ExtResource( 8 )]
 position = Vector2( 2531, 6 )
+fixed_position = Object(SGFixedVector2,"x":165871616,"y":393216,"script":null)
+
+fixed_scale = Object(SGFixedVector2,"x":65536,"y":65536,"script":null)
+
 
 [node name="TreeBig9" parent="Objects" instance=ExtResource( 8 )]
 position = Vector2( 1849, 23 )
+fixed_position = Object(SGFixedVector2,"x":121176064,"y":1507328,"script":null)
+
+fixed_scale = Object(SGFixedVector2,"x":65536,"y":65536,"script":null)
+
 
 [node name="TreeSmall10" parent="Objects" instance=ExtResource( 7 )]
 position = Vector2( 1933, 19 )
 
 [node name="TreeBig10" parent="Objects" instance=ExtResource( 8 )]
 position = Vector2( 1916, 355 )
+fixed_position = Object(SGFixedVector2,"x":125566976,"y":23265280,"script":null)
+
+fixed_scale = Object(SGFixedVector2,"x":65536,"y":65536,"script":null)
+
 
 [node name="TreeSmall11" parent="Objects" instance=ExtResource( 7 )]
 position = Vector2( 2119, 523 )
@@ -148,6 +193,10 @@ position = Vector2( 2128, 585 )
 
 [node name="TreeBig11" parent="Objects" instance=ExtResource( 8 )]
 position = Vector2( 2531, 576 )
+fixed_position = Object(SGFixedVector2,"x":165871616,"y":37748736,"script":null)
+
+fixed_scale = Object(SGFixedVector2,"x":65536,"y":65536,"script":null)
+
 
 [node name="TreeSmall14" parent="Objects" instance=ExtResource( 7 )]
 position = Vector2( 2553, 497 )
@@ -160,9 +209,17 @@ position = Vector2( 1814, 1122 )
 
 [node name="TreeBig12" parent="Objects" instance=ExtResource( 8 )]
 position = Vector2( 2531, 949 )
+fixed_position = Object(SGFixedVector2,"x":165871616,"y":62193664,"script":null)
+
+fixed_scale = Object(SGFixedVector2,"x":65536,"y":65536,"script":null)
+
 
 [node name="TreeBig13" parent="Objects" instance=ExtResource( 8 )]
 position = Vector2( 1867, 1516 )
+fixed_position = Object(SGFixedVector2,"x":122355712,"y":99352576,"script":null)
+
+fixed_scale = Object(SGFixedVector2,"x":65536,"y":65536,"script":null)
+
 
 [node name="TreeSmall17" parent="Objects" instance=ExtResource( 7 )]
 position = Vector2( 1920, 1583 )
@@ -184,6 +241,10 @@ position = Vector2( 2181, 954 )
 
 [node name="TreeBig15" parent="Objects" instance=ExtResource( 8 )]
 position = Vector2( 1370, 429 )
+fixed_position = Object(SGFixedVector2,"x":89784320,"y":28114944,"script":null)
+
+fixed_scale = Object(SGFixedVector2,"x":65536,"y":65536,"script":null)
+
 
 [node name="TreeSmall18" parent="Objects" instance=ExtResource( 7 )]
 position = Vector2( 1296, 372 )
@@ -346,12 +407,20 @@ rotation = -0.139493
 
 [node name="TreeBig16" parent="Objects" instance=ExtResource( 8 )]
 position = Vector2( 1228, 43 )
+fixed_position = Object(SGFixedVector2,"x":80478208,"y":2818048,"script":null)
+
+fixed_scale = Object(SGFixedVector2,"x":65536,"y":65536,"script":null)
+
 
 [node name="TreeSmall19" parent="Objects" instance=ExtResource( 7 )]
 position = Vector2( 1299, -2 )
 
 [node name="TreeBig17" parent="Objects" instance=ExtResource( 8 )]
 position = Vector2( 1585, 32 )
+fixed_position = Object(SGFixedVector2,"x":103874560,"y":2097152,"script":null)
+
+fixed_scale = Object(SGFixedVector2,"x":65536,"y":65536,"script":null)
+
 
 [node name="BarricadeWood8" parent="Objects" instance=ExtResource( 4 )]
 position = Vector2( 1453, 36 )
@@ -361,9 +430,17 @@ position = Vector2( 1047, 1633 )
 
 [node name="TreeBig18" parent="Objects" instance=ExtResource( 8 )]
 position = Vector2( 966, 1602 )
+fixed_position = Object(SGFixedVector2,"x":63307776,"y":104988672,"script":null)
+
+fixed_scale = Object(SGFixedVector2,"x":65536,"y":65536,"script":null)
+
 
 [node name="TreeBig19" parent="Objects" instance=ExtResource( 8 )]
 position = Vector2( 1132, 1640 )
+fixed_position = Object(SGFixedVector2,"x":74186752,"y":107479040,"script":null)
+
+fixed_scale = Object(SGFixedVector2,"x":65536,"y":65536,"script":null)
+
 
 [node name="TreeSmall21" parent="Objects" instance=ExtResource( 7 )]
 position = Vector2( 1340, 1667 )
@@ -376,6 +453,10 @@ position = Vector2( 1453, 1660 )
 
 [node name="TreeBig20" parent="Objects" instance=ExtResource( 8 )]
 position = Vector2( 1585, 1629 )
+fixed_position = Object(SGFixedVector2,"x":103874560,"y":106758144,"script":null)
+
+fixed_scale = Object(SGFixedVector2,"x":65536,"y":65536,"script":null)
+
 
 [node name="BarricadeWood9" parent="Objects" instance=ExtResource( 4 )]
 position = Vector2( 853, 1626 )

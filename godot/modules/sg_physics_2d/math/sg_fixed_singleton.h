@@ -59,6 +59,7 @@ public:
     int sqrt(int p_fixed_value) const;
 
     Ref<SGFixedVector2> vector2(int p_fixed_x, int p_fixed_y) const;
+    Ref<SGFixedVector2> from_float_vector2(const Vector2 &p_float_vector) const;
 
     SGFixed();
     ~SGFixed();

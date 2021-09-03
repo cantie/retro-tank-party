@@ -29,6 +29,8 @@ void SGFixedVector2::_bind_methods() {
     ClassDB::bind_method(D_METHOD("get_y"), &SGFixedVector2::get_y);
     ClassDB::bind_method(D_METHOD("set_y", "y"), &SGFixedVector2::set_y);
 
+    ClassDB::bind_method(D_METHOD("clear"), &SGFixedVector2::clear);
+
 	ADD_PROPERTY(PropertyInfo(Variant::INT, "x", PROPERTY_HINT_NONE), "set_x", "get_x");
 	ADD_PROPERTY(PropertyInfo(Variant::INT, "y", PROPERTY_HINT_NONE), "set_y", "get_y");
 

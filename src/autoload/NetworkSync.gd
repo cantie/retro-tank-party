@@ -47,9 +47,9 @@ class RTPMessageSerializer extends SyncManager.MessageSerializer:
 			buffer.put_u8(header)
 			buffer.put_float(input.get(Tank.PlayerInput.TURRET_ROTATION, 0.0))
 			if input.has(Tank.PlayerInput.INPUT_VECTOR):
-				var input_vector: Vector2 = input[Tank.PlayerInput.INPUT_VECTOR]
-				buffer.put_float(input_vector.x)
-				buffer.put_float(input_vector.y)
+				var input_vector: SGFixedVector2 = input[Tank.PlayerInput.INPUT_VECTOR]
+				buffer.put_32(input_vector.x)
+				buffer.put_32(input_vector.y)
 		
 		buffer.resize(buffer.get_position())
 		return buffer.data_array

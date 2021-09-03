@@ -1,6 +1,7 @@
-[gd_scene load_steps=6 format=2]
+[gd_scene load_steps=7 format=2]
 
 [ext_resource path="res://PhysicsTest2.gd" type="Script" id=1]
+[ext_resource path="res://src/objects/cover/TreeBig.tscn" type="PackedScene" id=2]
 [ext_resource path="res://icon.png" type="Texture" id=3]
 
 [sub_resource type="SGRectangleShape2D" id=1]
@@ -73,3 +74,17 @@ fixed_position = Object(SGFixedVector2,"x":0,"y":0,"script":null)
 fixed_scale = Object(SGFixedVector2,"x":65536,"y":65536,"script":null)
 
 shape = SubResource( 3 )
+
+[node name="TreeBig" parent="." instance=ExtResource( 2 )]
+position = Vector2( 900, 370 )
+fixed_position = Object(SGFixedVector2,"x":58982400,"y":24248320,"script":null)
+
+fixed_scale = Object(SGFixedVector2,"x":65536,"y":65536,"script":null)
+
+
+[node name="TreeBig2" parent="." instance=ExtResource( 2 )]
+position = Vector2( 893, 219 )
+fixed_position = Object(SGFixedVector2,"x":58523648,"y":14352384,"script":null)
+
+fixed_scale = Object(SGFixedVector2,"x":65536,"y":65536,"script":null)
+

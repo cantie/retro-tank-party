@@ -58,6 +58,7 @@ void SGFixed::_bind_methods() {
     ClassDB::bind_method(D_METHOD("sqrt", "fixed_value"), &SGFixed::sqrt);
 
     ClassDB::bind_method(D_METHOD("vector2", "fixed_x", "fixed_y"), &SGFixed::vector2);
+    ClassDB::bind_method(D_METHOD("from_float_vector2", "float_vector"), &SGFixed::from_float_vector2);
 }
 
 int SGFixed::from_int(int p_int_value) const {
@@ -118,4 +119,8 @@ int SGFixed::sqrt(int p_fixed_value) const {
 
 Ref<SGFixedVector2> SGFixed::vector2(int p_fixed_x, int p_fixed_y) const {
     return Ref<SGFixedVector2>(memnew(SGFixedVector2(fixed_vector2(fixed(p_fixed_x), fixed(p_fixed_y)))));
+}
+
+Ref<SGFixedVector2> SGFixed::from_float_vector2(const Vector2 &p_float_vector) const {
+    return Ref<SGFixedVector2>(memnew(SGFixedVector2(fixed_vector2(fixed::from_float(p_float_vector.x), fixed::from_float(p_float_vector.y)))));
 }

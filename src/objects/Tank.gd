@@ -21,12 +21,14 @@ onready var animation_player := $AnimationPlayer
 onready var shoot_sound := $ShootSound
 onready var engine_sound := $EngineSound
 
-const DEFAULT_TURN_SPEED := 5
-const DEFAULT_SPEED := 400
+#const DEFAULT_TURN_SPEED := 10923
+const DEFAULT_TURN_SPEED := 572
+#const DEFAULT_SPEED := 873726
+const DEFAULT_SPEED := 436863
 
 var turn_speed := DEFAULT_TURN_SPEED
 var speed := DEFAULT_SPEED
-var velocity: Vector2
+var velocity: SGFixedVector2 = SGFixed.vector2(0, 0)
 
 var health := 100
 var dead := false
@@ -280,7 +282,7 @@ func _hook_default_gather_input(event: GatherInputEvent) -> void:
 		input_vector.y += min(Input.get_action_strength("player1_backward") + 0.5, 1.0)
 	
 	if input_vector != Vector2.ZERO:
-		input[PlayerInput.INPUT_VECTOR] = input_vector
+		input[PlayerInput.INPUT_VECTOR] = SGFixed.from_float_vector2(input_vector)
 	
 	if _input_mouse_control:
 		input[PlayerInput.TURRET_ROTATION] = (get_global_mouse_position() - turret_pivot.global_position).angle()
@@ -299,42 +301,44 @@ func _hook_default_gather_input(event: GatherInputEvent) -> void:
 	_input_shoot = false
 	_input_use_ability = false
 
-func _calculate_movement_vector(input: Dictionary) -> Vector2:
+func _calculate_movement_vector(input: Dictionary) -> SGFixedVector2:
 	if not input.has(PlayerInput.INPUT_VECTOR):
-		return Vector2.ZERO
+		return SGFixed.vector2(0, 0)
 	
 	if input.get(PlayerInput.CONTROL_SCHEME, GameSettings.ControlScheme.MODERN) == GameSettings.ControlScheme.RETRO:
 		var input_vector = input[PlayerInput.INPUT_VECTOR]
 		# Movement is relative to a tank facing to the right, so Y turns to the
 		# left/right, and X moves forward backward.
-		return Vector2(-input_vector.y, input_vector.x)
+		return SGFixed.vector2(-input_vector.y, input_vector.x)
 	
-	var movement_vector: Vector2
-	var current_vector = Vector2.RIGHT.rotated(rotation)
+	#var movement_vector: Vector2
+	#var current_vector = SGFixed.vector2(65536, 0)
+	#current_vector.rotate(fixed_rotation)
 	
-	var desired_vector: Vector2 = input.get(PlayerInput.INPUT_VECTOR, Vector2.ZERO)
-	if desired_vector.length() > 0.85:
-		desired_vector = desired_vector.normalized()
-	
-	# If going backwards is a shorter rotation, move backwards.
-	if abs(current_vector.angle_to(desired_vector)) > PI / 2.0:
-		# Flip the vector for the angle calculations.
-		current_vector = current_vector.rotated(PI)
-		
-		# Set us moving backwards ...
-		movement_vector.x = -desired_vector.length()
-	else:
-		# ... or forwards
-		movement_vector.x = desired_vector.length()
-	
-	# Normalize the angle to the desired vector
-	var angle_to = current_vector.angle_to(desired_vector)
-	if abs(angle_to) > PI / 2.0:
-		angle_to = TAU - angle_to
-	
-	movement_vector.y = clamp(angle_to / (turn_speed * get_physics_process_delta_time()), -1.0, 1.0)
-	
-	return movement_vector
+#	var desired_vector: Vector2 = input.get(PlayerInput.INPUT_VECTOR, Vector2.ZERO)
+#	if desired_vector.length() > 0.85:
+#		desired_vector = desired_vector.normalized()
+#
+#	# If going backwards is a shorter rotation, move backwards.
+#	if abs(current_vector.angle_to(desired_vector)) > PI / 2.0:
+#		# Flip the vector for the angle calculations.
+#		current_vector = current_vector.rotated(PI)
+#
+#		# Set us moving backwards ...
+#		movement_vector.x = -desired_vector.length()
+#	else:
+#		# ... or forwards
+#		movement_vector.x = desired_vector.length()
+#
+#	# Normalize the angle to the desired vector
+#	var angle_to = current_vector.angle_to(desired_vector)
+#	if abs(angle_to) > PI / 2.0:
+#		angle_to = TAU - angle_to
+#
+#	movement_vector.y = clamp(angle_to / (turn_speed * get_physics_process_delta_time()), -1.0, 1.0)
+#
+#	return movement_vector
+	return SGFixed.vector2(0, 0)
 
 func _predict_remote_input(previous_input: Dictionary, ticks_since_real_input: int) -> Dictionary:
 	var input = previous_input.duplicate()
@@ -357,12 +361,16 @@ func _network_process(delta: float, input: Dictionary) -> void:
 	if movement_vector.y > 0:
 		engine_sound.turning = true
 	
-	rotation += movement_vector.y * turn_speed * delta
+	if movement_vector.y != 0:
+		rotate_and_slide(movement_vector.y * turn_speed)
 
-	velocity = Vector2()
-	velocity.x = movement_vector.x
-	velocity = velocity.rotated(rotation) * speed
-	move_and_slide(velocity)
+	if movement_vector.x != 0:
+		velocity.clear()
+		#velocity.y = 0
+		velocity.x = movement_vector.x
+		velocity.rotate(fixed_rotation)
+		velocity.imulf(speed)
+		move_and_slide(velocity)
 	
 	Globals.my_player_position = global_position
 	
@@ -400,8 +408,8 @@ func _after_update_position() -> void:
 
 func _save_state() -> Dictionary:
 	return {
-		position = position,
-		rotation = rotation,
+		fixed_position = fixed_position,
+		fixed_rotation = fixed_rotation,
 		turret_rotation = turret_pivot.global_rotation,
 		can_shoot = can_shoot,
 		health = health,
@@ -409,8 +417,10 @@ func _save_state() -> Dictionary:
 	}
 
 func _load_state(state: Dictionary) -> void:
-	position = state['position']
-	rotation = state['rotation']
+	fixed_position = state['fixed_position']
+	fixed_rotation = state['fixed_rotation']
+	sync_to_physics_engine()
+	
 	turret_pivot.global_rotation = state['turret_rotation']
 	can_shoot = state['can_shoot']
 	update_health(state['health'])
@@ -418,10 +428,11 @@ func _load_state(state: Dictionary) -> void:
 	_after_update_position()
 
 func _interpolate_state(old_state: Dictionary, new_state: Dictionary, weight: float) -> void:
-	position = lerp(old_state['position'], new_state['position'], weight)
-	rotation = lerp_angle(old_state['rotation'], new_state['rotation'], weight)
-	turret_pivot.global_rotation = lerp_angle(old_state['turret_rotation'], new_state['turret_rotation'], weight)
-	_after_update_position()
+	#position = lerp(old_state['position'], new_state['position'], weight)
+	#rotation = lerp_angle(old_state['rotation'], new_state['rotation'], weight)
+	#turret_pivot.global_rotation = lerp_angle(old_state['turret_rotation'], new_state['turret_rotation'], weight)
+	#_after_update_position()
+	pass
 
 func _unhandled_input(event: InputEvent) -> void:
 	if event is InputEventMouseMotion:
