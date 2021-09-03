@@ -34,6 +34,7 @@ class SGCollisionShape2D : public SGFixedNode2D {
 
     SGCollisionObject2D *collision_object;
     Ref<SGShape2D> shape;
+    SGShape2DInternal *internal_shape;
 
 protected:
     static void _bind_methods();

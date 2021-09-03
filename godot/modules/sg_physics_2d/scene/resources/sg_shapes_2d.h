@@ -36,16 +36,14 @@ class SGShape2D : public Resource {
 
     friend class SGCollisionShape2D;
     
-    SGShape2DInternal *shape;
-
 protected:
     static void _bind_methods();
 
-    inline SGShape2DInternal *get_shape_internal() const { return shape; }
+    virtual SGShape2DInternal *create_internal_shape() const = 0;
 
-    SGShape2D(SGShape2DInternal *shape);
+    SGShape2D();
 public:
-    virtual void sync_to_physics_engine(const fixed_transform2d &p_transform) const = 0;
+    virtual void sync_to_physics_engine(SGShape2DInternal *p_internal_shape) const = 0;
 
     virtual void draw(const RID &p_to_rid, const Color &p_color) = 0;
 
@@ -61,11 +59,13 @@ class SGRectangleShape2D : public SGShape2D {
 protected:
     static void _bind_methods();
 
+    virtual SGShape2DInternal *create_internal_shape() const override;
+
 public:
     void set_extents(const Ref<SGFixedVector2>& p_extents);
 	Ref<SGFixedVector2> get_extents();
 
-    virtual void sync_to_physics_engine(const fixed_transform2d &p_transform) const override;
+    virtual void sync_to_physics_engine(SGShape2DInternal *p_internal_shape) const override;
 
     virtual void draw(const RID &p_to_rid, const Color &p_color) override;
 
@@ -82,11 +82,13 @@ class SGCircleShape2D : public SGShape2D {
 protected:
     static void _bind_methods();
 
+    virtual SGShape2DInternal *create_internal_shape() const override;
+
 public:
     void set_radius(int p_radius);
 	int get_radius() const;
 
-    virtual void sync_to_physics_engine(const fixed_transform2d &p_transform) const override;
+    virtual void sync_to_physics_engine(SGShape2DInternal *p_internal_shape) const override;
 
     virtual void draw(const RID &p_to_rid, const Color &p_color) override;
 

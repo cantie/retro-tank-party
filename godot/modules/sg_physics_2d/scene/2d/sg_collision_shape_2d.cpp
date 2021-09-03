@@ -25,6 +25,8 @@
 
 #include <core/engine.h>
 
+#include "../../internal/sg_shapes_2d_internal.h"
+
 void SGCollisionShape2D::_bind_methods() {
     ClassDB::bind_method(D_METHOD("set_shape", "shape"), &SGCollisionShape2D::set_shape);
 	ClassDB::bind_method(D_METHOD("get_shape"), &SGCollisionShape2D::get_shape);
@@ -61,14 +63,14 @@ void SGCollisionShape2D::_notification(int p_what) {
         
         case NOTIFICATION_PARENTED:
             collision_object = Object::cast_to<SGCollisionObject2D>(get_parent());
-            if (collision_object && shape.is_valid()) {
-                collision_object->add_shape(shape->get_shape_internal());
+            if (collision_object && internal_shape) {
+                collision_object->add_shape(internal_shape);
             }
             break;
         
         case NOTIFICATION_UNPARENTED:
-            if (collision_object && shape.is_valid()) {
-                collision_object->remove_shape(shape->get_shape_internal());
+            if (collision_object && internal_shape) {
+                collision_object->remove_shape(internal_shape);
             }
             collision_object = nullptr;
             break;
@@ -79,8 +81,10 @@ void SGCollisionShape2D::_notification(int p_what) {
 void SGCollisionShape2D::set_shape(const Ref<SGShape2D> &p_shape) {
     if (shape.is_valid()) {
         shape->disconnect("changed", this, "_shape_changed");
-        if (collision_object) {
-            collision_object->remove_shape(p_shape->get_shape_internal());
+        if (collision_object && internal_shape) {
+            collision_object->remove_shape(internal_shape);
+            memdelete(internal_shape);
+            internal_shape = nullptr;
         }
     }
 
@@ -88,8 +92,9 @@ void SGCollisionShape2D::set_shape(const Ref<SGShape2D> &p_shape) {
 
     if (shape.is_valid()) {
         shape->connect("changed", this, "_shape_changed");
+        internal_shape = shape->create_internal_shape();
         if (collision_object) {
-            collision_object->add_shape(shape->get_shape_internal());
+            collision_object->add_shape(internal_shape);
         }
     }
 
@@ -105,8 +110,9 @@ void SGCollisionShape2D::_shape_changed() {
 }
 
 void SGCollisionShape2D::sync_to_physics_engine() const {
-    if (shape.is_valid()) {
-        shape->sync_to_physics_engine(get_fixed_transform());
+    if (shape.is_valid() && internal_shape) {
+        internal_shape->set_transform(get_fixed_transform());
+        shape->sync_to_physics_engine(internal_shape);
     }
 }
 
@@ -115,4 +121,7 @@ SGCollisionShape2D::SGCollisionShape2D() {
 }
 
 SGCollisionShape2D::~SGCollisionShape2D() {
+    if (internal_shape) {
+        memdelete(internal_shape);
+    }
 }
