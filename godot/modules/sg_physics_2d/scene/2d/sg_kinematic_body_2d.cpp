@@ -121,8 +121,6 @@ Ref<SGFixedVector2> SGKinematicBody2D::move_and_slide(const Ref<SGFixedVector2> 
 }
 
 bool SGKinematicBody2D::rotate_and_slide(int p_rotation, int p_max_slides) {
-    fixed rotation = fixed(p_rotation);
-
     SGWorld2DInternal *world = SGWorld2DInternal::get_singleton();
     SGWorld2DInternal::OverlapInfo overlap_info;
 

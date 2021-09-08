@@ -81,6 +81,10 @@ public:
     void rotate(int p_rotation);
     Ref<SGFixedVector2> rotated(int p_rotation) const;
 
+    Ref<SGFixedVector2> slide(const Ref<SGFixedVector2> &p_normal) const;
+    Ref<SGFixedVector2> bounce(const Ref<SGFixedVector2> &p_normal) const;
+    Ref<SGFixedVector2> reflect(const Ref<SGFixedVector2> &p_normal) const;
+
     void from_float(Vector2 p_float_vector);
     Vector2 to_float() const;
 

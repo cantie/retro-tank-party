@@ -118,9 +118,13 @@ void SGCollisionShape2D::sync_to_physics_engine() const {
 
 SGCollisionShape2D::SGCollisionShape2D() {
     collision_object = nullptr;
+    internal_shape = nullptr;
 }
 
 SGCollisionShape2D::~SGCollisionShape2D() {
+    if (collision_object && internal_shape) {
+        collision_object->remove_shape(internal_shape);
+    }
     if (internal_shape) {
         memdelete(internal_shape);
     }

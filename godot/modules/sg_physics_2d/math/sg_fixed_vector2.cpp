@@ -54,6 +54,10 @@ void SGFixedVector2::_bind_methods() {
 
     ClassDB::bind_method(D_METHOD("rotate", "radians"), &SGFixedVector2::rotate);
 
+    ClassDB::bind_method(D_METHOD("slide", "normal"), &SGFixedVector2::slide);
+    ClassDB::bind_method(D_METHOD("bounce", "normal"), &SGFixedVector2::bounce);
+    ClassDB::bind_method(D_METHOD("reflect", "normal"), &SGFixedVector2::reflect);
+
     ClassDB::bind_method(D_METHOD("from_float", "float_vector"), &SGFixedVector2::from_float);
     ClassDB::bind_method(D_METHOD("to_float"), &SGFixedVector2::to_float);
 
@@ -149,4 +153,22 @@ void SGFixedVector2::from_float(Vector2 p_float_vector) {
 
 Vector2 SGFixedVector2::to_float() const {
     return Vector2(value.x.to_float(), value.y.to_float());
+}
+
+Ref<SGFixedVector2> SGFixedVector2::slide(const Ref<SGFixedVector2> &p_normal) const {
+    Ref<SGFixedVector2> v(memnew(SGFixedVector2));
+    v->value = value.slide(p_normal->value);
+    return v;
+}
+
+Ref<SGFixedVector2> SGFixedVector2::bounce(const Ref<SGFixedVector2> &p_normal) const {
+    Ref<SGFixedVector2> v(memnew(SGFixedVector2));
+    v->value = value.bounce(p_normal->value);
+    return v;
+}
+
+Ref<SGFixedVector2> SGFixedVector2::reflect(const Ref<SGFixedVector2> &p_normal) const {
+    Ref<SGFixedVector2> v(memnew(SGFixedVector2));
+    v->value = value.reflect(p_normal->value);
+    return v;
 }
