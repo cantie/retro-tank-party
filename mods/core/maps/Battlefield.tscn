@@ -23,21 +23,41 @@ tile_data = PoolIntArray( -1, -1610612736, 0, -65536, -1610612736, 0, -65535, -1
 
 [node name="PlayerStartPositions" type="Node2D" parent="."]
 
-[node name="Player1" type="Position2D" parent="PlayerStartPositions"]
+[node name="Player1" type="SGFixedPosition2D" parent="PlayerStartPositions"]
 position = Vector2( 183, 169 )
-rotation = 0.643801
+rotation = 0.643799
+fixed_position = Object(SGFixedVector2,"x":11993088,"y":11075584,"script":null)
 
-[node name="Player2" type="Position2D" parent="PlayerStartPositions"]
+fixed_scale = Object(SGFixedVector2,"x":65536,"y":65536,"script":null)
+
+fixed_rotation = 42192
+
+[node name="Player2" type="SGFixedPosition2D" parent="PlayerStartPositions"]
 position = Vector2( 2288, 1438 )
-rotation = -2.28443
+rotation = -2.28442
+fixed_position = Object(SGFixedVector2,"x":149946368,"y":94240768,"script":null)
 
-[node name="Player3" type="Position2D" parent="PlayerStartPositions"]
+fixed_scale = Object(SGFixedVector2,"x":65536,"y":65536,"script":null)
+
+fixed_rotation = -149712
+
+[node name="Player3" type="SGFixedPosition2D" parent="PlayerStartPositions"]
 position = Vector2( 2306, 167 )
 rotation = 2.21715
+fixed_position = Object(SGFixedVector2,"x":151126016,"y":10944512,"script":null)
 
-[node name="Player4" type="Position2D" parent="PlayerStartPositions"]
+fixed_scale = Object(SGFixedVector2,"x":65536,"y":65536,"script":null)
+
+fixed_rotation = 145303
+
+[node name="Player4" type="SGFixedPosition2D" parent="PlayerStartPositions"]
 position = Vector2( 198, 1446 )
-rotation = -0.922228
+rotation = -0.922226
+fixed_position = Object(SGFixedVector2,"x":12976128,"y":94765056,"script":null)
+
+fixed_scale = Object(SGFixedVector2,"x":65536,"y":65536,"script":null)
+
+fixed_rotation = -60439
 
 [node name="Objects" type="Node2D" parent="."]
 
