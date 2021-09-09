@@ -92,6 +92,10 @@ public:
     _FORCE_INLINE_ fixed_vector2 get_internal() const { return value; }
     _FORCE_INLINE_ void set_internal(fixed_vector2 p_value) { value = p_value; }
 
+    _FORCE_INLINE_ static Ref<SGFixedVector2> from_internal(const fixed_vector2 &p_internal) {
+        return Ref<SGFixedVector2>(memnew(SGFixedVector2(p_internal)));
+    }
+
     SGFixedVector2() { }
     SGFixedVector2(const fixed_vector2& p_internal_vector) {
         value = p_internal_vector;

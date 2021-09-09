@@ -28,6 +28,7 @@
 
 #include "./math/sg_fixed_singleton.h"
 #include "./math/sg_fixed_vector2.h"
+#include "./math/sg_fixed_transform_2d.h"
 #include "./scene/2d/sg_fixed_position_2d.h"
 #include "./scene/2d/sg_area_2d.h"
 #include "./scene/2d/sg_static_body_2d.h"
@@ -45,6 +46,7 @@ static SGWorld2DInternal *world_singleton;
 void register_sg_physics_2d_types() {
     ClassDB::register_class<SGFixed>();
     ClassDB::register_class<SGFixedVector2>();
+    ClassDB::register_class<SGFixedTransform2D>();
 
     ClassDB::register_class<SGFixedNode2D>();
     ClassDB::register_class<SGFixedPosition2D>();

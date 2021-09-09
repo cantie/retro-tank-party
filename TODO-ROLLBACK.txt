@@ -15,6 +15,7 @@ MILESTONE 1 (physics):
    o Reintroduce the physics server to allow testing in GDScript?
  - Code clean-up
    o Break all classes up into their own files?
+   o Change the SGFixedVector math functions to take a Variant (so we don't need vector and fixed versions of each method)
    o Rename the fixed_* classes to be camel case?
    o Port over more of Vector2's methods?
 
