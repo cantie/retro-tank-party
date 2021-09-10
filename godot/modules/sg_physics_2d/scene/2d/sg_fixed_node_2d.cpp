@@ -84,9 +84,9 @@ void SGFixedNode2D::update_fixed_transform_internal(const fixed_transform2d &p_t
     fixed_position->set_internal(p_transform.get_origin());
     fixed_scale->set_internal(p_transform.get_scale());
     fixed_rotation = p_transform.get_rotation().value;
-    set_fixed_position(fixed_position);
-    set_fixed_scale(fixed_scale);
-    set_fixed_rotation(fixed_rotation);
+    _change_notify("fixed_position");
+    _change_notify("fixed_scale");
+    _change_notify("fixed_rotation");
 }
 
 void SGFixedNode2D::_set_fixed_position(const fixed_vector2 &p_fixed_position) {
