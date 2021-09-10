@@ -133,8 +133,8 @@ bool SGKinematicBody2D::rotate_and_slide(int p_rotation, int p_max_slides) {
         for (int i = 0; i < p_max_slides; i++) {
             fixed_transform2d t = internal->get_transform();
             t.set_origin(t.get_origin() + overlap_info.seperation);
-            update_fixed_transform(t);
-            internal->set_transform(get_global_fixed_transform());
+            update_fixed_transform_internal(t);
+            internal->set_transform(get_global_fixed_transform_internal());
 
             stuck = world->get_best_overlapping_body(internal, &overlap_info);
             if (!stuck) {

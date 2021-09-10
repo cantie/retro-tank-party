@@ -111,7 +111,7 @@ void SGCollisionShape2D::_shape_changed() {
 
 void SGCollisionShape2D::sync_to_physics_engine() const {
     if (shape.is_valid() && internal_shape) {
-        internal_shape->set_transform(get_fixed_transform());
+        internal_shape->set_transform(get_fixed_transform_internal());
         shape->sync_to_physics_engine(internal_shape);
     }
 }

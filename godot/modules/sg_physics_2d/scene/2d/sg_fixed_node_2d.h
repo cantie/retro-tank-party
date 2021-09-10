@@ -27,6 +27,7 @@
 #include <scene/2d/node_2d.h>
 
 #include "../../math/sg_fixed_vector2.h"
+#include "../../math/sg_fixed_transform_2d.h"
 
 class SGCollisionObject2D;
 
@@ -35,7 +36,7 @@ class SGFixedNode2D : public Node2D {
 
     friend SGCollisionObject2D;
 
-    fixed_transform2d fixed_transform;
+    Ref<SGFixedTransform2D> fixed_transform;
     Ref<SGFixedVector2> fixed_position;
     Ref<SGFixedVector2> fixed_scale;
     int fixed_rotation;
@@ -47,10 +48,10 @@ protected:
 
 	virtual void _changed_callback(Object *p_changed, const char *p_prop) override;
 
-    _FORCE_INLINE_ fixed_transform2d get_fixed_transform() const { return fixed_transform; }
-    fixed_transform2d get_global_fixed_transform() const;
+    _FORCE_INLINE_ fixed_transform2d get_fixed_transform_internal() const { return fixed_transform->get_internal(); }
+    fixed_transform2d get_global_fixed_transform_internal() const;
 
-    void update_fixed_transform(const fixed_transform2d &p_transform);
+    void update_fixed_transform_internal(const fixed_transform2d &p_transform);
 
     void _set_fixed_position(const fixed_vector2 &p_fixed_position);
 
