@@ -26,6 +26,10 @@
 #include <core/engine.h>
 
 void SGFixedNode2D::_bind_methods() {
+    ClassDB::bind_method(D_METHOD("get_fixed_transform"), &SGFixedNode2D::get_fixed_transform);
+    ClassDB::bind_method(D_METHOD("set_fixed_transform", "fixed_transform"), &SGFixedNode2D::set_fixed_transform);
+    ClassDB::bind_method(D_METHOD("_fixed_transform_changed"), &SGFixedNode2D::_fixed_transform_changed);
+
     ClassDB::bind_method(D_METHOD("get_fixed_position"), &SGFixedNode2D::get_fixed_position);
     ClassDB::bind_method(D_METHOD("set_fixed_position", "fixed_position"), &SGFixedNode2D::set_fixed_position);
     ClassDB::bind_method(D_METHOD("_fixed_position_changed"), &SGFixedNode2D::_fixed_position_changed);
@@ -37,6 +41,7 @@ void SGFixedNode2D::_bind_methods() {
     ClassDB::bind_method(D_METHOD("get_fixed_rotation"), &SGFixedNode2D::get_fixed_rotation);
     ClassDB::bind_method(D_METHOD("set_fixed_rotation", "fixed_scale"), &SGFixedNode2D::set_fixed_rotation);
 
+	ADD_PROPERTY(PropertyInfo(Variant::OBJECT, "fixed_transform", PROPERTY_HINT_NONE, "", 0), "set_fixed_transform", "get_fixed_transform");
 	ADD_PROPERTY(PropertyInfo(Variant::OBJECT, "fixed_position", PROPERTY_HINT_TYPE_STRING, "SGFixedVector2"), "set_fixed_position", "get_fixed_position");
 	ADD_PROPERTY(PropertyInfo(Variant::OBJECT, "fixed_scale", PROPERTY_HINT_TYPE_STRING, "SGFixedVector2"), "set_fixed_scale", "get_fixed_scale");
 	ADD_PROPERTY(PropertyInfo(Variant::INT, "fixed_rotation"), "set_fixed_rotation", "get_fixed_rotation");
@@ -55,6 +60,10 @@ void SGFixedNode2D::_changed_callback(Object *p_changed, const char *p_prop) {
         else if (strcmp(p_prop, "rotation") == 0) {
             fixed_rotation = fixed::from_float(get_rotation()).value;
             set_fixed_rotation(fixed_rotation);
+        }
+        else if (strcmp(p_prop, "transform") == 0) {
+            fixed_transform->from_float(get_transform());
+            set_fixed_transform(fixed_transform);
         }
     }
 }
@@ -86,12 +95,34 @@ void SGFixedNode2D::_set_fixed_position(const fixed_vector2 &p_fixed_position) {
     _change_notify("fixed_position");
 }
 
+void SGFixedNode2D::_fixed_transform_changed() {
+    set_fixed_transform(fixed_transform);
+}
+
 void SGFixedNode2D::_fixed_position_changed() {
     set_fixed_position(fixed_position);
 }
 
 void SGFixedNode2D::_fixed_scale_changed() {
     set_fixed_scale(fixed_scale);
+}
+
+void SGFixedNode2D::set_fixed_transform(const Ref<SGFixedTransform2D> &p_fixed_transform) {
+    fixed_transform2d internal_transform = p_fixed_transform->get_internal();
+    fixed_transform->set_internal(internal_transform);
+    updating_transform = true;
+    set_transform(fixed_transform->to_float());
+    fixed_position->set_internal(internal_transform.get_origin());
+    fixed_scale->set_internal(internal_transform.get_scale());
+    fixed_rotation = internal_transform.get_rotation().value;
+    updating_transform = false;
+    _change_notify("fixed_position");
+    _change_notify("fixed_scale");
+    _change_notify("fixed_rotation");
+}
+
+Ref<SGFixedTransform2D> SGFixedNode2D::get_fixed_transform() const {
+    return fixed_transform;
 }
 
 void SGFixedNode2D::set_fixed_position(const Ref<SGFixedVector2> &p_fixed_position) {
@@ -138,14 +169,13 @@ int SGFixedNode2D::get_fixed_rotation() const {
 
 SGFixedNode2D::SGFixedNode2D() {
     fixed_transform = Ref<SGFixedTransform2D>(memnew(SGFixedTransform2D));
-    //fixed_transform->connect("changed", this, "_fixed_transform_change");
+    fixed_transform->connect("changed", this, "_fixed_transform_change");
 
     fixed_position = Ref<SGFixedVector2>(memnew(SGFixedVector2));
     fixed_position->connect("changed", this, "_fixed_position_changed");
 
     fixed_scale = Ref<SGFixedVector2>(memnew(SGFixedVector2(fixed_vector2(fixed::ONE, fixed::ONE))));
     fixed_scale->connect("changed", this, "_fixed_scale_changed");
-
 
     fixed_rotation = 0;
 

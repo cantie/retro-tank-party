@@ -39,6 +39,8 @@ class SGFixedTransform2D : public Reference {
 protected:
     static void _bind_methods();
 
+	void _vector_changed();
+
 public:
 	Ref<SGFixedVector2> get_x() const;
 	void set_x(const Ref<SGFixedVector2> &p_x);
@@ -65,6 +67,9 @@ public:
 	_FORCE_INLINE_ static Ref<SGFixedTransform2D> from_internal(const fixed_transform2d &p_internal) {
 		return Ref<SGFixedTransform2D>(memnew(SGFixedTransform2D(p_internal)));
 	}
+
+	Transform2D to_float() const;
+	void from_float(const Transform2D &p_float_transform);
 
     Ref<SGFixedTransform2D> inverse() const;
     Ref<SGFixedTransform2D> affine_inverse() const;
