@@ -53,7 +53,7 @@ func _on_free_space_found(_destination) -> void:
 	
 	destination = _destination
 	
-	tank.collision_shape.set_deferred("disabled", true)
+	tank.collision_shape.disabled = true
 	
 	zap_stage = ZapStage.HIDING
 	tween.interpolate_property(tank, "scale", Vector2(1.0, 1.0), Vector2.ZERO, 0.15)
@@ -80,7 +80,7 @@ func _on_Tween_tween_all_completed() -> void:
 			rpc("show_tank")
 	elif zap_stage == ZapStage.SHOWING:
 		zap_stage = ZapStage.NONE
-		tank.collision_shape.set_deferred("disabled", false)
+		tank.collision_shape.disabled = false
 		
 		if charges <= 0:
 			emit_signal("finished")

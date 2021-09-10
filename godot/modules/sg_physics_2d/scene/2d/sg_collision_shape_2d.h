@@ -35,12 +35,15 @@ class SGCollisionShape2D : public SGFixedNode2D {
     SGCollisionObject2D *collision_object;
     Ref<SGShape2D> shape;
     SGShape2DInternal *internal_shape;
+    bool disabled;
 
 protected:
     static void _bind_methods();
     void _notification(int p_what);
 
 public:
+    void set_disabled(bool p_disabled);
+    bool get_disabled() const;
 
     void set_shape(const Ref<SGShape2D> &p_shape);
     Ref<SGShape2D> get_shape();

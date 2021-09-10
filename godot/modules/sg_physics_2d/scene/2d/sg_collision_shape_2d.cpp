@@ -63,13 +63,13 @@ void SGCollisionShape2D::_notification(int p_what) {
         
         case NOTIFICATION_PARENTED:
             collision_object = Object::cast_to<SGCollisionObject2D>(get_parent());
-            if (collision_object && internal_shape) {
+            if (collision_object && internal_shape && !disabled) {
                 collision_object->add_shape(internal_shape);
             }
             break;
         
         case NOTIFICATION_UNPARENTED:
-            if (collision_object && internal_shape) {
+            if (collision_object && internal_shape && !disabled) {
                 collision_object->remove_shape(internal_shape);
             }
             collision_object = nullptr;
@@ -78,10 +78,28 @@ void SGCollisionShape2D::_notification(int p_what) {
     }
 }
 
+void SGCollisionShape2D::set_disabled(bool p_disabled) {
+    if (disabled != p_disabled) {
+        disabled = p_disabled;
+        if (collision_object && internal_shape) {
+            if (disabled) {
+                collision_object->remove_shape(internal_shape);
+            }
+            else {
+                collision_object->add_shape(internal_shape);
+            }
+        }
+    }
+}
+
+bool SGCollisionShape2D::get_disabled() const {
+    return disabled;
+}
+
 void SGCollisionShape2D::set_shape(const Ref<SGShape2D> &p_shape) {
     if (shape.is_valid()) {
         shape->disconnect("changed", this, "_shape_changed");
-        if (collision_object && internal_shape) {
+        if (collision_object && internal_shape && !disabled) {
             collision_object->remove_shape(internal_shape);
             memdelete(internal_shape);
             internal_shape = nullptr;
@@ -93,7 +111,7 @@ void SGCollisionShape2D::set_shape(const Ref<SGShape2D> &p_shape) {
     if (shape.is_valid()) {
         shape->connect("changed", this, "_shape_changed");
         internal_shape = shape->create_internal_shape();
-        if (collision_object) {
+        if (collision_object && !disabled) {
             collision_object->add_shape(internal_shape);
         }
     }
@@ -110,19 +128,20 @@ void SGCollisionShape2D::_shape_changed() {
 }
 
 void SGCollisionShape2D::sync_to_physics_engine() const {
-    if (shape.is_valid() && internal_shape) {
+    if (shape.is_valid() && internal_shape && !disabled) {
         internal_shape->set_transform(get_fixed_transform_internal());
         shape->sync_to_physics_engine(internal_shape);
     }
 }
 
 SGCollisionShape2D::SGCollisionShape2D() {
+    disabled = false;
     collision_object = nullptr;
     internal_shape = nullptr;
 }
 
 SGCollisionShape2D::~SGCollisionShape2D() {
-    if (collision_object && internal_shape) {
+    if (collision_object && internal_shape && !disabled) {
         collision_object->remove_shape(internal_shape);
     }
     if (internal_shape) {
