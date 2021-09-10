@@ -161,7 +161,7 @@ func _network_spawn_preprocess(data: Dictionary) -> Dictionary:
 func _network_spawn(data: Dictionary) -> void:
 	game = get_node(data['game'])
 	
-	global_transform = data['start_transform']
+	set_global_fixed_transform(data['start_transform'])
 	
 	player_index = data['player_index']
 	set_network_master(data['peer_id'])

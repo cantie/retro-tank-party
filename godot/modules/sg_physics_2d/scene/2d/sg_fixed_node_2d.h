@@ -63,6 +63,9 @@ public:
     void set_fixed_transform(const Ref<SGFixedTransform2D> &p_transform);
     Ref<SGFixedTransform2D> get_fixed_transform() const;
 
+    void set_global_fixed_transform(const Ref<SGFixedTransform2D> &p_global_transform);
+    Ref<SGFixedTransform2D> get_global_fixed_transform() const;
+
     void set_fixed_position(const Ref<SGFixedVector2> &p_fixed_position);
     Ref<SGFixedVector2> get_fixed_position();
 

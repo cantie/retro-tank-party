@@ -34,7 +34,7 @@ func get_map_rect() -> Rect2:
 func _get_child_transforms(parent: Node2D) -> Array:
 	var transforms := []
 	for i in range(parent.get_child_count()):
-		transforms.append(parent.get_child(i).global_transform)
+		transforms.append(parent.get_child(i).get_global_fixed_transform())
 	return transforms
 
 func get_player_start_transforms() -> Array:
