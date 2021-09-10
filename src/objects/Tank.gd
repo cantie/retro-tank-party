@@ -285,13 +285,13 @@ func _hook_default_gather_input(event: GatherInputEvent) -> void:
 		input[PlayerInput.INPUT_VECTOR] = SGFixed.from_float_vector2(input_vector)
 	
 	if _input_mouse_control:
-		input[PlayerInput.TURRET_ROTATION] = (get_global_mouse_position() - turret_pivot.global_position).angle()
+		input[PlayerInput.TURRET_ROTATION] = SGFixed.from_float((get_global_mouse_position() - turret_pivot.global_position).angle())
 	else:
 		if Input.is_action_pressed("player1_aim_up") or Input.is_action_pressed("player1_aim_down") or Input.is_action_pressed("player1_aim_left") or Input.is_action_pressed("player1_aim_right"):
 			var joy_vector = Vector2()
 			joy_vector.x = Input.get_action_strength("player1_aim_right") - Input.get_action_strength("player1_aim_left")
 			joy_vector.y = Input.get_action_strength("player1_aim_down") - Input.get_action_strength("player1_aim_up")
-			input[PlayerInput.TURRET_ROTATION] = joy_vector.angle()
+			input[PlayerInput.TURRET_ROTATION] = SGFixed.from_float(joy_vector.angle())
 	
 	if _input_shoot:
 		input[PlayerInput.SHOOTING] = true
@@ -380,9 +380,9 @@ func _network_process(delta: float, input: Dictionary) -> void:
 		engine_sound.engine_state = engine_sound.EngineState.IDLE
 	
 	if input.has(PlayerInput.TURRET_ROTATION):
-		turret_pivot.global_rotation = input[PlayerInput.TURRET_ROTATION]
+		turret_pivot.set_global_fixed_rotation(input[PlayerInput.TURRET_ROTATION])
 	else:
-		turret_pivot.rotation = 0.0
+		turret_pivot.fixed_rotation = 0
 	
 	if input.get(PlayerInput.SHOOTING, false) and can_shoot:
 		can_shoot = false
@@ -410,7 +410,7 @@ func _save_state() -> Dictionary:
 	return {
 		fixed_position = fixed_position,
 		fixed_rotation = fixed_rotation,
-		turret_rotation = turret_pivot.global_rotation,
+		turret_rotation = turret_pivot.get_global_fixed_rotation(),
 		can_shoot = can_shoot,
 		health = health,
 		weapon_type = weapon_type.resource_path,
@@ -421,7 +421,7 @@ func _load_state(state: Dictionary) -> void:
 	fixed_rotation = state['fixed_rotation']
 	sync_to_physics_engine()
 	
-	turret_pivot.global_rotation = state['turret_rotation']
+	turret_pivot.set_global_fixed_rotation(state['turret_rotation'])
 	can_shoot = state['can_shoot']
 	update_health(state['health'])
 	set_weapon_type(load(state['weapon_type']))

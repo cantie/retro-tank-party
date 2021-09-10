@@ -2,7 +2,7 @@ extends "res://src/components/weapons/BaseBullet.gd"
 
 onready var bullet_sprite = $BulletPivot/Sprite
 
-var speed = 700
+var speed = 764477 # 11.66
 
 const BULLET_COLORS = {
 	1: Rect2(570, 584, 16, 28),
@@ -21,7 +21,8 @@ func explode(type: String) -> void:
 
 func _network_process(delta: float, _input: Dictionary) -> void:
 	._network_process(delta, _input)
-	position += vector * speed * delta
+	fixed_position.iadd(vector.mulf(speed))
+	sync_to_physics_engine()
 
 func _on_LifetimeTimer_timeout() -> void:
 	explode("smoke")

@@ -52,6 +52,7 @@ protected:
     fixed_transform2d get_global_fixed_transform_internal() const;
 
     void update_fixed_transform_internal(const fixed_transform2d &p_transform);
+    void update_global_fixed_transform_internal(const fixed_transform2d &p_global_transform);
 
     void _set_fixed_position(const fixed_vector2 &p_fixed_position);
 
@@ -63,9 +64,6 @@ public:
     void set_fixed_transform(const Ref<SGFixedTransform2D> &p_transform);
     Ref<SGFixedTransform2D> get_fixed_transform() const;
 
-    void set_global_fixed_transform(const Ref<SGFixedTransform2D> &p_global_transform);
-    Ref<SGFixedTransform2D> get_global_fixed_transform() const;
-
     void set_fixed_position(const Ref<SGFixedVector2> &p_fixed_position);
     Ref<SGFixedVector2> get_fixed_position();
 
@@ -74,6 +72,16 @@ public:
 
     void set_fixed_rotation(int p_fixed_rotation);
     int get_fixed_rotation() const;
+
+    void set_global_fixed_transform(const Ref<SGFixedTransform2D> &p_global_transform);
+    Ref<SGFixedTransform2D> get_global_fixed_transform() const;
+
+    void set_global_fixed_position(const Ref<SGFixedVector2> &p_fixed_position);
+    Ref<SGFixedVector2> get_global_fixed_position();
+
+    void set_global_fixed_rotation(int p_fixed_rotation);
+    int get_global_fixed_rotation() const;
+
 
     SGFixedNode2D();
     ~SGFixedNode2D();

@@ -57,18 +57,26 @@ texture = ExtResource( 1 )
 region_enabled = true
 region_rect = Rect2( 434, 0, 84, 83 )
 
-[node name="TurretPivot" type="Position2D" parent="."]
+[node name="TurretPivot" type="SGFixedPosition2D" parent="."]
+fixed_position = Object(SGFixedVector2,"x":0,"y":0,"script":null)
+
+fixed_scale = Object(SGFixedVector2,"x":65536,"y":65536,"script":null)
+
 
 [node name="TurretSprite" type="Sprite" parent="TurretPivot"]
-rotation = 4.71239
+rotation = -1.5708
 texture = ExtResource( 1 )
 centered = false
 offset = Vector2( -12, -10 )
 region_enabled = true
 region_rect = Rect2( 722, 199, 24, 60 )
 
-[node name="BulletStartPosition" type="Position2D" parent="TurretPivot"]
+[node name="BulletStartPosition" type="SGFixedPosition2D" parent="TurretPivot"]
 position = Vector2( 55, 0 )
+fixed_position = Object(SGFixedVector2,"x":3604480,"y":0,"script":null)
+
+fixed_scale = Object(SGFixedVector2,"x":65536,"y":65536,"script":null)
+
 
 [node name="PlayerInfo" parent="." instance=ExtResource( 3 )]
 position = Vector2( 0, -85 )

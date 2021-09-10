@@ -30,9 +30,6 @@ void SGFixedNode2D::_bind_methods() {
     ClassDB::bind_method(D_METHOD("set_fixed_transform", "fixed_transform"), &SGFixedNode2D::set_fixed_transform);
     ClassDB::bind_method(D_METHOD("_fixed_transform_changed"), &SGFixedNode2D::_fixed_transform_changed);
 
-    ClassDB::bind_method(D_METHOD("get_global_fixed_transform"), &SGFixedNode2D::get_global_fixed_transform);
-    ClassDB::bind_method(D_METHOD("set_global_fixed_transform", "fixed_transform"), &SGFixedNode2D::set_global_fixed_transform);
-
     ClassDB::bind_method(D_METHOD("get_fixed_position"), &SGFixedNode2D::get_fixed_position);
     ClassDB::bind_method(D_METHOD("set_fixed_position", "fixed_position"), &SGFixedNode2D::set_fixed_position);
     ClassDB::bind_method(D_METHOD("_fixed_position_changed"), &SGFixedNode2D::_fixed_position_changed);
@@ -48,6 +45,15 @@ void SGFixedNode2D::_bind_methods() {
 	ADD_PROPERTY(PropertyInfo(Variant::OBJECT, "fixed_position", PROPERTY_HINT_TYPE_STRING, "SGFixedVector2"), "set_fixed_position", "get_fixed_position");
 	ADD_PROPERTY(PropertyInfo(Variant::OBJECT, "fixed_scale", PROPERTY_HINT_TYPE_STRING, "SGFixedVector2"), "set_fixed_scale", "get_fixed_scale");
 	ADD_PROPERTY(PropertyInfo(Variant::INT, "fixed_rotation"), "set_fixed_rotation", "get_fixed_rotation");
+
+    ClassDB::bind_method(D_METHOD("get_global_fixed_transform"), &SGFixedNode2D::get_global_fixed_transform);
+    ClassDB::bind_method(D_METHOD("set_global_fixed_transform", "fixed_transform"), &SGFixedNode2D::set_global_fixed_transform);
+
+    ClassDB::bind_method(D_METHOD("get_global_fixed_position"), &SGFixedNode2D::get_global_fixed_position);
+    ClassDB::bind_method(D_METHOD("set_global_fixed_position", "fixed_position"), &SGFixedNode2D::set_global_fixed_position);
+
+    ClassDB::bind_method(D_METHOD("get_global_fixed_rotation"), &SGFixedNode2D::get_global_fixed_rotation);
+    ClassDB::bind_method(D_METHOD("set_global_fixed_rotation", "fixed_rotation"), &SGFixedNode2D::set_global_fixed_rotation);
 }
 
 void SGFixedNode2D::_changed_callback(Object *p_changed, const char *p_prop) {
@@ -89,6 +95,16 @@ void SGFixedNode2D::update_fixed_transform_internal(const fixed_transform2d &p_t
     _change_notify("fixed_rotation");
 }
 
+void SGFixedNode2D::update_global_fixed_transform_internal(const fixed_transform2d &p_global_transform) {
+    SGFixedNode2D *fixed_parent = Object::cast_to<SGFixedNode2D>(get_parent());
+    if (fixed_parent) {
+        update_fixed_transform_internal(fixed_parent->get_global_fixed_transform_internal().inverse() * p_global_transform);
+    }
+    else {
+        update_fixed_transform_internal(p_global_transform);
+    }
+}
+
 void SGFixedNode2D::_set_fixed_position(const fixed_vector2 &p_fixed_position) {
     fixed_position->set_internal(p_fixed_position);
     updating_transform = true;
@@ -116,18 +132,6 @@ void SGFixedNode2D::set_fixed_transform(const Ref<SGFixedTransform2D> &p_fixed_t
 
 Ref<SGFixedTransform2D> SGFixedNode2D::get_fixed_transform() const {
     return fixed_transform;
-}
-
-void SGFixedNode2D::set_global_fixed_transform(const Ref<SGFixedTransform2D> &p_global_transform) {
-    SGFixedNode2D *fixed_parent = Object::cast_to<SGFixedNode2D>(get_parent());
-    if (fixed_parent) {
-        update_fixed_transform_internal(fixed_parent->get_global_fixed_transform_internal().inverse() * p_global_transform->get_internal());
-    }
-    update_fixed_transform_internal(p_global_transform->get_internal());
-}
-
-Ref<SGFixedTransform2D> SGFixedNode2D::get_global_fixed_transform() const {
-    return Ref<SGFixedTransform2D>(memnew(SGFixedTransform2D(get_global_fixed_transform_internal())));
 }
 
 void SGFixedNode2D::set_fixed_position(const Ref<SGFixedVector2> &p_fixed_position) {
@@ -170,6 +174,39 @@ void SGFixedNode2D::set_fixed_rotation(int p_fixed_rotation) {
 
 int SGFixedNode2D::get_fixed_rotation() const {
     return fixed_rotation;
+}
+
+void SGFixedNode2D::set_global_fixed_transform(const Ref<SGFixedTransform2D> &p_global_transform) {
+    update_global_fixed_transform_internal(p_global_transform->get_internal());
+}
+
+Ref<SGFixedTransform2D> SGFixedNode2D::get_global_fixed_transform() const {
+    return Ref<SGFixedTransform2D>(memnew(SGFixedTransform2D(get_global_fixed_transform_internal())));
+}
+
+void SGFixedNode2D::set_global_fixed_position(const Ref<SGFixedVector2> &p_fixed_position) {
+   fixed_transform2d t = get_global_fixed_transform_internal();
+   t.set_origin(p_fixed_position->get_internal());
+   update_global_fixed_transform_internal(t);
+}
+
+Ref<SGFixedVector2> SGFixedNode2D::get_global_fixed_position() {
+    return SGFixedVector2::from_internal(get_global_fixed_transform_internal().get_origin());
+}
+
+void SGFixedNode2D::set_global_fixed_rotation(int p_fixed_rotation) {
+    SGFixedNode2D *fixed_parent = Object::cast_to<SGFixedNode2D>(get_parent());
+    if (fixed_parent) {
+        fixed parent_rotation = fixed_parent->get_global_fixed_transform_internal().get_rotation();
+        set_fixed_rotation(p_fixed_rotation - parent_rotation.value);
+    }
+    else {
+        set_fixed_rotation(p_fixed_rotation);
+    }
+}
+
+int SGFixedNode2D::get_global_fixed_rotation() const {
+    return get_global_fixed_transform_internal().get_rotation().value;
 }
 
 SGFixedNode2D::SGFixedNode2D() {

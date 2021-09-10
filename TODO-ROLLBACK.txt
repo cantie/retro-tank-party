@@ -4,7 +4,6 @@ TODO
 MILESTONE 1 (physics):
 
  - Attempt to put in game
-   o Convert bullet to SGArea2D
    o Convert DropCrate and DropCrateSpawnArea
  - Broadphase
  - Ray cast
