@@ -4,11 +4,10 @@ TODO
 MILESTONE 1 (physics):
 
  - Attempt to put in game
-   o Debug collision issues on Maze map
    o Convert bullet to SGArea2D
  - SGArea2D should directly implement get_overlapping_areas()/get_overlapping_bodies() so it can directly create the Array objects
- - Ray cast
  - Broadphase
+ - Ray cast
  - Unit tests!
    o Reintroduce the physics server to allow testing in GDScript?
  - Code clean-up
