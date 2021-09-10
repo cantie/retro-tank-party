@@ -18,6 +18,3 @@ func set_tree_color(color: int) -> void:
 	if sprite == null:
 		yield(self, "ready")
 	sprite.region_rect = TREE_COLORS[color]
-
-func _ready() -> void:
-	sync_to_physics_engine()
