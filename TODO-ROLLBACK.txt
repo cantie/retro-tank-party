@@ -5,7 +5,7 @@ MILESTONE 1 (physics):
 
  - Attempt to put in game
    o Convert bullet to SGArea2D
- - SGArea2D should directly implement get_overlapping_areas()/get_overlapping_bodies() so it can directly create the Array objects
+   o Convert DropCrate and DropCrateSpawnArea
  - Broadphase
  - Ray cast
  - Unit tests!
