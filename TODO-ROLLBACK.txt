@@ -4,6 +4,16 @@ TODO
 MILESTONE 1 (physics):
 
  - Attempt to put in game
+   o Maybe implement polygons?
+     - Convex polygons are easy and straight forward (maybe just start here and bail if non-convex?)
+     - Convert Concave polygons to a set of convex via triangulation?
+       * https://stackoverflow.com/questions/5247994/simple-2d-polygon-triangulation
+       * http://gamma.cs.unc.edu/SEIDEL/
+       * https://en.wikipedia.org/wiki/Polygon_triangulation
+       * Header only library:
+         - https://github.com/mapbox/earcut.hpp 
+       * Easy to read C library:
+         - https://people.sc.fsu.edu/~jburkardt/c_src/polygon_triangulate/polygon_triangulate.html
    o Convert DropCrate and DropCrateSpawnArea
  - Broadphase
  - Ray cast
