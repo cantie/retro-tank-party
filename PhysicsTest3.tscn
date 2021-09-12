@@ -37,6 +37,9 @@ position = Vector2( -297, 86 )
 rotation = -0.781479
 shape = SubResource( 2 )
 
+[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="StaticBody"]
+polygon = PoolVector2Array( 11, 11, 74, 1, 20, -38 )
+
 [node name="Character" type="KinematicBody2D" parent="."]
 position = Vector2( 581, 374 )
 rotation = -1.57079

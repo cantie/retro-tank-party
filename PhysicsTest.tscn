@@ -41,6 +41,16 @@ fixed_scale = Object(SGFixedVector2,"x":65536,"y":65536,"script":null)
 
 shape = SubResource( 2 )
 
+[node name="Polygon" type="SGCollisionPolygon2D" parent="Area"]
+fixed_position = Object(SGFixedVector2,"x":0,"y":0,"script":null)
+
+fixed_scale = Object(SGFixedVector2,"x":65536,"y":65536,"script":null)
+
+fixed_polygon = [ Object(SGFixedVector2,"x":-92556,"y":-463436,"script":null)
+, Object(SGFixedVector2,"x":509708,"y":139164,"script":null)
+, Object(SGFixedVector2,"x":-417134,"y":231588,"script":null)
+ ]
+
 [node name="Character" type="SGArea2D" parent="."]
 position = Vector2( 506, 367 )
 rotation = -0.867859
