@@ -36,6 +36,7 @@ public:
     enum ShapeType {
         SHAPE_RECTANGLE,
         SHAPE_CIRCLE,
+        SHAPE_POLYGON,
     };
 
 protected:
@@ -106,6 +107,17 @@ public:
     {
         radius = p_radius;
     }
+};
+
+class SGPolygon2DInternal : public SGShape2DInternal {
+protected:
+
+    Vector<fixed_vector2> points;
+
+public:
+    _FORCE_INLINE_ Vector<fixed_vector2> &get_points() { return points; } 
+
+    SGPolygon2DInternal() : SGShape2DInternal(SHAPE_POLYGON) { }
 };
 
 #endif

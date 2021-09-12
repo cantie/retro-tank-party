@@ -316,3 +316,15 @@ bool SGCollisionDetector2DInternal::Circle_overlaps_Rectangle(const SGCircle2DIn
 
     return overlapping;
 }
+
+bool SGCollisionDetector2DInternal::Polygon_overlaps_Polygon(const SGPolygon2DInternal &polygon1, const SGPolygon2DInternal &polygon2, OverlapInfo *p_info) {
+    return false;
+}
+
+bool SGCollisionDetector2DInternal::Polygon_overlaps_Circle(const SGPolygon2DInternal &polygon, const SGCircle2DInternal &circle, OverlapInfo *p_info) {
+    return false;
+}
+
+bool SGCollisionDetector2DInternal::Polygon_overlaps_Rectangle(const SGPolygon2DInternal &polygon, const SGRectangle2DInternal &rectangle, OverlapInfo *p_info) {
+    return false;
+}

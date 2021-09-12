@@ -24,6 +24,7 @@
 #include "sg_collision_polygon_2d.h"
 
 #include <core/engine.h>
+#include "sg_collision_object_2d.h"
 
 void SGCollisionPolygon2D::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("set_polygon", "polygon"), &SGCollisionPolygon2D::set_polygon);
@@ -64,21 +65,19 @@ void SGCollisionPolygon2D::_notification(int p_what) {
 			}
 		} break;
         
-		/*
         case NOTIFICATION_PARENTED:
             collision_object = Object::cast_to<SGCollisionObject2D>(get_parent());
-            if (collision_object && internal_shape && !disabled) {
+            if (collision_object && !disabled) {
                 collision_object->add_shape(internal_shape);
             }
             break;
         
         case NOTIFICATION_UNPARENTED:
-            if (collision_object && internal_shape && !disabled) {
+            if (collision_object && !disabled) {
                 collision_object->remove_shape(internal_shape);
             }
             collision_object = nullptr;
             break;
-		*/
 
     }
 
@@ -91,7 +90,7 @@ void SGCollisionPolygon2D::update_polygon() const {
 	for (int i = 0; i < fixed_polygon.size(); i++) {
 		Ref<SGFixedVector2> p = fixed_polygon.get(i);
 		if (p.is_valid()) {
-			polygon.set(i, p->to_float());
+			polygon.write[i] = p->to_float();
 		}
 	}
 
@@ -144,6 +143,24 @@ bool SGCollisionPolygon2D::_edit_is_selected_on_click(const Point2 &p_point, dou
 }
 #endif
 
+void SGCollisionPolygon2D::set_disabled(bool p_disabled) {
+    if (disabled != p_disabled) {
+        disabled = p_disabled;
+        if (collision_object) {
+            if (disabled) {
+                collision_object->remove_shape(internal_shape);
+            }
+            else {
+                collision_object->add_shape(internal_shape);
+            }
+        }
+    }
+}
+
+bool SGCollisionPolygon2D::get_disabled() const {
+	return disabled;
+}
+
 void SGCollisionPolygon2D::set_polygon(const Vector<Point2> &p_polygon) {
 	polygon = p_polygon;
 	update_fixed_polygon();
@@ -169,10 +186,32 @@ void SGCollisionPolygon2D::set_fixed_polygon(const Array &p_fixed_polygon) {
 	if (polygon.size() > 0) {
 		update_polygon();
 	}
+
+	update_internal_shape();
 }
 
 Array SGCollisionPolygon2D::get_fixed_polygon() const {
 	return fixed_polygon;
+}
+
+void SGCollisionPolygon2D::update_internal_shape() const {
+	Vector<fixed_vector2> points = internal_shape->get_points();
+
+	points.clear();
+	points.resize(fixed_polygon.size());
+
+	for (int i = 0; i < fixed_polygon.size(); i++) {
+		Ref<SGFixedVector2> point = fixed_polygon[i];
+		if (point.is_valid()) {
+			points.write[i] = point->get_internal();
+		}
+	}
+}
+
+void SGCollisionPolygon2D::sync_to_physics_engine() const {
+    if (!disabled) {
+        internal_shape->set_transform(get_fixed_transform_internal());
+    }
 }
 
 String SGCollisionPolygon2D::get_configuration_warning() const {
@@ -183,7 +222,12 @@ SGCollisionPolygon2D::SGCollisionPolygon2D() {
 	aabb = Rect2(-10, -10, 20, 20);
     disabled = false;
     collision_object = nullptr;
+	internal_shape = memnew(SGPolygon2DInternal);
 }
 
 SGCollisionPolygon2D::~SGCollisionPolygon2D() {
+    if (collision_object && !disabled) {
+        collision_object->remove_shape(internal_shape);
+    }
+	memdelete(internal_shape);
 }

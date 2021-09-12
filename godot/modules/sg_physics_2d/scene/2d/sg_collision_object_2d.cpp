@@ -26,6 +26,7 @@
 #include <core/engine.h>
 
 #include "sg_collision_shape_2d.h"
+#include "sg_collision_polygon_2d.h"
 #include "../../internal/sg_bodies_2d_internal.h"
 
 void SGCollisionObject2D::_bind_methods() {
@@ -69,6 +70,10 @@ String SGCollisionObject2D::get_configuration_warning() const {
             has_shape_child = true;
             break;
         }
+        if (Object::cast_to<SGCollisionPolygon2D>(get_child(i))) {
+            has_shape_child = true;
+            break;
+        }
     }
     if (!has_shape_child) {
         if (warning != String()) {
@@ -99,6 +104,12 @@ void SGCollisionObject2D::sync_to_physics_engine() const {
         SGCollisionShape2D *shape = Object::cast_to<SGCollisionShape2D>(get_child(i));
         if (shape) {
             shape->sync_to_physics_engine();
+        }
+        else {
+            SGCollisionPolygon2D *polygon = Object::cast_to<SGCollisionPolygon2D>(get_child(i));
+            if (polygon) {
+                polygon->sync_to_physics_engine();
+            }
         }
     }
 }
