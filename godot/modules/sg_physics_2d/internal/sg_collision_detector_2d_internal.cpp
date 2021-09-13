@@ -83,6 +83,30 @@ Interval SGCollisionDetector2DInternal::get_interval(const SGRectangle2DInternal
     return result;
 }
 
+Interval SGCollisionDetector2DInternal::get_interval(const SGPolygon2DInternal &polygon, const fixed_vector2 &axis) {
+    fixed_vector2 *verts = new fixed_vector2[polygon.get_points().size()];
+
+    for (int i = 0; i < polygon.get_points().size(); i++) {
+        verts[i] = polygon.get_global_transform().xform(polygon.get_points()[i]);
+    }
+
+    // @todo We can reuse the above verts for all the axes.
+
+    Interval result;
+    result.min = result.max = axis.dot(verts[0]);
+    for (int i = 1; i < 4; i++) {
+        fixed projection = axis.dot(verts[i]);
+        if (projection < result.min) {
+            result.min = projection;
+        }
+        if (projection > result.max) {
+            result.max = projection;
+        }
+    }
+
+    return result;
+}
+
 bool SGCollisionDetector2DInternal::overlaps_on_axis(const fixed_rect2 &aabb1, const fixed_rect2 &aabb2, const fixed_vector2 &axis, fixed &separation) {
     Interval i1 = get_interval(aabb1, axis);
     Interval i2 = get_interval(aabb2, axis);
@@ -126,6 +150,26 @@ bool SGCollisionDetector2DInternal::overlaps_on_axis(const fixed_rect2 &aabb, co
 bool SGCollisionDetector2DInternal::overlaps_on_axis(const SGRectangle2DInternal &rectangle1, const SGRectangle2DInternal &rectangle2, const fixed_vector2 &axis, fixed &separation) {
     Interval i1 = get_interval(rectangle1, axis);
     Interval i2 = get_interval(rectangle2, axis);
+
+    fixed d1 = i1.max - i2.min;
+    fixed d2 = i2.max - i1.min;
+    if (d1 >= fixed::ZERO && d2 >= fixed::ZERO) {
+        separation = (d1 < d2) ? d1 : d2;
+        // Add half to the seperation so we'd move to a non-overlapping state.
+        separation += fixed::HALF;
+        // Attempt to make the seperation relative to rectangle1.
+        if (i1.min < i2.min) {
+            separation = -separation;
+        }
+        return true;
+    }
+
+    return false;
+}
+
+bool SGCollisionDetector2DInternal::overlaps_on_axis(const SGPolygon2DInternal &polygon, const SGRectangle2DInternal &rectangle, const fixed_vector2 &axis, fixed &separation) {
+    Interval i1 = get_interval(polygon, axis);
+    Interval i2 = get_interval(rectangle, axis);
 
     fixed d1 = i1.max - i2.min;
     fixed d2 = i2.max - i1.min;
@@ -326,5 +370,42 @@ bool SGCollisionDetector2DInternal::Polygon_overlaps_Circle(const SGPolygon2DInt
 }
 
 bool SGCollisionDetector2DInternal::Polygon_overlaps_Rectangle(const SGPolygon2DInternal &polygon, const SGRectangle2DInternal &rectangle, OverlapInfo *p_info) {
-    return false;
+    fixed_transform2d rt1 = polygon.get_global_transform();
+    rt1.set_origin(fixed_vector2::ZERO);
+    fixed_transform2d rt2 = rectangle.get_global_transform();
+    rt2.set_origin(fixed_vector2::ZERO);
+
+    const Vector<fixed_vector2> &points = polygon.get_points();
+
+    fixed_vector2 *axes = new fixed_vector2[points.size() + 2];
+
+    axes[0] = rt2.xform(fixed_vector2(rectangle.get_extents().x, fixed::ZERO)).normalized();
+    axes[1] = rt2.xform(fixed_vector2(fixed::ZERO, rectangle.get_extents().y)).normalized();
+    for (int i = 0; i < points.size(); i++) {
+        int next_index = (i == points.size() - 1) ? 0 : i + 1;
+        axes[i + 2] = rt1.xform(points[next_index] - points[i]).normalized();
+    }
+
+    fixed separation_component;
+    fixed_vector2 best_separation_vector;
+
+    for (int i = 0; i < points.size() + 2; i++) {
+        if (overlaps_on_axis(polygon, rectangle, axes[i], separation_component)) {
+            fixed_vector2 separation_vector = (axes[i] * separation_component);
+            if (best_separation_vector == fixed_vector2::ZERO || separation_vector.length() < best_separation_vector.length()) {
+                best_separation_vector = separation_vector;
+            }
+        }
+        else {
+            // Axis of separation found! They don't overlap.
+            return false;
+        }
+    }
+    // No axis of separation found, they overlap!
+
+    if (p_info) {
+        p_info->separation = best_separation_vector;
+    }
+
+    return true;
 }

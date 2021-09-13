@@ -115,6 +115,7 @@ protected:
     Vector<fixed_vector2> points;
 
 public:
+    _FORCE_INLINE_ const Vector<fixed_vector2> &get_points() const { return points; } 
     _FORCE_INLINE_ Vector<fixed_vector2> &get_points() { return points; } 
 
     SGPolygon2DInternal() : SGShape2DInternal(SHAPE_POLYGON) { }
