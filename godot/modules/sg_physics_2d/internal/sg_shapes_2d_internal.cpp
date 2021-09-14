@@ -36,7 +36,49 @@ fixed_transform2d SGShape2DInternal::get_global_transform() const {
     return global_transform;
 }
 
+Vector<fixed_vector2> SGShape2DInternal::get_global_vertices() const {
+    return global_vertices;
+}
+
 fixed_rect2 SGRectangle2DInternal::get_bounds() const {
     fixed_transform2d t = get_global_transform();
     return fixed_rect2(t.get_origin(), extents * t.get_scale());
+}
+
+Vector<fixed_vector2> SGRectangle2DInternal::get_global_vertices() const {
+    if (global_vertices.size() == 0) {
+        fixed_transform2d t = get_global_transform();
+
+        global_vertices.resize(4);
+        global_vertices.write[0] = t.xform(fixed_vector2(-extents.x, -extents.y));
+        global_vertices.write[1] = t.xform(fixed_vector2(extents.x, -extents.y));
+        global_vertices.write[2] = t.xform(fixed_vector2(-extents.x, extents.y));
+        global_vertices.write[3] = t.xform(fixed_vector2(extents.x, extents.y));
+    }
+
+    return global_vertices;
+}
+
+Vector<fixed_vector2> SGCircle2DInternal::get_global_vertices() const {
+    if (global_vertices.size() == 0) {
+        fixed_transform2d t = get_global_transform();
+
+        global_vertices.resize(1);
+        global_vertices.write[0] = t.get_origin();
+    }
+
+    return global_vertices;
+}
+
+Vector<fixed_vector2> SGPolygon2DInternal::get_global_vertices() const {
+    if (global_vertices.size() == 0 && points.size() > 0) {
+        fixed_transform2d t = get_global_transform();
+
+        global_vertices.resize(points.size());
+        for (int i = 0; i < points.size(); i++) {
+            global_vertices.write[i] = t.xform(points[i]);
+        }
+    }
+
+    return global_vertices;
 }

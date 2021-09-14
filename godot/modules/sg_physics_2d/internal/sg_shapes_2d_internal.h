@@ -47,10 +47,16 @@ protected:
     mutable fixed_transform2d global_transform;
     mutable bool global_xform_dirty;
     SGCollisionObject2DInternal *owner;
+    mutable Vector<fixed_vector2> global_vertices;
+
+    _FORCE_INLINE_ void mark_global_xform_dirty() const {
+        global_xform_dirty = true;
+        global_vertices.clear();
+    }
 
     _FORCE_INLINE_ void set_owner(SGCollisionObject2DInternal *p_owner) {
         owner = p_owner;
-        global_xform_dirty = true;
+        mark_global_xform_dirty();
     }
 
 public:
@@ -58,12 +64,14 @@ public:
 
     _FORCE_INLINE_ void set_transform(const fixed_transform2d &p_transform) {
         transform = p_transform;
-        global_xform_dirty = true;
+        mark_global_xform_dirty();
     }
     _FORCE_INLINE_ fixed_transform2d get_transform() const { return transform; }
     fixed_transform2d get_global_transform() const;
 
     _FORCE_INLINE_ SGCollisionObject2DInternal *get_owner() const { return owner; }
+
+    virtual Vector<fixed_vector2> get_global_vertices() const;
 
     SGShape2DInternal(ShapeType p_shape_type) {
         shape_type = p_shape_type;
@@ -84,6 +92,8 @@ public:
 
     fixed_rect2 get_bounds() const;
 
+    virtual Vector<fixed_vector2> get_global_vertices() const override;
+
     SGRectangle2DInternal(fixed_vector2 p_extents) 
         : SGShape2DInternal(SHAPE_RECTANGLE) 
     {
@@ -102,6 +112,8 @@ public:
     _FORCE_INLINE_ fixed get_radius() const { return radius; }
     _FORCE_INLINE_ void set_radius(const fixed &p_radius) { radius = p_radius; }
 
+    virtual Vector<fixed_vector2> get_global_vertices() const override;
+
     SGCircle2DInternal(fixed p_radius)
         : SGShape2DInternal(SHAPE_CIRCLE)
     {
@@ -117,6 +129,8 @@ protected:
 public:
     _FORCE_INLINE_ const Vector<fixed_vector2> &get_points() const { return points; } 
     _FORCE_INLINE_ Vector<fixed_vector2> &get_points() { return points; } 
+
+    virtual Vector<fixed_vector2> get_global_vertices() const override;
 
     SGPolygon2DInternal() : SGShape2DInternal(SHAPE_POLYGON) { }
 };

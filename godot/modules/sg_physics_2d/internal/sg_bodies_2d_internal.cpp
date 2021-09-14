@@ -28,7 +28,7 @@
 void SGCollisionObject2DInternal::set_transform(const fixed_transform2d &p_transform) {
     transform = p_transform;
     for (List<SGShape2DInternal *>::Element *E = shapes.front(); E; E = E->next()) {
-        E->get()->global_xform_dirty = true;
+        E->get()->mark_global_xform_dirty();
     }
 }
 

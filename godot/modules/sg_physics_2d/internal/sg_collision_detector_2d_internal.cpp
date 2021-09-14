@@ -25,19 +25,12 @@
 
 using Interval = SGCollisionDetector2DInternal::Interval;
 
-Interval SGCollisionDetector2DInternal::get_interval(const fixed_rect2 &aabb, const fixed_vector2 &axis) {
+Interval SGCollisionDetector2DInternal::get_interval(const SGShape2DInternal &shape, const fixed_vector2 &axis) {
+    Vector<fixed_vector2> verts = shape.get_global_vertices();
+
     Interval result;
-
-    fixed_vector2 min = aabb.get_min();
-    fixed_vector2 max = aabb.get_max();
-
-    fixed_vector2 verts[] = {
-        fixed_vector2(min.x, min.y), fixed_vector2(max.x, min.y),
-        fixed_vector2(min.x, max.y), fixed_vector2(max.x, max.y),
-    };
-
     result.min = result.max = axis.dot(verts[0]);
-    for (int i = 1; i < 4; i++) {
+    for (int i = 1; i < verts.size(); i++) {
         fixed projection = axis.dot(verts[i]);
         if (projection < result.min) {
             result.min = projection;
@@ -50,125 +43,9 @@ Interval SGCollisionDetector2DInternal::get_interval(const fixed_rect2 &aabb, co
     return result;
 }
 
-Interval SGCollisionDetector2DInternal::get_interval(const SGRectangle2DInternal &rectangle, const fixed_vector2 &axis) {
-    fixed_vector2 extents = rectangle.get_extents();
-
-    fixed_vector2 verts[] = {
-        fixed_vector2(-extents.x, -extents.y), fixed_vector2(extents.x, -extents.y),
-        fixed_vector2(-extents.x, extents.y), fixed_vector2(extents.x, extents.y),
-    };
-
-    for (int i = 0; i < 4; i++) {
-        verts[i] = rectangle.get_global_transform().xform(verts[i]);
-    }
-
-    // @todo We can reuse the above verts for all the axes.
-
-    Interval result;
-    result.min = result.max = axis.dot(verts[0]);
-    for (int i = 1; i < 4; i++) {
-        fixed projection = axis.dot(verts[i]);
-        if (projection < result.min) {
-            result.min = projection;
-        }
-        if (projection > result.max) {
-            result.max = projection;
-        }
-    }
-
-    return result;
-}
-
-Interval SGCollisionDetector2DInternal::get_interval(const SGPolygon2DInternal &polygon, const fixed_vector2 &axis) {
-    const Vector<fixed_vector2> &points = polygon.get_points();
-
-    fixed_vector2 *verts = new fixed_vector2[points.size()];
-    for (int i = 0; i < points.size(); i++) {
-        verts[i] = polygon.get_global_transform().xform(points[i]);
-    }
-
-    // @todo We can reuse the above verts for all the axes.
-
-    Interval result;
-    result.min = result.max = axis.dot(verts[0]);
-    for (int i = 1; i < points.size(); i++) {
-        fixed projection = axis.dot(verts[i]);
-        if (projection < result.min) {
-            result.min = projection;
-        }
-        if (projection > result.max) {
-            result.max = projection;
-        }
-    }
-
-    delete[] verts;
-
-    return result;
-}
-
-bool SGCollisionDetector2DInternal::overlaps_on_axis(const fixed_rect2 &aabb1, const fixed_rect2 &aabb2, const fixed_vector2 &axis, fixed &separation) {
-    Interval i1 = get_interval(aabb1, axis);
-    Interval i2 = get_interval(aabb2, axis);
-
-    fixed d1 = i1.max - i2.min;
-    fixed d2 = i2.max - i1.min;
-    if (d1 >= fixed::ZERO && d2 >= fixed::ZERO) {
-        separation = (d1 < d2) ? d1 : d2;
-        // Add one to the seperation so we'd move to a non-overlapping state.
-        separation += fixed::ONE;
-        // Attempt to make the seperation relative to aabb1.
-        if (i1.min < i2.min) {
-            separation = -separation;
-        }
-        return true;
-    }
-
-    return false;
-}
-
-bool SGCollisionDetector2DInternal::overlaps_on_axis(const fixed_rect2 &aabb, const SGRectangle2DInternal &rectangle, const fixed_vector2 &axis, fixed &separation) {
-    Interval i1 = get_interval(aabb, axis);
-    Interval i2 = get_interval(rectangle, axis);
-
-    fixed d1 = i1.max - i2.min;
-    fixed d2 = i2.max - i1.min;
-    if (d1 >= fixed::ZERO && d2 >= fixed::ZERO) {
-        separation = (d1 < d2) ? d1 : d2;
-        // Add one to the seperation so we'd move to a non-overlapping state.
-        separation += fixed::ONE;
-        // Attempt to make the seperation relative to aabb.
-        if (i1.min < i2.min) {
-            separation = -separation;
-        }
-        return true;
-    }
-
-    return false;
-}
-
-bool SGCollisionDetector2DInternal::overlaps_on_axis(const SGRectangle2DInternal &rectangle1, const SGRectangle2DInternal &rectangle2, const fixed_vector2 &axis, fixed &separation) {
-    Interval i1 = get_interval(rectangle1, axis);
-    Interval i2 = get_interval(rectangle2, axis);
-
-    fixed d1 = i1.max - i2.min;
-    fixed d2 = i2.max - i1.min;
-    if (d1 >= fixed::ZERO && d2 >= fixed::ZERO) {
-        separation = (d1 < d2) ? d1 : d2;
-        // Add half to the seperation so we'd move to a non-overlapping state.
-        separation += fixed::HALF;
-        // Attempt to make the seperation relative to rectangle1.
-        if (i1.min < i2.min) {
-            separation = -separation;
-        }
-        return true;
-    }
-
-    return false;
-}
-
-bool SGCollisionDetector2DInternal::overlaps_on_axis(const SGPolygon2DInternal &polygon, const SGRectangle2DInternal &rectangle, const fixed_vector2 &axis, fixed &separation) {
-    Interval i1 = get_interval(polygon, axis);
-    Interval i2 = get_interval(rectangle, axis);
+bool SGCollisionDetector2DInternal::overlaps_on_axis(const SGShape2DInternal &shape1, const SGShape2DInternal &shape2, const fixed_vector2 &axis, fixed &separation) {
+    Interval i1 = get_interval(shape1, axis);
+    Interval i2 = get_interval(shape2, axis);
 
     fixed d1 = i1.max - i2.min;
     fixed d2 = i2.max - i1.min;
@@ -194,68 +71,6 @@ bool SGCollisionDetector2DInternal::AABB_overlaps_AABB(const fixed_rect2 &aabb1,
 
     return (min_two.x <= max_one.x) && (min_one.x <= max_two.x) && \
            (min_two.y <= max_one.y) && (min_one.y <= max_two.y);
-}
-
-bool SGCollisionDetector2DInternal::AABB_overlaps_AABB_SAT(const fixed_rect2 &aabb1, const fixed_rect2 &aabb2, OverlapInfo *p_info) {
-    fixed_vector2 axes[] = {
-        fixed_vector2(fixed::ONE, fixed::ZERO),
-        fixed_vector2(fixed::ZERO, fixed::ONE),
-    };
-
-    fixed separation_component;
-    fixed_vector2 best_separation_vector;
-
-    for (int i = 0; i < 2; i++) {
-        if (overlaps_on_axis(aabb1, aabb2, axes[i], separation_component)) {
-            fixed_vector2 separation_vector = (axes[i] * separation_component);
-            if (best_separation_vector == fixed_vector2::ZERO || separation_vector.length() < best_separation_vector.length()) {
-                best_separation_vector = separation_vector;
-            }
-        }
-        else {
-            // Axis of separation found! They don't overlap!
-            return false;
-        }
-    }
-    // No axis of separation found, they overlap!
-
-    if (p_info) {
-        p_info->separation = best_separation_vector;
-    }
-
-    return true;
-}
-
-bool SGCollisionDetector2DInternal::AABB_overlaps_Rectangle(const fixed_rect2 &aabb, const SGRectangle2DInternal &rectangle, OverlapInfo *p_info) {
-    fixed_vector2 axes[] = {
-        fixed_vector2(fixed::ONE, fixed::ZERO),
-        fixed_vector2(fixed::ZERO, fixed::ONE),
-        rectangle.get_global_transform().xform(fixed_vector2(rectangle.get_extents().x, fixed::ZERO)).normalized(),
-        rectangle.get_global_transform().xform(fixed_vector2(fixed::ZERO, rectangle.get_extents().y)).normalized(),
-    };
-
-    fixed separation_component;
-    fixed_vector2 best_separation_vector;
-
-    for (int i = 0; i < 4; i++) {
-        if (overlaps_on_axis(aabb, rectangle, axes[i], separation_component)) {
-            fixed_vector2 separation_vector = (axes[i] * separation_component);
-            if (best_separation_vector == fixed_vector2::ZERO || separation_vector.length() < best_separation_vector.length()) {
-                best_separation_vector = separation_vector;
-            }
-        }
-        else {
-            // Axis of separation found! They don't overlap.
-            return false;
-        }
-    }
-    // No axis of separation found, they overlap!
-
-    if (p_info) {
-        p_info->separation = best_separation_vector;
-    }
-
-    return true;
 }
 
 bool SGCollisionDetector2DInternal::Rectangle_overlaps_Rectangle(const SGRectangle2DInternal &rectangle1, const SGRectangle2DInternal &rectangle2, OverlapInfo *p_info) {
