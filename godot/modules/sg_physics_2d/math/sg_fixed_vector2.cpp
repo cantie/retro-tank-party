@@ -52,6 +52,10 @@ void SGFixedVector2::_bind_methods() {
     ClassDB::bind_method(D_METHOD("divf", "fixed_value"), &SGFixedVector2::divf);
     ClassDB::bind_method(D_METHOD("idivf", "fixed_value"), &SGFixedVector2::idivf);
 
+    ClassDB::bind_method(D_METHOD("abs"), &SGFixedVector2::abs);
+    ClassDB::bind_method(D_METHOD("normalized"), &SGFixedVector2::normalized);
+    ClassDB::bind_method(D_METHOD("length"), &SGFixedVector2::length);
+
     ClassDB::bind_method(D_METHOD("rotate", "radians"), &SGFixedVector2::rotate);
     ClassDB::bind_method(D_METHOD("rotated", "radians"), &SGFixedVector2::rotated);
 
@@ -138,7 +142,15 @@ void SGFixedVector2::idivf(int p_other) {
 }
 
 Ref<SGFixedVector2> SGFixedVector2::abs() const {
-    return Ref<SGFixedVector2>(memnew(SGFixedVector2(value.abs())));
+    return SGFixedVector2::from_internal(value.abs());
+}
+
+Ref<SGFixedVector2> SGFixedVector2::normalized() const {
+    return SGFixedVector2::from_internal(value.normalized());
+}
+
+int SGFixedVector2::length() const {
+    return value.length().value;
 }
 
 void SGFixedVector2::rotate(int p_rotation) {

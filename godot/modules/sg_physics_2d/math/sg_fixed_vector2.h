@@ -77,6 +77,8 @@ public:
     void idivf(int p_fixed);
 
     Ref<SGFixedVector2> abs() const;
+    Ref<SGFixedVector2> normalized() const;
+    int length() const;
 
     void rotate(int p_rotation);
     Ref<SGFixedVector2> rotated(int p_rotation) const;

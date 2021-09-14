@@ -86,14 +86,36 @@ void fixed_vector2::normalize() {
     // If a fixed value is less than 256, then squaring it can become 0,
     // causing this method to break with small values. Since only direction
     // matters, we can increase the vector's magnitude to avoid this.
-    if (x.abs().value < 256 || y.abs().value < 256) {
-        x.value *= 256;
-        y.value *= 256;
+    fixed x_abs = x.abs();
+    fixed y_abs = y.abs();
+    if ((x.value != 0 && x_abs.value < 256) || (y.value != 0 && y_abs.value < 256)) {
+        // Watch out for values that will overflow even 64 bits.
+        if (x_abs.value >= 11863283) {
+            x = fixed::ONE;
+            y = fixed::ZERO;
+        }
+        else if (y_abs.value >= 11863283) {
+            x = fixed::ZERO;
+            y = fixed::ONE;
+        }
+        else {
+            // We need to use 64-bit math, to avoid big numbers flipping sign,
+            // or overflowing.
+            int64_t x_64 = ((int64_t)x.value) << 8;
+            int64_t y_64 = ((int64_t)y.value) << 8;
+            int64_t l_64 = fix16_sqrt_64(x_64 * x_64 + y_64 * y_64);
+            if (l_64 != 0) {
+                x.value = ((x_64 << 16) / l_64);
+                y.value = ((y_64 << 16) / l_64);
+            }
+        }
     }
-    fixed l = length();
-    if (l != fixed::ZERO) {
-        x /= l;
-        y /= l;
+    else {
+        fixed l = length();
+        if (l != fixed::ZERO) {
+            x /= l;
+            y /= l;
+        }
     }
 }
 
