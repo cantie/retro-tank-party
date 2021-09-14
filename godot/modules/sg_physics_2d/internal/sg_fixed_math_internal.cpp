@@ -90,6 +90,7 @@ void fixed_vector2::normalize() {
     fixed y_abs = y.abs();
     if ((x.value != 0 && x_abs.value < 256) || (y.value != 0 && y_abs.value < 256)) {
         // Watch out for values that will overflow even 64 bits.
+        // 11863283 = sqrt(MAX_SIGNED_64BIT_NUMBER) / 256
         if (x_abs.value >= 11863283) {
             x = fixed::ONE;
             y = fixed::ZERO;
