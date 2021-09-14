@@ -15,6 +15,9 @@ MILESTONE 1 (physics):
          - https://github.com/mapbox/earcut.hpp 
        * Easy to read C library:
          - https://people.sc.fsu.edu/~jburkardt/c_src/polygon_triangulate/polygon_triangulate.html
+     - Good articles on SAT testing:
+	   * https://dyn4j.org/2010/01/sat/#sat-axes 
+	   * https://gamedevelopment.tutsplus.com/tutorials/collision-detection-using-the-separating-axis-theorem--gamedev-169
    o Convert DropCrate and DropCrateSpawnArea
  - Broadphase
  - Ray cast

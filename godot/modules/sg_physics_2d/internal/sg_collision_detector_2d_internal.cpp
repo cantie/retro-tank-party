@@ -51,19 +51,15 @@ Interval SGCollisionDetector2DInternal::get_interval(const fixed_rect2 &aabb, co
 }
 
 Interval SGCollisionDetector2DInternal::get_interval(const SGRectangle2DInternal &rectangle, const fixed_vector2 &axis) {
-    fixed_rect2 bounds = rectangle.get_bounds();
+    fixed_vector2 extents = rectangle.get_extents();
 
-    fixed_vector2 min = bounds.get_min();
-    fixed_vector2 max = bounds.get_max();
-
-    // @todo This isn't quite right, because bounds will already include the scale, which will get double applied in a moment.
     fixed_vector2 verts[] = {
-        fixed_vector2(min.x, min.y), fixed_vector2(max.x, min.y),
-        fixed_vector2(min.x, max.y), fixed_vector2(max.x, max.y),
+        fixed_vector2(-extents.x, -extents.y), fixed_vector2(extents.x, -extents.y),
+        fixed_vector2(-extents.x, extents.y), fixed_vector2(extents.x, extents.y),
     };
 
     for (int i = 0; i < 4; i++) {
-        verts[i] = rectangle.get_global_transform().xform(verts[i] - bounds.position);
+        verts[i] = rectangle.get_global_transform().xform(verts[i]);
     }
 
     // @todo We can reuse the above verts for all the axes.
@@ -84,10 +80,9 @@ Interval SGCollisionDetector2DInternal::get_interval(const SGRectangle2DInternal
 }
 
 Interval SGCollisionDetector2DInternal::get_interval(const SGPolygon2DInternal &polygon, const fixed_vector2 &axis) {
-    fixed_vector2 *verts = new fixed_vector2[polygon.get_points().size()];
-
     const Vector<fixed_vector2> &points = polygon.get_points();
 
+    fixed_vector2 *verts = new fixed_vector2[points.size()];
     for (int i = 0; i < points.size(); i++) {
         verts[i] = polygon.get_global_transform().xform(points[i]);
     }
@@ -392,9 +387,10 @@ bool SGCollisionDetector2DInternal::Polygon_overlaps_Rectangle(const SGPolygon2D
     axes[1] = rt.xform(fixed_vector2(fixed::ZERO, rectangle.get_extents().y)).normalized();
     for (int i = 0; i < points.size(); i++) {
         int next_index = (i == points.size() - 1) ? 0 : i + 1;
-        fixed_vector2 edge = (pt.xform(points[next_index]) - pt.xform(points[i]));
+        //fixed_vector2 edge = pt.xform(points[next_index]) - pt.xform(points[i]);
+        fixed_vector2 edge = pt.xform(points[next_index] - points[i]);
         // Get the vector perpendicular to the edge, which will be the edge normal.
-        axes[i + 2] = fixed_vector2(-edge.y, edge.x).normalized();
+        axes[i + 2] = fixed_vector2(edge.y, -edge.x).normalized();
     }
 
     fixed separation_component;
