@@ -387,7 +387,6 @@ bool SGCollisionDetector2DInternal::Polygon_overlaps_Rectangle(const SGPolygon2D
     axes[1] = rt.xform(fixed_vector2(fixed::ZERO, rectangle.get_extents().y)).normalized();
     for (int i = 0; i < points.size(); i++) {
         int next_index = (i == points.size() - 1) ? 0 : i + 1;
-        //fixed_vector2 edge = pt.xform(points[next_index]) - pt.xform(points[i]);
         fixed_vector2 edge = pt.xform(points[next_index] - points[i]);
         // Get the vector perpendicular to the edge, which will be the edge normal.
         axes[i + 2] = fixed_vector2(edge.y, -edge.x).normalized();
@@ -410,11 +409,11 @@ bool SGCollisionDetector2DInternal::Polygon_overlaps_Rectangle(const SGPolygon2D
         }
     }
     // No axis of separation found, they overlap!
-    delete[] axes;
 
     if (p_info) {
         p_info->separation = best_separation_vector;
     }
 
+    delete[] axes;
     return true;
 }

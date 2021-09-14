@@ -86,7 +86,7 @@ void fixed_vector2::normalize() {
     // If a fixed value is less than 256, then squaring it can become 0,
     // causing this method to break with small values. Since only direction
     // matters, we can increase the vector's magnitude to avoid this.
-    if (x.value < 256 || y.value < 256) {
+    if (x.abs().value < 256 || y.abs().value < 256) {
         x.value *= 256;
         y.value *= 256;
     }
