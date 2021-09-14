@@ -53,16 +53,15 @@ fixed_scale = Object(SGFixedVector2,"x":65536,"y":65536,"script":null)
 fixed_rotation = -51215
 shape = SubResource( 2 )
 
-[node name="Polygon" type="SGCollisionPolygon2D" parent="StaticBody"]
-position = Vector2( -6.10352e-05, 289 )
-fixed_position = Object(SGFixedVector2,"x":-4,"y":18939904,"script":null)
+[node name="SGCollisionPolygon2D" type="SGCollisionPolygon2D" parent="StaticBody"]
+position = Vector2( -105, 234 )
+fixed_position = Object(SGFixedVector2,"x":-6881284,"y":15335424,"script":null)
 
 fixed_scale = Object(SGFixedVector2,"x":65536,"y":65536,"script":null)
 
-fixed_polygon = [ Object(SGFixedVector2,"x":-1703940,"y":-1835008,"script":null)
-, Object(SGFixedVector2,"x":4718588,"y":-3211264,"script":null)
-, Object(SGFixedVector2,"x":5832700,"y":4849664,"script":null)
-, Object(SGFixedVector2,"x":-1179652,"y":7340032,"script":null)
+fixed_polygon = [ Object(SGFixedVector2,"x":-3080192,"y":-2686976,"script":null)
+, Object(SGFixedVector2,"x":6291456,"y":-917504,"script":null)
+, Object(SGFixedVector2,"x":1376256,"y":8257536,"script":null)
  ]
 
 [node name="Character" type="SGKinematicBody2D" parent="."]

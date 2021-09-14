@@ -51,8 +51,10 @@ bool SGKinematicBody2D::move_and_collide(const fixed_vector2 &p_linear_velocity,
         }
     }
     if (stuck) {
+        sync_from_physics_engine();
+
         // We can't really continue. Bail with some sort of reasonable values.
-        p_collision.collider = Object::cast_to<SGCollisionObject2D>((Object *)overlap_info.shape->get_owner()->get_data());
+        p_collision.collider = Object::cast_to<SGCollisionObject2D>((Object *)overlap_info.body->get_data());
         p_collision.normal = fixed_vector2::ZERO;
         p_collision.remainder = p_linear_velocity;
         return true;

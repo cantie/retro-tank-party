@@ -126,6 +126,8 @@ void SGCollisionPolygon2D::update_fixed_polygon() {
 		fixed_polygon[i] = p;
 	}
 
+	update_internal_shape();
+
 	_change_notify("fixed_polygon");
 }
 
@@ -195,7 +197,7 @@ Array SGCollisionPolygon2D::get_fixed_polygon() const {
 }
 
 void SGCollisionPolygon2D::update_internal_shape() const {
-	Vector<fixed_vector2> points = internal_shape->get_points();
+	Vector<fixed_vector2> &points = internal_shape->get_points();
 
 	points.clear();
 	points.resize(fixed_polygon.size());

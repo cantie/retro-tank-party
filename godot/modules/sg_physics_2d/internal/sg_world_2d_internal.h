@@ -42,10 +42,12 @@ class SGWorld2DInternal {
 
 public:
     struct OverlapInfo {
+        SGBody2DInternal *body;
         SGShape2DInternal *shape;
         fixed_vector2 seperation;
 
         OverlapInfo() {
+            body = nullptr;
             shape = nullptr;
         }
     };

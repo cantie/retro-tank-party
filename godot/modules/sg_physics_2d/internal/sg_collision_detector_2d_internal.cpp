@@ -86,15 +86,17 @@ Interval SGCollisionDetector2DInternal::get_interval(const SGRectangle2DInternal
 Interval SGCollisionDetector2DInternal::get_interval(const SGPolygon2DInternal &polygon, const fixed_vector2 &axis) {
     fixed_vector2 *verts = new fixed_vector2[polygon.get_points().size()];
 
-    for (int i = 0; i < polygon.get_points().size(); i++) {
-        verts[i] = polygon.get_global_transform().xform(polygon.get_points()[i]);
+    const Vector<fixed_vector2> &points = polygon.get_points();
+
+    for (int i = 0; i < points.size(); i++) {
+        verts[i] = polygon.get_global_transform().xform(points[i]);
     }
 
     // @todo We can reuse the above verts for all the axes.
 
     Interval result;
     result.min = result.max = axis.dot(verts[0]);
-    for (int i = 1; i < 4; i++) {
+    for (int i = 1; i < points.size(); i++) {
         fixed projection = axis.dot(verts[i]);
         if (projection < result.min) {
             result.min = projection;
@@ -103,6 +105,8 @@ Interval SGCollisionDetector2DInternal::get_interval(const SGPolygon2DInternal &
             result.max = projection;
         }
     }
+
+    delete[] verts;
 
     return result;
 }
@@ -309,7 +313,8 @@ bool SGCollisionDetector2DInternal::Circle_overlaps_Circle(const SGCircle2DInter
     bool overlapping = (line.length_squared_64() <= combined_radius);
 
     if (overlapping && p_info) {
-        p_info->separation = line.normalized() * (line.length() - (circle1.get_radius() + circle2.get_radius()));
+        // Add half to the seperation so we'd move to a non-overlapping state.
+        p_info->separation = line.normalized() * (line.length() - (circle1.get_radius() + circle2.get_radius()) + fixed::HALF);
     }
 
     return overlapping;
@@ -335,7 +340,8 @@ bool SGCollisionDetector2DInternal::Circle_overlaps_AABB(const SGCircle2DInterna
     bool overlapping = (line.length_squared_64() <= radius_squared_64);
 
     if (overlapping && p_info) {
-        p_info->separation = line.normalized() * (radius - line.length());
+        // Add half to the seperation so we'd move to a non-overlapping state.
+        p_info->separation = line.normalized() * (radius - line.length() + fixed::HALF);
     }
 
     return overlapping;
@@ -370,20 +376,25 @@ bool SGCollisionDetector2DInternal::Polygon_overlaps_Circle(const SGPolygon2DInt
 }
 
 bool SGCollisionDetector2DInternal::Polygon_overlaps_Rectangle(const SGPolygon2DInternal &polygon, const SGRectangle2DInternal &rectangle, OverlapInfo *p_info) {
-    fixed_transform2d rt1 = polygon.get_global_transform();
-    rt1.set_origin(fixed_vector2::ZERO);
-    fixed_transform2d rt2 = rectangle.get_global_transform();
-    rt2.set_origin(fixed_vector2::ZERO);
-
     const Vector<fixed_vector2> &points = polygon.get_points();
+    if (points.size() < 3) {
+        return false;
+    }
+
+    fixed_transform2d pt = polygon.get_global_transform();
+    pt.set_origin(fixed_vector2::ZERO);
+    fixed_transform2d rt = rectangle.get_global_transform();
+    rt.set_origin(fixed_vector2::ZERO);
 
     fixed_vector2 *axes = new fixed_vector2[points.size() + 2];
 
-    axes[0] = rt2.xform(fixed_vector2(rectangle.get_extents().x, fixed::ZERO)).normalized();
-    axes[1] = rt2.xform(fixed_vector2(fixed::ZERO, rectangle.get_extents().y)).normalized();
+    axes[0] = rt.xform(fixed_vector2(rectangle.get_extents().x, fixed::ZERO)).normalized();
+    axes[1] = rt.xform(fixed_vector2(fixed::ZERO, rectangle.get_extents().y)).normalized();
     for (int i = 0; i < points.size(); i++) {
         int next_index = (i == points.size() - 1) ? 0 : i + 1;
-        axes[i + 2] = rt1.xform(points[next_index] - points[i]).normalized();
+        fixed_vector2 edge = (pt.xform(points[next_index]) - pt.xform(points[i]));
+        // Get the vector perpendicular to the edge, which will be the edge normal.
+        axes[i + 2] = fixed_vector2(-edge.y, edge.x).normalized();
     }
 
     fixed separation_component;
@@ -398,10 +409,12 @@ bool SGCollisionDetector2DInternal::Polygon_overlaps_Rectangle(const SGPolygon2D
         }
         else {
             // Axis of separation found! They don't overlap.
+            delete[] axes;
             return false;
         }
     }
     // No axis of separation found, they overlap!
+    delete[] axes;
 
     if (p_info) {
         p_info->separation = best_separation_vector;

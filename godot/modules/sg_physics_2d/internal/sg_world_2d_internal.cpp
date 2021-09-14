@@ -114,7 +114,7 @@ bool SGWorld2DInternal::overlaps(SGShape2DInternal *p_shape1, SGShape2DInternal 
 
     if (overlapping && p_info) {
         // Make sure the info is from the perspective of the first shape.
-        p_info->shape = swap ? p_shape1 : p_shape2;
+        p_info->shape = p_shape2;
         p_info->seperation = swap ? -overlap_info.separation : overlap_info.separation;
     }
 
@@ -135,6 +135,7 @@ bool SGWorld2DInternal::get_best_overlapping_body(SGCollisionObject2DInternal *p
         if (overlaps(p_object, other, p_info)) {
             // @todo We should return the info for the collision with the deepest penetration.
             // For now, just return the info for the first overlapping shape.
+            p_info->body = other;
             return true;
         }
     }

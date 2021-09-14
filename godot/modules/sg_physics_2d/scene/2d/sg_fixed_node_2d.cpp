@@ -71,8 +71,8 @@ void SGFixedNode2D::_changed_callback(Object *p_changed, const char *p_prop) {
             set_fixed_rotation(fixed_rotation);
         }
         else if (strcmp(p_prop, "transform") == 0) {
-            fixed_transform->from_float(get_transform());
-            set_fixed_transform(fixed_transform);
+            //fixed_transform->from_float(get_transform());
+            //set_fixed_transform(fixed_transform);
         }
     }
 }
@@ -86,13 +86,16 @@ fixed_transform2d SGFixedNode2D::get_global_fixed_transform_internal() const {
 }
 
 void SGFixedNode2D::update_fixed_transform_internal(const fixed_transform2d &p_transform) {
+    updating_transform = true;
     fixed_transform->set_internal(p_transform);
     fixed_position->set_internal(p_transform.get_origin());
     fixed_scale->set_internal(p_transform.get_scale());
     fixed_rotation = p_transform.get_rotation().value;
+    set_transform(fixed_transform->to_float());
     _change_notify("fixed_position");
     _change_notify("fixed_scale");
     _change_notify("fixed_rotation");
+    updating_transform = false;
 }
 
 void SGFixedNode2D::update_global_fixed_transform_internal(const fixed_transform2d &p_global_transform) {
@@ -115,15 +118,21 @@ void SGFixedNode2D::_set_fixed_position(const fixed_vector2 &p_fixed_position) {
 }
 
 void SGFixedNode2D::_fixed_transform_changed() {
-    set_fixed_transform(fixed_transform);
+    if (!updating_transform) {
+        set_fixed_transform(fixed_transform);
+    }
 }
 
 void SGFixedNode2D::_fixed_position_changed() {
-    set_fixed_position(fixed_position);
+    if (!updating_transform) {
+        set_fixed_position(fixed_position);
+    }
 }
 
 void SGFixedNode2D::_fixed_scale_changed() {
-    set_fixed_scale(fixed_scale);
+    if (!updating_transform) {
+        set_fixed_scale(fixed_scale);
+    }
 }
 
 void SGFixedNode2D::set_fixed_transform(const Ref<SGFixedTransform2D> &p_fixed_transform) {

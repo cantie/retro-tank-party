@@ -3,7 +3,6 @@ TODO
 
 MILESTONE 1 (physics):
 
- - Fix issue with dragging CollisionShape2D's in the editor
  - Refactor SGCollisionDetector2DInternal to be less repetitious
  - Attempt to put in game
    o Maybe implement polygons?
