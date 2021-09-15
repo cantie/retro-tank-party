@@ -5,7 +5,6 @@ MILESTONE 1 (physics):
 
  - Attempt to put in game
    o Implement polygons
-	 - Polygon-Polygon collision
 	 - Check if polygon is convex (and give warning and prevent creating shape)
 	 - Polygon-Circle collision:
 	   * https://www.reddit.com/r/gamedev/comments/xtry1/circlepolygon_collison_using_sat/

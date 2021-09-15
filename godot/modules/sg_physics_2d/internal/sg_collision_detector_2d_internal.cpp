@@ -179,7 +179,28 @@ bool SGCollisionDetector2DInternal::Circle_overlaps_Rectangle(const SGCircle2DIn
 }
 
 bool SGCollisionDetector2DInternal::Polygon_overlaps_Polygon(const SGPolygon2DInternal &polygon1, const SGPolygon2DInternal &polygon2, OverlapInfo *p_info) {
-    return false;
+    if (polygon1.get_points().size() < 3) {
+        return false;
+    }
+    if (polygon2.get_points().size() < 3) {
+        return false;
+    }
+
+    fixed_vector2 best_separation_vector;
+
+    if (!sat_test(polygon1, polygon2, polygon1.get_global_axes(), best_separation_vector)) {
+        return false;
+    }
+
+    if (!sat_test(polygon1, polygon2, polygon2.get_global_axes(), best_separation_vector)) {
+        return false;
+    }
+
+    if (p_info) {
+        p_info->separation = best_separation_vector;
+    }
+
+    return true;
 }
 
 bool SGCollisionDetector2DInternal::Polygon_overlaps_Circle(const SGPolygon2DInternal &polygon, const SGCircle2DInternal &circle, OverlapInfo *p_info) {
