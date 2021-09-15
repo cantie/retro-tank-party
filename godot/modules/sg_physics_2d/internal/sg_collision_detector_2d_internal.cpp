@@ -204,7 +204,43 @@ bool SGCollisionDetector2DInternal::Polygon_overlaps_Polygon(const SGPolygon2DIn
 }
 
 bool SGCollisionDetector2DInternal::Polygon_overlaps_Circle(const SGPolygon2DInternal &polygon, const SGCircle2DInternal &circle, OverlapInfo *p_info) {
-    return false;
+    if (polygon.get_points().size() < 3) {
+        return false;
+    }
+
+    fixed_vector2 best_separation_vector;
+
+    // First, we see if the circle has any seperation from the polygon's axes.
+    if (!sat_test(polygon, circle, polygon.get_global_axes(), best_separation_vector)) {
+        return false;
+    }
+
+    Vector<fixed_vector2> vertices = polygon.get_points();
+    fixed_transform2d ct = circle.get_global_transform();
+    fixed_vector2 closest_vertex = vertices[0];
+    fixed closest_distance = (ct.get_origin() - vertices[0]).length();
+
+    // Next, we need to find the axis to check for the circle (it's a vector
+    // from the closest vertex to the circle center).
+    for (int i = 1; i < vertices.size(); i++) {
+        fixed distance = (ct.get_origin() - vertices[i]).length();
+        if (distance < closest_distance) {
+            closest_distance = distance;
+            closest_vertex = vertices[i];
+        }
+    }
+
+    Vector<fixed_vector2> circle_axes;
+    circle_axes.push_back((ct.get_origin() - closest_vertex).normalized());
+    if (!sat_test(polygon, circle, circle_axes, best_separation_vector)) {
+        return false;
+    }
+
+    if (p_info) {
+        p_info->separation = best_separation_vector;
+    }
+
+    return true;
 }
 
 bool SGCollisionDetector2DInternal::Polygon_overlaps_Rectangle(const SGPolygon2DInternal &polygon, const SGRectangle2DInternal &rectangle, OverlapInfo *p_info) {
