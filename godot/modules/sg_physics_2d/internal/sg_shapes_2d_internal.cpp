@@ -76,23 +76,6 @@ Vector<fixed_vector2> SGRectangle2DInternal::get_global_axes() const {
     return global_axes;
 }
 
-Vector<fixed_vector2> SGCircle2DInternal::get_global_vertices() const {
-    if (global_vertices.size() == 0) {
-        fixed_transform2d t = get_global_transform();
-        t.set_rotation(fixed::ZERO);
-
-        // For the purposes of projection in a SAT test, we make the circle
-        // into a square.
-        global_vertices.resize(4);
-        global_vertices.write[0] = t.xform(fixed_vector2(-radius, -radius));
-        global_vertices.write[1] = t.xform(fixed_vector2(radius, -radius));
-        global_vertices.write[2] = t.xform(fixed_vector2(-radius, radius));
-        global_vertices.write[3] = t.xform(fixed_vector2(radius, radius));
-    }
-
-    return global_vertices;
-}
-
 Vector<fixed_vector2> SGPolygon2DInternal::get_global_vertices() const {
     if (global_vertices.size() == 0 && points.size() > 0) {
         fixed_transform2d t = get_global_transform();

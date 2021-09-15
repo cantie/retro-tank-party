@@ -116,8 +116,6 @@ public:
     _FORCE_INLINE_ fixed get_radius() const { return radius; }
     _FORCE_INLINE_ void set_radius(const fixed &p_radius) { radius = p_radius; }
 
-    virtual Vector<fixed_vector2> get_global_vertices() const override;
-
     SGCircle2DInternal(fixed p_radius)
         : SGShape2DInternal(SHAPE_CIRCLE)
     {

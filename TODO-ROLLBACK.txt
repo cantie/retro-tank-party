@@ -9,6 +9,7 @@ MILESTONE 1 (physics):
 	   * https://www.reddit.com/r/gamedev/comments/xtry1/circlepolygon_collison_using_sat/
 	   * https://stackoverflow.com/questions/62432809/sat-polygon-circle-collision-resolve-the-intersection-in-the-direction-of-velo
 	   * https://www.gamedevelopment.blog/collision-detection-circles-rectangles-and-polygons/
+	   * https://www.sevenson.com.au/programming/sat/
    o Convert DropCrate and DropCrateSpawnArea
  - Broadphase
  - Ray cast
