@@ -67,13 +67,13 @@ void SGCollisionPolygon2D::_notification(int p_what) {
         
         case NOTIFICATION_PARENTED:
             collision_object = Object::cast_to<SGCollisionObject2D>(get_parent());
-            if (collision_object && !disabled) {
+            if (collision_object && !disabled && !concave) {
                 collision_object->add_shape(internal_shape);
             }
             break;
         
         case NOTIFICATION_UNPARENTED:
-            if (collision_object && !disabled) {
+            if (collision_object && !disabled && !concave) {
                 collision_object->remove_shape(internal_shape);
             }
             collision_object = nullptr;
@@ -126,9 +126,136 @@ void SGCollisionPolygon2D::update_fixed_polygon() {
 		fixed_polygon[i] = p;
 	}
 
+	check_concave();
 	update_internal_shape();
 
 	_change_notify("fixed_polygon");
+}
+
+void SGCollisionPolygon2D::check_concave() {
+	bool was_concave = concave;
+
+	concave = !is_convex(fixed_polygon);
+
+	// Add or remove the shape if our "convex-ness" has changed.
+	if (concave != was_concave) {
+		if (collision_object && !disabled) {
+			if (concave) {
+				collision_object->remove_shape(internal_shape);
+			}
+			else {
+				collision_object->add_shape(internal_shape);
+			}
+		}
+		update_configuration_warning();
+	}
+}
+
+bool SGCollisionPolygon2D::is_convex(const Array &p_vertices) {
+	if (p_vertices.size() < 3) {
+		return false;
+	}
+
+	// This algorithm is based on this answer on StackExchange:
+	//   https://math.stackexchange.com/a/1745427
+
+	fixed w_sign = fixed::ZERO;
+
+	int x_sign = 0;
+	int x_first_sign = 0;
+	int x_flips = 0;
+	
+	int y_sign = 0;
+	int y_first_sign = 0;
+	int y_flips = 0;
+
+	Ref<SGFixedVector2> prev;
+	Ref<SGFixedVector2> cur = p_vertices.get(p_vertices.size() - 2);
+	Ref<SGFixedVector2> next = p_vertices.get(p_vertices.size() - 1);
+
+	for (int i = 0; i < p_vertices.size(); i++) {
+		prev = cur;
+		cur = next;
+		next = p_vertices.get(i);
+
+		fixed_vector2 previous_edge = cur->get_internal() - prev->get_internal();
+		fixed_vector2 next_edge = next->get_internal() - cur->get_internal();
+
+		if (next_edge.x > fixed::ZERO) {
+			if (x_sign == 0) {
+				x_first_sign = +1;
+			}
+			else if (x_sign < 0) {
+				x_flips++;
+			}
+			x_sign = +1;
+		}
+		else if (next_edge.x < fixed::ZERO) {
+			if (x_sign == 0) {
+				x_first_sign = -1;
+			}
+			else if (x_sign > 0) {
+				x_flips++;
+			}
+			x_sign = -1;
+		}
+
+		if (x_flips > 2) {
+			return false;
+		}
+
+		if (next_edge.y > fixed::ZERO) {
+			if (y_sign == 0) {
+				y_first_sign = +1;
+			}
+			else if (y_sign < 0) {
+				y_flips++;
+			}
+			y_sign = +1;
+		}
+		else if (next_edge.y < fixed::ZERO) {
+			if (y_sign == 0) {
+				y_first_sign = -1;
+			}
+			else if (y_sign > 0) {
+				y_flips++;
+			}
+			y_sign = -1;
+		}
+
+		if (y_flips > 2) {
+			return false;
+		}
+
+		// Find out the orientation of this pair of edges and ensure it doesn't
+		// differ from previous ones.
+		fixed w = previous_edge.x * next_edge.y - next_edge.x * previous_edge.y;
+		if (w_sign == fixed::ZERO && w != fixed::ZERO) {
+			w_sign = w;
+		}
+		else if (w_sign > fixed::ZERO && w < fixed::ZERO) {
+			return false;
+		}
+		else if (w_sign < fixed::ZERO && w > fixed::ZERO) {
+			return false;
+		}
+	}
+
+	// Final wrap-around sign flips.
+	if (x_sign != 0 && x_first_sign != 0 && x_sign != x_first_sign) {
+		x_flips++;
+	}
+	if (y_sign != 0 && y_first_sign != 0 && y_sign != y_first_sign) {
+		y_flips++;
+	}
+
+	// Convex polygons have two sign flips along each axis.
+	if (x_flips != 2 || y_flips != 2) {
+		return false;
+	}
+
+	// We've passed all the tests!
+	return true;
 }
 
 #ifdef TOOLS_ENABLED
@@ -148,7 +275,7 @@ bool SGCollisionPolygon2D::_edit_is_selected_on_click(const Point2 &p_point, dou
 void SGCollisionPolygon2D::set_disabled(bool p_disabled) {
     if (disabled != p_disabled) {
         disabled = p_disabled;
-        if (collision_object) {
+        if (collision_object && !concave) {
             if (disabled) {
                 collision_object->remove_shape(internal_shape);
             }
@@ -169,7 +296,6 @@ void SGCollisionPolygon2D::set_polygon(const Vector<Point2> &p_polygon) {
 	update_aabb();
 
 	update();
-	update_configuration_warning();
 }
 
 Vector<Point2> SGCollisionPolygon2D::get_polygon() const {
@@ -189,6 +315,7 @@ void SGCollisionPolygon2D::set_fixed_polygon(const Array &p_fixed_polygon) {
 		update_polygon();
 	}
 
+	check_concave();
 	update_internal_shape();
 }
 
@@ -211,24 +338,34 @@ void SGCollisionPolygon2D::update_internal_shape() const {
 }
 
 void SGCollisionPolygon2D::sync_to_physics_engine() const {
-    if (!disabled) {
+    if (!disabled && !concave) {
         internal_shape->set_transform(get_fixed_transform_internal());
     }
 }
 
 String SGCollisionPolygon2D::get_configuration_warning() const {
-	return "";
+	String warning = SGFixedNode2D::get_configuration_warning();
+
+	if (fixed_polygon.size() < 3) {
+		warning += TTR("Need a polygon with 3 or more points.");
+	}
+	else if (concave) {
+		warning += TTR("This polygon is concave. Only convex polygons are supported.");
+	}
+
+	return warning;
 }
 
 SGCollisionPolygon2D::SGCollisionPolygon2D() {
 	aabb = Rect2(-10, -10, 20, 20);
     disabled = false;
+	concave = false;
     collision_object = nullptr;
 	internal_shape = memnew(SGPolygon2DInternal);
 }
 
 SGCollisionPolygon2D::~SGCollisionPolygon2D() {
-    if (collision_object && !disabled) {
+    if (collision_object && !disabled && !concave) {
         collision_object->remove_shape(internal_shape);
     }
 	memdelete(internal_shape);

@@ -40,6 +40,7 @@ protected:
 	Array fixed_polygon;
 	SGPolygon2DInternal *internal_shape;
 	bool disabled;
+	bool concave;
 
 protected:
 	static void _bind_methods();
@@ -48,6 +49,10 @@ protected:
 	void update_polygon() const;
 	void update_aabb() const;
 	void update_fixed_polygon();
+
+	void check_concave();
+
+	static bool is_convex(const Array &p_vertices);
 
 public:
 #ifdef TOOLS_ENABLED
