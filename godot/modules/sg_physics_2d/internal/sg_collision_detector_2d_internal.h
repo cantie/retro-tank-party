@@ -43,12 +43,22 @@ public:
         fixed_vector2 separation;
     };
 
+    static bool AABB_overlaps_AABB(const fixed_rect2 &aabb1, const fixed_rect2 &aabb2);
+
+    //
+    // SAT testing utilities
+    //
+
     static Interval get_interval(const fixed_rect2 &aabb, const fixed_vector2 &axis);
     static Interval get_interval(const SGShape2DInternal &shape, const fixed_vector2 &axis);
 
     static bool overlaps_on_axis(const SGShape2DInternal &shape1, const SGShape2DInternal &shape2, const fixed_vector2 &axis, fixed &separation);
+    static bool sat_test(const SGShape2DInternal &shape1, const SGShape2DInternal &shape2, const Vector<fixed_vector2> &axes, fixed_vector2 &best_separation_vector);
 
-    static bool AABB_overlaps_AABB(const fixed_rect2 &aabb1, const fixed_rect2 &aabb2, OverlapInfo *p_info = nullptr);
+    //
+    // Rectangles
+    //
+
     static bool Rectangle_overlaps_Rectangle(const SGRectangle2DInternal &rectangle1, const SGRectangle2DInternal &rectangle2, OverlapInfo *p_info = nullptr);
 
     //
@@ -70,4 +80,3 @@ public:
 };
 
 #endif
-

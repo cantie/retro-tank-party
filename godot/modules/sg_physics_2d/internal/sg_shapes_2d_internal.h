@@ -48,10 +48,12 @@ protected:
     mutable bool global_xform_dirty;
     SGCollisionObject2DInternal *owner;
     mutable Vector<fixed_vector2> global_vertices;
+    mutable Vector<fixed_vector2> global_axes;
 
     _FORCE_INLINE_ void mark_global_xform_dirty() const {
         global_xform_dirty = true;
         global_vertices.clear();
+        global_axes.clear();
     }
 
     _FORCE_INLINE_ void set_owner(SGCollisionObject2DInternal *p_owner) {
@@ -72,6 +74,7 @@ public:
     _FORCE_INLINE_ SGCollisionObject2DInternal *get_owner() const { return owner; }
 
     virtual Vector<fixed_vector2> get_global_vertices() const;
+    virtual Vector<fixed_vector2> get_global_axes() const;
 
     SGShape2DInternal(ShapeType p_shape_type) {
         shape_type = p_shape_type;
@@ -93,6 +96,7 @@ public:
     fixed_rect2 get_bounds() const;
 
     virtual Vector<fixed_vector2> get_global_vertices() const override;
+    virtual Vector<fixed_vector2> get_global_axes() const override;
 
     SGRectangle2DInternal(fixed_vector2 p_extents) 
         : SGShape2DInternal(SHAPE_RECTANGLE) 
@@ -127,10 +131,15 @@ protected:
     Vector<fixed_vector2> points;
 
 public:
-    _FORCE_INLINE_ const Vector<fixed_vector2> &get_points() const { return points; } 
-    _FORCE_INLINE_ Vector<fixed_vector2> &get_points() { return points; } 
+    _FORCE_INLINE_ Vector<fixed_vector2> get_points() const { return points; } 
+    _FORCE_INLINE_ void set_points(const Vector<fixed_vector2> &p_points) {
+        points = p_points;
+        global_vertices.clear();
+        global_axes.clear();
+    }
 
     virtual Vector<fixed_vector2> get_global_vertices() const override;
+    virtual Vector<fixed_vector2> get_global_axes() const override;
 
     SGPolygon2DInternal() : SGShape2DInternal(SHAPE_POLYGON) { }
 };

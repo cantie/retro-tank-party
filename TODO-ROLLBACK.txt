@@ -3,21 +3,10 @@ TODO
 
 MILESTONE 1 (physics):
 
- - Refactor SGCollisionDetector2DInternal to be less repetitious
  - Attempt to put in game
-   o Maybe implement polygons?
-     - Convex polygons are easy and straight forward (maybe just start here and bail if non-convex?)
-     - Convert Concave polygons to a set of convex via triangulation?
-       * https://stackoverflow.com/questions/5247994/simple-2d-polygon-triangulation
-       * http://gamma.cs.unc.edu/SEIDEL/
-       * https://en.wikipedia.org/wiki/Polygon_triangulation
-       * Header only library:
-         - https://github.com/mapbox/earcut.hpp 
-       * Easy to read C library:
-         - https://people.sc.fsu.edu/~jburkardt/c_src/polygon_triangulate/polygon_triangulate.html
-     - Good articles on SAT testing:
-	   * https://dyn4j.org/2010/01/sat/#sat-axes 
-	   * https://gamedevelopment.tutsplus.com/tutorials/collision-detection-using-the-separating-axis-theorem--gamedev-169
+   o Implement polygons
+	 - Polygon-Polygon collision
+	 - Check if polygon is convex (and give warning and prevent creating shape)
 	 - Polygon-Circle collision:
 	   * https://www.reddit.com/r/gamedev/comments/xtry1/circlepolygon_collison_using_sat/
 	   * https://stackoverflow.com/questions/62432809/sat-polygon-circle-collision-resolve-the-intersection-in-the-direction-of-velo
@@ -62,4 +51,12 @@ BACKLOG:
 
  - Solve problems packet loss
    o Dig deeper into WebRTC and try to see where things are going awry!
+ - Convert concave polygons to a set of convex via triangulation?
+   * https://stackoverflow.com/questions/5247994/simple-2d-polygon-triangulation
+   * http://gamma.cs.unc.edu/SEIDEL/
+   * https://en.wikipedia.org/wiki/Polygon_triangulation
+   * Header only library:
+	 - https://github.com/mapbox/earcut.hpp 
+   * Easy to read C library:
+	 - https://people.sc.fsu.edu/~jburkardt/c_src/polygon_triangulate/polygon_triangulate.html
 

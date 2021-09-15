@@ -101,7 +101,7 @@ void SGFixedNode2D::update_fixed_transform_internal(const fixed_transform2d &p_t
 void SGFixedNode2D::update_global_fixed_transform_internal(const fixed_transform2d &p_global_transform) {
     SGFixedNode2D *fixed_parent = Object::cast_to<SGFixedNode2D>(get_parent());
     if (fixed_parent) {
-        update_fixed_transform_internal(fixed_parent->get_global_fixed_transform_internal().inverse() * p_global_transform);
+        update_fixed_transform_internal(fixed_parent->get_global_fixed_transform_internal().affine_inverse() * p_global_transform);
     }
     else {
         update_fixed_transform_internal(p_global_transform);

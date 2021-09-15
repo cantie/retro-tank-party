@@ -197,9 +197,7 @@ Array SGCollisionPolygon2D::get_fixed_polygon() const {
 }
 
 void SGCollisionPolygon2D::update_internal_shape() const {
-	Vector<fixed_vector2> &points = internal_shape->get_points();
-
-	points.clear();
+	Vector<fixed_vector2> points;
 	points.resize(fixed_polygon.size());
 
 	for (int i = 0; i < fixed_polygon.size(); i++) {
@@ -208,6 +206,8 @@ void SGCollisionPolygon2D::update_internal_shape() const {
 			points.write[i] = point->get_internal();
 		}
 	}
+
+	internal_shape->set_points(points);
 }
 
 void SGCollisionPolygon2D::sync_to_physics_engine() const {

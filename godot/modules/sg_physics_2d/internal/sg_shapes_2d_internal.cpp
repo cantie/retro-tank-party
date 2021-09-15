@@ -40,6 +40,10 @@ Vector<fixed_vector2> SGShape2DInternal::get_global_vertices() const {
     return global_vertices;
 }
 
+Vector<fixed_vector2> SGShape2DInternal::get_global_axes() const {
+    return global_axes;
+}
+
 fixed_rect2 SGRectangle2DInternal::get_bounds() const {
     fixed_transform2d t = get_global_transform();
     return fixed_rect2(t.get_origin(), extents * t.get_scale());
@@ -57,6 +61,19 @@ Vector<fixed_vector2> SGRectangle2DInternal::get_global_vertices() const {
     }
 
     return global_vertices;
+}
+
+Vector<fixed_vector2> SGRectangle2DInternal::get_global_axes() const {
+    if (global_axes.size() == 0) {
+        fixed_transform2d t = get_global_transform();
+        t.set_origin(fixed_vector2::ZERO);
+
+        global_axes.resize(2);
+        global_axes.write[0] = t.xform(fixed_vector2(extents.x, fixed::ZERO)).normalized();
+        global_axes.write[1] = t.xform(fixed_vector2(fixed::ZERO, extents.y)).normalized();
+    }
+
+    return global_axes;
 }
 
 Vector<fixed_vector2> SGCircle2DInternal::get_global_vertices() const {
@@ -81,4 +98,21 @@ Vector<fixed_vector2> SGPolygon2DInternal::get_global_vertices() const {
     }
 
     return global_vertices;
+}
+
+Vector<fixed_vector2> SGPolygon2DInternal::get_global_axes() const {
+    if (global_axes.size() == 0) {
+        fixed_transform2d t = get_global_transform();
+        t.set_origin(fixed_vector2::ZERO);
+
+        global_axes.resize(points.size());
+        for (int i = 0; i < points.size(); i++) {
+            int next_index = (i == points.size() - 1) ? 0 : i + 1;
+            fixed_vector2 edge = t.xform(points[next_index] - points[i]);
+            // Get the vector perpendicular to the edge, which will be the edge normal.
+            global_axes.write[i] = fixed_vector2(edge.y, -edge.x).normalized();
+        }
+    }
+
+    return global_axes;
 }
