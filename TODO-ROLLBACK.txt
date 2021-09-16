@@ -6,8 +6,6 @@ MILESTONE 1 (physics):
  - Attempt to put in game
    o Convert DropCrate and DropCrateSpawnArea
    o ... what next?
- - Have SGArea2D directly build its Array to avoid allocating the intermediate vector
-   o OR, pass in a function pointer and use that to build the Array
  - Broadphase
  - Ray cast
    o https://stackoverflow.com/questions/1073336/circle-line-segment-collision-detection-algorithm
@@ -59,4 +57,6 @@ BACKLOG:
 	 - https://github.com/mapbox/earcut.hpp 
    * Easy to read C library:
 	 - https://people.sc.fsu.edu/~jburkardt/c_src/polygon_triangulate/polygon_triangulate.html
+ - Have SGArea2D directly build its Array to avoid allocating the intermediate vector
+   o OR, pass in a function pointer and use that to build the Array
 
