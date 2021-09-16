@@ -231,10 +231,10 @@ bool SGCollisionDetector2DInternal::Polygon_overlaps_Circle(const SGPolygon2DInt
     Vector<fixed_vector2> vertices = polygon.get_global_vertices();
     fixed_transform2d ct = circle.get_global_transform();
     fixed_vector2 closest_vertex = vertices[0];
-    fixed closest_distance = (ct.get_origin() - vertices[0]).length();
+    int64_t closest_distance = (ct.get_origin() - vertices[0]).length_squared_64();
 
     for (int i = 1; i < vertices.size(); i++) {
-        fixed distance = (ct.get_origin() - vertices[i]).length();
+        int64_t distance = (ct.get_origin() - vertices[i]).length_squared_64();
         if (distance < closest_distance) {
             closest_distance = distance;
             closest_vertex = vertices[i];
@@ -245,6 +245,10 @@ bool SGCollisionDetector2DInternal::Polygon_overlaps_Circle(const SGPolygon2DInt
     circle_axes.push_back((ct.get_origin() - closest_vertex).normalized());
     if (!sat_test(polygon, circle, circle_axes, best_separation_vector)) {
         return false;
+    }
+
+    if (p_info) {
+        p_info->separation = best_separation_vector;
     }
 
     return true;

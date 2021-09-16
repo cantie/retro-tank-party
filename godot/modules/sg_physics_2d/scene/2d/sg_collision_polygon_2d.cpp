@@ -33,8 +33,12 @@ void SGCollisionPolygon2D::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("set_fixed_polygon", "polygon"), &SGCollisionPolygon2D::set_fixed_polygon);
 	ClassDB::bind_method(D_METHOD("get_fixed_polygon"), &SGCollisionPolygon2D::get_fixed_polygon);
 
+	ClassDB::bind_method(D_METHOD("set_disabled", "disabled"), &SGCollisionPolygon2D::set_disabled);
+	ClassDB::bind_method(D_METHOD("get_disabled"), &SGCollisionPolygon2D::get_disabled);
+
 	ADD_PROPERTY(PropertyInfo(Variant::POOL_VECTOR2_ARRAY, "polygon", PROPERTY_HINT_NONE, "", 0), "set_polygon", "get_polygon");
 	ADD_PROPERTY(PropertyInfo(Variant::ARRAY, "fixed_polygon"), "set_fixed_polygon", "get_fixed_polygon");
+	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "disabled"), "set_disabled", "get_disabled");
 }
 
 void SGCollisionPolygon2D::_notification(int p_what) {
@@ -128,6 +132,7 @@ void SGCollisionPolygon2D::update_fixed_polygon() {
 
 	check_concave();
 	update_internal_shape();
+	update_configuration_warning();
 
 	_change_notify("fixed_polygon");
 }
@@ -147,7 +152,6 @@ void SGCollisionPolygon2D::check_concave() {
 				collision_object->add_shape(internal_shape);
 			}
 		}
-		update_configuration_warning();
 	}
 }
 
@@ -317,6 +321,7 @@ void SGCollisionPolygon2D::set_fixed_polygon(const Array &p_fixed_polygon) {
 
 	check_concave();
 	update_internal_shape();
+	update_configuration_warning();
 }
 
 Array SGCollisionPolygon2D::get_fixed_polygon() const {

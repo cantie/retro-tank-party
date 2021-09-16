@@ -31,9 +31,13 @@ void SGCollisionShape2D::_bind_methods() {
     ClassDB::bind_method(D_METHOD("set_shape", "shape"), &SGCollisionShape2D::set_shape);
 	ClassDB::bind_method(D_METHOD("get_shape"), &SGCollisionShape2D::get_shape);
 
-	ClassDB::bind_method(D_METHOD("_shape_changed"), &SGCollisionShape2D::_shape_changed);
+    ClassDB::bind_method(D_METHOD("set_disabled", "disabled"), &SGCollisionShape2D::set_disabled);
+	ClassDB::bind_method(D_METHOD("get_disabled"), &SGCollisionShape2D::get_disabled);
 
     ADD_PROPERTY(PropertyInfo(Variant::OBJECT, "shape", PROPERTY_HINT_RESOURCE_TYPE, "SGShape2D"), "set_shape", "get_shape");
+    ADD_PROPERTY(PropertyInfo(Variant::BOOL, "disabled"), "set_disabled", "get_disabled");
+
+	ClassDB::bind_method(D_METHOD("_shape_changed"), &SGCollisionShape2D::_shape_changed);
 }
 
 void SGCollisionShape2D::_notification(int p_what) {

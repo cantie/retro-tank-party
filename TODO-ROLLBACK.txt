@@ -4,13 +4,10 @@ TODO
 MILESTONE 1 (physics):
 
  - Attempt to put in game
-   o Implement polygons
-	 - Polygon-Circle collision:
-	   * https://www.reddit.com/r/gamedev/comments/xtry1/circlepolygon_collison_using_sat/
-	   * https://stackoverflow.com/questions/62432809/sat-polygon-circle-collision-resolve-the-intersection-in-the-direction-of-velo
-	   * https://www.gamedevelopment.blog/collision-detection-circles-rectangles-and-polygons/
-	   * https://www.sevenson.com.au/programming/sat/
    o Convert DropCrate and DropCrateSpawnArea
+   o ... what next?
+ - Have SGArea2D directly build its Array to avoid allocating the intermediate vector
+   o OR, pass in a function pointer and use that to build the Array
  - Broadphase
  - Ray cast
  - Unit tests!
@@ -19,7 +16,7 @@ MILESTONE 1 (physics):
    o Break all classes up into their own files?
    o Change the SGFixedVector math functions to take a Variant (so we don't need vector and fixed versions of each method)
    o Rename the fixed_* classes to be camel case?
-   o Port over more of Vector2's methods?
+   o Port over more (all?) of Vector2's methods?
 
 MILESTOE 2 (finish porting all the things):
 
