@@ -10,6 +10,9 @@ MILESTONE 1 (physics):
    o OR, pass in a function pointer and use that to build the Array
  - Broadphase
  - Ray cast
+   o https://stackoverflow.com/questions/1073336/circle-line-segment-collision-detection-algorithm
+   o http://csharphelper.com/blog/2014/09/determine-where-a-line-intersects-a-circle-in-c/
+   o https://stackoverflow.com/questions/30844482/what-is-most-efficient-way-to-find-the-intersection-of-a-line-and-a-circle-in-py
  - Unit tests!
    o Reintroduce the physics server to allow testing in GDScript?
  - Code clean-up

@@ -185,6 +185,10 @@ List<SGBody2DInternal *> *SGWorld2DInternal::get_overlapping_bodies(SGCollisionO
     return ret;
 }
 
+bool SGWorld2DInternal::cast_ray(const fixed_vector2 &start, const fixed_vector2 &end, uint32_t collision_mask, RayCastInfo *p_info) const {
+    return false;
+}
+
 SGWorld2DInternal::SGWorld2DInternal()
 {
     singleton = this;

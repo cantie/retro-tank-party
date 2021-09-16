@@ -52,6 +52,16 @@ public:
         }
     };
 
+    struct RayCastInfo {
+        SGBody2DInternal *body;
+        fixed_vector2 collision_point;
+        fixed_vector2 collision_normal;
+
+        RayCastInfo() {
+            body = nullptr;
+        }
+    };
+
     static SGWorld2DInternal *get_singleton();
 
     _FORCE_INLINE_ const List<SGBody2DInternal *> &get_bodies() const { return bodies; }
@@ -71,6 +81,8 @@ public:
 
     List<SGArea2DInternal *> *get_overlapping_areas(SGCollisionObject2DInternal *p_object) const;
     List<SGBody2DInternal *> *get_overlapping_bodies(SGCollisionObject2DInternal *p_object) const;
+
+    bool cast_ray(const fixed_vector2 &start, const fixed_vector2 &end, uint32_t collision_mask, RayCastInfo *p_info = nullptr) const;
 
     SGWorld2DInternal();
     ~SGWorld2DInternal();

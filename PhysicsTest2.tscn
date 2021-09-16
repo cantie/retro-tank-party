@@ -1,4 +1,4 @@
-[gd_scene load_steps=7 format=2]
+[gd_scene load_steps=6 format=2]
 
 [ext_resource path="res://PhysicsTest2.gd" type="Script" id=1]
 [ext_resource path="res://src/objects/cover/TreeBig.tscn" type="PackedScene" id=2]
@@ -10,10 +10,6 @@ extents = Object(SGFixedVector2,"x":3276800,"y":3276800,"script":null)
 
 [sub_resource type="SGCircleShape2D" id=2]
 radius = 3635322
-
-[sub_resource type="SGRectangleShape2D" id=3]
-extents = Object(SGFixedVector2,"x":1310720,"y":1638412,"script":null)
-
 
 [node name="PhysicsTest2" type="Node2D"]
 script = ExtResource( 1 )
@@ -81,51 +77,6 @@ collision_mask = 0
 rotation = 1.5708
 texture = ExtResource( 3 )
 
-[node name="FrontPoly1" type="SGCollisionPolygon2D" parent="Character"]
-fixed_position = Object(SGFixedVector2,"x":0,"y":0,"script":null)
-
-fixed_scale = Object(SGFixedVector2,"x":65536,"y":65536,"script":null)
-
-fixed_polygon = [ Object(SGFixedVector2,"x":1376240,"y":-1179664,"script":null)
-, Object(SGFixedVector2,"x":1507314,"y":-1048592,"script":null)
-, Object(SGFixedVector2,"x":1507336,"y":1048560,"script":null)
-, Object(SGFixedVector2,"x":1376266,"y":1114096,"script":null)
- ]
-disabled = true
-
-[node name="FrontPoly2" type="SGCollisionPolygon2D" parent="Character"]
-fixed_position = Object(SGFixedVector2,"x":0,"y":0,"script":null)
-
-fixed_scale = Object(SGFixedVector2,"x":65536,"y":65536,"script":null)
-
-fixed_polygon = [ Object(SGFixedVector2,"x":1114092,"y":-1572876,"script":null)
-, Object(SGFixedVector2,"x":1376240,"y":-1179664,"script":null)
-, Object(SGFixedVector2,"x":1376266,"y":1114096,"script":null)
-, Object(SGFixedVector2,"x":1114126,"y":1572852,"script":null)
- ]
-disabled = true
-
-[node name="MiddleRectangle" type="SGCollisionShape2D" parent="Character"]
-position = Vector2( -3.00003, 6.10352e-05 )
-fixed_position = Object(SGFixedVector2,"x":-196610,"y":4,"script":null)
-
-fixed_scale = Object(SGFixedVector2,"x":65536,"y":65536,"script":null)
-
-shape = SubResource( 3 )
-disabled = true
-
-[node name="BackPoly" type="SGCollisionPolygon2D" parent="Character"]
-fixed_position = Object(SGFixedVector2,"x":0,"y":0,"script":null)
-
-fixed_scale = Object(SGFixedVector2,"x":65536,"y":65536,"script":null)
-
-fixed_polygon = [ Object(SGFixedVector2,"x":-1441812,"y":-1638384,"script":null)
-, Object(SGFixedVector2,"x":-1966096,"y":-1179624,"script":null)
-, Object(SGFixedVector2,"x":-1966070,"y":1245208,"script":null)
-, Object(SGFixedVector2,"x":-1441776,"y":1703952,"script":null)
- ]
-disabled = true
-
 [node name="SGCollisionPolygon2D" type="SGCollisionPolygon2D" parent="Character"]
 fixed_position = Object(SGFixedVector2,"x":0,"y":0,"script":null)
 
@@ -140,6 +91,14 @@ fixed_polygon = [ Object(SGFixedVector2,"x":1048556,"y":-1638412,"script":null)
 , Object(SGFixedVector2,"x":-1900560,"y":-1179628,"script":null)
 , Object(SGFixedVector2,"x":-1507348,"y":-1638384,"script":null)
  ]
+
+[node name="SGRayCast2D" type="SGRayCast2D" parent="Character"]
+fixed_position = Object(SGFixedVector2,"x":0,"y":0,"script":null)
+
+fixed_scale = Object(SGFixedVector2,"x":65536,"y":65536,"script":null)
+
+cast_to = Object(SGFixedVector2,"x":3276800,"y":0,"script":null)
+
 
 [node name="TreeBig" parent="." instance=ExtResource( 2 )]
 position = Vector2( 900, 370 )

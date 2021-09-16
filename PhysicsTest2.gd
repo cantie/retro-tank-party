@@ -37,6 +37,13 @@ func _physics_process(delta: float) -> void:
 	#else:
 	#	character.sync_to_physics_engine()
 	
+	var ray_cast = character.get_node("SGRayCast2D")
+	ray_cast.update_raycast_collision()
+	if ray_cast.is_colliding():
+		character.modulate = Color(1.0, 0.0, 0.0, 1.0)
+	else:
+		character.modulate = Color(1.0, 1.0, 1.0, 1.0)
+	
 	#var overlapping_bodies = area.get_overlapping_bodies()
 	#if overlapping_bodies.size() > 0 && overlapping_bodies[0] == character:
 	#	character.modulate = Color(1.0, 0.0, 0.0, 1.0)

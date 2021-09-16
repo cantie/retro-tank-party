@@ -75,6 +75,7 @@ public:
 
     virtual Vector<fixed_vector2> get_global_vertices() const;
     virtual Vector<fixed_vector2> get_global_axes() const;
+    virtual bool intersects_segment(const fixed_vector2 &p_start, const fixed_vector2 &p_end, fixed_vector2 &p_intersection_point) const;
 
     SGShape2DInternal(ShapeType p_shape_type) {
         shape_type = p_shape_type;
@@ -91,7 +92,10 @@ protected:
 
 public:
     _FORCE_INLINE_ fixed_vector2 get_extents() const { return extents; }
-    _FORCE_INLINE_ void set_extents(const fixed_vector2 &p_extents) { extents = p_extents; }
+    _FORCE_INLINE_ void set_extents(const fixed_vector2 &p_extents) {
+        extents = p_extents;
+        global_vertices.clear();
+    }
 
     fixed_rect2 get_bounds() const;
 

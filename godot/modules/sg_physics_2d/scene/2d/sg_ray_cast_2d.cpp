@@ -24,6 +24,8 @@
 #include "sg_ray_cast_2d.h"
 
 #include <core/engine.h>
+#include "../../internal/sg_world_2d_internal.h"
+#include "../../internal/sg_bodies_2d_internal.h"
 
 void SGRayCast2D::_bind_methods() {
     ClassDB::bind_method(D_METHOD("get_cast_to"), &SGRayCast2D::get_cast_to);
@@ -37,6 +39,12 @@ void SGRayCast2D::_bind_methods() {
 
 	ADD_GROUP("Collision", "collision_");
 	ADD_PROPERTY(PropertyInfo(Variant::INT, "collision_mask", PROPERTY_HINT_LAYERS_2D_PHYSICS), "set_collision_mask", "get_collision_mask");
+
+    ClassDB::bind_method(D_METHOD("update_raycast_collision"), &SGRayCast2D::update_raycast_collision);
+    ClassDB::bind_method(D_METHOD("is_colliding"), &SGRayCast2D::is_colliding);
+    ClassDB::bind_method(D_METHOD("get_collider"), &SGRayCast2D::get_collider);
+    ClassDB::bind_method(D_METHOD("get_collision_point"), &SGRayCast2D::get_collision_point);
+    ClassDB::bind_method(D_METHOD("get_collision_normal"), &SGRayCast2D::get_collision_normal);
 }
 
 void SGRayCast2D::_notification(int p_what) {
@@ -95,10 +103,54 @@ void SGRayCast2D::set_collision_mask_bit(int p_bit, bool p_value) {
     set_collision_mask(m);
 }
 
+void SGRayCast2D::update_raycast_collision() {
+	SGWorld2DInternal::RayCastInfo info;
+
+	fixed_transform2d t = get_global_fixed_transform_internal();
+
+	if (SGWorld2DInternal::get_singleton()->cast_ray(t.get_origin(), t.xform(cast_to->get_internal()), collision_mask, &info)) {
+		colliding = true;
+		collider = ((Object *)info.body->get_data())->get_instance_id();
+		collision_point->set_internal(info.collision_point);
+		collision_normal->set_internal(info.collision_normal);
+	}
+	else {
+		colliding = false;
+		collider = 0;
+		collision_point->clear();
+		collision_normal->clear();
+	}
+}
+
+bool SGRayCast2D::is_colliding() const {
+	return colliding;
+}
+
+Object *SGRayCast2D::get_collider() const {
+	if (!collider) {
+		return nullptr;
+	}
+
+	return ObjectDB::get_instance(collider);
+}
+
+Ref<SGFixedVector2> SGRayCast2D::get_collision_point() const {
+	return collision_point;
+}
+
+Ref<SGFixedVector2> SGRayCast2D::get_collision_normal() const {
+	return collision_normal;
+}
+
 SGRayCast2D::SGRayCast2D() {
 	// Start casting to (0, 50) like Godot's RayCast2D.
 	cast_to = Ref<SGFixedVector2>(memnew(SGFixedVector2(fixed_vector2(fixed::ZERO, fixed(3276800)))));
     collision_mask = 1;
+
+	colliding = false;
+	collider = 0;
+	collision_point = Ref<SGFixedVector2>(memnew(SGFixedVector2));
+	collision_normal = Ref<SGFixedVector2>(memnew(SGFixedVector2));
 }
 
 SGRayCast2D::~SGRayCast2D() {

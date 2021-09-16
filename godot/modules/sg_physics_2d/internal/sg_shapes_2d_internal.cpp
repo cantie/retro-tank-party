@@ -44,6 +44,10 @@ Vector<fixed_vector2> SGShape2DInternal::get_global_axes() const {
     return global_axes;
 }
 
+bool SGShape2DInternal::intersects_segment(const fixed_vector2 &p_start, const fixed_vector2 &p_end, fixed_vector2 &p_intersection_point) const {
+    return false;
+}
+
 fixed_rect2 SGRectangle2DInternal::get_bounds() const {
     fixed_transform2d t = get_global_transform();
     return fixed_rect2(t.get_origin(), extents * t.get_scale());
