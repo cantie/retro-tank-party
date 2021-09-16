@@ -33,6 +33,7 @@
 #include "./scene/2d/sg_area_2d.h"
 #include "./scene/2d/sg_static_body_2d.h"
 #include "./scene/2d/sg_kinematic_body_2d.h"
+#include "./scene/2d/sg_ray_cast_2d.h"
 #include "./scene/2d/sg_collision_shape_2d.h"
 #include "./scene/2d/sg_collision_polygon_2d.h"
 #include "./scene/resources/sg_shapes_2d.h"
@@ -57,6 +58,7 @@ void register_sg_physics_2d_types() {
     ClassDB::register_class<SGStaticBody2D>();
     ClassDB::register_class<SGKinematicBody2D>();
     ClassDB::register_class<SGKinematicCollision2D>();
+    ClassDB::register_class<SGRayCast2D>();
 
     ClassDB::register_class<SGCollisionShape2D>();
     ClassDB::register_class<SGCollisionPolygon2D>();

@@ -1,0 +1,105 @@
+/*************************************************************************/
+/* Copyright (c) 2021 David Snopek                                       */
+/*                                                                       */
+/* Permission is hereby granted, free of charge, to any person obtaining */
+/* a copy of this software and associated documentation files (the       */
+/* "Software"), to deal in the Software without restriction, including   */
+/* without limitation the rights to use, copy, modify, merge, publish,   */
+/* distribute, sublicense, and/or sell copies of the Software, and to    */
+/* permit persons to whom the Software is furnished to do so, subject to */
+/* the following conditions:                                             */
+/*                                                                       */
+/* The above copyright notice and this permission notice shall be        */
+/* included in all copies or substantial portions of the Software.       */
+/*                                                                       */
+/* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,       */
+/* EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF    */
+/* MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.*/
+/* IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY  */
+/* CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,  */
+/* TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE     */
+/* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
+/*************************************************************************/
+
+#include "sg_ray_cast_2d.h"
+
+#include <core/engine.h>
+
+void SGRayCast2D::_bind_methods() {
+    ClassDB::bind_method(D_METHOD("get_cast_to"), &SGRayCast2D::get_cast_to);
+    ClassDB::bind_method(D_METHOD("set_cast_to", "cast_to"), &SGRayCast2D::set_cast_to);
+
+	ADD_PROPERTY(PropertyInfo(Variant::OBJECT, "cast_to", PROPERTY_HINT_TYPE_STRING, "SGFixedVector2"), "set_cast_to", "get_cast_to");
+
+    ClassDB::bind_method(D_METHOD("get_collision_mask"), &SGRayCast2D::get_collision_mask);
+    ClassDB::bind_method(D_METHOD("set_collision_mask", "collision_mask"), &SGRayCast2D::set_collision_mask);
+    ClassDB::bind_method(D_METHOD("set_collision_mask_bit", "bit", "value"), &SGRayCast2D::set_collision_mask_bit);
+
+	ADD_GROUP("Collision", "collision_");
+	ADD_PROPERTY(PropertyInfo(Variant::INT, "collision_mask", PROPERTY_HINT_LAYERS_2D_PHYSICS), "set_collision_mask", "get_collision_mask");
+}
+
+void SGRayCast2D::_notification(int p_what) {
+	switch (p_what) {
+		case NOTIFICATION_DRAW: {
+			if (!Engine::get_singleton()->is_editor_hint() && !get_tree()->is_debugging_collisions_hint())
+				break;
+			Transform2D xf;
+			Vector2 cast_to_float = cast_to->to_float();
+			xf.rotate(cast_to_float.angle());
+			xf.translate(Vector2(cast_to_float.length(), 0));
+
+			// Draw an arrow indicating where the RayCast is pointing to
+			Color draw_col = get_tree()->get_debug_collisions_color();
+			draw_line(Vector2(), cast_to_float, draw_col, 2, true);
+			Vector<Vector2> pts;
+			float tsize = 8;
+			pts.push_back(xf.xform(Vector2(tsize, 0)));
+			pts.push_back(xf.xform(Vector2(0, Math_SQRT12 * tsize)));
+			pts.push_back(xf.xform(Vector2(0, -Math_SQRT12 * tsize)));
+			Vector<Color> cols;
+			for (int i = 0; i < 3; i++)
+				cols.push_back(draw_col);
+
+			draw_primitive(pts, cols, Vector<Vector2>());
+
+		} break;
+	}
+}
+
+Ref<SGFixedVector2> SGRayCast2D::get_cast_to() const {
+	return cast_to;
+}
+
+void SGRayCast2D::set_cast_to(const Ref<SGFixedVector2> &p_cast_to) {
+	cast_to->set_internal(p_cast_to->get_internal());
+	update();
+}
+
+uint32_t SGRayCast2D::get_collision_mask() const {
+    return collision_mask;
+}
+void SGRayCast2D::set_collision_mask(uint32_t p_collision_mask) {
+    collision_mask = p_collision_mask;
+    _change_notify("collision_mask");
+}
+
+void SGRayCast2D::set_collision_mask_bit(int p_bit, bool p_value) {
+    uint32_t m = collision_mask;
+    if (p_value) {
+        m |= (1 << p_bit);
+    }
+    else {
+        m &= ~(1 << p_bit);
+    }
+    set_collision_mask(m);
+}
+
+SGRayCast2D::SGRayCast2D() {
+	// Start casting to (0, 50) like Godot's RayCast2D.
+	cast_to = Ref<SGFixedVector2>(memnew(SGFixedVector2(fixed_vector2(fixed::ZERO, fixed(3276800)))));
+    collision_mask = 1;
+}
+
+SGRayCast2D::~SGRayCast2D() {
+}
