@@ -192,13 +192,11 @@ bool SGWorld2DInternal::segment_intersects_shape(const fixed_vector2 &p_start, c
 
     switch (shape_type) {
         case ShapeType::SHAPE_RECTANGLE:
-            return SGCollisionDetector2DInternal::segment_intersects_Rectangle(p_start, p_cast_to, *(SGRectangle2DInternal *)p_shape, p_intersection_point, p_collision_normal);
+        case ShapeType::SHAPE_POLYGON:
+            return SGCollisionDetector2DInternal::segment_intersects_Polygon(p_start, p_cast_to, *(SGShape2DInternal *)p_shape, p_intersection_point, p_collision_normal);
         
         case ShapeType::SHAPE_CIRCLE:
             return SGCollisionDetector2DInternal::segment_intersects_Circle(p_start, p_cast_to, *(SGCircle2DInternal *)p_shape, p_intersection_point, p_collision_normal);
-        
-        case ShapeType::SHAPE_POLYGON:
-            return SGCollisionDetector2DInternal::segment_intersects_Polygon(p_start, p_cast_to, *(SGPolygon2DInternal *)p_shape, p_intersection_point, p_collision_normal);
 
     }
 

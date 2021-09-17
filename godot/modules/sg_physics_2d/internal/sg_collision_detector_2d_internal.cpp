@@ -318,25 +318,23 @@ bool SGCollisionDetector2DInternal::segment_intersects_segment(const fixed_vecto
     return true;
 }
 
-bool SGCollisionDetector2DInternal::segment_intersects_Rectangle(const fixed_vector2 &p_start, const fixed_vector2 &p_cast_to, const SGRectangle2DInternal &rectangle, fixed_vector2 &p_intersection_point, fixed_vector2 &p_collision_normal) {
-    Vector<fixed_vector2> verts = rectangle.get_global_vertices();
+bool SGCollisionDetector2DInternal::segment_intersects_Polygon(const fixed_vector2 &p_start, const fixed_vector2 &p_cast_to, const SGShape2DInternal &polygon, fixed_vector2 &p_intersection_point, fixed_vector2 &p_collision_normal) {
+    Vector<fixed_vector2> verts = polygon.get_global_vertices();
 
     fixed_vector2 previous = verts[verts.size() - 1];
     for (int i = 0; i < verts.size(); i++) {
-        fixed_vector2 edge = verts[i] - previous;
+        fixed_vector2 cur = verts[i];
+        fixed_vector2 edge = cur - previous;
         if (segment_intersects_segment(p_start, p_cast_to, previous, edge, p_intersection_point)) {
             p_collision_normal = fixed_vector2(edge.y, -edge.x).normalized();
             return true;
         }
+        previous = cur;
     }
 
     return false;
 }
 
 bool SGCollisionDetector2DInternal::segment_intersects_Circle(const fixed_vector2 &p_start, const fixed_vector2 &p_cast_to, const SGCircle2DInternal &circle, fixed_vector2 &p_intersection_point, fixed_vector2 &p_collision_normal) {
-    return false;
-}
-
-bool SGCollisionDetector2DInternal::segment_intersects_Polygon(const fixed_vector2 &p_start, const fixed_vector2 &p_cast_to, const SGPolygon2DInternal &polygon, fixed_vector2 &p_intersection_point, fixed_vector2 &p_collision_normal) {
     return false;
 }

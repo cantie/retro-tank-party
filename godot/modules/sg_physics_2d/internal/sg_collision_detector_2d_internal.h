@@ -83,9 +83,11 @@ public:
     //
 
     static bool segment_intersects_segment(const fixed_vector2 &p_start_1, const fixed_vector2 &p_cast_to_1, const fixed_vector2 &p_start_2, const fixed_vector2 &p_cast_to_2, fixed_vector2 &p_intersection_point);
-    static bool segment_intersects_Rectangle(const fixed_vector2 &p_start, const fixed_vector2 &p_cast_to, const SGRectangle2DInternal &rectangle, fixed_vector2 &p_intersection_point, fixed_vector2 &p_collision_normal);
+    // This can handle either SGRectangle2DInternal or SGPolygon2DInternal,
+    // since they are both polygons with connected vertices returned by
+    // get_global_vertices().
+    static bool segment_intersects_Polygon(const fixed_vector2 &p_start, const fixed_vector2 &p_cast_to, const SGShape2DInternal &polygon, fixed_vector2 &p_intersection_point, fixed_vector2 &p_collision_normal);
     static bool segment_intersects_Circle(const fixed_vector2 &p_start, const fixed_vector2 &p_cast_to, const SGCircle2DInternal &circle, fixed_vector2 &p_intersection_point, fixed_vector2 &p_collision_normal);
-    static bool segment_intersects_Polygon(const fixed_vector2 &p_start, const fixed_vector2 &p_cast_to, const SGPolygon2DInternal &polygon, fixed_vector2 &p_intersection_point, fixed_vector2 &p_collision_normal);
 
 };
 
