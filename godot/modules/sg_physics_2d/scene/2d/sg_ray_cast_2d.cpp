@@ -110,7 +110,7 @@ void SGRayCast2D::update_raycast_collision() {
 	fixed_vector2 start = t.get_origin();
 	t.set_origin(fixed_vector2::ZERO);
 
-	if (SGWorld2DInternal::get_singleton()->cast_ray(t.get_origin(), t.xform(cast_to->get_internal()), collision_mask, &info)) {
+	if (SGWorld2DInternal::get_singleton()->cast_ray(start, t.xform(cast_to->get_internal()), collision_mask, &info)) {
 		colliding = true;
 		collider = ((Object *)info.body->get_data())->get_instance_id();
 		collision_point->set_internal(info.collision_point);
