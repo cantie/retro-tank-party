@@ -1,43 +1,20 @@
-extends Area2D
+extends SGArea2D
 
-var detection_area: Rect2
-var detecting := false
-var wait_frames: int
-
-signal free_space_found (position)
-
-func start_detecting(_detection_area: Rect2, dimensions: Vector2) -> void:
-	var half_dimensions = dimensions / 2.0
+func detect_free_space(area_top_left: SGFixedVector2, area_bottom_right: SGFixedVector2, dimensions: SGFixedVector2) -> SGFixedVector2:
+	var area_dimensions = area_bottom_right.sub(area_top_left)
+	var half_dimensions = dimensions.divf(65536*2)
 	
-	var shape = RectangleShape2D.new()
+	var shape = SGRectangleShape2D.new()
 	shape.extents = half_dimensions
 	$CollisionShape2D.shape = shape
 	
-	detection_area = _detection_area
-	detection_area.position += half_dimensions
-	detection_area.size -= half_dimensions
+	while true:
+		# @todo Figure out how to make randomness deterministic
+		set_global_fixed_position(SGFixed.vector2(
+			area_top_left.x + (randi() % int(area_dimensions.x)),
+			area_top_left.y + (randi() % int(area_dimensions.y))))
+		sync_to_physics_engine()
+		if get_overlapping_bodies().size() == 0 and get_overlapping_areas().size() == 0:
+			break
 	
-	try_next_position()
-	
-	detecting = true
-
-func stop_detecting() -> void:
-	detecting = false
-
-func try_next_position() -> void:
-	global_position = Vector2(
-		detection_area.position.x + (randi() % int(detection_area.size.x)),
-		detection_area.position.y + (randi() % int(detection_area.size.y)))
-	wait_frames = 1
-
-func _physics_process(delta: float) -> void:
-	if detecting:
-		if wait_frames > 0:
-			wait_frames -= 1
-			return
-		if get_overlapping_bodies().size() > 0 or get_overlapping_areas().size() > 0:
-			try_next_position()
-			return
-		
-		emit_signal("free_space_found", global_position)
-		detecting = false
+	return get_global_fixed_position()

@@ -23,9 +23,12 @@ MILESTONE 1 (physics):
 
 MILESTOE 2 (finish porting all the things):
 
+ - Bug: sometimes bullet doesn't explode when hitting DropCrate - it just keeps going (even though crate opens)
+ - Bug: sometimes tank appears to shrink (and maybe camera zooms too?)
  - Fix Railgun
  - Re-implement abilities
    o Maybe we shouldn't actually create the ability node until we use the ability?
+ - Search for time Timers in the game and make sure they are switched to NetworkTimer
  - Figure out how to handle physics
  - Figure out how to handle sound!
  - Implement spectators

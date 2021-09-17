@@ -1348,9 +1348,17 @@ fixed_scale = Object(SGFixedVector2,"x":65536,"y":65536,"script":null)
 
 [node name="DropCrateSpawnArea1" parent="." instance=ExtResource( 2 )]
 position = Vector2( 640, 896 )
+fixed_position = Object(SGFixedVector2,"x":41943040,"y":58720256,"script":null)
+
+fixed_scale = Object(SGFixedVector2,"x":65536,"y":65536,"script":null)
+
 
 [node name="DropCrateSpawnArea2" parent="." instance=ExtResource( 2 )]
 position = Vector2( 2048, 896 )
+fixed_position = Object(SGFixedVector2,"x":134217728,"y":58720256,"script":null)
+
+fixed_scale = Object(SGFixedVector2,"x":65536,"y":65536,"script":null)
+
 
 [node name="BallStartPosition" type="Position2D" parent="."]
 position = Vector2( 1340, 898 )

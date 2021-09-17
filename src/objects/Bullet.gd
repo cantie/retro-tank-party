@@ -18,6 +18,7 @@ func _network_spawn(data: Dictionary) -> void:
 func explode(type: String) -> void:
 	.explode(type)
 	queue_free()
+	lifetime_timer.stop()
 
 func _network_process(delta: float, _input: Dictionary) -> void:
 	._network_process(delta, _input)

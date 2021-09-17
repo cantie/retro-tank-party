@@ -1543,12 +1543,28 @@ fixed_rotation = 101652
 
 [node name="DropCrateSpawnArea1" parent="." instance=ExtResource( 2 )]
 position = Vector2( 1274.15, 299 )
+fixed_position = Object(SGFixedVector2,"x":83502696,"y":19595264,"script":null)
+
+fixed_scale = Object(SGFixedVector2,"x":65536,"y":65536,"script":null)
+
 
 [node name="DropCrateSpawnArea2" parent="." instance=ExtResource( 2 )]
 position = Vector2( 911, 1086 )
+fixed_position = Object(SGFixedVector2,"x":59703296,"y":71172096,"script":null)
+
+fixed_scale = Object(SGFixedVector2,"x":65536,"y":65536,"script":null)
+
 
 [node name="DropCrateSpawnArea3" parent="." instance=ExtResource( 2 )]
 position = Vector2( 2016.06, 667.883 )
+fixed_position = Object(SGFixedVector2,"x":132124512,"y":43770380,"script":null)
+
+fixed_scale = Object(SGFixedVector2,"x":65536,"y":65536,"script":null)
+
 
 [node name="DropCrateSpawnArea4" parent="." instance=ExtResource( 2 )]
 position = Vector2( 2016.06, 1154.37 )
+fixed_position = Object(SGFixedVector2,"x":132124512,"y":75652792,"script":null)
+
+fixed_scale = Object(SGFixedVector2,"x":65536,"y":65536,"script":null)
+
