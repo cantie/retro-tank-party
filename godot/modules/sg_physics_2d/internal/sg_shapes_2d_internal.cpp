@@ -56,8 +56,8 @@ Vector<fixed_vector2> SGRectangle2DInternal::get_global_vertices() const {
         global_vertices.resize(4);
         global_vertices.write[0] = t.xform(fixed_vector2(-extents.x, -extents.y));
         global_vertices.write[1] = t.xform(fixed_vector2(extents.x, -extents.y));
-        global_vertices.write[2] = t.xform(fixed_vector2(-extents.x, extents.y));
-        global_vertices.write[3] = t.xform(fixed_vector2(extents.x, extents.y));
+        global_vertices.write[2] = t.xform(fixed_vector2(extents.x, extents.y));
+        global_vertices.write[3] = t.xform(fixed_vector2(-extents.x, extents.y));
     }
 
     return global_vertices;

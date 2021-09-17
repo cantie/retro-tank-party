@@ -276,11 +276,60 @@ bool SGCollisionDetector2DInternal::Polygon_overlaps_Rectangle(const SGPolygon2D
     return true;
 }
 
+// Algorithm from: https://stackoverflow.com/a/565282
+//
+// p = p_start_1
+// r = p_cast_to_1
+// q = p_start_2
+// s = p_cast_to_2
 bool SGCollisionDetector2DInternal::segment_intersects_segment(const fixed_vector2 &p_start_1, const fixed_vector2 &p_cast_to_1, const fixed_vector2 &p_start_2, const fixed_vector2 &p_cast_to_2, fixed_vector2 &p_intersection_point) {
-    return false;
+    fixed denominator = p_cast_to_1.cross(p_cast_to_2);
+    fixed u_nominator = (p_start_2 - p_start_1).cross(p_cast_to_1);
+
+    if (denominator == fixed::ZERO && u_nominator == fixed::ZERO) {
+        // Line segments are collinear.
+        //
+        // They could overlap, but since we are always dealing with polygons,
+        // we know that there will always be another edge that shares one of
+        // the 2nd line segments end points, so we can trust that we'll
+        // collide with that edge (so long as there aren't two collinear edges).
+        return false;
+    }
+
+    if (denominator == fixed::ZERO) {
+        // Line segments are parallel and so non-intersecting.
+        return false;
+    }
+
+    fixed u = u_nominator / denominator;
+    if (u < fixed::ZERO || u > fixed::ONE) {
+        // Intersection would happen before the start or after the end of the 2nd segment.
+        return false;
+    }
+
+    fixed t = (p_start_2 - p_start_1).cross(p_cast_to_2) / denominator;
+    if (t < fixed::ZERO || t > fixed::ONE) {
+        // Intersection would happen before the start or after the end of the 1st segment.
+        return false;
+    }
+
+    p_intersection_point = p_start_1 + (p_cast_to_1 * t);
+
+    return true;
 }
 
 bool SGCollisionDetector2DInternal::segment_intersects_Rectangle(const fixed_vector2 &p_start, const fixed_vector2 &p_cast_to, const SGRectangle2DInternal &rectangle, fixed_vector2 &p_intersection_point, fixed_vector2 &p_collision_normal) {
+    Vector<fixed_vector2> verts = rectangle.get_global_vertices();
+
+    fixed_vector2 previous = verts[verts.size() - 1];
+    for (int i = 0; i < verts.size(); i++) {
+        fixed_vector2 edge = verts[i] - previous;
+        if (segment_intersects_segment(p_start, p_cast_to, previous, edge, p_intersection_point)) {
+            p_collision_normal = fixed_vector2(edge.y, -edge.x).normalized();
+            return true;
+        }
+    }
+
     return false;
 }
 
