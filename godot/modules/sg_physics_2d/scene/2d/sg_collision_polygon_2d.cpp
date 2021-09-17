@@ -155,6 +155,11 @@ void SGCollisionPolygon2D::check_concave() {
 	}
 }
 
+// Algorithm from https://math.stackexchange.com/a/1745427/969278
+//
+// License: CC BY-SA 3.0
+// Author: Nominal Animal
+//
 bool SGCollisionPolygon2D::is_convex(const Array &p_vertices) {
 	if (p_vertices.size() < 3) {
 		return false;

@@ -276,7 +276,10 @@ bool SGCollisionDetector2DInternal::Polygon_overlaps_Rectangle(const SGPolygon2D
     return true;
 }
 
-// Algorithm from: https://stackoverflow.com/a/565282
+// Algorithm from https://stackoverflow.com/a/565282
+//
+// License: CC BY-SA 3.0
+// Author: Gareth Rees
 //
 // p = p_start_1
 // r = p_cast_to_1
@@ -335,6 +338,62 @@ bool SGCollisionDetector2DInternal::segment_intersects_Polygon(const fixed_vecto
     return false;
 }
 
+// Algorithm from https://stackoverflow.com/a/1084899
+//
+// License: CC BY-SA 4.0
+// Original author: bobobobo
+//
+// The code has been adapted to this engine and fixed-point path.
+//
+// E = p_start
+// d = p_cast_to
 bool SGCollisionDetector2DInternal::segment_intersects_Circle(const fixed_vector2 &p_start, const fixed_vector2 &p_cast_to, const SGCircle2DInternal &circle, fixed_vector2 &p_intersection_point, fixed_vector2 &p_collision_normal) {
+    fixed_transform2d ct = circle.get_global_transform();
+
+    fixed_vector2 C = ct.get_origin();
+    fixed r = circle.get_radius() * ct.get_scale().x;
+    fixed_vector2 f = p_start - C;
+
+    fixed a = p_cast_to.dot(p_cast_to);
+    fixed b = fixed::TWO * f.dot(p_cast_to);
+    fixed c = f.dot(f) - r * r;
+
+    // This is what this should be:
+    //fixed discriminant = (b * b) - fixed(262144) * a * c;
+
+    // But discriminants can get VERY large, so we have to reduce precision to
+    // stay within the limits of 64-bit numbers.
+    int64_t small_a = a.value >> 8;
+    int64_t small_b = b.value >> 8;
+    int64_t small_c = c.value >> 8;
+
+    // 4.0 = 262144 >> 8 = 1024
+    int64_t small_discriminant = ((small_b * small_b) >> 8) - ((((1024 * small_a) >> 8) * small_c) >> 8);
+    if (small_discriminant < 0) {
+        // No intersection.
+        return false;
+    }
+    else {
+        // Get the square root and go back to our normal precision.
+        fixed discriminant = fixed(sg_sqrt_64(small_discriminant << 8));
+
+        fixed t1 = (-b - discriminant) / (fixed::TWO * a);
+        fixed t2 = (-b + discriminant) / (fixed::TWO * a);
+
+        // This is where we're outside the circle, and intersect at least once.
+        if (t1 >= fixed::ZERO && t1 <= fixed::ONE) {
+            p_intersection_point = p_start + p_cast_to * t1;
+            p_collision_normal = (p_intersection_point - C).normalized();
+            return true;
+        }
+
+        // This is where we're inside the circle, and intersect the outer edge.
+        if (t2 >= fixed::ZERO && t2 <= fixed::ONE) {
+            p_intersection_point = p_start + p_cast_to * t2;
+            p_collision_normal = (p_intersection_point - C).normalized();
+            return true;
+        }
+    }
+
     return false;
 }

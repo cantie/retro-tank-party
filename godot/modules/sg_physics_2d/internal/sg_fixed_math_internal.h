@@ -28,6 +28,8 @@
 #include <core/error_macros.h>
 #include "../thirdparty/libfixmath/fixmath.h"
 
+int64_t sg_sqrt_64(int64_t num);
+
 struct fixed {
     fix16_t value;
 

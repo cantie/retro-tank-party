@@ -41,7 +41,7 @@ const fixed_vector2 fixed_vector2::ZERO = fixed_vector2(fixed::ZERO, fixed::ZERO
  * Copied from https://en.wikipedia.org/wiki/Methods_of_computing_square_roots#Binary_numeral_system_.28base_2.29
  * but modified to use 64-bit numbers.
  */
-static int64_t fix16_sqrt_64(int64_t num) {
+int64_t sg_sqrt_64(int64_t num) {
     int64_t res = 0;
     int64_t bit = 1LL << 62;
 
@@ -104,7 +104,7 @@ void fixed_vector2::normalize() {
             // or overflowing.
             int64_t x_64 = ((int64_t)x.value) << 8;
             int64_t y_64 = ((int64_t)y.value) << 8;
-            int64_t l_64 = fix16_sqrt_64(x_64 * x_64 + y_64 * y_64);
+            int64_t l_64 = sg_sqrt_64(x_64 * x_64 + y_64 * y_64);
             if (l_64 != 0) {
                 x.value = ((x_64 << 16) / l_64);
                 y.value = ((y_64 << 16) / l_64);
@@ -131,7 +131,7 @@ bool fixed_vector2::is_normalized() const {
 }
 
 fixed fixed_vector2::length() const {
-    return fixed(fix16_sqrt_64(length_squared_64()));
+    return fixed(sg_sqrt_64(length_squared_64()));
 }
 
 fixed fixed_vector2::length_squared() const {
