@@ -185,7 +185,66 @@ List<SGBody2DInternal *> *SGWorld2DInternal::get_overlapping_bodies(SGCollisionO
     return ret;
 }
 
-bool SGWorld2DInternal::cast_ray(const fixed_vector2 &start, const fixed_vector2 &end, uint32_t collision_mask, RayCastInfo *p_info) const {
+bool SGWorld2DInternal::segment_intersects_shape(const fixed_vector2 &p_start, const fixed_vector2 &p_cast_to, SGShape2DInternal *p_shape, fixed_vector2 &p_intersection_point, fixed_vector2 &p_collision_normal) const {
+    using ShapeType = SGShape2DInternal::ShapeType;
+
+    ShapeType shape_type = p_shape->get_shape_type();
+
+    switch (shape_type) {
+        case ShapeType::SHAPE_RECTANGLE:
+            return SGCollisionDetector2DInternal::segment_intersects_Rectangle(p_start, p_cast_to, *(SGRectangle2DInternal *)p_shape, p_intersection_point, p_collision_normal);
+        
+        case ShapeType::SHAPE_CIRCLE:
+            return SGCollisionDetector2DInternal::segment_intersects_Circle(p_start, p_cast_to, *(SGCircle2DInternal *)p_shape, p_intersection_point, p_collision_normal);
+        
+        case ShapeType::SHAPE_POLYGON:
+            return SGCollisionDetector2DInternal::segment_intersects_Polygon(p_start, p_cast_to, *(SGPolygon2DInternal *)p_shape, p_intersection_point, p_collision_normal);
+
+    }
+
+    return false;
+}
+
+bool SGWorld2DInternal::cast_ray(const fixed_vector2 &p_start, const fixed_vector2 &p_cast_to, uint32_t p_collision_mask, RayCastInfo *p_info) const {
+    SGBody2DInternal *collider = nullptr;
+    int64_t shortest_distance_squared;
+    fixed_vector2 closest_intersection_point;
+    fixed_vector2 closest_collision_normal;
+
+    fixed_vector2 intersection_point;
+    fixed_vector2 collision_normal;
+
+    for (const List<SGBody2DInternal *>::Element *E = bodies.front(); E; E = E->next()) {
+        SGBody2DInternal *other = E->get();
+        if (!(other->get_collision_layer() & p_collision_mask)) {
+            continue;
+        }
+
+        for (const List<SGShape2DInternal *>::Element *S = other->get_shapes().front(); S; S = S->next()) {
+            SGShape2DInternal *shape = S->get();
+            if (segment_intersects_shape(p_start, p_cast_to, shape, intersection_point, collision_normal)) {
+                if (p_info == nullptr) {
+                    return true;
+                }
+
+                int64_t distance_squared = (intersection_point - p_start).length_squared_64();
+                if (collider == nullptr || distance_squared < shortest_distance_squared) {
+                    shortest_distance_squared = distance_squared;
+                    collider = other;
+                    closest_intersection_point = intersection_point;
+                    closest_collision_normal = collision_normal;
+                }
+            }
+        }
+    }
+
+    if (p_info && collider) {
+        p_info->body = collider;
+        p_info->collision_point = closest_intersection_point;
+        p_info->collision_normal = closest_collision_normal;
+        return true;
+    }
+
     return false;
 }
 

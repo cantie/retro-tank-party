@@ -275,3 +275,19 @@ bool SGCollisionDetector2DInternal::Polygon_overlaps_Rectangle(const SGPolygon2D
 
     return true;
 }
+
+bool SGCollisionDetector2DInternal::segment_intersects_segment(const fixed_vector2 &p_start_1, const fixed_vector2 &p_cast_to_1, const fixed_vector2 &p_start_2, const fixed_vector2 &p_cast_to_2, fixed_vector2 &p_intersection_point) {
+    return false;
+}
+
+bool SGCollisionDetector2DInternal::segment_intersects_Rectangle(const fixed_vector2 &p_start, const fixed_vector2 &p_cast_to, const SGRectangle2DInternal &rectangle, fixed_vector2 &p_intersection_point, fixed_vector2 &p_collision_normal) {
+    return false;
+}
+
+bool SGCollisionDetector2DInternal::segment_intersects_Circle(const fixed_vector2 &p_start, const fixed_vector2 &p_cast_to, const SGCircle2DInternal &circle, fixed_vector2 &p_intersection_point, fixed_vector2 &p_collision_normal) {
+    return false;
+}
+
+bool SGCollisionDetector2DInternal::segment_intersects_Polygon(const fixed_vector2 &p_start, const fixed_vector2 &p_cast_to, const SGPolygon2DInternal &polygon, fixed_vector2 &p_intersection_point, fixed_vector2 &p_collision_normal) {
+    return false;
+}

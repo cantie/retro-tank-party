@@ -107,6 +107,8 @@ void SGRayCast2D::update_raycast_collision() {
 	SGWorld2DInternal::RayCastInfo info;
 
 	fixed_transform2d t = get_global_fixed_transform_internal();
+	fixed_vector2 start = t.get_origin();
+	t.set_origin(fixed_vector2::ZERO);
 
 	if (SGWorld2DInternal::get_singleton()->cast_ray(t.get_origin(), t.xform(cast_to->get_internal()), collision_mask, &info)) {
 		colliding = true;
