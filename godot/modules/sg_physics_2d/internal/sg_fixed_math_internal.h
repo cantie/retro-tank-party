@@ -26,7 +26,6 @@
 
 #include <core/typedefs.h>
 #include <core/error_macros.h>
-#include "../thirdparty/libfixmath/fixmath.h"
 
 int64_t sg_sqrt_64(int64_t num);
 
@@ -44,6 +43,7 @@ struct fixed {
     static const fixed TWO;
     static const fixed NEG_ONE;
     static const fixed PI;
+    static const fixed TAU;
     static const fixed PI_DIV_4;
     static const fixed EPSILON;
 
@@ -122,17 +122,15 @@ struct fixed {
 
     _FORCE_INLINE_ fixed abs() const { return (value < 0) ? fixed(-value) : *this; }
     _FORCE_INLINE_ fixed operator-() const { return fixed(-value); }
-
-    // TODO: If values are greater than fix16 can handle, divide by PI to get equivalent values.
-    _FORCE_INLINE_ fixed  sin() const { return fixed(fix16_sin(value)); }
-    _FORCE_INLINE_ fixed  cos() const { return fixed(fix16_cos(value)); }
-    _FORCE_INLINE_ fixed  tan() const { return fixed(fix16_tan(value)); }
-    _FORCE_INLINE_ fixed asin() const { return fixed(fix16_asin(value)); }
-    _FORCE_INLINE_ fixed acos() const { return fixed(fix16_acos(value)); }
-    _FORCE_INLINE_ fixed atan() const { return fixed(fix16_atan(value)); }
-    _FORCE_INLINE_ fixed atan2(const fixed &inY) const { return fixed(fix16_atan2(value, inY.value)); }
-
     _FORCE_INLINE_ fixed sqrt() const { return fixed(sg_sqrt_64(value)); }
+
+    fixed  sin() const;
+    fixed  cos() const;
+    fixed  tan() const;
+    fixed asin() const;
+    fixed acos() const;
+    fixed atan() const;
+    fixed atan2(const fixed &inY) const;
 };
 
 #define FIXED_SGN(m_v) (((m_v) < fixed(0)) ? fixed::NEG_ONE : fixed::ONE)

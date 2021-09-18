@@ -23,14 +23,74 @@
 
 #include "sg_fixed_math_internal.h"
 
+#include "../thirdparty/libfixmath/fixmath.h"
+
 const fixed fixed::ZERO = fixed(0);
 const fixed fixed::ONE  = fixed(fix16_one);
 const fixed fixed::HALF = fixed(32768);
 const fixed fixed::TWO  = fixed(131072);
 const fixed fixed::NEG_ONE = fixed(-fix16_one);
 const fixed fixed::PI = fixed(fix16_pi);
+const fixed fixed::TAU = fixed(fix16_pi << 1);
 const fixed fixed::PI_DIV_4 = fixed(PI_DIV_4);
 const fixed fixed::EPSILON = fixed(fix16_eps);
+
+fixed fixed::sin() const {
+    if (value < fix16_maximum && value > fix16_minimum) {
+        return fixed(fix16_sin(value));
+    }
+
+    int64_t remainder = value % fixed::TAU.value;
+    return fixed(fix16_sin(remainder));
+}
+
+fixed fixed::cos() const {
+    if (value < fix16_maximum && value > fix16_minimum) {
+        return fixed(fix16_cos(value));
+    }
+
+    return fixed(0);
+}
+
+fixed fixed::tan() const {
+    if (value < fix16_maximum && value > fix16_minimum) {
+        return fixed(fix16_tan(value));
+    }
+
+    return fixed(0);
+}
+
+fixed fixed::asin() const {
+    if (value < fix16_maximum && value > fix16_minimum) {
+        return fixed(fix16_asin(value));
+    }
+
+    return fixed(0);
+}
+
+fixed fixed::acos() const {
+    if (value < fix16_maximum && value > fix16_minimum) {
+        return fixed(fix16_acos(value));
+    }
+
+    return fixed(0);
+}
+
+fixed fixed::atan() const {
+    if (value < fix16_maximum && value > fix16_minimum) {
+        return fixed(fix16_atan(value));
+    }
+
+    return fixed(0);
+}
+
+fixed fixed::atan2(const fixed &inY) const {
+    if (value < fix16_maximum && value > fix16_minimum) {
+        return fixed(fix16_atan2(value, inY.value));
+    }
+
+    return fixed(0);
+}
 
 // Tolerate more precision error than normal.
 const fixed fixed_vector2::FIXED_UNIT_EPSILON = fixed(65);
