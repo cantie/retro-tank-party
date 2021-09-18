@@ -353,227 +353,47 @@ bool SGCollisionDetector2DInternal::segment_intersects_Circle(const fixed_vector
     fixed_vector2 C = ct.get_origin();
     fixed_vector2 f = p_start - C;
 
-    Vector2 fC = Vector2(ct.get_origin().x.to_float(), ct.get_origin().y.to_float());
-    float fr = (circle.get_radius() * ct.get_scale().x).to_float();
-    Vector2 fE = Vector2(p_start.x.to_float(), p_start.y.to_float());
-    Vector2 fd = Vector2(p_cast_to.x.to_float(), p_cast_to.y.to_float());
-    Vector2 ff = fE - fC;
+    // Because values can get REALLY big when solving a quadratic equation
+    // we need to switch to working with raw 64-bit numbers.
 
-    uint64_t r = (circle.get_radius() * ct.get_scale().x).value;
+    int64_t r = (circle.get_radius() * ct.get_scale().x).value;
 
     int64_t a = p_cast_to.dot(p_cast_to).value;
     int64_t b = (fixed::TWO * f.dot(p_cast_to)).value;
-    int64_t f_dot_f = f.dot_64(f);
     int64_t c = f.dot_64(f) - ((r * r) >> 16);
 
-    float fa = fd.dot(fd);
-    float fb = 2.0 * ff.dot(fd);
-    float fc = ff.dot(ff) - fr * fr;
-    float ff_dot_ff = ff.dot(ff);
-
-    // But discriminants can get VERY large, so we have to reduce precision to
-    // stay within the limits of 64-bit numbers.
+    // Reduce precision - we're just going to use whole integers to calculate
+    // the determinant, in an attempt to avoid overflowing 64-bits.
     int64_t small_a = a >> 16;
     int64_t small_b = b >> 16;
     int64_t small_c = c >> 16;
 
-    //int64_t front = (small_b * small_b) >> 8;
-    int64_t front = (small_b * small_b);
-    //int64_t back_1 = (1024 * small_a) >> 8;
-    int64_t back_1 = (4 * small_a);
-    //int64_t back_2 = (back_1 * small_c) >> 8;
-    int64_t back_2 = (back_1 * small_c);
-    //int64_t small_discriminant = ((small_b * small_b) >> 8) - ((((1024 * small_a) >> 8) * small_c) >> 8);
-    //int64_t small_discriminant = ((small_b * small_b) >> 8) - ((((4 * small_a)) * small_c) >> 8);
     int64_t small_discriminant = (small_b * small_b) - (4 * small_a * small_c);
-    int64_t small_discriminant_from_parts = front - back_2;
-
-    float ffront = (fb * fb);
-    float fback_1 = 4.0 * fa;
-    float fback_2 = fback_1 * fc;
-    float fdiscriminant = (fb * fb) - 4.0 * fa * fc;
-    float fdiscriminant_from_parts = ffront - fback_2;
-
-    if (fdiscriminant < 0) {
+    if (small_discriminant < 0) {
         // No intersection.
         return false;
     }
     else {
-        // Get the square root and go back to our normal precision.
+        // Get the square root and return to our normal precision.
         int64_t discriminant = sg_sqrt_64(small_discriminant) << 16;
-        fdiscriminant = sqrt(fdiscriminant);
-
-        float ft1 = (-fb - fdiscriminant) / (2.0 * fa);
-        float ft2 = (-fb + fdiscriminant) / (2.0 * fa);
 
         int64_t t1 = ((-b - discriminant) << 16) / (2 * a);
         int64_t t2 = ((-b + discriminant) << 16) / (2 * a);
 
         // This is where we're outside the circle, and intersect at least once.
         if (t1 >= 0 && t1 <= 65536) {
-        //if (t1 >= fixed::ZERO && t1 <= fixed::ONE) {
-            //p_intersection_point = p_start + p_cast_to * t1;
-            //p_collision_normal = (p_intersection_point - C).normalized();
+            p_intersection_point = p_start + p_cast_to * fixed(t1);
+            p_collision_normal = (p_intersection_point - C).normalized();
             return true;
         }
 
         // This is where we're inside the circle, and intersect the outer edge.
         if (t2 >= 0 && t2 <= 65536) {
-        //if (t2 >= fixed::ZERO && t2 <= fixed::ONE) {
-            //p_intersection_point = p_start + p_cast_to * t2;
-            //p_collision_normal = (p_intersection_point - C).normalized();
-            return true;
-        }
-
-    }
-
-/*
-    Vector2 fC = Vector2(ct.get_origin().x.to_float(), ct.get_origin().y.to_float());
-    float fr = (circle.get_radius() * ct.get_scale().x).to_float();
-    Vector2 fE = Vector2(p_start.x.to_float(), p_start.y.to_float());
-    Vector2 fd = Vector2(p_cast_to.x.to_float(), p_cast_to.y.to_float());
-    Vector2 ff = fE - fC;
-
-    float fa = fd.dot(fd);
-    float fb = 2.0 * ff.dot(fd);
-    float fc = ff.dot(ff) - fr * fr;
-
-    float fdiscriminant = (fb * fb) - 4.0 * fa * fc;
-
-    if (fdiscriminant < 0) {
-        // No intersection.
-        return false;
-    }
-    else {
-        // Get the square root and go back to our normal precision.
-        fdiscriminant = sqrt(fdiscriminant);
-
-        float ft1 = (-fb - fdiscriminant) / (2.0 * fa);
-        float ft2 = (-fb + fdiscriminant) / (2.0 * fa);
-
-        // This is where we're outside the circle, and intersect at least once.
-        if (ft1 >= 0.0 && ft1 <= 1.0) {
-            return true;
-        }
-
-        // This is where we're inside the circle, and intersect the outer edge.
-        if (ft2 >= 0.0 && ft2 <= 1.0) {
+            p_intersection_point = p_start + p_cast_to * fixed(t2);
+            p_collision_normal = (p_intersection_point - C).normalized();
             return true;
         }
     }
-*/
-
-/*
-    fixed_transform2d ct = circle.get_global_transform();
-
-    fixed_vector2 C = ct.get_origin();
-    fixed r = circle.get_radius() * ct.get_scale().x;
-    fixed_vector2 f = p_start - C;
-
-    fixed a = p_cast_to.dot(p_cast_to);
-    fixed b = fixed::TWO * f.dot(p_cast_to);
-    fixed c = f.dot(f) - r * r;
-
-    // This is what this should be:
-    //fixed discriminant = (b * b) - fixed(262144) * a * c;
-
-    // But discriminants can get VERY large, so we have to reduce precision to
-    // stay within the limits of 64-bit numbers.
-    int64_t small_a = a.value >> 8;
-    int64_t small_b = b.value >> 8;
-    int64_t small_c = c.value >> 8;
-
-    // 4.0 = 262144 >> 8 = 1024
-    int64_t small_discriminant = ((small_b * small_b) >> 8) - ((((1024 * small_a) >> 8) * small_c) >> 8);
-    if (small_discriminant < 0) {
-        // No intersection.
-        return false;
-    }
-    else {
-        fixed discriminant = fixed(sg_sqrt_64(small_discriminant << 8) << 8);
-
-        //fixed t1 = fixed((((-small_b - small_discriminant) << 8) / (512 * small_a)) << 8);
-        //fixed t2 = fixed((((-small_b + small_discriminant) << 8) / (512 * small_a)) << 8);
-        //int64_t t1 = ((-small_b - small_discriminant) << 8) / (512 * small_a);
-        //int64_t t2 = ((-small_b + small_discriminant) << 8) / (512 * small_a);
-        fixed t1 = (-b - discriminant) / (fixed::TWO * a);
-        fixed t2 = (-b + discriminant) / (fixed::TWO * a);
-
-        small_discriminant = sg_sqrt_64(small_discriminant << 8);
-
-        // In the last bit, we do (2 * small_a) rather than (512 * small_a) >> 8 to save
-        // on shifting (and bits), since they are equivalent.
-        int64_t small_t1 = ((-small_b - small_discriminant) << 8) / (2 * small_a);
-        int64_t small_t2 = ((-small_b + small_discriminant) << 8) / (2 * small_a);
-
-
-        // This is where we're outside the circle, and intersect at least once.
-        if (small_t1 >= 0 && small_t1 <= 256) {
-        //if (t1 >= fixed::ZERO && t1 <= fixed::ONE) {
-            //p_intersection_point = p_start + p_cast_to * t1;
-            //p_collision_normal = (p_intersection_point - C).normalized();
-            return true;
-        }
-
-        // This is where we're inside the circle, and intersect the outer edge.
-        if (small_t2 >= 0 && small_t2 <= 256) {
-        //if (t2 >= fixed::ZERO && t2 <= fixed::ONE) {
-            //p_intersection_point = p_start + p_cast_to * t2;
-            //p_collision_normal = (p_intersection_point - C).normalized();
-            return true;
-        }
-    }
-    */
-
-/*
-    fixed_transform2d ct = circle.get_global_transform();
-
-    fixed_vector2 C = ct.get_origin();
-    fixed_vector2 f = p_start - C;
-
-    uint64_t r = (circle.get_radius() * ct.get_scale().x).value;
-
-    int64_t a = p_cast_to.dot(p_cast_to).value;
-    int64_t b = (fixed::TWO * f.dot(p_cast_to)).value;
-    int64_t c = f.dot(f).value - (r * r);
-
-    // This is what this should be:
-    //fixed discriminant = (b * b) - fixed(262144) * a * c;
-
-    // But discriminants can get VERY large, so we have to reduce precision to
-    // stay within the limits of 64-bit numbers.
-    int64_t small_a = a >> 16;
-    int64_t small_b = b >> 16;
-    int64_t small_c = c >> 16;
-
-    int64_t small_discriminant = (small_b * small_b) - (4 * small_a * small_c);
-    if (small_discriminant < 0) {
-        // No intersection.
-        return false;
-    }
-    else {
-        int64_t discriminant = sg_sqrt_64(small_discriminant) << 16;
-
-        int64_t t1 = ((-b - discriminant) << 16) / (fixed::TWO.value * a);
-        int64_t t2 = ((-b + discriminant) << 16) / (fixed::TWO.value * a);
-
-        // This is where we're outside the circle, and intersect at least once.
-        if (t1 >= 0 && t1 <= 65536) {
-        //if (t1 >= fixed::ZERO && t1 <= fixed::ONE) {
-            //p_intersection_point = p_start + p_cast_to * t1;
-            //p_collision_normal = (p_intersection_point - C).normalized();
-            return true;
-        }
-
-        // This is where we're inside the circle, and intersect the outer edge.
-        if (t2 >= 0 && t2 <= 65536) {
-        //if (t2 >= fixed::ZERO && t2 <= fixed::ONE) {
-            //p_intersection_point = p_start + p_cast_to * t2;
-            //p_collision_normal = (p_intersection_point - C).normalized();
-            return true;
-        }
-    }
-    */
 
     return false;
 }
