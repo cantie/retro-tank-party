@@ -31,11 +31,11 @@
 int64_t sg_sqrt_64(int64_t num);
 
 struct fixed {
-    fix16_t value;
+    int64_t value;
 
     _FORCE_INLINE_ fixed() {}
 
-    explicit _FORCE_INLINE_ fixed(fix16_t p_initial_value)
+    explicit _FORCE_INLINE_ fixed(int64_t p_initial_value)
         : value(p_initial_value) {}
 
     static const fixed ZERO;
@@ -47,12 +47,12 @@ struct fixed {
     static const fixed PI_DIV_4;
     static const fixed EPSILON;
 
-    static _FORCE_INLINE_ fixed from_int(int p_int_value) {
-        return fixed(fix16_from_int(p_int_value));
+    static _FORCE_INLINE_ fixed from_int(int64_t p_int_value) {
+        return fixed(p_int_value << 16);
     }
     
     static _FORCE_INLINE_ fixed from_float(float p_float_value) {
-        return fixed(fix16_from_float(p_float_value));
+        return fixed(p_float_value * 65536);
     }
 
     static _FORCE_INLINE_ bool is_equal_approx(fixed a, fixed b) {
@@ -73,24 +73,24 @@ struct fixed {
         return (a - b).abs() < tolerance;
     }
 
-    _FORCE_INLINE_ int32_t to_int() const {
-        return fix16_to_int(value);
+    _FORCE_INLINE_ int64_t to_int() const {
+        return value >> 16;
     }
 
     _FORCE_INLINE_ float to_float() const {
-        return fix16_to_float(value);
+        return (double)value / 65536;
     }
 
     _FORCE_INLINE_ fixed operator+(const fixed& p_other) const {
-        return fixed(fix16_add(value, p_other.value));
+        return fixed(value + p_other.value);
     }
 
     _FORCE_INLINE_ void operator+=(const fixed& p_other) {
-        value = fix16_add(value, p_other.value);
+        value += p_other.value;
     }
 
     _FORCE_INLINE_ fixed operator-(const fixed& p_other) const {
-        return fixed(fix16_sub(value, p_other.value));
+        return fixed(value - p_other.value);
     }
 
     _FORCE_INLINE_ void operator-=(const fixed& p_other) {
@@ -98,33 +98,19 @@ struct fixed {
     }
 
     _FORCE_INLINE_ fixed operator*(const fixed& p_other) const {
-        // Naive implementation - maybe this is fine?
-        /*
-        int64_t temp = value * p_other.value;
-        return fixed((int32_t)(temp >> FRACTIONAL_BITS));
-        */
-        return fixed(fix16_mul(value, p_other.value));
+        return fixed((value * p_other.value) >> 16);
     }
 
     _FORCE_INLINE_ void operator*=(const fixed& p_other) {
-        // Naive implementation - maybe this is fine?
-        /*
-        int64_t temp = value * p_other.value;
-        value = (int32_t)(temp >> FRACTIONAL_BITS);
-        */
-        value = fix16_mul(value, p_other.value);
+        value = (value * p_other.value) >> 16;
     }
 
     _FORCE_INLINE_ fixed operator/(const fixed& p_other) const {
-        // Naive implementation - maybe this is fine?
-        //return fixed(((int64_t)value << FRACTIONAL_BITS) / (int64_t)p_other.value);
-        return fixed(fix16_div(value, p_other.value));
+        return fixed((value << 16) / p_other.value);
     }
 
     _FORCE_INLINE_ void operator/=(const fixed& p_other) {
-        // Naive implementation - maybe this is fine?
-        //value = (int32_t)(((int64_t)value << FRACTIONAL_BITS) / (int64_t)p_other.value);
-        value = fix16_div(value, p_other.value);
+        value = (value << 16) / p_other.value;
     }
 
     _FORCE_INLINE_ bool operator==(const fixed &p_other) const { return value == p_other.value; }
@@ -134,9 +120,10 @@ struct fixed {
     _FORCE_INLINE_ bool operator< (const fixed &p_other) const { return value <  p_other.value; }
     _FORCE_INLINE_ bool operator> (const fixed &p_other) const { return value >  p_other.value; }
 
-    _FORCE_INLINE_ fixed abs() const { return fixed(fix16_abs(value)); }
+    _FORCE_INLINE_ fixed abs() const { return (value < 0) ? fixed(-value) : *this; }
     _FORCE_INLINE_ fixed operator-() const { return fixed(-value); }
 
+    // TODO: If values are greater than fix16 can handle, divide by PI to get equivalent values.
     _FORCE_INLINE_ fixed  sin() const { return fixed(fix16_sin(value)); }
     _FORCE_INLINE_ fixed  cos() const { return fixed(fix16_cos(value)); }
     _FORCE_INLINE_ fixed  tan() const { return fixed(fix16_tan(value)); }
@@ -144,7 +131,8 @@ struct fixed {
     _FORCE_INLINE_ fixed acos() const { return fixed(fix16_acos(value)); }
     _FORCE_INLINE_ fixed atan() const { return fixed(fix16_atan(value)); }
     _FORCE_INLINE_ fixed atan2(const fixed &inY) const { return fixed(fix16_atan2(value, inY.value)); }
-    _FORCE_INLINE_ fixed sqrt() const { return fixed(fix16_sqrt(value)); }
+
+    _FORCE_INLINE_ fixed sqrt() const { return fixed(sg_sqrt_64(value)); }
 };
 
 #define FIXED_SGN(m_v) (((m_v) < fixed(0)) ? fixed::NEG_ONE : fixed::ONE)
