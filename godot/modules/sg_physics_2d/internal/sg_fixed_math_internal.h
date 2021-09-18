@@ -78,7 +78,7 @@ struct fixed {
     }
 
     _FORCE_INLINE_ float to_float() const {
-        return (double)value / 65536;
+        return (float)value / 65536;
     }
 
     _FORCE_INLINE_ fixed operator+(const fixed& p_other) const {

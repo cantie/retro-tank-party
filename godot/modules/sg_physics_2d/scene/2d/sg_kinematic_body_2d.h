@@ -40,6 +40,10 @@ public:
         // @todo How can we get the shape in here?
         fixed_vector2 normal;
         fixed_vector2 remainder;
+
+        Collision() {
+            collider = nullptr;
+        }
     };
 
     bool move_and_collide(const fixed_vector2 &p_linear_velocity, Collision &p_collision);
