@@ -265,6 +265,7 @@ struct fixed_vector2 {
     int64_t length_squared_64() const;
 
     fixed dot(const fixed_vector2 &p_other) const;
+    int64_t dot_64(const fixed_vector2 &p_other) const;
     fixed cross(const fixed_vector2 &p_other) const;
 
     _FORCE_INLINE_ static fixed_vector2 linear_interpolate(const fixed_vector2 &p_a, const fixed_vector2 &p_b, fixed p_weight);

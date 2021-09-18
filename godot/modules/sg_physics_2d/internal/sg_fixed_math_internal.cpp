@@ -148,6 +148,11 @@ fixed fixed_vector2::dot(const fixed_vector2 &p_other) const {
     return x * p_other.x + y * p_other.y;
 }
 
+int64_t fixed_vector2::dot_64(const fixed_vector2 &p_other) const {
+    return (((int64_t)x.value * p_other.x.value) >> 16) + (((int64_t)y.value * p_other.y.value) >> 16);
+}
+
+
 fixed fixed_vector2::cross(const fixed_vector2 &p_other) const {
     return x * p_other.y - y * p_other.x;
 }
