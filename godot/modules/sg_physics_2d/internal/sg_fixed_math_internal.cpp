@@ -49,7 +49,8 @@ fixed fixed::cos() const {
         return fixed(fix16_cos(value));
     }
 
-    return fixed(0);
+    int64_t remainder = value % fixed::TAU.value;
+    return fixed(fix16_cos(remainder));
 }
 
 fixed fixed::tan() const {
@@ -57,7 +58,8 @@ fixed fixed::tan() const {
         return fixed(fix16_tan(value));
     }
 
-    return fixed(0);
+    int64_t remainder = value % fixed::PI.value;
+    return fixed(fix16_tan(remainder));
 }
 
 fixed fixed::asin() const {
@@ -65,7 +67,8 @@ fixed fixed::asin() const {
         return fixed(fix16_asin(value));
     }
 
-    return fixed(0);
+    int64_t remainder = value % fixed::TAU.value;
+    return fixed(fix16_asin(remainder));
 }
 
 fixed fixed::acos() const {
@@ -73,7 +76,8 @@ fixed fixed::acos() const {
         return fixed(fix16_acos(value));
     }
 
-    return fixed(0);
+    int64_t remainder = value % fixed::TAU.value;
+    return fixed(fix16_acos(remainder));
 }
 
 fixed fixed::atan() const {
@@ -81,7 +85,8 @@ fixed fixed::atan() const {
         return fixed(fix16_atan(value));
     }
 
-    return fixed(0);
+    int64_t remainder = value % fixed::TAU.value;
+    return fixed(fix16_atan(remainder));
 }
 
 fixed fixed::atan2(const fixed &inY) const {
@@ -89,7 +94,9 @@ fixed fixed::atan2(const fixed &inY) const {
         return fixed(fix16_atan2(value, inY.value));
     }
 
-    return fixed(0);
+    int64_t x = value % fixed::PI.value;
+    int64_t y = inY.value % fixed::PI.value;
+    return fixed(fix16_atan2(x, y));
 }
 
 // Tolerate more precision error than normal.

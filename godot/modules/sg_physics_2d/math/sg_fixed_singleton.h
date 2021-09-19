@@ -40,25 +40,25 @@ protected:
 public:
     static SGFixed *get_singleton();
 
-    int from_int(int p_int_value) const;
-    int from_float(float p_float_value) const;
+    int64_t from_int(int64_t p_int_value) const;
+    int64_t from_float(float p_float_value) const;
 
-    int to_int(int p_fixed_value) const;
-    float to_float(int p_fixed_value) const;
+    int64_t to_int(int64_t p_fixed_value) const;
+    float to_float(int64_t p_fixed_value) const;
 
-    int mul(int p_fixed_one, int p_fixed_two) const;
-    int div(int p_fixed_one, int p_fixed_two) const;
+    int64_t mul(int64_t p_fixed_one, int64_t p_fixed_two) const;
+    int64_t div(int64_t p_fixed_one, int64_t p_fixed_two) const;
 
-    int sin(int p_fixed_value) const;
-    int cos(int p_fixed_value) const;
-    int tan(int p_fixed_value) const;
-    int asin(int p_fixed_value) const;
-    int acos(int p_fixed_value) const;
-    int atan(int p_fixed_value) const;
-    int atan2(int p_fixed_y_value, int p_fixed_x_value) const;
-    int sqrt(int p_fixed_value) const;
+    int64_t sin(int64_t p_fixed_value) const;
+    int64_t cos(int64_t p_fixed_value) const;
+    int64_t tan(int64_t p_fixed_value) const;
+    int64_t asin(int64_t p_fixed_value) const;
+    int64_t acos(int64_t p_fixed_value) const;
+    int64_t atan(int64_t p_fixed_value) const;
+    int64_t atan2(int64_t p_fixed_y_value, int64_t p_fixed_x_value) const;
+    int64_t sqrt(int64_t p_fixed_value) const;
 
-    Ref<SGFixedVector2> vector2(int p_fixed_x, int p_fixed_y) const;
+    Ref<SGFixedVector2> vector2(int64_t p_fixed_x, int64_t p_fixed_y) const;
     Ref<SGFixedVector2> from_float_vector2(const Vector2 &p_float_vector) const;
 
     SGFixed();
