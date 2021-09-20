@@ -39,7 +39,7 @@ class SGFixedNode2D : public Node2D {
     Ref<SGFixedTransform2D> fixed_transform;
     Ref<SGFixedVector2> fixed_position;
     Ref<SGFixedVector2> fixed_scale;
-    int fixed_rotation;
+    int64_t fixed_rotation;
 
     bool updating_transform;
 
@@ -70,8 +70,8 @@ public:
     void set_fixed_scale(const Ref<SGFixedVector2> &p_fixed_scale);
     Ref<SGFixedVector2> get_fixed_scale();
 
-    void set_fixed_rotation(int p_fixed_rotation);
-    int get_fixed_rotation() const;
+    void set_fixed_rotation(int64_t p_fixed_rotation);
+    int64_t get_fixed_rotation() const;
 
     void set_global_fixed_transform(const Ref<SGFixedTransform2D> &p_global_transform);
     Ref<SGFixedTransform2D> get_global_fixed_transform() const;
@@ -79,8 +79,8 @@ public:
     void set_global_fixed_position(const Ref<SGFixedVector2> &p_fixed_position);
     Ref<SGFixedVector2> get_global_fixed_position();
 
-    void set_global_fixed_rotation(int p_fixed_rotation);
-    int get_global_fixed_rotation() const;
+    void set_global_fixed_rotation(int64_t p_fixed_rotation);
+    int64_t get_global_fixed_rotation() const;
 
 
     SGFixedNode2D();

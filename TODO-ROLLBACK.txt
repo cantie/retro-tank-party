@@ -3,8 +3,6 @@ TODO
 
 MILESTONE 1 (physics):
 
- - Complete conversion of fixed to 64-bits
-   o Make sure all methods passing int's to/from Godot use int64_t
  - Attempt to put in game
    o Convert DropCrate and DropCrateSpawnArea
    o ... what next?
@@ -22,6 +20,8 @@ MILESTONE 1 (physics):
    o Rename the fixed_* classes to be camel case?
    o Port over more (all?) of Vector2's methods?
    o Make consistent tabs vs spaces in all source files
+ - Bugs:
+   o Sometimes rotating can teleport the tank into obvlivion (seen on the test scene)
 
 MILESTOE 2 (finish porting all the things):
 

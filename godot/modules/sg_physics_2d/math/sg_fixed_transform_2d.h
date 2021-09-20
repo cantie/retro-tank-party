@@ -74,8 +74,8 @@ public:
     Ref<SGFixedTransform2D> inverse() const;
     Ref<SGFixedTransform2D> affine_inverse() const;
 
-    int get_rotation() const;
-	Ref<SGFixedTransform2D> rotated(int p_radians) const;
+    int64_t get_rotation() const;
+	Ref<SGFixedTransform2D> rotated(int64_t p_radians) const;
 
     Ref<SGFixedVector2> get_scale() const;
 	Ref<SGFixedTransform2D> scaled(const Ref<SGFixedVector2> &p_scale) const;
@@ -86,7 +86,7 @@ public:
 
     Ref<SGFixedTransform2D> mul(const Ref<SGFixedTransform2D> &p_transform) const;
 
-    Ref<SGFixedTransform2D> interpolate_with(const Ref<SGFixedTransform2D> &p_transform, int p_weight) const;
+    Ref<SGFixedTransform2D> interpolate_with(const Ref<SGFixedTransform2D> &p_transform, int64_t p_weight) const;
 
     Ref<SGFixedVector2> basis_xform(const Ref<SGFixedVector2> &p_vec) const;
     Ref<SGFixedVector2> basis_xform_inv(const Ref<SGFixedVector2> &p_vec) const;

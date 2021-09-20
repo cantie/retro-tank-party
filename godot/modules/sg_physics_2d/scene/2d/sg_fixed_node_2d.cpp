@@ -168,7 +168,7 @@ Ref<SGFixedVector2> SGFixedNode2D::get_fixed_scale() {
     return fixed_scale;
 }
 
-void SGFixedNode2D::set_fixed_rotation(int p_fixed_rotation) {
+void SGFixedNode2D::set_fixed_rotation(int64_t p_fixed_rotation) {
     fixed_rotation = p_fixed_rotation;
     updating_transform = true;
     set_rotation(fixed(p_fixed_rotation).to_float());
@@ -181,7 +181,7 @@ void SGFixedNode2D::set_fixed_rotation(int p_fixed_rotation) {
     _change_notify("fixed_rotation");
 }
 
-int SGFixedNode2D::get_fixed_rotation() const {
+int64_t SGFixedNode2D::get_fixed_rotation() const {
     return fixed_rotation;
 }
 
@@ -203,7 +203,7 @@ Ref<SGFixedVector2> SGFixedNode2D::get_global_fixed_position() {
     return SGFixedVector2::from_internal(get_global_fixed_transform_internal().get_origin());
 }
 
-void SGFixedNode2D::set_global_fixed_rotation(int p_fixed_rotation) {
+void SGFixedNode2D::set_global_fixed_rotation(int64_t p_fixed_rotation) {
     SGFixedNode2D *fixed_parent = Object::cast_to<SGFixedNode2D>(get_parent());
     if (fixed_parent) {
         fixed parent_rotation = fixed_parent->get_global_fixed_transform_internal().get_rotation();
@@ -214,7 +214,7 @@ void SGFixedNode2D::set_global_fixed_rotation(int p_fixed_rotation) {
     }
 }
 
-int SGFixedNode2D::get_global_fixed_rotation() const {
+int64_t SGFixedNode2D::get_global_fixed_rotation() const {
     return get_global_fixed_transform_internal().get_rotation().value;
 }
 

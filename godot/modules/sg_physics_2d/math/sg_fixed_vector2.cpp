@@ -105,38 +105,38 @@ void SGFixedVector2::idiv(const Ref<SGFixedVector2>& p_other) {
     emit_signal("changed");
 }
 
-Ref<SGFixedVector2> SGFixedVector2::addf(int p_other) const {
+Ref<SGFixedVector2> SGFixedVector2::addf(int64_t p_other) const {
     return Ref<SGFixedVector2>(memnew(SGFixedVector2(value + fixed(p_other))));
 }
 
-void SGFixedVector2::iaddf(int p_other) {
+void SGFixedVector2::iaddf(int64_t p_other) {
     value += fixed(p_other);
     emit_signal("changed");
 }
 
-Ref<SGFixedVector2> SGFixedVector2::subf(int p_other) const {
+Ref<SGFixedVector2> SGFixedVector2::subf(int64_t p_other) const {
     return Ref<SGFixedVector2>(memnew(SGFixedVector2(value - fixed(p_other))));
 }
 
-void SGFixedVector2::isubf(int p_other) {
+void SGFixedVector2::isubf(int64_t p_other) {
     value -= fixed(p_other);
     emit_signal("changed");
 }
 
-Ref<SGFixedVector2> SGFixedVector2::mulf(int p_other) const {
+Ref<SGFixedVector2> SGFixedVector2::mulf(int64_t p_other) const {
     return Ref<SGFixedVector2>(memnew(SGFixedVector2(value * fixed(p_other))));
 }
 
-void SGFixedVector2::imulf(int p_other) {
+void SGFixedVector2::imulf(int64_t p_other) {
     value *= fixed(p_other);
     emit_signal("changed");
 }
 
-Ref<SGFixedVector2> SGFixedVector2::divf(int p_other) const {
+Ref<SGFixedVector2> SGFixedVector2::divf(int64_t p_other) const {
     return Ref<SGFixedVector2>(memnew(SGFixedVector2(value / fixed(p_other))));
 }
 
-void SGFixedVector2::idivf(int p_other) {
+void SGFixedVector2::idivf(int64_t p_other) {
     value /= fixed(p_other);
     emit_signal("changed");
 }
@@ -149,16 +149,16 @@ Ref<SGFixedVector2> SGFixedVector2::normalized() const {
     return SGFixedVector2::from_internal(value.normalized());
 }
 
-int SGFixedVector2::length() const {
+int64_t SGFixedVector2::length() const {
     return value.length().value;
 }
 
-void SGFixedVector2::rotate(int p_rotation) {
+void SGFixedVector2::rotate(int64_t p_rotation) {
     value = value.rotated(fixed(p_rotation));
     emit_signal("changed");
 }
 
-Ref<SGFixedVector2> SGFixedVector2::rotated(int p_rotation) const {
+Ref<SGFixedVector2> SGFixedVector2::rotated(int64_t p_rotation) const {
     return SGFixedVector2::from_internal(value.rotated(fixed(p_rotation)));
 }
 

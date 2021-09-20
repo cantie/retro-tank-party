@@ -39,15 +39,15 @@ protected:
 
 public:
 
-    _FORCE_INLINE_ int get_x() const { return value.x.value; }
-    _FORCE_INLINE_ int get_y() const { return value.y.value; }
+    _FORCE_INLINE_ int64_t get_x() const { return value.x.value; }
+    _FORCE_INLINE_ int64_t get_y() const { return value.y.value; }
 
-    void set_x(int p_x) {
+    void set_x(int64_t p_x) {
         value.x.value = p_x;
         emit_signal("changed");
     }
 
-    void set_y(int p_y) {
+    void set_y(int64_t p_y) {
         value.y.value = p_y;
         emit_signal("changed");
     }
@@ -67,21 +67,21 @@ public:
     Ref<SGFixedVector2> div(const Ref<SGFixedVector2> &p_other) const;
     void idiv(const Ref<SGFixedVector2>& p_other);
 
-    Ref<SGFixedVector2> addf(int p_fixed) const;
-    void iaddf(int p_fixed);
-    Ref<SGFixedVector2> subf(int p_fixed) const;
-    void isubf(int p_fixed);
-    Ref<SGFixedVector2> mulf(int p_fixed) const;
-    void imulf(int p_fixed);
-    Ref<SGFixedVector2> divf(int p_fixed) const;
-    void idivf(int p_fixed);
+    Ref<SGFixedVector2> addf(int64_t p_fixed) const;
+    void iaddf(int64_t p_fixed);
+    Ref<SGFixedVector2> subf(int64_t p_fixed) const;
+    void isubf(int64_t p_fixed);
+    Ref<SGFixedVector2> mulf(int64_t p_fixed) const;
+    void imulf(int64_t p_fixed);
+    Ref<SGFixedVector2> divf(int64_t p_fixed) const;
+    void idivf(int64_t p_fixed);
 
     Ref<SGFixedVector2> abs() const;
     Ref<SGFixedVector2> normalized() const;
-    int length() const;
+    int64_t length() const;
 
-    void rotate(int p_rotation);
-    Ref<SGFixedVector2> rotated(int p_rotation) const;
+    void rotate(int64_t p_rotation);
+    Ref<SGFixedVector2> rotated(int64_t p_rotation) const;
 
     Ref<SGFixedVector2> slide(const Ref<SGFixedVector2> &p_normal) const;
     Ref<SGFixedVector2> bounce(const Ref<SGFixedVector2> &p_normal) const;

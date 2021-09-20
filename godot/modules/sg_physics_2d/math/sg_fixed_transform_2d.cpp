@@ -109,12 +109,12 @@ Ref<SGFixedTransform2D> SGFixedTransform2D::affine_inverse() const {
 	return SGFixedTransform2D::from_internal(internal);
 }
 
-int SGFixedTransform2D::get_rotation() const {
+int64_t SGFixedTransform2D::get_rotation() const {
 	fixed_transform2d internal = get_internal();
 	return internal.get_rotation().value;
 }
 
-Ref<SGFixedTransform2D> SGFixedTransform2D::rotated(int p_radians) const {
+Ref<SGFixedTransform2D> SGFixedTransform2D::rotated(int64_t p_radians) const {
 	fixed_transform2d internal = get_internal();
 	internal.rotate(fixed(p_radians));
 	return SGFixedTransform2D::from_internal(internal);
@@ -152,7 +152,7 @@ Ref<SGFixedTransform2D> SGFixedTransform2D::mul(const Ref<SGFixedTransform2D> &p
 	return SGFixedTransform2D::from_internal(get_internal() * p_transform->get_internal());
 }
 
-Ref<SGFixedTransform2D> SGFixedTransform2D::interpolate_with(const Ref<SGFixedTransform2D> &p_transform, int p_weight) const {
+Ref<SGFixedTransform2D> SGFixedTransform2D::interpolate_with(const Ref<SGFixedTransform2D> &p_transform, int64_t p_weight) const {
 	fixed_transform2d internal = get_internal();
 	internal.interpolate_with(p_transform->get_internal(), fixed(p_weight));
 	return SGFixedTransform2D::from_internal(internal);
