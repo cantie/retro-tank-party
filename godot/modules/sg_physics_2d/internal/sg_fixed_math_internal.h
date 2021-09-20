@@ -46,6 +46,7 @@ struct fixed {
     static const fixed TAU;
     static const fixed PI_DIV_4;
     static const fixed EPSILON;
+    static const fixed OVERFLOW;
 
     static _FORCE_INLINE_ fixed from_int(int64_t p_int_value) {
         return fixed(p_int_value << 16);
@@ -78,39 +79,59 @@ struct fixed {
     }
 
     _FORCE_INLINE_ float to_float() const {
-        return (float)value / 65536;
+        return (float)value / 65536.0f;
     }
 
     _FORCE_INLINE_ fixed operator+(const fixed& p_other) const {
+        if (p_other.value > 0 && (value > INT64_MAX - p_other.value))
+            return fixed::OVERFLOW;
+        if (p_other.value < 0 && (value < INT64_MIN - p_other.value))
+            return fixed::OVERFLOW;
         return fixed(value + p_other.value);
     }
 
     _FORCE_INLINE_ void operator+=(const fixed& p_other) {
-        value += p_other.value;
+        value = (*this + p_other).value;
     }
 
     _FORCE_INLINE_ fixed operator-(const fixed& p_other) const {
+        if (p_other.value < 0 && (value > INT64_MAX + p_other.value))
+            return fixed::OVERFLOW;
+        if (p_other.value > 0 && (value < INT64_MIN + p_other.value))
+            return fixed::OVERFLOW;
         return fixed(value - p_other.value);
     }
 
     _FORCE_INLINE_ void operator-=(const fixed& p_other) {
-        value -= p_other.value;
+        value = (*this + p_other).value;
     }
 
     _FORCE_INLINE_ fixed operator*(const fixed& p_other) const {
+        if (value == -1 && p_other.value == INT64_MAX)
+            return fixed::OVERFLOW;
+        if (p_other.value == -1 && value == INT64_MIN)
+            return fixed::OVERFLOW;
+        if (p_other.value > 0 && (value > (INT64_MAX / p_other.value) || value < (INT64_MIN / p_other.value)))
+            return fixed::OVERFLOW;
+        if (p_other.value < 0 && (value < (INT64_MAX / p_other.value) || value > (INT64_MIN / p_other.value)))
+            return fixed::OVERFLOW;
         return fixed((value * p_other.value) >> 16);
     }
 
     _FORCE_INLINE_ void operator*=(const fixed& p_other) {
-        value = (value * p_other.value) >> 16;
+        value = (*this * p_other).value;
     }
 
     _FORCE_INLINE_ fixed operator/(const fixed& p_other) const {
+        if (value == -1 && p_other.value == INT64_MAX)
+            return fixed::OVERFLOW;
+        if (p_other.value == -1 && value == INT64_MIN)
+            return fixed::OVERFLOW;
         return fixed((value << 16) / p_other.value);
     }
 
     _FORCE_INLINE_ void operator/=(const fixed& p_other) {
-        value = (value << 16) / p_other.value;
+        value = (*this / p_other).value;
     }
 
     _FORCE_INLINE_ bool operator==(const fixed &p_other) const { return value == p_other.value; }

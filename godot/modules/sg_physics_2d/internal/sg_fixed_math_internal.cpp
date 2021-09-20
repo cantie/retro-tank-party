@@ -34,6 +34,7 @@ const fixed fixed::PI = fixed(fix16_pi);
 const fixed fixed::TAU = fixed(fix16_pi << 1);
 const fixed fixed::PI_DIV_4 = fixed(PI_DIV_4);
 const fixed fixed::EPSILON = fixed(fix16_eps);
+const fixed fixed::OVERFLOW = fixed(INT64_MIN);
 
 fixed fixed::sin() const {
     if (value < fix16_maximum && value > fix16_minimum) {
@@ -180,11 +181,12 @@ void fixed_vector2::normalize() {
         }
         else {
             // Multiply X and Y by 256.
-            fixed_vector2 scaled(fixed(x.value << 8), fixed(y.value << 8));
-            fixed l = fixed_vector2(fixed(x.value << 8), fixed(y.value << 8)).length();
+            fixed x_big = fixed(x.value << 8);
+            fixed y_big = fixed(y.value << 8);
+            fixed l = fixed_vector2(x_big, y_big).length();
             if (l != fixed::ZERO) {
-                x /= l;
-                y /= l;
+                x = x_big / l;
+                y = y_big / l;
             }
         }
     }
@@ -315,8 +317,14 @@ fixed_vector2 fixed_transform2d::get_scale() const {
 void fixed_transform2d::set_scale(const fixed_vector2 &p_scale) {
     elements[0].normalize();
     elements[1].normalize();
-    elements[0] *= p_scale.x;
-    elements[1] *= p_scale.y;
+
+    // If scale is very nearly 1, then we just trust normalize() to do its magic.
+    if (!fixed::is_equal_approx(p_scale.x, fixed::ONE, fixed_vector2::FIXED_UNIT_EPSILON)) {
+        elements[0] *= p_scale.x;
+    }
+    if (!fixed::is_equal_approx(p_scale.y, fixed::ONE, fixed_vector2::FIXED_UNIT_EPSILON)) {
+        elements[1] *= p_scale.y;
+    }
 }
 
 void fixed_transform2d::scale(const fixed_vector2 &p_scale) {
