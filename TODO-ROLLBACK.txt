@@ -4,10 +4,6 @@ TODO
 MILESTONE 1 (physics):
 
  - Complete conversion of fixed to 64-bits
-   o Fix the trig functions:
-     - https://math.stackexchange.com/a/480055/969278
-   o Remove the special *_64() methods from fixed_vector2
-   o Remove some of the hacks from SGCollisionDetector2DInternal::segment_intersects_circle()
    o Make sure all methods passing int's to/from Godot use int64_t
  - Attempt to put in game
    o Convert DropCrate and DropCrateSpawnArea

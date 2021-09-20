@@ -127,11 +127,9 @@ bool SGCollisionDetector2DInternal::Circle_overlaps_Circle(const SGCircle2DInter
 
     fixed_vector2 line = t1.get_origin() - t2.get_origin();
 
-    // We need to use 64-bit integer math so we don't overflow 32-bits with
-    // all these big squared values.
     // We only multiply by the scale.x because we don't support non-uniform scaling.
-    int64_t combined_radius = (int64_t)circle1.get_radius().value * (int64_t)t1.get_scale().x.value + (int64_t)circle2.get_radius().value * (int64_t)t2.get_scale().x.value;
-    bool overlapping = (line.length_squared_64() <= combined_radius);
+    fixed combined_radius = circle1.get_radius() * t1.get_scale().x + circle2.get_radius() * t2.get_scale().x;
+    bool overlapping = (line.length_squared() <= combined_radius);
 
     if (overlapping && p_info) {
         // Add half to the seperation so we'd move to a non-overlapping state.
@@ -155,11 +153,7 @@ bool SGCollisionDetector2DInternal::Circle_overlaps_AABB(const SGCircle2DInterna
     // We only multiply by the scale.x because we don't support non-uniform scaling.
     fixed radius = circle.get_radius() * t.get_scale().x;
 
-    // We need to use 64-bit integer math so we don't overflow 32-bits with
-    // all these big squared values.
-    int64_t radius_squared_64 = (int64_t)radius.value * (int64_t)radius.value;
-    bool overlapping = (line.length_squared_64() <= radius_squared_64);
-
+    bool overlapping = (line.length_squared() <= (radius * radius));
     if (overlapping && p_info) {
         // Add half to the seperation so we'd move to a non-overlapping state.
         p_info->separation = line.normalized() * (radius - line.length() + fixed::HALF);
@@ -231,10 +225,10 @@ bool SGCollisionDetector2DInternal::Polygon_overlaps_Circle(const SGPolygon2DInt
     Vector<fixed_vector2> vertices = polygon.get_global_vertices();
     fixed_transform2d ct = circle.get_global_transform();
     fixed_vector2 closest_vertex = vertices[0];
-    int64_t closest_distance = (ct.get_origin() - vertices[0]).length_squared_64();
+    fixed closest_distance = (ct.get_origin() - vertices[0]).length_squared();
 
     for (int i = 1; i < vertices.size(); i++) {
-        int64_t distance = (ct.get_origin() - vertices[i]).length_squared_64();
+        fixed distance = (ct.get_origin() - vertices[i]).length_squared();
         if (distance < closest_distance) {
             closest_distance = distance;
             closest_vertex = vertices[i];
@@ -353,20 +347,22 @@ bool SGCollisionDetector2DInternal::segment_intersects_Circle(const fixed_vector
     fixed_vector2 C = ct.get_origin();
     fixed_vector2 f = p_start - C;
 
-    // Because values can get REALLY big when solving a quadratic equation
-    // we need to switch to working with raw 64-bit numbers.
+    fixed r = circle.get_radius() * ct.get_scale().x;
 
-    int64_t r = (circle.get_radius() * ct.get_scale().x).value;
+    fixed a = p_cast_to.dot(p_cast_to);
+    if (a == fixed::ZERO) {
+        // This would lead to division by zero.
+        return false;
+    }
 
-    int64_t a = p_cast_to.dot(p_cast_to).value;
-    int64_t b = (fixed::TWO * f.dot(p_cast_to)).value;
-    int64_t c = f.dot_64(f) - ((r * r) >> 16);
+    fixed b = fixed::TWO * f.dot(p_cast_to);
+    fixed c = f.dot(f) - (r * r);
 
     // Reduce precision - we're just going to use whole integers to calculate
     // the determinant, in an attempt to avoid overflowing 64-bits.
-    int64_t small_a = a >> 16;
-    int64_t small_b = b >> 16;
-    int64_t small_c = c >> 16;
+    int64_t small_a = a.value >> 16;
+    int64_t small_b = b.value >> 16;
+    int64_t small_c = c.value >> 16;
 
     int64_t small_discriminant = (small_b * small_b) - (4 * small_a * small_c);
     if (small_discriminant < 0) {
@@ -375,21 +371,21 @@ bool SGCollisionDetector2DInternal::segment_intersects_Circle(const fixed_vector
     }
     else {
         // Get the square root and return to our normal precision.
-        int64_t discriminant = sg_sqrt_64(small_discriminant) << 16;
+        fixed discriminant(sg_sqrt_64(small_discriminant) << 16);
 
-        int64_t t1 = ((-b - discriminant) << 16) / (2 * a);
-        int64_t t2 = ((-b + discriminant) << 16) / (2 * a);
+        fixed t1 = (-b - discriminant) / (fixed::TWO * a);
+        fixed t2 = (-b + discriminant) / (fixed::TWO * a);
 
         // This is where we're outside the circle, and intersect at least once.
-        if (t1 >= 0 && t1 <= 65536) {
-            p_intersection_point = p_start + p_cast_to * fixed(t1);
+        if (t1 >= fixed::ZERO && t1 <= fixed::ONE) {
+            p_intersection_point = p_start + p_cast_to * t1;
             p_collision_normal = (p_intersection_point - C).normalized();
             return true;
         }
 
         // This is where we're inside the circle, and intersect the outer edge.
-        if (t2 >= 0 && t2 <= 65536) {
-            p_intersection_point = p_start + p_cast_to * fixed(t2);
+        if (t2 >= fixed::ZERO && t2 <= fixed::ONE) {
+            p_intersection_point = p_start + p_cast_to * t2;
             p_collision_normal = (p_intersection_point - C).normalized();
             return true;
         }

@@ -205,7 +205,7 @@ bool SGWorld2DInternal::segment_intersects_shape(const fixed_vector2 &p_start, c
 
 bool SGWorld2DInternal::cast_ray(const fixed_vector2 &p_start, const fixed_vector2 &p_cast_to, uint32_t p_collision_mask, RayCastInfo *p_info) const {
     SGBody2DInternal *collider = nullptr;
-    int64_t shortest_distance_squared;
+    fixed shortest_distance_squared;
     fixed_vector2 closest_intersection_point;
     fixed_vector2 closest_collision_normal;
 
@@ -225,7 +225,7 @@ bool SGWorld2DInternal::cast_ray(const fixed_vector2 &p_start, const fixed_vecto
                     return true;
                 }
 
-                int64_t distance_squared = (intersection_point - p_start).length_squared_64();
+                fixed distance_squared = (intersection_point - p_start).length_squared();
                 if (collider == nullptr || distance_squared < shortest_distance_squared) {
                     shortest_distance_squared = distance_squared;
                     collider = other;

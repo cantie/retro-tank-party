@@ -107,11 +107,23 @@ const fixed_vector2 fixed_vector2::ZERO = fixed_vector2(fixed::ZERO, fixed::ZERO
 /**
  * Copied from https://en.wikipedia.org/wiki/Methods_of_computing_square_roots#Binary_numeral_system_.28base_2.29
  * but modified to use 64-bit numbers.
+ * 
+ * Like fix16_sqrt(), for negative numbers we return the negated square root of
+ * the absolute value (ie. sqrt(-x) = -sqrt(x)).
  */
 int64_t sg_sqrt_64(int64_t num) {
+    if (num == 0) {
+        return 0;
+    }
+
+    bool neg = num < 0;
+    if (neg) {
+        num = -num;
+    }
     int64_t res = 0;
     int64_t bit = 1LL << 62;
 
+    // Start bit at the highest power of four that's less than or equal to num.
     while (bit > num) {
         bit >>= 2;
     }
@@ -127,7 +139,7 @@ int64_t sg_sqrt_64(int64_t num) {
         bit >>= 2;
     }
 
-    return res;
+    return neg ? -res : res;
 }
 
 bool fixed_vector2::operator==(const fixed_vector2 &p_v) const {
@@ -167,14 +179,12 @@ void fixed_vector2::normalize() {
             y = fixed::ONE;
         }
         else {
-            // We need to use 64-bit math, to avoid big numbers flipping sign,
-            // or overflowing.
-            int64_t x_64 = ((int64_t)x.value) << 8;
-            int64_t y_64 = ((int64_t)y.value) << 8;
-            int64_t l_64 = sg_sqrt_64(x_64 * x_64 + y_64 * y_64);
-            if (l_64 != 0) {
-                x.value = ((x_64 << 16) / l_64);
-                y.value = ((y_64 << 16) / l_64);
+            // Multiply X and Y by 256.
+            fixed_vector2 scaled(fixed(x.value << 8), fixed(y.value << 8));
+            fixed l = fixed_vector2(fixed(x.value << 8), fixed(y.value << 8)).length();
+            if (l != fixed::ZERO) {
+                x /= l;
+                y /= l;
             }
         }
     }
@@ -198,33 +208,27 @@ bool fixed_vector2::is_normalized() const {
 }
 
 fixed fixed_vector2::length() const {
-    return fixed(sg_sqrt_64(length_squared_64()));
+    // By directly using 64-bit integers we can avoid a left shift, since
+    // multiplying two fixed point numbers effectively shifts them left.
+    return fixed(sg_sqrt_64(x.value * x.value + y.value * y.value));
 }
 
 fixed fixed_vector2::length_squared() const {
     return x * x + y * y;
 }
 
-int64_t fixed_vector2::length_squared_64() const {
-    int64_t x_squared = (int64_t)x.value * (int64_t)x.value;
-    int64_t y_squared = (int64_t)y.value * (int64_t)y.value;
-    return x_squared + y_squared;
-}
-
 fixed fixed_vector2::dot(const fixed_vector2 &p_other) const {
     return x * p_other.x + y * p_other.y;
 }
-
-int64_t fixed_vector2::dot_64(const fixed_vector2 &p_other) const {
-    return (((int64_t)x.value * p_other.x.value) >> 16) + (((int64_t)y.value * p_other.y.value) >> 16);
-}
-
 
 fixed fixed_vector2::cross(const fixed_vector2 &p_other) const {
     return x * p_other.y - y * p_other.x;
 }
 
 fixed_vector2 fixed_vector2::slide(const fixed_vector2 &p_normal) const {
+#ifdef MATH_CHECKS
+	ERR_FAIL_COND_V_MSG(!p_normal.is_normalized(), fixed_vector2(), "The normal fixed_vector2 must be normalized.");
+#endif
     return *this - p_normal * this->dot(p_normal);
 }
 
@@ -233,8 +237,10 @@ fixed_vector2 fixed_vector2::bounce(const fixed_vector2 &p_normal) const {
 }
 
 fixed_vector2 fixed_vector2::reflect(const fixed_vector2 &p_normal) const {
-    // 131072 = 2.0
-    return p_normal * fixed(131072) * this->dot(p_normal) - *this;
+#ifdef MATH_CHECKS
+	ERR_FAIL_COND_V_MSG(!p_normal.is_normalized(), fixed_vector2(), "The normal fixed_vector2 must be normalized.");
+#endif
+    return p_normal * fixed::TWO * this->dot(p_normal) - *this;
 }
 
 bool fixed_vector2::is_equal_approx(const fixed_vector2 &p_v) const {

@@ -32,7 +32,7 @@ int64_t sg_sqrt_64(int64_t num);
 struct fixed {
     int64_t value;
 
-    _FORCE_INLINE_ fixed() {}
+    _FORCE_INLINE_ fixed() : value(0) {}
 
     explicit _FORCE_INLINE_ fixed(int64_t p_initial_value)
         : value(p_initial_value) {}
@@ -122,7 +122,7 @@ struct fixed {
 
     _FORCE_INLINE_ fixed abs() const { return (value < 0) ? fixed(-value) : *this; }
     _FORCE_INLINE_ fixed operator-() const { return fixed(-value); }
-    _FORCE_INLINE_ fixed sqrt() const { return fixed(sg_sqrt_64(value)); }
+    _FORCE_INLINE_ fixed sqrt() const { return fixed(sg_sqrt_64(value << 16)); }
 
     fixed  sin() const;
     fixed  cos() const;
@@ -248,10 +248,8 @@ struct fixed_vector2 {
 
     fixed length() const;
     fixed length_squared() const;
-    int64_t length_squared_64() const;
 
     fixed dot(const fixed_vector2 &p_other) const;
-    int64_t dot_64(const fixed_vector2 &p_other) const;
     fixed cross(const fixed_vector2 &p_other) const;
 
     _FORCE_INLINE_ static fixed_vector2 linear_interpolate(const fixed_vector2 &p_a, const fixed_vector2 &p_b, fixed p_weight);
