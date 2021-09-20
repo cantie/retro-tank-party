@@ -7,11 +7,6 @@ MILESTONE 1 (physics):
    o Convert DropCrate and DropCrateSpawnArea
    o ... what next?
  - Broadphase
- - Ray cast
-   o Circles
-     * https://stackoverflow.com/questions/1073336/circle-line-segment-collision-detection-algorithm
-     * http://csharphelper.com/blog/2014/09/determine-where-a-line-intersects-a-circle-in-c/
-     * https://stackoverflow.com/questions/30844482/what-is-most-efficient-way-to-find-the-intersection-of-a-line-and-a-circle-in-py
  - Unit tests!
    o Reintroduce the physics server to allow testing in GDScript?
  - Code clean-up
@@ -20,8 +15,6 @@ MILESTONE 1 (physics):
    o Rename the fixed_* classes to be camel case?
    o Port over more (all?) of Vector2's methods?
    o Make consistent tabs vs spaces in all source files
- - Bugs:
-   o Sometimes rotating can teleport the tank into obvlivion (seen on the test scene)
 
 MILESTOE 2 (finish porting all the things):
 
