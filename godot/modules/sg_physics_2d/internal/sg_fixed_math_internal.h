@@ -293,11 +293,13 @@ struct fixed_rect2 {
     fixed_vector2 position;
     fixed_vector2 size;
 
+    _FORCE_INLINE_ fixed_rect2() {}
+
     _FORCE_INLINE_ fixed_rect2(fixed_vector2 p_position, fixed_vector2 p_size) 
         : position(p_position), size(p_size) {}
 
     _FORCE_INLINE_ fixed_vector2 get_min() const {
-        return position - size;
+        return position;
     }
 
     _FORCE_INLINE_ fixed_vector2 get_max() const {
