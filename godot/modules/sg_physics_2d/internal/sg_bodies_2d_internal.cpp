@@ -44,6 +44,17 @@ void SGCollisionObject2DInternal::remove_shape(SGShape2DInternal *p_shape) {
     SGWorld2DInternal::get_singleton()->remove_shape(p_shape);
 }
 
+fixed_rect2 SGCollisionObject2DInternal::get_bounds() const {
+    const List<SGShape2DInternal *>::Element *E = shapes.front();
+    fixed_rect2 bounds = E->get()->get_bounds();
+
+    for (E = E->next(); E; E = E->next()) {
+        bounds = bounds.merge(E->get()->get_bounds());
+    }
+
+    return bounds;
+}
+
 SGCollisionObject2DInternal::SGCollisionObject2DInternal() {
     data = nullptr;
     collision_layer = 1;

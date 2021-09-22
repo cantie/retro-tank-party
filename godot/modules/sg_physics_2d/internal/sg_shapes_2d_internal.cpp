@@ -44,9 +44,15 @@ Vector<fixed_vector2> SGShape2DInternal::get_global_axes() const {
     return global_axes;
 }
 
-fixed_rect2 SGRectangle2DInternal::get_bounds() const {
-    fixed_transform2d t = get_global_transform();
-    return fixed_rect2(t.get_origin(), extents * t.get_scale());
+fixed_rect2 SGShape2DInternal::get_bounds() const {
+    fixed_rect2 bounds;
+
+    Vector<fixed_vector2> points = get_global_vertices();
+    for (int i = 0; i < points.size(); i++) {
+        bounds.expand_to(points[i]);
+    }
+
+    return bounds;
 }
 
 Vector<fixed_vector2> SGRectangle2DInternal::get_global_vertices() const {
@@ -104,4 +110,10 @@ Vector<fixed_vector2> SGPolygon2DInternal::get_global_axes() const {
     }
 
     return global_axes;
+}
+
+fixed_rect2 SGCircle2DInternal::get_bounds() const {
+    fixed_transform2d t = get_global_transform();
+    fixed diameter(radius.value << 1);
+    return fixed_rect2(t.get_origin(), fixed_vector2(diameter, diameter) * t.get_scale().x);
 }

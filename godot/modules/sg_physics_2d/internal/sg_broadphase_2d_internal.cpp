@@ -86,8 +86,7 @@ SGBroadphase2DInternal::Element *SGBroadphase2DInternal::create_element(SGCollis
 	elements.push_back(element);
 
 	element->object = p_object;
-	// @todo Implement!
-	//element->bounds = p_object->get_bounds();
+	element->bounds = p_object->get_bounds();
 	_add_element_to_cells(element);
 
 	return element;

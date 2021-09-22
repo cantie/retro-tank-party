@@ -44,6 +44,8 @@ public:
     void add_shape(SGShape2DInternal *p_shape);
     void remove_shape(SGShape2DInternal *p_shape);
 
+    fixed_rect2 get_bounds() const;
+
     _FORCE_INLINE_ const List<SGShape2DInternal *> &get_shapes() const {
         return shapes;
     }

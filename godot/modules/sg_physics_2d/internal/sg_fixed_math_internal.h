@@ -306,6 +306,48 @@ struct fixed_rect2 {
         return position + size;
     }
 
+    inline bool intersects(const fixed_rect2 &p_other) const {
+        fixed_vector2 min_one = get_min();
+        fixed_vector2 max_one = get_max();
+        fixed_vector2 min_two = p_other.get_min();
+        fixed_vector2 max_two = p_other.get_max();
+
+        return (min_two.x <= max_one.x) && (min_one.x <= max_two.x) && \
+            (min_two.y <= max_one.y) && (min_one.y <= max_two.y);
+    }
+
+	inline fixed_rect2 merge(const fixed_rect2 &p_rect) const {
+        fixed_rect2 new_rect;
+
+        new_rect.position.x = MIN(p_rect.position.x, position.x);
+        new_rect.position.y = MIN(p_rect.position.y, position.y);
+
+        new_rect.size.x = MAX(p_rect.position.x + p_rect.size.x, position.x + size.x);
+        new_rect.size.y = MAX(p_rect.position.y + p_rect.size.y, position.y + size.y);
+
+        // Make relative again.
+        new_rect.size = new_rect.size - new_rect.position;
+
+        return new_rect;
+    };
+
+	inline void expand_to(const fixed_vector2 &p_vector) {
+        fixed_vector2 begin = position;
+        fixed_vector2 end = position + size;
+
+        if (p_vector.x < begin.x)
+            begin.x = p_vector.x;
+        if (p_vector.y < begin.y)
+            begin.y = p_vector.y;
+
+        if (p_vector.x > end.x)
+            end.x = p_vector.x;
+        if (p_vector.y > end.y)
+            end.y = p_vector.y;
+
+        position = begin;
+        size = end - begin;
+	}
 };
 
 struct fixed_transform2d {

@@ -75,6 +75,7 @@ public:
 
     virtual Vector<fixed_vector2> get_global_vertices() const;
     virtual Vector<fixed_vector2> get_global_axes() const;
+    virtual fixed_rect2 get_bounds() const;
 
     SGShape2DInternal(ShapeType p_shape_type) {
         shape_type = p_shape_type;
@@ -96,8 +97,6 @@ public:
         global_vertices.clear();
     }
 
-    fixed_rect2 get_bounds() const;
-
     virtual Vector<fixed_vector2> get_global_vertices() const override;
     virtual Vector<fixed_vector2> get_global_axes() const override;
 
@@ -118,6 +117,8 @@ protected:
 public:
     _FORCE_INLINE_ fixed get_radius() const { return radius; }
     _FORCE_INLINE_ void set_radius(const fixed &p_radius) { radius = p_radius; }
+
+    virtual fixed_rect2 get_bounds() const override;
 
     SGCircle2DInternal(fixed p_radius)
         : SGShape2DInternal(SHAPE_CIRCLE)
