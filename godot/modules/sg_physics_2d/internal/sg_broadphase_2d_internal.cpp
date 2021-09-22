@@ -100,6 +100,7 @@ void SGBroadphase2DInternal::update_element(Element *p_element) {
 
 void SGBroadphase2DInternal::delete_element(Element *p_element) {
 	_remove_element_from_cells(p_element);
+	elements.erase(p_element);
 	memdelete(p_element);
 }
 
@@ -152,8 +153,8 @@ SGBroadphase2DInternal::SGBroadphase2DInternal(int p_cell_size) {
 }
 
 SGBroadphase2DInternal::~SGBroadphase2DInternal() {
+	_clear_cells();
 	for (List<Element *>::Element *E = elements.front(); E; E = E->next()) {
 		memdelete(E->get());
 	}
-	_clear_cells();
 }
