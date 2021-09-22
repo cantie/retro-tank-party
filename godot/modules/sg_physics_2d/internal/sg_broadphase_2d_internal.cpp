@@ -23,7 +23,9 @@
 
 #include "sg_broadphase_2d_internal.h"
 
-void SGBroadphase2DInternal::_add_element_to_cells(Element *p_element) {
+#include "sg_bodies_2d_internal.h"
+
+void SGBroadphase2DInternal::_add_element_to_cells(SGBroadphase2DInternalElement *p_element) {
 	fixed_vector2 min = p_element->bounds.get_min();
 	fixed_vector2 max = p_element->bounds.get_max();
 
@@ -50,12 +52,12 @@ void SGBroadphase2DInternal::_add_element_to_cells(Element *p_element) {
 			}
 
 			cell->elements.push_back(p_element);
-			p_element->indices.write[index++] = key;
+			p_element->indices.write[index++] = key.key;
 		}
 	}
 }
 
-void SGBroadphase2DInternal::_remove_element_from_cells(Element *p_element) {
+void SGBroadphase2DInternal::_remove_element_from_cells(SGBroadphase2DInternalElement *p_element) {
 	for (int i = 0; i < p_element->indices.size(); i++) {
 		HashKey key = p_element->indices[i];
 		Map<HashKey, Cell *>::Element *cell_element = cells.find(key);
@@ -81,8 +83,8 @@ void SGBroadphase2DInternal::_clear_cells() {
 	cells.clear();
 }
 
-SGBroadphase2DInternal::Element *SGBroadphase2DInternal::create_element(SGCollisionObject2DInternal *p_object) {
-	Element *element = memnew(Element);
+SGBroadphase2DInternalElement *SGBroadphase2DInternal::create_element(SGCollisionObject2DInternal *p_object) {
+	SGBroadphase2DInternalElement *element = memnew(SGBroadphase2DInternalElement);
 	elements.push_back(element);
 
 	element->object = p_object;
@@ -92,18 +94,18 @@ SGBroadphase2DInternal::Element *SGBroadphase2DInternal::create_element(SGCollis
 	return element;
 }
 
-void SGBroadphase2DInternal::update_element(Element *p_element) {
+void SGBroadphase2DInternal::update_element(SGBroadphase2DInternalElement *p_element) {
 	_remove_element_from_cells(p_element);
 	_add_element_to_cells(p_element);
 }
 
-void SGBroadphase2DInternal::delete_element(Element *p_element) {
+void SGBroadphase2DInternal::delete_element(SGBroadphase2DInternalElement *p_element) {
 	_remove_element_from_cells(p_element);
 	elements.erase(p_element);
 	memdelete(p_element);
 }
 
-Set<SGCollisionObject2DInternal *> *SGBroadphase2DInternal::find_nearby(const fixed_rect2 &p_bounds) const {
+Set<SGCollisionObject2DInternal *> *SGBroadphase2DInternal::find_nearby(const fixed_rect2 &p_bounds, SGCollisionObject2DInternal::Type p_type) const {
 	Set<SGCollisionObject2DInternal *> *results = memnew(Set<SGCollisionObject2DInternal *>);
 
 	fixed_vector2 min = p_bounds.get_min();
@@ -125,8 +127,11 @@ Set<SGCollisionObject2DInternal *> *SGBroadphase2DInternal::find_nearby(const fi
 			}
 
 			cell = cell_element->get();
-			for (List<Element *>::Element *E = cell->elements.front(); E; E = E->next()) {
-				results->insert(E->get()->object);
+			for (List<SGBroadphase2DInternalElement *>::Element *E = cell->elements.front(); E; E = E->next()) {
+				SGBroadphase2DInternalElement *element = E->get();
+				if (element->object->get_type() & p_type) {
+					results->insert(E->get()->object);
+				}
 			}
 		}
 	}
@@ -139,8 +144,8 @@ void SGBroadphase2DInternal::set_cell_size(int p_cell_size) {
 		cell_size = p_cell_size;
 
 		_clear_cells();
-		for (List<Element *>::Element *E = elements.front(); E; E = E->next()) {
-			Element *element = E->get();
+		for (List<SGBroadphase2DInternalElement *>::Element *E = elements.front(); E; E = E->next()) {
+			SGBroadphase2DInternalElement *element = E->get();
 			element->indices.clear();
 			_add_element_to_cells(element);
 		}
@@ -153,7 +158,7 @@ SGBroadphase2DInternal::SGBroadphase2DInternal(int p_cell_size) {
 
 SGBroadphase2DInternal::~SGBroadphase2DInternal() {
 	_clear_cells();
-	for (List<Element *>::Element *E = elements.front(); E; E = E->next()) {
+	for (List<SGBroadphase2DInternalElement *>::Element *E = elements.front(); E; E = E->next()) {
 		memdelete(E->get());
 	}
 }

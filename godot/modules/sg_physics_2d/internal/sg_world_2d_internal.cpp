@@ -23,8 +23,11 @@
 
 #include "sg_world_2d_internal.h"
 
+#include <core/project_settings.h>
+
 #include "sg_bodies_2d_internal.h"
 #include "sg_shapes_2d_internal.h"
+#include "sg_broadphase_2d_internal.h"
 #include "sg_collision_detector_2d_internal.h"
 
 SGWorld2DInternal *SGWorld2DInternal::singleton = NULL;
@@ -35,26 +38,22 @@ SGWorld2DInternal *SGWorld2DInternal::get_singleton() {
 
 void SGWorld2DInternal::add_area(SGArea2DInternal *p_area) {
     areas.push_back(p_area);
+    p_area->add_to_broadphase(broadphase);
 }
 
 void SGWorld2DInternal::remove_area(SGArea2DInternal *p_area) {
     areas.erase(p_area);
+    p_area->remove_from_broadphase();
 }
 
 void SGWorld2DInternal::add_body(SGBody2DInternal *p_body) {
     bodies.push_back(p_body);
+    p_body->add_to_broadphase(broadphase);
 }
 
 void SGWorld2DInternal::remove_body(SGBody2DInternal *p_body) {
     bodies.erase(p_body);
-}
-
-void SGWorld2DInternal::add_shape(SGShape2DInternal *p_shape) {
-    shapes.push_back(p_shape);
-}
-
-void SGWorld2DInternal::remove_shape(SGShape2DInternal *p_shape) {
-    shapes.erase(p_shape);
+    p_body->remove_from_broadphase();
 }
 
 bool SGWorld2DInternal::overlaps(SGCollisionObject2DInternal *p_object1, SGCollisionObject2DInternal *p_object2, SGWorld2DInternal::OverlapInfo *p_info) const {
@@ -122,8 +121,11 @@ bool SGWorld2DInternal::overlaps(SGShape2DInternal *p_shape1, SGShape2DInternal 
 }
 
 bool SGWorld2DInternal::get_best_overlapping_body(SGCollisionObject2DInternal *p_object, SGWorld2DInternal::OverlapInfo *p_info) const {
-    for (const List<SGBody2DInternal *>::Element *E = bodies.front(); E; E = E->next()) {
-        SGBody2DInternal *other = E->get();
+    bool overlapping = false;
+
+    Set<SGCollisionObject2DInternal *> *nearby_bodies = broadphase->find_nearby(p_object->get_bounds(), SGCollisionObject2DInternal::TYPE_BODY);
+    for (Set<SGCollisionObject2DInternal *>::Element *E = nearby_bodies->front(); E; E = E->next()) {
+        SGBody2DInternal *other = (SGBody2DInternal *)E->get();
         if (other == p_object) {
             continue;
         }
@@ -132,22 +134,25 @@ bool SGWorld2DInternal::get_best_overlapping_body(SGCollisionObject2DInternal *p
             continue;
         }
 
-        if (overlaps(p_object, other, p_info)) {
+        overlapping = overlaps(p_object, other, p_info);
+        if (overlapping) {
             // @todo We should return the info for the collision with the deepest penetration.
             // For now, just return the info for the first overlapping shape.
             p_info->body = other;
-            return true;
+            break;
         }
     }
+    memdelete(nearby_bodies);
 
-    return false;
+    return overlapping;
 }
 
 List<SGArea2DInternal *> *SGWorld2DInternal::get_overlapping_areas(SGCollisionObject2DInternal *p_object) const {
     List<SGArea2DInternal *> *ret = memnew(List<SGArea2DInternal *>);
 
-    for (const List<SGArea2DInternal *>::Element *E = areas.front(); E; E = E->next()) {
-        SGArea2DInternal *other = E->get();
+    Set<SGCollisionObject2DInternal *> *nearby_bodies = broadphase->find_nearby(p_object->get_bounds(), SGCollisionObject2DInternal::TYPE_AREA);
+    for (Set<SGCollisionObject2DInternal *>::Element *E = nearby_bodies->front(); E; E = E->next()) {
+        SGArea2DInternal *other = (SGArea2DInternal *)E->get();
         if (other == p_object) {
             continue;
         }
@@ -160,6 +165,7 @@ List<SGArea2DInternal *> *SGWorld2DInternal::get_overlapping_areas(SGCollisionOb
             ret->push_back(other);
         }
     }
+    memdelete(nearby_bodies);
 
     return ret;
 }
@@ -167,8 +173,9 @@ List<SGArea2DInternal *> *SGWorld2DInternal::get_overlapping_areas(SGCollisionOb
 List<SGBody2DInternal *> *SGWorld2DInternal::get_overlapping_bodies(SGCollisionObject2DInternal *p_object) const {
     List<SGBody2DInternal *> *ret = memnew(List<SGBody2DInternal *>);
 
-    for (const List<SGBody2DInternal *>::Element *E = bodies.front(); E; E = E->next()) {
-        SGBody2DInternal *other = E->get();
+    Set<SGCollisionObject2DInternal *> *nearby_bodies = broadphase->find_nearby(p_object->get_bounds(), SGCollisionObject2DInternal::TYPE_BODY);
+    for (Set<SGCollisionObject2DInternal *>::Element *E = nearby_bodies->front(); E; E = E->next()) {
+        SGBody2DInternal *other = (SGBody2DInternal *)E->get();
         if (other == p_object) {
             continue;
         }
@@ -181,6 +188,7 @@ List<SGBody2DInternal *> *SGWorld2DInternal::get_overlapping_bodies(SGCollisionO
             ret->push_back(other);
         }
     }
+    memdelete(nearby_bodies);
 
     return ret;
 }
@@ -212,8 +220,12 @@ bool SGWorld2DInternal::cast_ray(const fixed_vector2 &p_start, const fixed_vecto
     fixed_vector2 intersection_point;
     fixed_vector2 collision_normal;
 
-    for (const List<SGBody2DInternal *>::Element *E = bodies.front(); E; E = E->next()) {
-        SGBody2DInternal *other = E->get();
+    fixed_rect2 bounds(p_start, fixed_vector2());
+    bounds.expand_to(p_start + p_cast_to);
+
+    Set<SGCollisionObject2DInternal *> *nearby_bodies = broadphase->find_nearby(bounds, SGCollisionObject2DInternal::TYPE_BODY);
+    for (Set<SGCollisionObject2DInternal *>::Element *E = nearby_bodies->front(); E; E = E->next()) {
+        SGBody2DInternal *other = (SGBody2DInternal *)E->get();
         if (!(other->get_collision_layer() & p_collision_mask)) {
             continue;
         }
@@ -222,6 +234,7 @@ bool SGWorld2DInternal::cast_ray(const fixed_vector2 &p_start, const fixed_vecto
             SGShape2DInternal *shape = S->get();
             if (segment_intersects_shape(p_start, p_cast_to, shape, intersection_point, collision_normal)) {
                 if (p_info == nullptr) {
+                    memdelete(nearby_bodies);
                     return true;
                 }
 
@@ -235,6 +248,7 @@ bool SGWorld2DInternal::cast_ray(const fixed_vector2 &p_start, const fixed_vecto
             }
         }
     }
+    memdelete(nearby_bodies);
 
     if (p_info && collider) {
         p_info->body = collider;
@@ -248,9 +262,16 @@ bool SGWorld2DInternal::cast_ray(const fixed_vector2 &p_start, const fixed_vecto
 
 SGWorld2DInternal::SGWorld2DInternal()
 {
+    int cell_size = ProjectSettings::get_singleton()->get_setting("physics/2d/cell_size");
+    if (cell_size == 0) {
+        cell_size = 128;
+    }
+
+    broadphase = memnew(SGBroadphase2DInternal(cell_size));
     singleton = this;
 }
 
 SGWorld2DInternal::~SGWorld2DInternal() {
+    memdelete(broadphase);
     singleton = nullptr;
 }

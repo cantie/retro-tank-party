@@ -24,27 +24,47 @@
 #include "sg_bodies_2d_internal.h"
 
 #include "sg_world_2d_internal.h"
+#include "sg_broadphase_2d_internal.h"
 
 void SGCollisionObject2DInternal::set_transform(const fixed_transform2d &p_transform) {
     transform = p_transform;
     for (List<SGShape2DInternal *>::Element *E = shapes.front(); E; E = E->next()) {
         E->get()->mark_global_xform_dirty();
     }
+
+    if (broadphase) {
+        if (broadphase_element) {
+            broadphase->update_element(broadphase_element);
+        }
+        else {
+            broadphase_element = broadphase->create_element(this);
+        }
+    }
 }
 
 void SGCollisionObject2DInternal::add_shape(SGShape2DInternal *p_shape) {
     p_shape->set_owner(this);
     shapes.push_back(p_shape);
-    SGWorld2DInternal::get_singleton()->add_shape(p_shape);
+
+    if (broadphase && broadphase_element) {
+        broadphase->update_element(broadphase_element);
+    }
 }
 
 void SGCollisionObject2DInternal::remove_shape(SGShape2DInternal *p_shape) {
     p_shape->set_owner(nullptr);
     shapes.erase(p_shape);
-    SGWorld2DInternal::get_singleton()->remove_shape(p_shape);
+
+    if (broadphase && broadphase_element) {
+        broadphase->update_element(broadphase_element);
+    }
 }
 
 fixed_rect2 SGCollisionObject2DInternal::get_bounds() const {
+    if (shapes.size() == 0) {
+        return fixed_rect2(transform.get_origin(), fixed_vector2());
+    }
+
     const List<SGShape2DInternal *>::Element *E = shapes.front();
     fixed_rect2 bounds = E->get()->get_bounds();
 
@@ -55,16 +75,39 @@ fixed_rect2 SGCollisionObject2DInternal::get_bounds() const {
     return bounds;
 }
 
-SGCollisionObject2DInternal::SGCollisionObject2DInternal() {
+void SGCollisionObject2DInternal::add_to_broadphase(SGBroadphase2DInternal *p_broadphase) {
+    remove_from_broadphase();
+    broadphase = p_broadphase;
+    // Defer creation of the broadphase element until we update the transform.
+    broadphase_element = nullptr;
+}
+
+void SGCollisionObject2DInternal::remove_from_broadphase() {
+    if (broadphase) {
+        if (broadphase_element) {
+            broadphase->delete_element(broadphase_element);
+        }
+        broadphase = nullptr;
+        broadphase_element = nullptr;
+    }
+}
+
+SGCollisionObject2DInternal::SGCollisionObject2DInternal(Type p_type) {
+    type = p_type;
+    broadphase = nullptr;
+    broadphase_element = nullptr;
     data = nullptr;
     collision_layer = 1;
     collision_mask = 1;
 }
 
 SGCollisionObject2DInternal::~SGCollisionObject2DInternal() {
+    remove_from_broadphase();
 }
 
-SGArea2DInternal::SGArea2DInternal() {
+SGArea2DInternal::SGArea2DInternal()
+    : SGCollisionObject2DInternal(TYPE_AREA)
+{
     SGWorld2DInternal::get_singleton()->add_area(this);
 }
 
@@ -72,7 +115,9 @@ SGArea2DInternal::~SGArea2DInternal() {
     SGWorld2DInternal::get_singleton()->remove_area(this);
 }
 
-SGBody2DInternal::SGBody2DInternal(BodyType p_type) {
+SGBody2DInternal::SGBody2DInternal(BodyType p_type)
+    : SGCollisionObject2DInternal(TYPE_BODY)
+{
     type = p_type;
     SGWorld2DInternal::get_singleton()->add_body(this);
 }

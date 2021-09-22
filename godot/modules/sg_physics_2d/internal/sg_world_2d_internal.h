@@ -32,11 +32,12 @@ class SGArea2DInternal;
 class SGBody2DInternal;
 class SGCollisionObject2DInternal;
 class SGShape2DInternal;
+class SGBroadphase2DInternal;
 
 class SGWorld2DInternal {
     List<SGArea2DInternal *> areas;
     List<SGBody2DInternal *> bodies;
-    List<SGShape2DInternal *> shapes;
+    SGBroadphase2DInternal *broadphase;
 
     static SGWorld2DInternal *singleton;
 
@@ -66,13 +67,12 @@ public:
 
     _FORCE_INLINE_ const List<SGBody2DInternal *> &get_bodies() const { return bodies; }
     _FORCE_INLINE_ const List<SGArea2DInternal *> &get_areas() const { return areas; }
+    _FORCE_INLINE_ const SGBroadphase2DInternal *get_broadphase() const { return broadphase; }
 
     void add_area(SGArea2DInternal *p_area);
     void remove_area(SGArea2DInternal *p_area);
     void add_body(SGBody2DInternal *p_body);
     void remove_body(SGBody2DInternal *p_body);
-    void add_shape(SGShape2DInternal *p_shape);
-    void remove_shape(SGShape2DInternal *p_shape);
 
     bool overlaps(SGCollisionObject2DInternal *p_object1, SGCollisionObject2DInternal *p_object2, OverlapInfo *p_info = nullptr) const;
     bool overlaps(SGShape2DInternal *p_shape1, SGShape2DInternal *p_shape2, OverlapInfo *p_info = nullptr) const;

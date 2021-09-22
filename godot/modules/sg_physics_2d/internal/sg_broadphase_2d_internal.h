@@ -26,6 +26,16 @@
 
 #include "sg_bodies_2d_internal.h"
 
+struct SGBroadphase2DInternalElement {
+	SGCollisionObject2DInternal *object;
+	fixed_rect2 bounds;
+	Vector<uint64_t> indices;
+
+	_FORCE_INLINE_ SGBroadphase2DInternalElement() {
+		object = nullptr;
+	}
+};
+
 class SGBroadphase2DInternal {
 
 	struct HashKey {
@@ -44,38 +54,31 @@ class SGBroadphase2DInternal {
 			y = p_y;
 		}
 
+		_FORCE_INLINE_ HashKey(uint64_t p_key) {
+			key = p_key;
+		}
+
 		_FORCE_INLINE_ bool operator<(HashKey p_other) const { return key < p_other.key; }
 	};
 
-	struct Element {
-		SGCollisionObject2DInternal *object;
-		fixed_rect2 bounds;
-		Vector<HashKey> indices;
-
-		_FORCE_INLINE_ Element() {
-			object = nullptr;
-		}
-	};
-
 	struct Cell {
-		List<Element *> elements;
+		List<SGBroadphase2DInternalElement *> elements;
 	};
 
-	List<Element *> elements;
+	List<SGBroadphase2DInternalElement *> elements;
 	Map<HashKey, Cell *> cells;
 	int cell_size;
 
-	void _add_element_to_cells(Element *p_element);
-	void _remove_element_from_cells(Element *p_element);
+	void _add_element_to_cells(SGBroadphase2DInternalElement *p_element);
+	void _remove_element_from_cells(SGBroadphase2DInternalElement *p_element);
 	void _clear_cells();
 
 public:
+	SGBroadphase2DInternalElement *create_element(SGCollisionObject2DInternal *p_object);
+	void update_element(SGBroadphase2DInternalElement *p_element);
+	void delete_element(SGBroadphase2DInternalElement *p_element);
 
-	Element *create_element(SGCollisionObject2DInternal *p_object);
-	void update_element(Element *p_element);
-	void delete_element(Element *p_element);
-
-	Set<SGCollisionObject2DInternal *> *find_nearby(const fixed_rect2 &p_bounds) const;
+	Set<SGCollisionObject2DInternal *> *find_nearby(const fixed_rect2 &p_bounds, SGCollisionObject2DInternal::Type p_type = SGCollisionObject2DInternal::TYPE_BOTH) const;
 
 	void set_cell_size(int p_cell_size);
 

@@ -99,7 +99,6 @@ void SGCollisionObject2D::sync_from_physics_engine() {
 }
 
 void SGCollisionObject2D::sync_to_physics_engine() const {
-    internal->set_transform(get_global_fixed_transform_internal());
     for (int i = 0; i < get_child_count(); i++) {
         SGCollisionShape2D *shape = Object::cast_to<SGCollisionShape2D>(get_child(i));
         if (shape) {
@@ -112,6 +111,10 @@ void SGCollisionObject2D::sync_to_physics_engine() const {
             }
         }
     }
+
+    // Update the body last, because then the shape info will be all setup to
+    // be used for updating the body's broadphase element.
+    internal->set_transform(get_global_fixed_transform_internal());
 }
 
 uint32_t SGCollisionObject2D::get_collision_layer() const {

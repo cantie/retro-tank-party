@@ -45,10 +45,13 @@ Vector<fixed_vector2> SGShape2DInternal::get_global_axes() const {
 }
 
 fixed_rect2 SGShape2DInternal::get_bounds() const {
-    fixed_rect2 bounds;
-
     Vector<fixed_vector2> points = get_global_vertices();
-    for (int i = 0; i < points.size(); i++) {
+    if (points.size() == 0) {
+        return fixed_rect2(global_transform.get_origin(), fixed_vector2());
+    }
+
+    fixed_rect2 bounds(points[0], fixed_vector2());
+    for (int i = 1; i < points.size(); i++) {
         bounds.expand_to(points[i]);
     }
 

@@ -28,27 +28,45 @@
 
 #include "sg_shapes_2d_internal.h"
 
-class SGCollisionObject2DInternal {
+class SGBroadphase2DInternal;
+class SGBroadphase2DInternalElement;
 
+class SGCollisionObject2DInternal {
+public:
+    enum Type {
+        TYPE_AREA = 1,
+        TYPE_BODY = 2,
+        TYPE_BOTH = (TYPE_AREA | TYPE_BODY),
+    };
+
+private:
+    Type type;
     fixed_transform2d transform;
     List<SGShape2DInternal *> shapes;
+    SGBroadphase2DInternal *broadphase;
+    SGBroadphase2DInternalElement *broadphase_element;
     void *data;
 
     uint32_t collision_layer;
     uint32_t collision_mask;
     
 public:
+    _FORCE_INLINE_ Type get_type() const { return type; }
+
     _FORCE_INLINE_ fixed_transform2d get_transform() const { return transform; }
     void set_transform(const fixed_transform2d &p_transform);
 
     void add_shape(SGShape2DInternal *p_shape);
     void remove_shape(SGShape2DInternal *p_shape);
 
-    fixed_rect2 get_bounds() const;
-
     _FORCE_INLINE_ const List<SGShape2DInternal *> &get_shapes() const {
         return shapes;
     }
+
+    fixed_rect2 get_bounds() const;
+   
+    void add_to_broadphase(SGBroadphase2DInternal *p_broadphase);
+    void remove_from_broadphase();
 
     _FORCE_INLINE_ void set_data(void *p_data) { data = p_data; }
     _FORCE_INLINE_ void *get_data() const { return data; }
@@ -63,7 +81,7 @@ public:
         return (collision_layer & p_other->collision_mask) || (p_other->collision_layer & collision_mask);
     }
 
-    SGCollisionObject2DInternal();
+    SGCollisionObject2DInternal(Type p_type);
     virtual ~SGCollisionObject2DInternal();
 
 };
