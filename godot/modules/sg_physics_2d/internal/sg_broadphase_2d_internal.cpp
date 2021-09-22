@@ -24,12 +24,61 @@
 #include "sg_broadphase_2d_internal.h"
 
 void SGBroadphase2DInternal::_add_element_to_cells(Element *p_element) {
-	// @todo Implement!
+	fixed_vector2 min = p_element->bounds.get_min();
+	fixed_vector2 max = p_element->bounds.get_max();
+
+	int32_t from_x = min.x.to_int() / cell_size;
+	int32_t from_y = min.y.to_int() / cell_size;
+	int32_t to_x = max.x.to_int() / cell_size;
+	int32_t to_y = max.y.to_int() / cell_size;
+
+	p_element->indices.resize(((to_x + 1) - from_x) * ((to_y + 1) - from_y));
+	int index = 0;
+
+	for (int32_t x = from_x; x <= to_x; x++) {
+		for (int32_t y = from_y; y <= to_y; y++) {
+			HashKey key(x, y);
+			Map<HashKey, Cell *>::Element *cell_element = cells.find(key);
+			Cell *cell;
+
+			if (cell_element) {
+				cell = cell_element->get();
+			}
+			else {
+				cell = memnew(Cell);
+				cell_element = cells.insert(key, cell);
+			}
+
+			cell->elements.push_back(p_element);
+			p_element->indices.write[index++] = key;
+		}
+	}
 }
 
 void SGBroadphase2DInternal::_remove_element_from_cells(Element *p_element) {
+	for (int i = 0; i < p_element->indices.size(); i++) {
+		HashKey key = p_element->indices[i];
+		Map<HashKey, Cell *>::Element *cell_element = cells.find(key);
+
+		if (!cell_element) {
+			continue;
+		}
+
+		Cell *cell = cell_element->get();
+		cell->elements.erase(p_element);
+
+		if (cell->elements.size() == 0) {
+			cells.erase(key);
+		}
+	}
 	p_element->indices.clear();
-	// @todo Implement!
+}
+
+void SGBroadphase2DInternal::_clear_cells() {
+	for (Map<HashKey, Cell *>::Element *E = cells.front(); E; E = E->next()) {
+		memdelete(E->get());
+	}
+	cells.clear();
 }
 
 SGBroadphase2DInternal::Element *SGBroadphase2DInternal::create_element(SGCollisionObject2DInternal *p_object) {
@@ -37,6 +86,7 @@ SGBroadphase2DInternal::Element *SGBroadphase2DInternal::create_element(SGCollis
 	elements.push_back(element);
 
 	element->object = p_object;
+	// @todo Implement!
 	//element->bounds = p_object->get_bounds();
 	_add_element_to_cells(element);
 
@@ -56,7 +106,30 @@ void SGBroadphase2DInternal::delete_element(Element *p_element) {
 Set<SGCollisionObject2DInternal *> *SGBroadphase2DInternal::find_nearby(const fixed_rect2 &p_bounds) const {
 	Set<SGCollisionObject2DInternal *> *results = memnew(Set<SGCollisionObject2DInternal *>);
 
-	// @todo Implement!
+	fixed_vector2 min = p_bounds.get_min();
+	fixed_vector2 max = p_bounds.get_max();
+
+	int32_t from_x = min.x.to_int() / cell_size;
+	int32_t from_y = min.y.to_int() / cell_size;
+	int32_t to_x = max.x.to_int() / cell_size;
+	int32_t to_y = max.y.to_int() / cell_size;
+
+	for (int32_t x = from_x; x <= to_x; x++) {
+		for (int32_t y = from_y; y <= to_y; y++) {
+			HashKey key(x, y);
+			const Map<HashKey, Cell *>::Element *cell_element = cells.find(key);
+			Cell *cell;
+
+			if (!cell_element) {
+				continue;
+			}
+
+			cell = cell_element->get();
+			for (List<Element *>::Element *E = cell->elements.front(); E; E = E->next()) {
+				results->insert(E->get()->object);
+			}
+		}
+	}
 
 	return results;
 }
@@ -65,7 +138,7 @@ void SGBroadphase2DInternal::set_cell_size(int p_cell_size) {
 	if (cell_size != p_cell_size) {
 		cell_size = p_cell_size;
 
-		cells.clear();
+		_clear_cells();
 		for (List<Element *>::Element *E = elements.front(); E; E = E->next()) {
 			Element *element = E->get();
 			element->indices.clear();
@@ -82,4 +155,5 @@ SGBroadphase2DInternal::~SGBroadphase2DInternal() {
 	for (List<Element *>::Element *E = elements.front(); E; E = E->next()) {
 		memdelete(E->get());
 	}
+	_clear_cells();
 }

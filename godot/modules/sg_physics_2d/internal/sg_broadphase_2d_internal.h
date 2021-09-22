@@ -44,7 +44,7 @@ class SGBroadphase2DInternal {
 			y = p_y;
 		}
 
-		_FORCE_INLINE_ bool operator<(HashKey p_other) { return key < p_other.key; }
+		_FORCE_INLINE_ bool operator<(HashKey p_other) const { return key < p_other.key; }
 	};
 
 	struct Element {
@@ -62,11 +62,12 @@ class SGBroadphase2DInternal {
 	};
 
 	List<Element *> elements;
-	Map<HashKey, Cell> cells;
+	Map<HashKey, Cell *> cells;
 	int cell_size;
 
 	void _add_element_to_cells(Element *p_element);
 	void _remove_element_from_cells(Element *p_element);
+	void _clear_cells();
 
 public:
 
