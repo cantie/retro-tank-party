@@ -56,10 +56,10 @@ Array SGArea2D::get_overlapping_bodies() const {
     List<SGBody2DInternal *> *overlapping_bodies = SGWorld2DInternal::get_singleton()->get_overlapping_bodies((SGArea2DInternal *)internal);
     for (List<SGBody2DInternal *>::Element *E = overlapping_bodies->front(); E; E = E->next()) {
         SGBody2DInternal *overlapping_body = E->get();
-        if (overlapping_body->get_type() == SGBody2DInternal::BODY_STATIC) {
+        if (overlapping_body->get_body_type() == SGBody2DInternal::BODY_STATIC) {
             ret.push_back((SGStaticBody2D *)overlapping_body->get_data());
         }
-        else if (overlapping_body->get_type() == SGBody2DInternal::BODY_KINEMATIC) {
+        else if (overlapping_body->get_body_type() == SGBody2DInternal::BODY_KINEMATIC) {
             ret.push_back((SGKinematicBody2D *)overlapping_body->get_data());
         }
     }

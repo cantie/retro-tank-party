@@ -1,4 +1,4 @@
-[gd_scene load_steps=7 format=2]
+[gd_scene load_steps=8 format=2]
 
 [ext_resource path="res://PhysicsTest2.gd" type="Script" id=1]
 [ext_resource path="res://src/objects/cover/TreeBig.tscn" type="PackedScene" id=2]
@@ -11,6 +11,10 @@ extents = Object(SGFixedVector2,"x":3276800,"y":3276800,"script":null)
 
 [sub_resource type="SGCircleShape2D" id=2]
 radius = 3635322
+
+[sub_resource type="SGRectangleShape2D" id=3]
+extents = Object(SGFixedVector2,"x":4259840,"y":4259840,"script":null)
+
 
 [node name="PhysicsTest2" type="Node2D"]
 position = Vector2( -1, 0 )
@@ -122,3 +126,18 @@ fixed_position = Object(SGFixedVector2,"x":51314688,"y":32636928,"script":null)
 
 fixed_scale = Object(SGFixedVector2,"x":65536,"y":65536,"script":null)
 
+
+[node name="Area" type="SGArea2D" parent="."]
+position = Vector2( 406, 512 )
+fixed_position = Object(SGFixedVector2,"x":26607616,"y":33554432,"script":null)
+
+fixed_scale = Object(SGFixedVector2,"x":65536,"y":65536,"script":null)
+
+collision_mask = 2
+
+[node name="SGCollisionShape2D" type="SGCollisionShape2D" parent="Area"]
+fixed_position = Object(SGFixedVector2,"x":0,"y":0,"script":null)
+
+fixed_scale = Object(SGFixedVector2,"x":65536,"y":65536,"script":null)
+
+shape = SubResource( 3 )

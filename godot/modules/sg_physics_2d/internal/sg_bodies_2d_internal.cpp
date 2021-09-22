@@ -92,8 +92,8 @@ void SGCollisionObject2DInternal::remove_from_broadphase() {
     }
 }
 
-SGCollisionObject2DInternal::SGCollisionObject2DInternal(Type p_type) {
-    type = p_type;
+SGCollisionObject2DInternal::SGCollisionObject2DInternal(ObjectType p_type) {
+    object_type = p_type;
     broadphase = nullptr;
     broadphase_element = nullptr;
     data = nullptr;
@@ -106,7 +106,7 @@ SGCollisionObject2DInternal::~SGCollisionObject2DInternal() {
 }
 
 SGArea2DInternal::SGArea2DInternal()
-    : SGCollisionObject2DInternal(TYPE_AREA)
+    : SGCollisionObject2DInternal(OBJECT_AREA)
 {
     SGWorld2DInternal::get_singleton()->add_area(this);
 }
@@ -116,9 +116,9 @@ SGArea2DInternal::~SGArea2DInternal() {
 }
 
 SGBody2DInternal::SGBody2DInternal(BodyType p_type)
-    : SGCollisionObject2DInternal(TYPE_BODY)
+    : SGCollisionObject2DInternal(OBJECT_BODY)
 {
-    type = p_type;
+    body_type = p_type;
     SGWorld2DInternal::get_singleton()->add_body(this);
 }
 

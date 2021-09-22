@@ -71,6 +71,7 @@ void SGBroadphase2DInternal::_remove_element_from_cells(SGBroadphase2DInternalEl
 
 		if (cell->elements.size() == 0) {
 			cells.erase(key);
+			memdelete(cell);
 		}
 	}
 	p_element->indices.clear();
@@ -96,6 +97,7 @@ SGBroadphase2DInternalElement *SGBroadphase2DInternal::create_element(SGCollisio
 
 void SGBroadphase2DInternal::update_element(SGBroadphase2DInternalElement *p_element) {
 	_remove_element_from_cells(p_element);
+	p_element->bounds = p_element->object->get_bounds();
 	_add_element_to_cells(p_element);
 }
 
@@ -105,7 +107,7 @@ void SGBroadphase2DInternal::delete_element(SGBroadphase2DInternalElement *p_ele
 	memdelete(p_element);
 }
 
-Set<SGCollisionObject2DInternal *> *SGBroadphase2DInternal::find_nearby(const fixed_rect2 &p_bounds, SGCollisionObject2DInternal::Type p_type) const {
+Set<SGCollisionObject2DInternal *> *SGBroadphase2DInternal::find_nearby(const fixed_rect2 &p_bounds, SGCollisionObject2DInternal::ObjectType p_type) const {
 	Set<SGCollisionObject2DInternal *> *results = memnew(Set<SGCollisionObject2DInternal *>);
 
 	fixed_vector2 min = p_bounds.get_min();
@@ -129,7 +131,7 @@ Set<SGCollisionObject2DInternal *> *SGBroadphase2DInternal::find_nearby(const fi
 			cell = cell_element->get();
 			for (List<SGBroadphase2DInternalElement *>::Element *E = cell->elements.front(); E; E = E->next()) {
 				SGBroadphase2DInternalElement *element = E->get();
-				if (element->object->get_type() & p_type) {
+				if ((element->object->get_object_type() & p_type) && p_bounds.intersects(element->bounds)) {
 					results->insert(E->get()->object);
 				}
 			}

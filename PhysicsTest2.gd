@@ -2,6 +2,7 @@ extends Node2D
 
 onready var character = $Character
 onready var area = $Area
+onready var ray_cast = $Character/SGRayCast2D
 
 var rotation_speed = SGFixed.from_float(0.1)
 var velocity = SGFixed.vector2(0, 0)
@@ -34,18 +35,11 @@ func _physics_process(delta: float) -> void:
 			print ("slide remainder: %s" % collision.remainder.slide(collision.normal).to_float())
 			print ("slide remainedr (float): %s" % collision.remainder.to_float().slide(collision.normal.to_float()))
 		#character.move_and_slide(velocity)
-	#else:
-	#	character.sync_to_physics_engine()
 	
-	var ray_cast = character.get_node("SGRayCast2D")
-	ray_cast.update_raycast_collision()
-	if ray_cast.is_colliding():
-		character.modulate = Color(1.0, 0.0, 0.0, 1.0)
-	else:
-		character.modulate = Color(1.0, 1.0, 1.0, 1.0)
-	
-	#var overlapping_bodies = area.get_overlapping_bodies()
-	#if overlapping_bodies.size() > 0 && overlapping_bodies[0] == character:
-	#	character.modulate = Color(1.0, 0.0, 0.0, 1.0)
-	#else:
-	#	character.modulate = Color(1.0, 1.0, 1.0, 1.0)
+		ray_cast.update_raycast_collision()
+		var overlapping_bodies = area.get_overlapping_bodies()
+		
+		if ray_cast.is_colliding() or (overlapping_bodies.size() > 0 && overlapping_bodies[0] == character):
+			character.modulate = Color(1.0, 0.0, 0.0, 1.0)
+		else:
+			character.modulate = Color(1.0, 1.0, 1.0, 1.0)

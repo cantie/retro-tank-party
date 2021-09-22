@@ -33,14 +33,14 @@ class SGBroadphase2DInternalElement;
 
 class SGCollisionObject2DInternal {
 public:
-    enum Type {
-        TYPE_AREA = 1,
-        TYPE_BODY = 2,
-        TYPE_BOTH = (TYPE_AREA | TYPE_BODY),
+    enum ObjectType {
+        OBJECT_AREA = 1,
+        OBJECT_BODY = 2,
+        OBJECT_BOTH = (OBJECT_AREA | OBJECT_BODY),
     };
 
 private:
-    Type type;
+    ObjectType object_type;
     fixed_transform2d transform;
     List<SGShape2DInternal *> shapes;
     SGBroadphase2DInternal *broadphase;
@@ -51,7 +51,7 @@ private:
     uint32_t collision_mask;
     
 public:
-    _FORCE_INLINE_ Type get_type() const { return type; }
+    _FORCE_INLINE_ ObjectType get_object_type() const { return object_type; }
 
     _FORCE_INLINE_ fixed_transform2d get_transform() const { return transform; }
     void set_transform(const fixed_transform2d &p_transform);
@@ -81,7 +81,7 @@ public:
         return (collision_layer & p_other->collision_mask) || (p_other->collision_layer & collision_mask);
     }
 
-    SGCollisionObject2DInternal(Type p_type);
+    SGCollisionObject2DInternal(ObjectType p_type);
     virtual ~SGCollisionObject2DInternal();
 
 };
@@ -101,10 +101,10 @@ public:
     };
 
 protected:
-    BodyType type;
+    BodyType body_type;
 
 public:
-    _FORCE_INLINE_ BodyType get_type() const { return type; }
+    _FORCE_INLINE_ BodyType get_body_type() const { return body_type; }
 
     SGBody2DInternal(BodyType p_type);
     ~SGBody2DInternal();

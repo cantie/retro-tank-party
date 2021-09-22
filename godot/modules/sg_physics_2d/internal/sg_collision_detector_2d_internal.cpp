@@ -164,7 +164,7 @@ bool SGCollisionDetector2DInternal::Circle_overlaps_AABB(const SGCircle2DInterna
 
 bool SGCollisionDetector2DInternal::Circle_overlaps_Rectangle(const SGCircle2DInternal &circle, const SGRectangle2DInternal &rectangle, OverlapInfo *p_info) {
     // Convert first rectangle into its own local space.
-    fixed_rect2 aabb(fixed_vector2(), rectangle.get_extents() * fixed::TWO);
+    fixed_rect2 aabb(-rectangle.get_extents(), rectangle.get_extents() * fixed::TWO);
 
     // Transform the circle into the local space of the rectangle.
     fixed_transform2d t = rectangle.get_global_transform();

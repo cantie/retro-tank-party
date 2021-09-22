@@ -123,7 +123,7 @@ bool SGWorld2DInternal::overlaps(SGShape2DInternal *p_shape1, SGShape2DInternal 
 bool SGWorld2DInternal::get_best_overlapping_body(SGCollisionObject2DInternal *p_object, SGWorld2DInternal::OverlapInfo *p_info) const {
     bool overlapping = false;
 
-    Set<SGCollisionObject2DInternal *> *nearby_bodies = broadphase->find_nearby(p_object->get_bounds(), SGCollisionObject2DInternal::TYPE_BODY);
+    Set<SGCollisionObject2DInternal *> *nearby_bodies = broadphase->find_nearby(p_object->get_bounds(), SGCollisionObject2DInternal::OBJECT_BODY);
     for (Set<SGCollisionObject2DInternal *>::Element *E = nearby_bodies->front(); E; E = E->next()) {
         SGBody2DInternal *other = (SGBody2DInternal *)E->get();
         if (other == p_object) {
@@ -150,7 +150,7 @@ bool SGWorld2DInternal::get_best_overlapping_body(SGCollisionObject2DInternal *p
 List<SGArea2DInternal *> *SGWorld2DInternal::get_overlapping_areas(SGCollisionObject2DInternal *p_object) const {
     List<SGArea2DInternal *> *ret = memnew(List<SGArea2DInternal *>);
 
-    Set<SGCollisionObject2DInternal *> *nearby_bodies = broadphase->find_nearby(p_object->get_bounds(), SGCollisionObject2DInternal::TYPE_AREA);
+    Set<SGCollisionObject2DInternal *> *nearby_bodies = broadphase->find_nearby(p_object->get_bounds(), SGCollisionObject2DInternal::OBJECT_BODY);
     for (Set<SGCollisionObject2DInternal *>::Element *E = nearby_bodies->front(); E; E = E->next()) {
         SGArea2DInternal *other = (SGArea2DInternal *)E->get();
         if (other == p_object) {
@@ -173,7 +173,7 @@ List<SGArea2DInternal *> *SGWorld2DInternal::get_overlapping_areas(SGCollisionOb
 List<SGBody2DInternal *> *SGWorld2DInternal::get_overlapping_bodies(SGCollisionObject2DInternal *p_object) const {
     List<SGBody2DInternal *> *ret = memnew(List<SGBody2DInternal *>);
 
-    Set<SGCollisionObject2DInternal *> *nearby_bodies = broadphase->find_nearby(p_object->get_bounds(), SGCollisionObject2DInternal::TYPE_BODY);
+    Set<SGCollisionObject2DInternal *> *nearby_bodies = broadphase->find_nearby(p_object->get_bounds(), SGCollisionObject2DInternal::OBJECT_BODY);
     for (Set<SGCollisionObject2DInternal *>::Element *E = nearby_bodies->front(); E; E = E->next()) {
         SGBody2DInternal *other = (SGBody2DInternal *)E->get();
         if (other == p_object) {
@@ -223,7 +223,7 @@ bool SGWorld2DInternal::cast_ray(const fixed_vector2 &p_start, const fixed_vecto
     fixed_rect2 bounds(p_start, fixed_vector2());
     bounds.expand_to(p_start + p_cast_to);
 
-    Set<SGCollisionObject2DInternal *> *nearby_bodies = broadphase->find_nearby(bounds, SGCollisionObject2DInternal::TYPE_BODY);
+    Set<SGCollisionObject2DInternal *> *nearby_bodies = broadphase->find_nearby(bounds, SGCollisionObject2DInternal::OBJECT_BODY);
     for (Set<SGCollisionObject2DInternal *>::Element *E = nearby_bodies->front(); E; E = E->next()) {
         SGBody2DInternal *other = (SGBody2DInternal *)E->get();
         if (!(other->get_collision_layer() & p_collision_mask)) {

@@ -78,7 +78,7 @@ public:
 	void update_element(SGBroadphase2DInternalElement *p_element);
 	void delete_element(SGBroadphase2DInternalElement *p_element);
 
-	Set<SGCollisionObject2DInternal *> *find_nearby(const fixed_rect2 &p_bounds, SGCollisionObject2DInternal::Type p_type = SGCollisionObject2DInternal::TYPE_BOTH) const;
+	Set<SGCollisionObject2DInternal *> *find_nearby(const fixed_rect2 &p_bounds, SGCollisionObject2DInternal::ObjectType p_type = SGCollisionObject2DInternal::OBJECT_BOTH) const;
 
 	void set_cell_size(int p_cell_size);
 
