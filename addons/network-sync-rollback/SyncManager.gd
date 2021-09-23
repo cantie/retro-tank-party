@@ -378,7 +378,7 @@ func _call_get_local_input() -> Dictionary:
 	var input := {}
 	var nodes: Array = get_tree().get_nodes_in_group('network_sync')
 	for node in nodes:
-		if node.is_network_master() and node.has_method('_get_local_input') and node.is_inside_tree():
+		if node.is_network_master() and node.has_method('_get_local_input') and node.is_inside_tree() and not node.is_queued_for_deletion():
 			var node_input = node._get_local_input()
 			if node_input.size() > 0:
 				input[str(node.get_path())] = node_input
@@ -407,7 +407,7 @@ func _call_network_process(delta: float, input_frame: InputBufferFrame) -> void:
 	while i > 0:
 		i -= 1
 		var node = nodes[i]
-		if node.has_method('_network_process') and node.is_inside_tree():
+		if node.has_method('_network_process') and node.is_inside_tree() and not node.is_queued_for_deletion():
 			var player_input = input_frame.get_player_input(node.get_network_master())
 			node._network_process(delta, player_input.get(str(node.get_path()), {}))
 

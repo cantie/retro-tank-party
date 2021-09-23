@@ -5,8 +5,9 @@ MILESTONE 1 (physics):
 
  - Attempt to put in game
    o Convert DropCrate and DropCrateSpawnArea
+     * The powerup too!
+   o Share random seed with all clients at match start
    o ... what next?
- - Broadphase
  - Unit tests!
    o Reintroduce the physics server to allow testing in GDScript?
  - Code clean-up

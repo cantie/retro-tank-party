@@ -73,7 +73,7 @@ bool SGCollisionDetector2DInternal::overlaps_on_axis(const SGShape2DInternal &sh
         separation = (d1 < d2) ? d1 : d2;
         // Add half to the seperation so we'd move to a non-overlapping state.
         separation += fixed::HALF;
-        // Attempt to make the seperation relative to rectangle1.
+        // Attempt to make the seperation relative to shape1.
         if (i1.min < i2.min) {
             separation = -separation;
         }

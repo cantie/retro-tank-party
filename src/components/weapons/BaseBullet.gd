@@ -58,6 +58,9 @@ func setup_bullet(_tank, weapon_type) -> void:
 	pass
 
 func explode(type: String):
+	if is_queued_for_deletion():
+		return
+	
 	SyncManager.spawn("Explosion", get_parent(), Explosion, {
 		position = global_position,
 		scale = 0.5,

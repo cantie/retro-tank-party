@@ -7,8 +7,10 @@ var contents: Pickup
 func _ready():
 	$AnimationPlayer.play("glow")
 
-func set_contents(_contents: Pickup):
-	contents = _contents
+func _network_spawn(data: Dictionary) -> void:
+	set_global_fixed_position(data['fixed_position'])
+	contents = load(data['contents_path'])
+	sync_to_physics_engine()
 
 func take_damage(damage: int, attacker_id: int, attack_vector: SGFixedVector2) -> void:
 	open_crate()

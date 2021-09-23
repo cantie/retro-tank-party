@@ -28,8 +28,6 @@ func has_drop_crate_or_powerup() -> bool:
 	return spawns.has_node("DropCrate") or spawns.has_node("Powerup")
 
 func spawn_drop_crate() -> void:
-	if not is_network_master():
-		return
 	if not has_drop_crate_or_powerup():
 		var extents = collision_shape.shape.extents
 		var fixed_global_position = get_global_fixed_position()
@@ -38,22 +36,14 @@ func spawn_drop_crate() -> void:
 		
 		var crate_position = detector.detect_free_space(area_top_left, area_bottom_right, crate_size)
 		var contents = possible_contents[randi() % possible_contents.size()]
-		_do_spawn_drop_crate(crate_position, contents.resource_path)
+		
+		SyncManager.spawn('DropCrate', spawns, DropCrate, {
+			fixed_position = crate_position,
+			contents_path = contents.resource_path,
+		}, false)
 
 func _on_DropTimer_timeout() -> void:
 	spawn_drop_crate()
-
-func _on_free_space_found(crate_position) -> void:
-	var contents = possible_contents[randi() % possible_contents.size()]
-	rpc("_do_spawn_drop_crate", crate_position, contents.resource_path)
-
-remotesync func _do_spawn_drop_crate(_position: SGFixedVector2, pickup_path: String):
-	var crate = DropCrate.instance()
-	crate.name = 'DropCrate'
-	spawns.add_child(crate)
-	crate.set_global_fixed_position(_position)
-	crate.sync_to_physics_engine()
-	crate.set_contents(load(pickup_path))
 
 func clear():
 	for child in spawns.get_children():

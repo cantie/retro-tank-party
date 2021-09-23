@@ -1,6 +1,7 @@
-[gd_scene load_steps=3 format=2]
+[gd_scene load_steps=4 format=2]
 
 [ext_resource path="res://src/objects/DropCrateSpawnArea.gd" type="Script" id=1]
+[ext_resource path="res://addons/network-sync-rollback/NetworkTimer.gd" type="Script" id=2]
 
 [sub_resource type="SGRectangleShape2D" id=1]
 extents = Object(SGFixedVector2,"x":16056320,"y":14811136,"script":null)
@@ -25,8 +26,9 @@ fixed_scale = Object(SGFixedVector2,"x":65536,"y":65536,"script":null)
 
 shape = SubResource( 1 )
 
-[node name="DropTimer" type="Timer" parent="."]
-wait_time = 20.0
+[node name="DropTimer" type="Node" parent="."]
+script = ExtResource( 2 )
+wait_ticks = 600
 
 [node name="Spawns" type="SGFixedNode2D" parent="."]
 fixed_position = Object(SGFixedVector2,"x":0,"y":0,"script":null)
