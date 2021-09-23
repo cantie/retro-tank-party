@@ -16,13 +16,13 @@ func take_damage(damage: int, attacker_id: int, attack_vector: SGFixedVector2) -
 	open_crate()
 
 func open_crate() -> void:
-	var twigs = GreenTwigs.instance()
-	twigs.position = position
-	get_parent().add_child(twigs)
-		
-	var powerup = contents.instance()
-	powerup.set_name("Powerup")
-	powerup.position = position
-	get_parent().add_child(powerup)
+	SyncManager.spawn('GreenTwigs', get_parent(), GreenTwigs, {
+		position = position,
+	})
+	
+	SyncManager.spawn('Powerup', get_parent(), contents.get_pickup_scene(), {
+		fixed_position = fixed_position,
+		pickup_path = contents.resource_path,
+	}, false)
 	
 	queue_free()

@@ -45,12 +45,14 @@ func _hook_tank_shoot(event: Tank.TankEvent) -> void:
 		event.stop_propagation()
 
 func _hook_tank_gather_input(event: Tank.GatherInputEvent) -> void:
-	var movement_vector = event.input.get(Tank.PlayerInput.MOVEMENT_VECTOR, Vector2.ZERO)
-	if boosting:
-		movement_vector.x = last_movement_direction
-	elif movement_vector.x != 0:
-		last_movement_direction = -1.0 if movement_vector.x < 0 else 1.0
-	event.input[Tank.PlayerInput.MOVEMENT_VECTOR] = movement_vector
+	# @todo Messing with INPUT_VECTOR probably isn't right with the modern control scheme
+	if event.input.has(Tank.PlayerInput.INPUT_VECTOR) or boosting:
+		var movement_vector = event.input.get(Tank.PlayerInput.INPUT_VECTOR, SGFixed.vector2(0, 0))
+		if boosting:
+			movement_vector.x = last_movement_direction
+		elif movement_vector.x != 0:
+			last_movement_direction = -1.0 if movement_vector.x < 0 else 1.0
+		event.input[Tank.PlayerInput.INPUT_VECTOR] = movement_vector
 
 func mark_finished() -> void:
 	if boosting:

@@ -4,9 +4,11 @@ TODO
 MILESTONE 1 (physics):
 
  - Attempt to put in game
-   o Convert DropCrate and DropCrateSpawnArea
-     * The powerup too!
+   o Implement a sound manager
+     * Get rid of Pickup waiting for sound to complete
+   o Get all the weapons and abilities working
    o Share random seed with all clients at match start
+   o Do more accurate conversion of the movement and rotation speeds
    o ... what next?
  - Unit tests!
    o Reintroduce the physics server to allow testing in GDScript?
@@ -26,7 +28,8 @@ MILESTOE 2 (finish porting all the things):
  - Search for time Timers in the game and make sure they are switched to NetworkTimer
  - Figure out how to handle physics
  - Figure out how to handle sound!
- - Implement spectators
+ - Re-implement the modern control scheme
+   o Make sure we're good in Boost.gd
 
 MILESTONE 3 (internal cleanup):
 
@@ -46,6 +49,7 @@ BEFORE RELEASE:
 
 BACKLOG:
 
+ - Implement spectators
  - Solve problems packet loss
    o Dig deeper into WebRTC and try to see where things are going awry!
  - Convert concave polygons to a set of convex via triangulation?
