@@ -46,5 +46,9 @@ func _on_Powerup_body_entered(body) -> void:
 		_pickup.pickup(body)
 	
 	queue_free()
-
-	#sound.play()
+	
+	# Duplicate sound and put on parent so it won't get freed when we do.
+	Sounds.play_multiple(sound, get_path())
+	#var new_sound = sound.duplicate(0)
+	#get_parent().add_child(new_sound)
+	#new_sound.play()
