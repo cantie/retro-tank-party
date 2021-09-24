@@ -4,9 +4,15 @@ TODO
 MILESTONE 1 (physics):
 
  - Attempt to put in game
+   o Get all the weapons and abilities working
+     * Railgun
+	   o We need exceptions on raycasts
+	 * Tracer
+	 * Boost
+	 * Zap
+	 * Invisible
    o Implement a sound manager to prevent double playing sounds
      * Affects Pickup.gd
-   o Get all the weapons and abilities working
    o Share random seed with all clients at match start
    o Do more accurate conversion of the movement and rotation speeds
    o ... what next?

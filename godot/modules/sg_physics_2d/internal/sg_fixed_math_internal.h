@@ -111,9 +111,9 @@ struct fixed {
             return fixed::OVERFLOW;
         if (p_other.value == -1 && value == INT64_MIN)
             return fixed::OVERFLOW;
-        if (p_other.value > 0 && (value > (INT64_MAX / p_other.value) || value < (INT64_MIN / p_other.value)))
+        if (p_other.value > 0 && (value > (INT64_MAX / p_other.value) || value < ((INT64_MIN + 1) / p_other.value)))
             return fixed::OVERFLOW;
-        if (p_other.value < 0 && (value < (INT64_MAX / p_other.value) || value > (INT64_MIN / p_other.value)))
+        if (p_other.value < 0 && (value < (INT64_MAX / p_other.value) || value > ((INT64_MIN + 1) / p_other.value)))
             return fixed::OVERFLOW;
         return fixed((value * p_other.value) >> 16);
     }

@@ -211,7 +211,7 @@ bool SGWorld2DInternal::segment_intersects_shape(const fixed_vector2 &p_start, c
     return false;
 }
 
-bool SGWorld2DInternal::cast_ray(const fixed_vector2 &p_start, const fixed_vector2 &p_cast_to, uint32_t p_collision_mask, RayCastInfo *p_info) const {
+bool SGWorld2DInternal::cast_ray(const fixed_vector2 &p_start, const fixed_vector2 &p_cast_to, uint32_t p_collision_mask, Set<SGCollisionObject2DInternal *> *p_exceptions, RayCastInfo *p_info) const {
     SGBody2DInternal *collider = nullptr;
     fixed shortest_distance_squared;
     fixed_vector2 closest_intersection_point;
@@ -226,6 +226,10 @@ bool SGWorld2DInternal::cast_ray(const fixed_vector2 &p_start, const fixed_vecto
     Set<SGCollisionObject2DInternal *> *nearby_bodies = broadphase->find_nearby(bounds, SGCollisionObject2DInternal::OBJECT_BODY);
     for (Set<SGCollisionObject2DInternal *>::Element *E = nearby_bodies->front(); E; E = E->next()) {
         SGBody2DInternal *other = (SGBody2DInternal *)E->get();
+
+        if (p_exceptions && p_exceptions->has(other)) {
+            continue;
+        }
         if (!(other->get_collision_layer() & p_collision_mask)) {
             continue;
         }

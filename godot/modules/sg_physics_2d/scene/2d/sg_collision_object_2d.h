@@ -56,6 +56,8 @@ public:
 
     virtual void sync_to_physics_engine() const;
 
+    _FORCE_INLINE_ SGCollisionObject2DInternal *get_internal() const { return internal; }
+
     uint32_t get_collision_layer() const;
     void set_collision_layer(uint32_t p_collision_layer);
 
@@ -63,7 +65,10 @@ public:
     void set_collision_mask(uint32_t p_collision_mask);
 
     void set_collision_layer_bit(int p_bit, bool p_value);
+    bool get_collision_layer_bit(int p_bit) const;
+
     void set_collision_mask_bit(int p_bit, bool p_value);
+    bool get_collision_mask_bit(int p_bit) const;
 
     SGCollisionObject2D(SGCollisionObject2DInternal *p_internal);
     ~SGCollisionObject2D();

@@ -76,12 +76,15 @@ public:
     Ref<SGFixedVector2> divf(int64_t p_fixed) const;
     void idivf(int64_t p_fixed);
 
+    Ref<SGFixedVector2> copy() const;
+
     Ref<SGFixedVector2> abs() const;
     Ref<SGFixedVector2> normalized() const;
     int64_t length() const;
 
     void rotate(int64_t p_rotation);
     Ref<SGFixedVector2> rotated(int64_t p_rotation) const;
+    int64_t angle() const;
 
     Ref<SGFixedVector2> slide(const Ref<SGFixedVector2> &p_normal) const;
     Ref<SGFixedVector2> bounce(const Ref<SGFixedVector2> &p_normal) const;

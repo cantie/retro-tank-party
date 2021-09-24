@@ -26,6 +26,7 @@
 #include <core/engine.h>
 #include "../../internal/sg_world_2d_internal.h"
 #include "../../internal/sg_bodies_2d_internal.h"
+#include "sg_collision_object_2d.h"
 
 void SGRayCast2D::_bind_methods() {
     ClassDB::bind_method(D_METHOD("get_cast_to"), &SGRayCast2D::get_cast_to);
@@ -45,6 +46,10 @@ void SGRayCast2D::_bind_methods() {
     ClassDB::bind_method(D_METHOD("get_collider"), &SGRayCast2D::get_collider);
     ClassDB::bind_method(D_METHOD("get_collision_point"), &SGRayCast2D::get_collision_point);
     ClassDB::bind_method(D_METHOD("get_collision_normal"), &SGRayCast2D::get_collision_normal);
+
+    ClassDB::bind_method(D_METHOD("add_exception", "object"), &SGRayCast2D::add_exception);
+    ClassDB::bind_method(D_METHOD("remove_exception", "object"), &SGRayCast2D::remove_exception);
+    ClassDB::bind_method(D_METHOD("clear_exceptions"), &SGRayCast2D::clear_exceptions);
 }
 
 void SGRayCast2D::_notification(int p_what) {
@@ -110,7 +115,7 @@ void SGRayCast2D::update_raycast_collision() {
 	fixed_vector2 start = t.get_origin();
 	t.set_origin(fixed_vector2::ZERO);
 
-	if (SGWorld2DInternal::get_singleton()->cast_ray(start, t.xform(cast_to->get_internal()), collision_mask, &info)) {
+	if (SGWorld2DInternal::get_singleton()->cast_ray(start, t.xform(cast_to->get_internal()), collision_mask, &exceptions, &info)) {
 		colliding = true;
 		collider = ((Object *)info.body->get_data())->get_instance_id();
 		collision_point->set_internal(info.collision_point);
@@ -142,6 +147,24 @@ Ref<SGFixedVector2> SGRayCast2D::get_collision_point() const {
 
 Ref<SGFixedVector2> SGRayCast2D::get_collision_normal() const {
 	return collision_normal;
+}
+
+void SGRayCast2D::add_exception(const Object *p_object) {
+	const SGCollisionObject2D *collision_object = Object::cast_to<SGCollisionObject2D>(p_object);
+	if (p_object) {
+		exceptions.insert(collision_object->get_internal());
+	}
+}
+
+void SGRayCast2D::remove_exception(const Object *p_object) {
+	const SGCollisionObject2D *collision_object = Object::cast_to<SGCollisionObject2D>(p_object);
+	if (p_object) {
+		exceptions.erase(collision_object->get_internal());
+	}
+}
+
+void SGRayCast2D::clear_exceptions() {
+	exceptions.clear();
 }
 
 SGRayCast2D::SGRayCast2D() {

@@ -39,7 +39,7 @@ func _network_process(_delta: float, _input: Dictionary) -> void:
 
 func _save_state() -> Dictionary:
 	return {
-		fixed_position = fixed_position,
+		fixed_position = fixed_position.copy(),
 		fixed_rotation = fixed_rotation,
 	}
 

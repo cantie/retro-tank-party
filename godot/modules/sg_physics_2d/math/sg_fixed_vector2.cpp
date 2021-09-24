@@ -52,12 +52,14 @@ void SGFixedVector2::_bind_methods() {
     ClassDB::bind_method(D_METHOD("divf", "fixed_value"), &SGFixedVector2::divf);
     ClassDB::bind_method(D_METHOD("idivf", "fixed_value"), &SGFixedVector2::idivf);
 
+    ClassDB::bind_method(D_METHOD("copy"), &SGFixedVector2::copy);
     ClassDB::bind_method(D_METHOD("abs"), &SGFixedVector2::abs);
     ClassDB::bind_method(D_METHOD("normalized"), &SGFixedVector2::normalized);
     ClassDB::bind_method(D_METHOD("length"), &SGFixedVector2::length);
 
     ClassDB::bind_method(D_METHOD("rotate", "radians"), &SGFixedVector2::rotate);
     ClassDB::bind_method(D_METHOD("rotated", "radians"), &SGFixedVector2::rotated);
+    ClassDB::bind_method(D_METHOD("angle"), &SGFixedVector2::angle);
 
     ClassDB::bind_method(D_METHOD("slide", "normal"), &SGFixedVector2::slide);
     ClassDB::bind_method(D_METHOD("bounce", "normal"), &SGFixedVector2::bounce);
@@ -141,6 +143,10 @@ void SGFixedVector2::idivf(int64_t p_other) {
     emit_signal("changed");
 }
 
+Ref<SGFixedVector2> SGFixedVector2::copy() const {
+    return SGFixedVector2::from_internal(value);
+}
+
 Ref<SGFixedVector2> SGFixedVector2::abs() const {
     return SGFixedVector2::from_internal(value.abs());
 }
@@ -156,6 +162,10 @@ int64_t SGFixedVector2::length() const {
 void SGFixedVector2::rotate(int64_t p_rotation) {
     value = value.rotated(fixed(p_rotation));
     emit_signal("changed");
+}
+
+int64_t SGFixedVector2::angle() const {
+    return value.angle().value;
 }
 
 Ref<SGFixedVector2> SGFixedVector2::rotated(int64_t p_rotation) const {

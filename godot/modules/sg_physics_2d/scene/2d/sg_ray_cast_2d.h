@@ -26,6 +26,7 @@
 
 #include "sg_fixed_node_2d.h"
 
+#include "../../internal/sg_bodies_2d_internal.h"
 #include "../../math/sg_fixed_vector2.h"
 
 class SGRayCast2D : public SGFixedNode2D {
@@ -38,6 +39,8 @@ class SGRayCast2D : public SGFixedNode2D {
 	ObjectID collider;
 	Ref<SGFixedVector2> collision_point;
 	Ref<SGFixedVector2> collision_normal;
+
+	Set<SGCollisionObject2DInternal *> exceptions;
 
 protected:
     static void _bind_methods();
@@ -58,6 +61,10 @@ public:
 	Object *get_collider() const;
 	Ref<SGFixedVector2> get_collision_point() const;
 	Ref<SGFixedVector2> get_collision_normal() const;
+
+	void add_exception(const Object *p_object);
+	void remove_exception(const Object *p_object);
+	void clear_exceptions();
 
     SGRayCast2D();
     ~SGRayCast2D();
