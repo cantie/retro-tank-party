@@ -19,8 +19,8 @@ func _ready():
 	line.set_as_toplevel(true)
 	line.global_position = Vector2(0, 0)
 
-func setup_bullet(tank, weapon_type) -> void:
-	.setup_bullet(tank, weapon_type)
+func _network_spawn(data: Dictionary) -> void:
+	._network_spawn(data)
 	line.default_color = LASER_COLORS[player_index]
 	line.add_point(global_position)
 
@@ -32,11 +32,13 @@ func _save_state() -> Dictionary:
 	var state = ._save_state()
 	state['points'] = line.points
 	state['growing'] = growing
+	state['exceptions'] = ray_cast.get_exceptions()
 	return state
 
 func _load_state(state: Dictionary) -> void:
 	line.points = state['points']
 	growing = state['growing']
+	ray_cast.set_exceptions(state['exceptions'])
 	._load_state(state)
 
 func _network_process(delta: float, input: Dictionary) -> void:
@@ -46,7 +48,7 @@ func _network_process(delta: float, input: Dictionary) -> void:
 		ray_cast.update_raycast_collision()
 		if ray_cast.is_colliding():
 			set_global_fixed_position(ray_cast.get_collision_point())
-
+			
 			var collider = ray_cast.get_collider()
 			# bit 2 = bullets
 			if collider.get_collision_mask_bit(2):
@@ -57,7 +59,7 @@ func _network_process(delta: float, input: Dictionary) -> void:
 					print ("bounce: %sx%s" % [vector.x, vector.y])
 					fixed_rotation = vector.angle()
 					bounced = true
-
+			
 			ray_cast.clear_exceptions()
 			ray_cast.add_exception(collider)
 		else:

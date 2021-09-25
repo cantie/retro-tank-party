@@ -141,3 +141,13 @@ fixed_position = Object(SGFixedVector2,"x":0,"y":0,"script":null)
 fixed_scale = Object(SGFixedVector2,"x":65536,"y":65536,"script":null)
 
 shape = SubResource( 3 )
+
+[node name="Spot" type="ColorRect" parent="."]
+margin_left = -5.0
+margin_top = -5.0
+margin_right = 5.0
+margin_bottom = 5.0
+color = Color( 0.0313726, 1, 0, 1 )
+__meta__ = {
+"_edit_use_anchors_": false
+}

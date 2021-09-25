@@ -3,6 +3,7 @@ extends Node2D
 onready var character = $Character
 onready var area = $Area
 onready var ray_cast = $Character/SGRayCast2D
+onready var spot = $Spot
 
 var rotation_speed = SGFixed.from_float(0.1)
 var velocity = SGFixed.vector2(0, 0)
@@ -43,3 +44,6 @@ func _physics_process(delta: float) -> void:
 			character.modulate = Color(1.0, 0.0, 0.0, 1.0)
 		else:
 			character.modulate = Color(1.0, 1.0, 1.0, 1.0)
+		
+		if ray_cast.is_colliding():
+			spot.rect_position = ray_cast.get_collision_point().to_float() - Vector2(5, 5)

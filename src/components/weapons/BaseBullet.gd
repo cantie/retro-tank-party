@@ -41,11 +41,13 @@ func _save_state() -> Dictionary:
 	return {
 		fixed_position = fixed_position.copy(),
 		fixed_rotation = fixed_rotation,
+		vector = vector.copy(),
 	}
 
 func _load_state(state: Dictionary) -> void:
-	fixed_position = state['fixed_position']
+	fixed_position = state['fixed_position'].copy()
 	fixed_rotation = state['fixed_rotation']
+	vector = state['vector'].copy()
 	sync_to_physics_engine()
 
 func _interpolate_state(old_state: Dictionary, new_state: Dictionary, weight: float) -> void:

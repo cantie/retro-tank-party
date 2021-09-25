@@ -408,7 +408,7 @@ func _after_update_position() -> void:
 
 func _save_state() -> Dictionary:
 	return {
-		fixed_position = fixed_position,
+		fixed_position = fixed_position.copy(),
 		fixed_rotation = fixed_rotation,
 		turret_rotation = turret_pivot.get_global_fixed_rotation(),
 		can_shoot = can_shoot,
@@ -417,7 +417,7 @@ func _save_state() -> Dictionary:
 	}
 
 func _load_state(state: Dictionary) -> void:
-	fixed_position = state['fixed_position']
+	fixed_position = state['fixed_position'].copy()
 	fixed_rotation = state['fixed_rotation']
 	sync_to_physics_engine()
 	

@@ -49,6 +49,8 @@ void SGRayCast2D::_bind_methods() {
 
     ClassDB::bind_method(D_METHOD("add_exception", "object"), &SGRayCast2D::add_exception);
     ClassDB::bind_method(D_METHOD("remove_exception", "object"), &SGRayCast2D::remove_exception);
+    ClassDB::bind_method(D_METHOD("get_exceptions"), &SGRayCast2D::get_exceptions);
+    ClassDB::bind_method(D_METHOD("set_exceptions", "exceptions"), &SGRayCast2D::set_exceptions);
     ClassDB::bind_method(D_METHOD("clear_exceptions"), &SGRayCast2D::clear_exceptions);
 }
 
@@ -160,6 +162,21 @@ void SGRayCast2D::remove_exception(const Object *p_object) {
 	const SGCollisionObject2D *collision_object = Object::cast_to<SGCollisionObject2D>(p_object);
 	if (p_object) {
 		exceptions.erase(collision_object->get_internal());
+	}
+}
+
+Array SGRayCast2D::get_exceptions() const {
+	Array result;
+	for (Set<SGCollisionObject2DInternal *>::Element *E = exceptions.front(); E; E = E->next()) {
+		result.append((SGCollisionObject2D *)E->get()->get_data());
+	}
+	return result;
+}
+
+void SGRayCast2D::set_exceptions(const Array &p_exceptions) {
+	exceptions.clear();
+	for (int i = 0; i < p_exceptions.size(); i++) {
+		add_exception(p_exceptions[i]);
 	}
 }
 

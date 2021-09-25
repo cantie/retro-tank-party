@@ -117,6 +117,7 @@ Vector<fixed_vector2> SGPolygon2DInternal::get_global_axes() const {
 
 fixed_rect2 SGCircle2DInternal::get_bounds() const {
     fixed_transform2d t = get_global_transform();
-    fixed diameter(radius.value << 1);
-    return fixed_rect2(t.get_origin(), fixed_vector2(diameter, diameter) * t.get_scale().x);
+    fixed radius_scaled = radius * t.get_scale().x;
+    fixed diameter(radius_scaled.value << 1);
+    return fixed_rect2(t.get_origin() - radius_scaled, fixed_vector2(diameter, diameter));
 }

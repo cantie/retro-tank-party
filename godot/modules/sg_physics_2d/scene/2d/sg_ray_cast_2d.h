@@ -64,6 +64,8 @@ public:
 
 	void add_exception(const Object *p_object);
 	void remove_exception(const Object *p_object);
+	Array get_exceptions() const;
+	void set_exceptions(const Array &p_exceptions);
 	void clear_exceptions();
 
     SGRayCast2D();
