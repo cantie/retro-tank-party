@@ -9,22 +9,23 @@ MILESTONE 1 (physics):
      * Boost
      * Zap
      * Invisible
+   o Convert all the game modes (do Football last)
    o Implement a sound manager to prevent double playing sounds
      * Affects Pickup.gd
      * Can we avoid playing sounds on the first frame when interpolating?
    o Get interpolation working again
      * Test that movement works the same interpolation disabled too
    o Share random seed with all clients at match start
-   o Do more accurate conversion of the movement and rotation speeds
    o ... what next?
- - Unit tests!
-   o Reintroduce the physics server to allow testing in GDScript?
  - Code clean-up
    o Break all classes up into their own files?
    o Change the SGFixedVector math functions to take a Variant (so we don't need vector and fixed versions of each method)
    o Rename the fixed_* classes to be camel case?
    o Port over more (all?) of Vector2's methods?
    o Make consistent tabs vs spaces in all source files
+ - Move engine to its own repo
+ - Unit tests!
+   o Reintroduce the physics server to allow testing in GDScript?
 
 MILESTOE 2 (finish porting all the things):
 
