@@ -32,11 +32,13 @@ func _save_state() -> Dictionary:
 	var state = ._save_state()
 	state['points'] = line.points
 	state['growing'] = growing
+	state['exceptions'] = ray_cast.get_exceptions()
 	return state
 
 func _load_state(state: Dictionary) -> void:
 	line.points = state['points']
 	growing = state['growing']
+	ray_cast.set_exceptions(state['exceptions'])
 	._load_state(state)
 
 func _network_process(delta: float, input: Dictionary) -> void:
@@ -56,6 +58,9 @@ func _network_process(delta: float, input: Dictionary) -> void:
 					vector = vector.bounce(collision_normal).normalized()
 					fixed_rotation = vector.angle()
 					bounced = true
+			
+			ray_cast.clear_exceptions()
+			ray_cast.add_exception(collider)
 		else:
 			set_global_fixed_position(get_global_fixed_position().add(increment))
 		
