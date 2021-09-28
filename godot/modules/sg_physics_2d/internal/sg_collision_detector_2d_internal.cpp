@@ -318,18 +318,35 @@ bool SGCollisionDetector2DInternal::segment_intersects_segment(const fixed_vecto
 bool SGCollisionDetector2DInternal::segment_intersects_Polygon(const fixed_vector2 &p_start, const fixed_vector2 &p_cast_to, const SGShape2DInternal &polygon, fixed_vector2 &p_intersection_point, fixed_vector2 &p_collision_normal) {
     Vector<fixed_vector2> verts = polygon.get_global_vertices();
 
+    bool intersecting = false;
+
+    fixed_vector2 closest_intersection_point;
+    fixed_vector2 closest_collision_normal;
+    fixed closest_distance_squared;
+
     fixed_vector2 previous = verts[verts.size() - 1];
     for (int i = 0; i < verts.size(); i++) {
         fixed_vector2 cur = verts[i];
         fixed_vector2 edge = cur - previous;
-        if (segment_intersects_segment(p_start, p_cast_to, previous, edge, p_intersection_point)) {
-            p_collision_normal = fixed_vector2(edge.y, -edge.x).normalized();
-            return true;
+        fixed_vector2 intersection_point;
+        if (segment_intersects_segment(p_start, p_cast_to, previous, edge, intersection_point)) {
+            fixed distance_squared = (intersection_point - p_start).length_squared();
+            if (!intersecting || distance_squared < closest_distance_squared) {
+                closest_distance_squared = distance_squared;
+                closest_intersection_point = intersection_point;
+                closest_collision_normal = fixed_vector2(edge.y, -edge.x).normalized();
+            }
+            intersecting = true;
         }
         previous = cur;
     }
 
-    return false;
+    if (intersecting) {
+        p_collision_normal = closest_collision_normal;
+        p_intersection_point = closest_intersection_point;
+    }
+
+    return intersecting;
 }
 
 // Algorithm from https://stackoverflow.com/a/1084899

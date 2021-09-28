@@ -38,7 +38,8 @@ fixed_scale = Object(SGFixedVector2,"x":65536,"y":65536,"script":null)
 shape = SubResource( 1 )
 
 [node name="RayCast2D" type="SGRayCast2D" parent="." index="2"]
-fixed_position = Object(SGFixedVector2,"x":0,"y":0,"script":null)
+position = Vector2( 1, 0 )
+fixed_position = Object(SGFixedVector2,"x":65536,"y":0,"script":null)
 
 fixed_scale = Object(SGFixedVector2,"x":65536,"y":65536,"script":null)
 

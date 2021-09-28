@@ -76,9 +76,9 @@ class PickupAbilityEvent extends TankEvent:
 class TakeDamageEvent extends TankEvent:
 	var damage: int
 	var attacker_id: int
-	var attack_vector: Vector2
+	var attack_vector: SGFixedVector2
 	
-	func _init(_tank, _damage: int, _attacker_id: int, _attack_vector: Vector2).(_tank) -> void:
+	func _init(_tank, _damage: int, _attacker_id: int, _attack_vector: SGFixedVector2).(_tank) -> void:
 		damage = _damage
 		attacker_id = _attacker_id
 		attack_vector = _attack_vector
@@ -518,7 +518,7 @@ func _hook_default_use_ability(event: TankEvent):
 func _on_ShootCooldownTimer_timeout() -> void:
 	can_shoot = true
 
-func take_damage(damage: int, attacker_id: int = -1, attack_vector: Vector2 = Vector2.ZERO) -> void:
+func take_damage(damage: int, attacker_id: int = -1, attack_vector: SGFixedVector2 = SGFixed.vector2(0, 0)) -> void:
 	hooks.dispatch_event("take_damage", TakeDamageEvent.new(self, damage, attacker_id, attack_vector))
 
 func _hook_default_take_damage(event: TakeDamageEvent) -> void:

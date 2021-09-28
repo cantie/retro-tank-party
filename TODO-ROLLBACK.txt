@@ -13,6 +13,8 @@ MILESTONE 1 (physics):
 	 * Invisible
    o Implement a sound manager to prevent double playing sounds
      * Affects Pickup.gd
+   o Get interpolation working again
+     * Test that movement works the same interpolation disabled too
    o Share random seed with all clients at match start
    o Do more accurate conversion of the movement and rotation speeds
    o ... what next?
