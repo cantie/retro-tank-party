@@ -426,11 +426,10 @@ func _load_state(state: Dictionary) -> void:
 	_after_update_position()
 
 func _interpolate_state(old_state: Dictionary, new_state: Dictionary, weight: float) -> void:
-	#position = lerp(old_state['position'], new_state['position'], weight)
-	#rotation = lerp_angle(old_state['rotation'], new_state['rotation'], weight)
-	#turret_pivot.global_rotation = lerp_angle(old_state['turret_rotation'], new_state['turret_rotation'], weight)
-	#_after_update_position()
-	pass
+	position = lerp(old_state['fixed_position'].to_float(), new_state['fixed_position'].to_float(), weight)
+	rotation = lerp_angle(SGFixed.to_float(old_state['fixed_rotation']), SGFixed.to_float(new_state['fixed_rotation']), weight)
+	turret_pivot.global_rotation = lerp_angle(SGFixed.to_float(old_state['turret_rotation']), SGFixed.to_float(new_state['turret_rotation']), weight)
+	_after_update_position()
 
 func _unhandled_input(event: InputEvent) -> void:
 	if event is InputEventMouseMotion:
