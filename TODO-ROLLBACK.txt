@@ -3,6 +3,12 @@ TODO
 
 MILESTONE 1 (physics):
 
+ - Code clean-up
+   o Port over more (all?) of Vector2's methods? Need in both fixed_vector2 and SGFixedVector2!
+   o Break all classes up into their own files?
+   o Change the SGFixedVector math functions to take a Variant (so we don't need vector and fixed versions of each method)
+   o Rename the fixed_* classes to be camel case?
+   o Make consistent tabs vs spaces in all source files
  - Attempt to put in game
    o Get all the weapons and abilities working
      * Tracer
@@ -14,15 +20,9 @@ MILESTONE 1 (physics):
      * Affects Pickup.gd
      * Can we avoid playing sounds on the first frame when interpolating?
    o Get interpolation working again
-     * Test that movement works the same interpolation disabled too
+     * Test that movement works the same with interpolation disabled too
    o Share random seed with all clients at match start
    o ... what next?
- - Code clean-up
-   o Break all classes up into their own files?
-   o Change the SGFixedVector math functions to take a Variant (so we don't need vector and fixed versions of each method)
-   o Rename the fixed_* classes to be camel case?
-   o Port over more (all?) of Vector2's methods?
-   o Make consistent tabs vs spaces in all source files
  - Move engine to its own repo
  - Unit tests!
    o Reintroduce the physics server to allow testing in GDScript?
