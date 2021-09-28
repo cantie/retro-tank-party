@@ -5,12 +5,13 @@ MILESTONE 1 (physics):
 
  - Attempt to put in game
    o Get all the weapons and abilities working
-	 * Tracer
-	 * Boost
-	 * Zap
-	 * Invisible
+     * Tracer
+     * Boost
+     * Zap
+     * Invisible
    o Implement a sound manager to prevent double playing sounds
      * Affects Pickup.gd
+     * Can we avoid playing sounds on the first frame when interpolating?
    o Get interpolation working again
      * Test that movement works the same interpolation disabled too
    o Share random seed with all clients at match start
@@ -63,9 +64,9 @@ BACKLOG:
    * http://gamma.cs.unc.edu/SEIDEL/
    * https://en.wikipedia.org/wiki/Polygon_triangulation
    * Header only library:
-	 - https://github.com/mapbox/earcut.hpp 
+     - https://github.com/mapbox/earcut.hpp 
    * Easy to read C library:
-	 - https://people.sc.fsu.edu/~jburkardt/c_src/polygon_triangulate/polygon_triangulate.html
+     - https://people.sc.fsu.edu/~jburkardt/c_src/polygon_triangulate/polygon_triangulate.html
  - Have SGArea2D directly build its Array to avoid allocating the intermediate vector
    o OR, pass in a function pointer and use that to build the Array
 
