@@ -2,7 +2,7 @@ extends "res://src/components/weapons/BaseBullet.gd"
 
 onready var bullet_sprite = $BulletPivot/Sprite
 
-var speed = 764477 # 11.66
+var speed = 1529173 # ~23.33
 
 const BULLET_COLORS = {
 	1: Rect2(570, 584, 16, 28),

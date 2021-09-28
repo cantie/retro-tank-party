@@ -21,10 +21,8 @@ onready var animation_player := $AnimationPlayer
 onready var shoot_sound := $ShootSound
 onready var engine_sound := $EngineSound
 
-#const DEFAULT_TURN_SPEED := 10923
-const DEFAULT_TURN_SPEED := 572
-#const DEFAULT_SPEED := 873726
-const DEFAULT_SPEED := 436863
+const DEFAULT_TURN_SPEED := 10923
+const DEFAULT_SPEED := 873726
 
 var turn_speed := DEFAULT_TURN_SPEED
 var speed := DEFAULT_SPEED
@@ -362,7 +360,7 @@ func _network_process(delta: float, input: Dictionary) -> void:
 		engine_sound.turning = true
 	
 	if movement_vector.y != 0:
-		rotate_and_slide(movement_vector.y * turn_speed)
+		rotate_and_slide(SGFixed.mul(movement_vector.y, turn_speed))
 
 	if movement_vector.x != 0:
 		velocity.clear()

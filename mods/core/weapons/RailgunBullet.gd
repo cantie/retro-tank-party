@@ -3,8 +3,7 @@ extends "res://src/components/weapons/BaseBullet.gd"
 onready var ray_cast := $RayCast2D
 onready var line := $Line2D
 
-var speed = 6094848
-#var speed = 380928
+var speed = 6116693
 var growing := true
 var bounced := false
 

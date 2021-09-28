@@ -16,6 +16,9 @@ func take_damage(damage: int, attacker_id: int, attack_vector: SGFixedVector2) -
 	open_crate()
 
 func open_crate() -> void:
+	if get_parent() == null:
+		return
+	
 	SyncManager.spawn('GreenTwigs', get_parent(), GreenTwigs, {
 		position = position,
 	})
