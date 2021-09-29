@@ -47,39 +47,39 @@ static SGFixed *fixed_singleton;
 static SGWorld2DInternal *world_singleton;
 
 void register_sg_physics_2d_types() {
-    ClassDB::register_class<SGFixed>();
-    ClassDB::register_class<SGFixedVector2>();
-    ClassDB::register_class<SGFixedTransform2D>();
+	ClassDB::register_class<SGFixed>();
+	ClassDB::register_class<SGFixedVector2>();
+	ClassDB::register_class<SGFixedTransform2D>();
 
-    ClassDB::register_class<SGFixedNode2D>();
-    ClassDB::register_class<SGFixedPosition2D>();
-    ClassDB::register_virtual_class<SGCollisionObject2D>();
-    ClassDB::register_class<SGArea2D>();
-    ClassDB::register_class<SGStaticBody2D>();
-    ClassDB::register_class<SGKinematicBody2D>();
-    ClassDB::register_class<SGKinematicCollision2D>();
-    ClassDB::register_class<SGRayCast2D>();
+	ClassDB::register_class<SGFixedNode2D>();
+	ClassDB::register_class<SGFixedPosition2D>();
+	ClassDB::register_virtual_class<SGCollisionObject2D>();
+	ClassDB::register_class<SGArea2D>();
+	ClassDB::register_class<SGStaticBody2D>();
+	ClassDB::register_class<SGKinematicBody2D>();
+	ClassDB::register_class<SGKinematicCollision2D>();
+	ClassDB::register_class<SGRayCast2D>();
 
-    ClassDB::register_class<SGCollisionShape2D>();
-    ClassDB::register_class<SGCollisionPolygon2D>();
+	ClassDB::register_class<SGCollisionShape2D>();
+	ClassDB::register_class<SGCollisionPolygon2D>();
 
-    ClassDB::register_virtual_class<SGShape2D>();
-    ClassDB::register_class<SGRectangleShape2D>();
-    ClassDB::register_class<SGCircleShape2D>();
+	ClassDB::register_virtual_class<SGShape2D>();
+	ClassDB::register_class<SGRectangleShape2D>();
+	ClassDB::register_class<SGCircleShape2D>();
 
-    fixed_singleton = memnew(SGFixed);
-    Engine::get_singleton()->add_singleton(Engine::Singleton("SGFixed", SGFixed::get_singleton()));
+	fixed_singleton = memnew(SGFixed);
+	Engine::get_singleton()->add_singleton(Engine::Singleton("SGFixed", SGFixed::get_singleton()));
 
-    world_singleton = memnew(SGWorld2DInternal);
+	world_singleton = memnew(SGWorld2DInternal);
 
 #ifdef TOOLS_ENABLED
-    EditorPlugins::add_by_type<SGFixedMathEditorPlugin>();
-    EditorPlugins::add_by_type<SGCollisionShape2DEditorPlugin>();
-    EditorPlugins::add_by_type<SGCollisionPolygon2DEditorPlugin>();
+	EditorPlugins::add_by_type<SGFixedMathEditorPlugin>();
+	EditorPlugins::add_by_type<SGCollisionShape2DEditorPlugin>();
+	EditorPlugins::add_by_type<SGCollisionPolygon2DEditorPlugin>();
 #endif
 }
 
 void unregister_sg_physics_2d_types() {
-    memdelete(fixed_singleton);
-    memdelete(world_singleton);
+	memdelete(fixed_singleton);
+	memdelete(world_singleton);
 }

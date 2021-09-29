@@ -29,7 +29,7 @@ void SGStaticBody2D::_bind_methods() {
 }
 
 SGStaticBody2D::SGStaticBody2D()
-    : SGCollisionObject2D(memnew(SGBody2DInternal(SGBody2DInternal::BodyType::BODY_STATIC)))
+	: SGCollisionObject2D(memnew(SGBody2DInternal(SGBody2DInternal::BodyType::BODY_STATIC)))
 {
 }
 

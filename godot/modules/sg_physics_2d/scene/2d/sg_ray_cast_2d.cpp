@@ -29,29 +29,29 @@
 #include "sg_collision_object_2d.h"
 
 void SGRayCast2D::_bind_methods() {
-    ClassDB::bind_method(D_METHOD("get_cast_to"), &SGRayCast2D::get_cast_to);
-    ClassDB::bind_method(D_METHOD("set_cast_to", "cast_to"), &SGRayCast2D::set_cast_to);
+	ClassDB::bind_method(D_METHOD("get_cast_to"), &SGRayCast2D::get_cast_to);
+	ClassDB::bind_method(D_METHOD("set_cast_to", "cast_to"), &SGRayCast2D::set_cast_to);
 
 	ADD_PROPERTY(PropertyInfo(Variant::OBJECT, "cast_to", PROPERTY_HINT_TYPE_STRING, "SGFixedVector2"), "set_cast_to", "get_cast_to");
 
-    ClassDB::bind_method(D_METHOD("get_collision_mask"), &SGRayCast2D::get_collision_mask);
-    ClassDB::bind_method(D_METHOD("set_collision_mask", "collision_mask"), &SGRayCast2D::set_collision_mask);
-    ClassDB::bind_method(D_METHOD("set_collision_mask_bit", "bit", "value"), &SGRayCast2D::set_collision_mask_bit);
+	ClassDB::bind_method(D_METHOD("get_collision_mask"), &SGRayCast2D::get_collision_mask);
+	ClassDB::bind_method(D_METHOD("set_collision_mask", "collision_mask"), &SGRayCast2D::set_collision_mask);
+	ClassDB::bind_method(D_METHOD("set_collision_mask_bit", "bit", "value"), &SGRayCast2D::set_collision_mask_bit);
 
 	ADD_GROUP("Collision", "collision_");
 	ADD_PROPERTY(PropertyInfo(Variant::INT, "collision_mask", PROPERTY_HINT_LAYERS_2D_PHYSICS), "set_collision_mask", "get_collision_mask");
 
-    ClassDB::bind_method(D_METHOD("update_raycast_collision"), &SGRayCast2D::update_raycast_collision);
-    ClassDB::bind_method(D_METHOD("is_colliding"), &SGRayCast2D::is_colliding);
-    ClassDB::bind_method(D_METHOD("get_collider"), &SGRayCast2D::get_collider);
-    ClassDB::bind_method(D_METHOD("get_collision_point"), &SGRayCast2D::get_collision_point);
-    ClassDB::bind_method(D_METHOD("get_collision_normal"), &SGRayCast2D::get_collision_normal);
+	ClassDB::bind_method(D_METHOD("update_raycast_collision"), &SGRayCast2D::update_raycast_collision);
+	ClassDB::bind_method(D_METHOD("is_colliding"), &SGRayCast2D::is_colliding);
+	ClassDB::bind_method(D_METHOD("get_collider"), &SGRayCast2D::get_collider);
+	ClassDB::bind_method(D_METHOD("get_collision_point"), &SGRayCast2D::get_collision_point);
+	ClassDB::bind_method(D_METHOD("get_collision_normal"), &SGRayCast2D::get_collision_normal);
 
-    ClassDB::bind_method(D_METHOD("add_exception", "object"), &SGRayCast2D::add_exception);
-    ClassDB::bind_method(D_METHOD("remove_exception", "object"), &SGRayCast2D::remove_exception);
-    ClassDB::bind_method(D_METHOD("get_exceptions"), &SGRayCast2D::get_exceptions);
-    ClassDB::bind_method(D_METHOD("set_exceptions", "exceptions"), &SGRayCast2D::set_exceptions);
-    ClassDB::bind_method(D_METHOD("clear_exceptions"), &SGRayCast2D::clear_exceptions);
+	ClassDB::bind_method(D_METHOD("add_exception", "object"), &SGRayCast2D::add_exception);
+	ClassDB::bind_method(D_METHOD("remove_exception", "object"), &SGRayCast2D::remove_exception);
+	ClassDB::bind_method(D_METHOD("get_exceptions"), &SGRayCast2D::get_exceptions);
+	ClassDB::bind_method(D_METHOD("set_exceptions", "exceptions"), &SGRayCast2D::set_exceptions);
+	ClassDB::bind_method(D_METHOD("clear_exceptions"), &SGRayCast2D::clear_exceptions);
 }
 
 void SGRayCast2D::_notification(int p_what) {
@@ -92,22 +92,22 @@ void SGRayCast2D::set_cast_to(const Ref<SGFixedVector2> &p_cast_to) {
 }
 
 uint32_t SGRayCast2D::get_collision_mask() const {
-    return collision_mask;
+	return collision_mask;
 }
 void SGRayCast2D::set_collision_mask(uint32_t p_collision_mask) {
-    collision_mask = p_collision_mask;
-    _change_notify("collision_mask");
+	collision_mask = p_collision_mask;
+	_change_notify("collision_mask");
 }
 
 void SGRayCast2D::set_collision_mask_bit(int p_bit, bool p_value) {
-    uint32_t m = collision_mask;
-    if (p_value) {
-        m |= (1 << p_bit);
-    }
-    else {
-        m &= ~(1 << p_bit);
-    }
-    set_collision_mask(m);
+	uint32_t m = collision_mask;
+	if (p_value) {
+		m |= (1 << p_bit);
+	}
+	else {
+		m &= ~(1 << p_bit);
+	}
+	set_collision_mask(m);
 }
 
 void SGRayCast2D::update_raycast_collision() {
@@ -187,7 +187,7 @@ void SGRayCast2D::clear_exceptions() {
 SGRayCast2D::SGRayCast2D() {
 	// Start casting to (0, 50) like Godot's RayCast2D.
 	cast_to = Ref<SGFixedVector2>(memnew(SGFixedVector2(SGFixedVector2Internal(fixed::ZERO, fixed(3276800)))));
-    collision_mask = 1;
+	collision_mask = 1;
 
 	colliding = false;
 	collider = 0;

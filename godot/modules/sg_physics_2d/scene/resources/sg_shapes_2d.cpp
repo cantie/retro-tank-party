@@ -37,41 +37,41 @@ SGShape2D::~SGShape2D() {
 }
 
 void SGRectangleShape2D::_bind_methods() {
-    ClassDB::bind_method(D_METHOD("get_extents"), &SGRectangleShape2D::get_extents);
-    ClassDB::bind_method(D_METHOD("set_extents", "extents"), &SGRectangleShape2D::set_extents);
+	ClassDB::bind_method(D_METHOD("get_extents"), &SGRectangleShape2D::get_extents);
+	ClassDB::bind_method(D_METHOD("set_extents", "extents"), &SGRectangleShape2D::set_extents);
 
 	ADD_PROPERTY(PropertyInfo(Variant::OBJECT, "extents", PROPERTY_HINT_TYPE_STRING, "SGFixedVector2"), "set_extents", "get_extents");
 }
 
 void SGRectangleShape2D::set_extents(const Ref<SGFixedVector2>& p_extents) {
-    extents->set_internal(p_extents->get_internal());
-    _change_notify("extents");
-    emit_changed();
+	extents->set_internal(p_extents->get_internal());
+	_change_notify("extents");
+	emit_changed();
 }
 
 Ref<SGFixedVector2> SGRectangleShape2D::get_extents() {
-    return extents;
+	return extents;
 }
 
 SGShape2DInternal *SGRectangleShape2D::create_internal_shape() const {
-    return memnew(SGRectangle2DInternal(fixed(655360), fixed(655360)));
+	return memnew(SGRectangle2DInternal(fixed(655360), fixed(655360)));
 }
 
 void SGRectangleShape2D::sync_to_physics_engine(SGShape2DInternal *p_internal_shape) const {
-    SGRectangle2DInternal* rectangle = (SGRectangle2DInternal *)p_internal_shape;
-    rectangle->set_extents(extents->get_internal());
+	SGRectangle2DInternal* rectangle = (SGRectangle2DInternal *)p_internal_shape;
+	rectangle->set_extents(extents->get_internal());
 }
 
 void SGRectangleShape2D::draw(const RID &p_to_rid, const Color &p_color) {
-    Size2 float_extents = extents->to_float();
+	Size2 float_extents = extents->to_float();
 
 	VisualServer::get_singleton()->canvas_item_add_rect(p_to_rid, Rect2(-float_extents, float_extents * 2.0), p_color);
 }
 
 SGRectangleShape2D::SGRectangleShape2D() : SGShape2D(),
-    extents(Ref<SGFixedVector2>(memnew(SGFixedVector2(SGFixedVector2Internal(fixed(655360), fixed(655360))))))
+	extents(Ref<SGFixedVector2>(memnew(SGFixedVector2(SGFixedVector2Internal(fixed(655360), fixed(655360))))))
 {
-    extents->connect("changed", this, "emit_changed");
+	extents->connect("changed", this, "emit_changed");
 }
 
 SGRectangleShape2D::~SGRectangleShape2D() {
@@ -79,33 +79,33 @@ SGRectangleShape2D::~SGRectangleShape2D() {
 
 
 void SGCircleShape2D::_bind_methods() {
-    ClassDB::bind_method(D_METHOD("get_radius"), &SGCircleShape2D::get_radius);
-    ClassDB::bind_method(D_METHOD("set_radius", "radius"), &SGCircleShape2D::set_radius);
+	ClassDB::bind_method(D_METHOD("get_radius"), &SGCircleShape2D::get_radius);
+	ClassDB::bind_method(D_METHOD("set_radius", "radius"), &SGCircleShape2D::set_radius);
 
 	ADD_PROPERTY(PropertyInfo(Variant::INT, "radius"), "set_radius", "get_radius");
 }
 
 void SGCircleShape2D::set_radius(int p_radius) {
-    radius = fixed(p_radius);
-    _change_notify("extents");
-    emit_changed();
+	radius = fixed(p_radius);
+	_change_notify("extents");
+	emit_changed();
 }
 
 int SGCircleShape2D::get_radius() const {
-    return radius.value;
+	return radius.value;
 }
 
 SGShape2DInternal *SGCircleShape2D::create_internal_shape() const {
-    return memnew(SGCircle2DInternal(fixed(655360)));
+	return memnew(SGCircle2DInternal(fixed(655360)));
 }
 
 void SGCircleShape2D::sync_to_physics_engine(SGShape2DInternal *p_internal_shape) const {
-    SGCircle2DInternal *circle = (SGCircle2DInternal *)p_internal_shape;
-    circle->set_radius(fixed(radius));
+	SGCircle2DInternal *circle = (SGCircle2DInternal *)p_internal_shape;
+	circle->set_radius(fixed(radius));
 }
 
 void SGCircleShape2D::draw(const RID &p_to_rid, const Color &p_color) {
-    float float_radius = radius.to_float();
+	float float_radius = radius.to_float();
 
 	Vector<Vector2> points;
 	for (int i = 0; i < 24; i++) {
@@ -119,7 +119,7 @@ void SGCircleShape2D::draw(const RID &p_to_rid, const Color &p_color) {
 }
 
 SGCircleShape2D::SGCircleShape2D() : SGShape2D(),
-    radius(655360)
+	radius(655360)
 {
 }
 

@@ -24,34 +24,34 @@
 #include "sg_fixed_transform_2d.h"
 
 void SGFixedTransform2D::_bind_methods() {
-    ClassDB::bind_method(D_METHOD("get_x"), &SGFixedTransform2D::get_x);
-    ClassDB::bind_method(D_METHOD("set_x", "x"), &SGFixedTransform2D::set_x);
-    ClassDB::bind_method(D_METHOD("get_y"), &SGFixedTransform2D::get_y);
-    ClassDB::bind_method(D_METHOD("set_y", "y"), &SGFixedTransform2D::set_y);
-    ClassDB::bind_method(D_METHOD("get_origin"), &SGFixedTransform2D::get_origin);
-    ClassDB::bind_method(D_METHOD("set_origin", "origin"), &SGFixedTransform2D::set_origin);
+	ClassDB::bind_method(D_METHOD("get_x"), &SGFixedTransform2D::get_x);
+	ClassDB::bind_method(D_METHOD("set_x", "x"), &SGFixedTransform2D::set_x);
+	ClassDB::bind_method(D_METHOD("get_y"), &SGFixedTransform2D::get_y);
+	ClassDB::bind_method(D_METHOD("set_y", "y"), &SGFixedTransform2D::set_y);
+	ClassDB::bind_method(D_METHOD("get_origin"), &SGFixedTransform2D::get_origin);
+	ClassDB::bind_method(D_METHOD("set_origin", "origin"), &SGFixedTransform2D::set_origin);
 
 	ADD_PROPERTY(PropertyInfo(Variant::OBJECT, "x", PROPERTY_HINT_TYPE_STRING, "SGFixedVector2"), "set_x", "get_x");
 	ADD_PROPERTY(PropertyInfo(Variant::OBJECT, "y", PROPERTY_HINT_TYPE_STRING, "SGFixedVector2"), "set_y", "get_y");
 	ADD_PROPERTY(PropertyInfo(Variant::OBJECT, "origin", PROPERTY_HINT_TYPE_STRING, "SGFixedVector2"), "set_origin", "get_origin");
 
-    ClassDB::bind_method(D_METHOD("inverse"), &SGFixedTransform2D::inverse);
-    ClassDB::bind_method(D_METHOD("affine_inverse"), &SGFixedTransform2D::affine_inverse);
-    ClassDB::bind_method(D_METHOD("get_rotation"), &SGFixedTransform2D::get_rotation);
-    ClassDB::bind_method(D_METHOD("rotated", "radians"), &SGFixedTransform2D::rotated);
-    ClassDB::bind_method(D_METHOD("get_scale"), &SGFixedTransform2D::get_scale);
-    ClassDB::bind_method(D_METHOD("scaled", "scale"), &SGFixedTransform2D::scaled);
-    ClassDB::bind_method(D_METHOD("translated", "offset"), &SGFixedTransform2D::translated);
-    ClassDB::bind_method(D_METHOD("orthonormalized"), &SGFixedTransform2D::orthonormalized);
-    ClassDB::bind_method(D_METHOD("is_equal_approx", "transform"), &SGFixedTransform2D::is_equal_approx);
-    ClassDB::bind_method(D_METHOD("mul", "transform"), &SGFixedTransform2D::mul);
-    ClassDB::bind_method(D_METHOD("interpolate_with", "transform"), &SGFixedTransform2D::interpolate_with);
-    ClassDB::bind_method(D_METHOD("basis_xform", "vector"), &SGFixedTransform2D::basis_xform);
-    ClassDB::bind_method(D_METHOD("basis_xform_inv", "vector"), &SGFixedTransform2D::basis_xform_inv);
-    ClassDB::bind_method(D_METHOD("xform", "vector"), &SGFixedTransform2D::xform);
-    ClassDB::bind_method(D_METHOD("xform_inv", "vector"), &SGFixedTransform2D::xform_inv);
+	ClassDB::bind_method(D_METHOD("inverse"), &SGFixedTransform2D::inverse);
+	ClassDB::bind_method(D_METHOD("affine_inverse"), &SGFixedTransform2D::affine_inverse);
+	ClassDB::bind_method(D_METHOD("get_rotation"), &SGFixedTransform2D::get_rotation);
+	ClassDB::bind_method(D_METHOD("rotated", "radians"), &SGFixedTransform2D::rotated);
+	ClassDB::bind_method(D_METHOD("get_scale"), &SGFixedTransform2D::get_scale);
+	ClassDB::bind_method(D_METHOD("scaled", "scale"), &SGFixedTransform2D::scaled);
+	ClassDB::bind_method(D_METHOD("translated", "offset"), &SGFixedTransform2D::translated);
+	ClassDB::bind_method(D_METHOD("orthonormalized"), &SGFixedTransform2D::orthonormalized);
+	ClassDB::bind_method(D_METHOD("is_equal_approx", "transform"), &SGFixedTransform2D::is_equal_approx);
+	ClassDB::bind_method(D_METHOD("mul", "transform"), &SGFixedTransform2D::mul);
+	ClassDB::bind_method(D_METHOD("interpolate_with", "transform"), &SGFixedTransform2D::interpolate_with);
+	ClassDB::bind_method(D_METHOD("basis_xform", "vector"), &SGFixedTransform2D::basis_xform);
+	ClassDB::bind_method(D_METHOD("basis_xform_inv", "vector"), &SGFixedTransform2D::basis_xform_inv);
+	ClassDB::bind_method(D_METHOD("xform", "vector"), &SGFixedTransform2D::xform);
+	ClassDB::bind_method(D_METHOD("xform_inv", "vector"), &SGFixedTransform2D::xform_inv);
 
-    ClassDB::bind_method(D_METHOD("_vector_changed"), &SGFixedTransform2D::_vector_changed);
+	ClassDB::bind_method(D_METHOD("_vector_changed"), &SGFixedTransform2D::_vector_changed);
 
 	ADD_SIGNAL(MethodInfo("changed"));
 }

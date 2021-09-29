@@ -26,98 +26,98 @@
 #include "sg_bodies_2d_internal.h"
 
 SGFixedTransform2DInternal SGShape2DInternal::get_global_transform() const {
-    if (!owner) {
-        return transform;
-    }
-    if (global_xform_dirty) {
-        global_transform = owner->get_transform() * transform;
-        global_xform_dirty = false;
-    }
-    return global_transform;
+	if (!owner) {
+		return transform;
+	}
+	if (global_xform_dirty) {
+		global_transform = owner->get_transform() * transform;
+		global_xform_dirty = false;
+	}
+	return global_transform;
 }
 
 Vector<SGFixedVector2Internal> SGShape2DInternal::get_global_vertices() const {
-    return global_vertices;
+	return global_vertices;
 }
 
 Vector<SGFixedVector2Internal> SGShape2DInternal::get_global_axes() const {
-    return global_axes;
+	return global_axes;
 }
 
 SGFixedRect2Internal SGShape2DInternal::get_bounds() const {
-    Vector<SGFixedVector2Internal> points = get_global_vertices();
-    if (points.size() == 0) {
-        return SGFixedRect2Internal(global_transform.get_origin(), SGFixedVector2Internal());
-    }
+	Vector<SGFixedVector2Internal> points = get_global_vertices();
+	if (points.size() == 0) {
+		return SGFixedRect2Internal(global_transform.get_origin(), SGFixedVector2Internal());
+	}
 
-    SGFixedRect2Internal bounds(points[0], SGFixedVector2Internal());
-    for (int i = 1; i < points.size(); i++) {
-        bounds.expand_to(points[i]);
-    }
+	SGFixedRect2Internal bounds(points[0], SGFixedVector2Internal());
+	for (int i = 1; i < points.size(); i++) {
+		bounds.expand_to(points[i]);
+	}
 
-    return bounds;
+	return bounds;
 }
 
 Vector<SGFixedVector2Internal> SGRectangle2DInternal::get_global_vertices() const {
-    if (global_vertices.size() == 0) {
-        SGFixedTransform2DInternal t = get_global_transform();
+	if (global_vertices.size() == 0) {
+		SGFixedTransform2DInternal t = get_global_transform();
 
-        global_vertices.resize(4);
-        global_vertices.write[0] = t.xform(SGFixedVector2Internal(-extents.x, -extents.y));
-        global_vertices.write[1] = t.xform(SGFixedVector2Internal(extents.x, -extents.y));
-        global_vertices.write[2] = t.xform(SGFixedVector2Internal(extents.x, extents.y));
-        global_vertices.write[3] = t.xform(SGFixedVector2Internal(-extents.x, extents.y));
-    }
+		global_vertices.resize(4);
+		global_vertices.write[0] = t.xform(SGFixedVector2Internal(-extents.x, -extents.y));
+		global_vertices.write[1] = t.xform(SGFixedVector2Internal(extents.x, -extents.y));
+		global_vertices.write[2] = t.xform(SGFixedVector2Internal(extents.x, extents.y));
+		global_vertices.write[3] = t.xform(SGFixedVector2Internal(-extents.x, extents.y));
+	}
 
-    return global_vertices;
+	return global_vertices;
 }
 
 Vector<SGFixedVector2Internal> SGRectangle2DInternal::get_global_axes() const {
-    if (global_axes.size() == 0) {
-        SGFixedTransform2DInternal t = get_global_transform();
-        t.set_origin(SGFixedVector2Internal::ZERO);
+	if (global_axes.size() == 0) {
+		SGFixedTransform2DInternal t = get_global_transform();
+		t.set_origin(SGFixedVector2Internal::ZERO);
 
-        global_axes.resize(2);
-        global_axes.write[0] = t.xform(SGFixedVector2Internal(extents.x, fixed::ZERO)).normalized();
-        global_axes.write[1] = t.xform(SGFixedVector2Internal(fixed::ZERO, extents.y)).normalized();
-    }
+		global_axes.resize(2);
+		global_axes.write[0] = t.xform(SGFixedVector2Internal(extents.x, fixed::ZERO)).normalized();
+		global_axes.write[1] = t.xform(SGFixedVector2Internal(fixed::ZERO, extents.y)).normalized();
+	}
 
-    return global_axes;
+	return global_axes;
 }
 
 Vector<SGFixedVector2Internal> SGPolygon2DInternal::get_global_vertices() const {
-    if (global_vertices.size() == 0 && points.size() > 0) {
-        SGFixedTransform2DInternal t = get_global_transform();
+	if (global_vertices.size() == 0 && points.size() > 0) {
+		SGFixedTransform2DInternal t = get_global_transform();
 
-        global_vertices.resize(points.size());
-        for (int i = 0; i < points.size(); i++) {
-            global_vertices.write[i] = t.xform(points[i]);
-        }
-    }
+		global_vertices.resize(points.size());
+		for (int i = 0; i < points.size(); i++) {
+			global_vertices.write[i] = t.xform(points[i]);
+		}
+	}
 
-    return global_vertices;
+	return global_vertices;
 }
 
 Vector<SGFixedVector2Internal> SGPolygon2DInternal::get_global_axes() const {
-    if (global_axes.size() == 0) {
-        SGFixedTransform2DInternal t = get_global_transform();
-        t.set_origin(SGFixedVector2Internal::ZERO);
+	if (global_axes.size() == 0) {
+		SGFixedTransform2DInternal t = get_global_transform();
+		t.set_origin(SGFixedVector2Internal::ZERO);
 
-        global_axes.resize(points.size());
-        for (int i = 0; i < points.size(); i++) {
-            int next_index = (i == points.size() - 1) ? 0 : i + 1;
-            SGFixedVector2Internal edge = t.xform(points[next_index] - points[i]);
-            // Get the vector perpendicular to the edge, which will be the edge normal.
-            global_axes.write[i] = SGFixedVector2Internal(edge.y, -edge.x).normalized();
-        }
-    }
+		global_axes.resize(points.size());
+		for (int i = 0; i < points.size(); i++) {
+			int next_index = (i == points.size() - 1) ? 0 : i + 1;
+			SGFixedVector2Internal edge = t.xform(points[next_index] - points[i]);
+			// Get the vector perpendicular to the edge, which will be the edge normal.
+			global_axes.write[i] = SGFixedVector2Internal(edge.y, -edge.x).normalized();
+		}
+	}
 
-    return global_axes;
+	return global_axes;
 }
 
 SGFixedRect2Internal SGCircle2DInternal::get_bounds() const {
-    SGFixedTransform2DInternal t = get_global_transform();
-    fixed radius_scaled = radius * t.get_scale().x;
-    fixed diameter(radius_scaled.value << 1);
-    return SGFixedRect2Internal(t.get_origin() - radius_scaled, SGFixedVector2Internal(diameter, diameter));
+	SGFixedTransform2DInternal t = get_global_transform();
+	fixed radius_scaled = radius * t.get_scale().x;
+	fixed diameter(radius_scaled.value << 1);
+	return SGFixedRect2Internal(t.get_origin() - radius_scaled, SGFixedVector2Internal(diameter, diameter));
 }

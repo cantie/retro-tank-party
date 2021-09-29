@@ -30,8 +30,8 @@ void EditorPropertySGFixedVector2::_value_changed(double val, const String &p_na
 		return;
 
 	Ref<SGFixedVector2> v2(memnew(SGFixedVector2()));
-    v2->set_x((int)spin[0]->get_value());
-    v2->set_y((int)spin[1]->get_value());
+	v2->set_x((int)spin[0]->get_value());
+	v2->set_y((int)spin[1]->get_value());
 	emit_changed(get_edited_property(), v2, p_name);
 }
 
@@ -91,7 +91,7 @@ EditorPropertySGFixedVector2::EditorPropertySGFixedVector2() {
 		spin[i]->set_hide_slider(true);
 		spin[i]->set_allow_greater(true);
 		spin[i]->set_allow_lesser(true);
-        spin[i]->set_use_rounded_values(true);
+		spin[i]->set_use_rounded_values(true);
 	}
 
 	if (!horizontal) {
@@ -109,32 +109,32 @@ void SGFixedMathEditorInspectorPlugin::parse_begin(Object *p_object) {
 }
 
 bool SGFixedMathEditorInspectorPlugin::parse_property(Object *p_object, Variant::Type p_type, const String &p_path, PropertyHint p_hint, const String &p_hint_text, int p_usage) {
-    if (p_hint == PROPERTY_HINT_TYPE_STRING && p_hint_text == "SGFixedVector2") {
-        EditorPropertySGFixedVector2 *editor = memnew(EditorPropertySGFixedVector2);
-        add_property_editor(p_path, editor);
-        return true;
-    }
-    return false;
+	if (p_hint == PROPERTY_HINT_TYPE_STRING && p_hint_text == "SGFixedVector2") {
+		EditorPropertySGFixedVector2 *editor = memnew(EditorPropertySGFixedVector2);
+		add_property_editor(p_path, editor);
+		return true;
+	}
+	return false;
 }
 
 void SGFixedMathEditorInspectorPlugin::parse_end() {
 }
 
 SGFixedMathEditorPlugin::SGFixedMathEditorPlugin(EditorNode *p_editor) {
-    fixed_math_editor_inspector_plugin = memnew(SGFixedMathEditorInspectorPlugin);
+	fixed_math_editor_inspector_plugin = memnew(SGFixedMathEditorInspectorPlugin);
 }
 
 SGFixedMathEditorPlugin::~SGFixedMathEditorPlugin() {
 }
 
 void SGFixedMathEditorPlugin::_notification(int p_what) {
-    switch (p_what) {
-        case NOTIFICATION_ENTER_TREE:
-            add_inspector_plugin(fixed_math_editor_inspector_plugin);
-            break;
-        
-        case NOTIFICATION_EXIT_TREE:
-            remove_inspector_plugin(fixed_math_editor_inspector_plugin);
-            break;
-    }
+	switch (p_what) {
+		case NOTIFICATION_ENTER_TREE:
+			add_inspector_plugin(fixed_math_editor_inspector_plugin);
+			break;
+		
+		case NOTIFICATION_EXIT_TREE:
+			remove_inspector_plugin(fixed_math_editor_inspector_plugin);
+			break;
+	}
 }
