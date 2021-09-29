@@ -113,9 +113,9 @@ void SGRayCast2D::set_collision_mask_bit(int p_bit, bool p_value) {
 void SGRayCast2D::update_raycast_collision() {
 	SGWorld2DInternal::RayCastInfo info;
 
-	fixed_transform2d t = get_global_fixed_transform_internal();
-	fixed_vector2 start = t.get_origin();
-	t.set_origin(fixed_vector2::ZERO);
+	SGFixedTransform2DInternal t = get_global_fixed_transform_internal();
+	SGFixedVector2Internal start = t.get_origin();
+	t.set_origin(SGFixedVector2Internal::ZERO);
 
 	if (SGWorld2DInternal::get_singleton()->cast_ray(start, t.xform(cast_to->get_internal()), collision_mask, &exceptions, &info)) {
 		colliding = true;
@@ -186,7 +186,7 @@ void SGRayCast2D::clear_exceptions() {
 
 SGRayCast2D::SGRayCast2D() {
 	// Start casting to (0, 50) like Godot's RayCast2D.
-	cast_to = Ref<SGFixedVector2>(memnew(SGFixedVector2(fixed_vector2(fixed::ZERO, fixed(3276800)))));
+	cast_to = Ref<SGFixedVector2>(memnew(SGFixedVector2(SGFixedVector2Internal(fixed::ZERO, fixed(3276800)))));
     collision_mask = 1;
 
 	colliding = false;

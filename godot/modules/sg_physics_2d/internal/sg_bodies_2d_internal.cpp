@@ -26,7 +26,7 @@
 #include "sg_world_2d_internal.h"
 #include "sg_broadphase_2d_internal.h"
 
-void SGCollisionObject2DInternal::set_transform(const fixed_transform2d &p_transform) {
+void SGCollisionObject2DInternal::set_transform(const SGFixedTransform2DInternal &p_transform) {
     transform = p_transform;
     for (List<SGShape2DInternal *>::Element *E = shapes.front(); E; E = E->next()) {
         E->get()->mark_global_xform_dirty();
@@ -60,13 +60,13 @@ void SGCollisionObject2DInternal::remove_shape(SGShape2DInternal *p_shape) {
     }
 }
 
-fixed_rect2 SGCollisionObject2DInternal::get_bounds() const {
+SGFixedRect2Internal SGCollisionObject2DInternal::get_bounds() const {
     if (shapes.size() == 0) {
-        return fixed_rect2(transform.get_origin(), fixed_vector2());
+        return SGFixedRect2Internal(transform.get_origin(), SGFixedVector2Internal());
     }
 
     const List<SGShape2DInternal *>::Element *E = shapes.front();
-    fixed_rect2 bounds = E->get()->get_bounds();
+    SGFixedRect2Internal bounds = E->get()->get_bounds();
 
     for (E = E->next(); E; E = E->next()) {
         bounds = bounds.merge(E->get()->get_bounds());

@@ -193,7 +193,7 @@ List<SGBody2DInternal *> *SGWorld2DInternal::get_overlapping_bodies(SGCollisionO
     return ret;
 }
 
-bool SGWorld2DInternal::segment_intersects_shape(const fixed_vector2 &p_start, const fixed_vector2 &p_cast_to, SGShape2DInternal *p_shape, fixed_vector2 &p_intersection_point, fixed_vector2 &p_collision_normal) const {
+bool SGWorld2DInternal::segment_intersects_shape(const SGFixedVector2Internal &p_start, const SGFixedVector2Internal &p_cast_to, SGShape2DInternal *p_shape, SGFixedVector2Internal &p_intersection_point, SGFixedVector2Internal &p_collision_normal) const {
     using ShapeType = SGShape2DInternal::ShapeType;
 
     ShapeType shape_type = p_shape->get_shape_type();
@@ -211,16 +211,16 @@ bool SGWorld2DInternal::segment_intersects_shape(const fixed_vector2 &p_start, c
     return false;
 }
 
-bool SGWorld2DInternal::cast_ray(const fixed_vector2 &p_start, const fixed_vector2 &p_cast_to, uint32_t p_collision_mask, Set<SGCollisionObject2DInternal *> *p_exceptions, RayCastInfo *p_info) const {
+bool SGWorld2DInternal::cast_ray(const SGFixedVector2Internal &p_start, const SGFixedVector2Internal &p_cast_to, uint32_t p_collision_mask, Set<SGCollisionObject2DInternal *> *p_exceptions, RayCastInfo *p_info) const {
     SGBody2DInternal *collider = nullptr;
     fixed shortest_distance_squared;
-    fixed_vector2 closest_intersection_point;
-    fixed_vector2 closest_collision_normal;
+    SGFixedVector2Internal closest_intersection_point;
+    SGFixedVector2Internal closest_collision_normal;
 
-    fixed_vector2 intersection_point;
-    fixed_vector2 collision_normal;
+    SGFixedVector2Internal intersection_point;
+    SGFixedVector2Internal collision_normal;
 
-    fixed_rect2 bounds(p_start, fixed_vector2());
+    SGFixedRect2Internal bounds(p_start, SGFixedVector2Internal());
     bounds.expand_to(p_start + p_cast_to);
 
     Set<SGCollisionObject2DInternal *> *nearby_bodies = broadphase->find_nearby(bounds, SGCollisionObject2DInternal::OBJECT_BODY);

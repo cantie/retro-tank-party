@@ -26,13 +26,13 @@
 
 #include <core/reference.h>
 
-#include "../internal/sg_fixed_math_internal.h"
+#include "../internal/sg_fixed_vector2_internal.h"
 
 class SGFixedVector2 : public Reference {
 
     GDCLASS(SGFixedVector2, Reference);
 
-    fixed_vector2 value;
+    SGFixedVector2Internal value;
 
 protected:
     static void _bind_methods();
@@ -94,15 +94,15 @@ public:
     Vector2 to_float() const;
 
     // Won't trigger the "changed" signal. Meant only for internal use.
-    _FORCE_INLINE_ fixed_vector2 get_internal() const { return value; }
-    _FORCE_INLINE_ void set_internal(fixed_vector2 p_value) { value = p_value; }
+    _FORCE_INLINE_ SGFixedVector2Internal get_internal() const { return value; }
+    _FORCE_INLINE_ void set_internal(SGFixedVector2Internal p_value) { value = p_value; }
 
-    _FORCE_INLINE_ static Ref<SGFixedVector2> from_internal(const fixed_vector2 &p_internal) {
+    _FORCE_INLINE_ static Ref<SGFixedVector2> from_internal(const SGFixedVector2Internal &p_internal) {
         return Ref<SGFixedVector2>(memnew(SGFixedVector2(p_internal)));
     }
 
     SGFixedVector2() { }
-    SGFixedVector2(const fixed_vector2& p_internal_vector) {
+    SGFixedVector2(const SGFixedVector2Internal& p_internal_vector) {
         value = p_internal_vector;
     }
 

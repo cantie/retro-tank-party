@@ -26,7 +26,8 @@
 
 #include <core/resource.h>
 
-#include "sg_fixed_math_internal.h"
+#include "sg_fixed_transform_2d_internal.h"
+#include "sg_fixed_rect2_internal.h"
 
 class SGCollisionObject2DInternal;
 
@@ -43,12 +44,12 @@ protected:
     friend class SGCollisionObject2DInternal;
 
     ShapeType shape_type;
-    fixed_transform2d transform;
-    mutable fixed_transform2d global_transform;
+    SGFixedTransform2DInternal transform;
+    mutable SGFixedTransform2DInternal global_transform;
     mutable bool global_xform_dirty;
     SGCollisionObject2DInternal *owner;
-    mutable Vector<fixed_vector2> global_vertices;
-    mutable Vector<fixed_vector2> global_axes;
+    mutable Vector<SGFixedVector2Internal> global_vertices;
+    mutable Vector<SGFixedVector2Internal> global_axes;
 
     _FORCE_INLINE_ void mark_global_xform_dirty() const {
         global_xform_dirty = true;
@@ -64,18 +65,18 @@ protected:
 public:
     _FORCE_INLINE_ ShapeType get_shape_type() const { return shape_type; }
 
-    _FORCE_INLINE_ void set_transform(const fixed_transform2d &p_transform) {
+    _FORCE_INLINE_ void set_transform(const SGFixedTransform2DInternal &p_transform) {
         transform = p_transform;
         mark_global_xform_dirty();
     }
-    _FORCE_INLINE_ fixed_transform2d get_transform() const { return transform; }
-    fixed_transform2d get_global_transform() const;
+    _FORCE_INLINE_ SGFixedTransform2DInternal get_transform() const { return transform; }
+    SGFixedTransform2DInternal get_global_transform() const;
 
     _FORCE_INLINE_ SGCollisionObject2DInternal *get_owner() const { return owner; }
 
-    virtual Vector<fixed_vector2> get_global_vertices() const;
-    virtual Vector<fixed_vector2> get_global_axes() const;
-    virtual fixed_rect2 get_bounds() const;
+    virtual Vector<SGFixedVector2Internal> get_global_vertices() const;
+    virtual Vector<SGFixedVector2Internal> get_global_axes() const;
+    virtual SGFixedRect2Internal get_bounds() const;
 
     SGShape2DInternal(ShapeType p_shape_type) {
         shape_type = p_shape_type;
@@ -88,25 +89,25 @@ public:
 class SGRectangle2DInternal : public SGShape2DInternal {
 protected:
 
-    fixed_vector2 extents;
+    SGFixedVector2Internal extents;
 
 public:
-    _FORCE_INLINE_ fixed_vector2 get_extents() const { return extents; }
-    _FORCE_INLINE_ void set_extents(const fixed_vector2 &p_extents) {
+    _FORCE_INLINE_ SGFixedVector2Internal get_extents() const { return extents; }
+    _FORCE_INLINE_ void set_extents(const SGFixedVector2Internal &p_extents) {
         extents = p_extents;
         global_vertices.clear();
     }
 
-    virtual Vector<fixed_vector2> get_global_vertices() const override;
-    virtual Vector<fixed_vector2> get_global_axes() const override;
+    virtual Vector<SGFixedVector2Internal> get_global_vertices() const override;
+    virtual Vector<SGFixedVector2Internal> get_global_axes() const override;
 
-    SGRectangle2DInternal(fixed_vector2 p_extents) 
+    SGRectangle2DInternal(SGFixedVector2Internal p_extents) 
         : SGShape2DInternal(SHAPE_RECTANGLE) 
     {
         extents = p_extents;
     }
     SGRectangle2DInternal(fixed p_extents_w, fixed p_extents_h) 
-        : SGRectangle2DInternal(fixed_vector2(p_extents_w, p_extents_h)) { }
+        : SGRectangle2DInternal(SGFixedVector2Internal(p_extents_w, p_extents_h)) { }
 };
 
 class SGCircle2DInternal : public SGShape2DInternal {
@@ -118,7 +119,7 @@ public:
     _FORCE_INLINE_ fixed get_radius() const { return radius; }
     _FORCE_INLINE_ void set_radius(const fixed &p_radius) { radius = p_radius; }
 
-    virtual fixed_rect2 get_bounds() const override;
+    virtual SGFixedRect2Internal get_bounds() const override;
 
     SGCircle2DInternal(fixed p_radius)
         : SGShape2DInternal(SHAPE_CIRCLE)
@@ -130,18 +131,18 @@ public:
 class SGPolygon2DInternal : public SGShape2DInternal {
 protected:
 
-    Vector<fixed_vector2> points;
+    Vector<SGFixedVector2Internal> points;
 
 public:
-    _FORCE_INLINE_ Vector<fixed_vector2> get_points() const { return points; } 
-    _FORCE_INLINE_ void set_points(const Vector<fixed_vector2> &p_points) {
+    _FORCE_INLINE_ Vector<SGFixedVector2Internal> get_points() const { return points; } 
+    _FORCE_INLINE_ void set_points(const Vector<SGFixedVector2Internal> &p_points) {
         points = p_points;
         global_vertices.clear();
         global_axes.clear();
     }
 
-    virtual Vector<fixed_vector2> get_global_vertices() const override;
-    virtual Vector<fixed_vector2> get_global_axes() const override;
+    virtual Vector<SGFixedVector2Internal> get_global_vertices() const override;
+    virtual Vector<SGFixedVector2Internal> get_global_axes() const override;
 
     SGPolygon2DInternal() : SGShape2DInternal(SHAPE_POLYGON) { }
 };

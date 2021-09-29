@@ -98,53 +98,53 @@ void SGFixedTransform2D::set_origin(const Ref<SGFixedVector2> &p_origin) {
 }
 
 Ref<SGFixedTransform2D> SGFixedTransform2D::inverse() const {
-	fixed_transform2d internal = get_internal();
+	SGFixedTransform2DInternal internal = get_internal();
 	internal.invert();
 	return SGFixedTransform2D::from_internal(internal);
 }
 
 Ref<SGFixedTransform2D> SGFixedTransform2D::affine_inverse() const {
-	fixed_transform2d internal = get_internal();
+	SGFixedTransform2DInternal internal = get_internal();
 	internal.affine_invert();
 	return SGFixedTransform2D::from_internal(internal);
 }
 
 int64_t SGFixedTransform2D::get_rotation() const {
-	fixed_transform2d internal = get_internal();
+	SGFixedTransform2DInternal internal = get_internal();
 	return internal.get_rotation().value;
 }
 
 Ref<SGFixedTransform2D> SGFixedTransform2D::rotated(int64_t p_radians) const {
-	fixed_transform2d internal = get_internal();
+	SGFixedTransform2DInternal internal = get_internal();
 	internal.rotate(fixed(p_radians));
 	return SGFixedTransform2D::from_internal(internal);
 }
 
 Ref<SGFixedVector2> SGFixedTransform2D::get_scale() const {
-	fixed_transform2d internal = get_internal();
+	SGFixedTransform2DInternal internal = get_internal();
 	return SGFixedVector2::from_internal(internal.get_scale());
 }
 
 Ref<SGFixedTransform2D> SGFixedTransform2D::scaled(const Ref<SGFixedVector2> &p_scale) const {
-	fixed_transform2d internal = get_internal();
+	SGFixedTransform2DInternal internal = get_internal();
 	internal.scale(p_scale->get_internal());
 	return SGFixedTransform2D::from_internal(internal);
 }
 
 Ref<SGFixedTransform2D> SGFixedTransform2D::translated(const Ref<SGFixedVector2> &p_offset) const {
-	fixed_transform2d internal = get_internal();
+	SGFixedTransform2DInternal internal = get_internal();
 	internal.translate(p_offset->get_internal());
 	return SGFixedTransform2D::from_internal(internal);
 }
 
 Ref<SGFixedTransform2D> SGFixedTransform2D::orthonormalized() const {
-	fixed_transform2d internal = get_internal();
+	SGFixedTransform2DInternal internal = get_internal();
 	internal.orthonormalize();
 	return SGFixedTransform2D::from_internal(internal);
 }
 
 bool SGFixedTransform2D::is_equal_approx(const Ref<SGFixedTransform2D> &p_transform) const {
-	fixed_transform2d internal = get_internal();
+	SGFixedTransform2DInternal internal = get_internal();
 	return internal.is_equal_approx(p_transform->get_internal());
 }
 
@@ -153,43 +153,43 @@ Ref<SGFixedTransform2D> SGFixedTransform2D::mul(const Ref<SGFixedTransform2D> &p
 }
 
 Ref<SGFixedTransform2D> SGFixedTransform2D::interpolate_with(const Ref<SGFixedTransform2D> &p_transform, int64_t p_weight) const {
-	fixed_transform2d internal = get_internal();
+	SGFixedTransform2DInternal internal = get_internal();
 	internal.interpolate_with(p_transform->get_internal(), fixed(p_weight));
 	return SGFixedTransform2D::from_internal(internal);
 }
 
 Ref<SGFixedVector2> SGFixedTransform2D::basis_xform(const Ref<SGFixedVector2> &p_vec) const {
-	fixed_vector2 internal = p_vec->get_internal();
+	SGFixedVector2Internal internal = p_vec->get_internal();
 	internal = get_internal().basis_xform(internal);
 	return SGFixedVector2::from_internal(internal);
 }
 
 Ref<SGFixedVector2> SGFixedTransform2D::basis_xform_inv(const Ref<SGFixedVector2> &p_vec) const {
-	fixed_vector2 internal = p_vec->get_internal();
+	SGFixedVector2Internal internal = p_vec->get_internal();
 	internal = get_internal().basis_xform_inv(internal);
 	return SGFixedVector2::from_internal(internal);
 }
 
 Ref<SGFixedVector2> SGFixedTransform2D::xform(const Ref<SGFixedVector2> &p_vec) const {
-	fixed_vector2 internal = p_vec->get_internal();
+	SGFixedVector2Internal internal = p_vec->get_internal();
 	internal = get_internal().xform(internal);
 	return SGFixedVector2::from_internal(internal);
 }
 
 Ref<SGFixedVector2> SGFixedTransform2D::xform_inv(const Ref<SGFixedVector2> &p_vec) const {
-	fixed_vector2 internal = p_vec->get_internal();
+	SGFixedVector2Internal internal = p_vec->get_internal();
 	internal = get_internal().xform_inv(internal);
 	return SGFixedVector2::from_internal(internal);
 }
 
 SGFixedTransform2D::SGFixedTransform2D() :
-	x(memnew(SGFixedVector2(fixed_vector2(fixed::ONE, fixed::ZERO)))),
-	y(memnew(SGFixedVector2(fixed_vector2(fixed::ZERO, fixed::ONE)))),
+	x(memnew(SGFixedVector2(SGFixedVector2Internal(fixed::ONE, fixed::ZERO)))),
+	y(memnew(SGFixedVector2(SGFixedVector2Internal(fixed::ZERO, fixed::ONE)))),
 	origin(memnew(SGFixedVector2()))
 {
 }
 
-SGFixedTransform2D::SGFixedTransform2D(const fixed_transform2d &p_internal) :
+SGFixedTransform2D::SGFixedTransform2D(const SGFixedTransform2DInternal &p_internal) :
 	x(memnew(SGFixedVector2(p_internal.elements[0]))),
 	y(memnew(SGFixedVector2(p_internal.elements[1]))),
 	origin(memnew(SGFixedVector2(p_internal.elements[2])))

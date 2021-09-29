@@ -41,7 +41,7 @@ public:
 
 private:
     ObjectType object_type;
-    fixed_transform2d transform;
+    SGFixedTransform2DInternal transform;
     List<SGShape2DInternal *> shapes;
     SGBroadphase2DInternal *broadphase;
     SGBroadphase2DInternalElement *broadphase_element;
@@ -53,8 +53,8 @@ private:
 public:
     _FORCE_INLINE_ ObjectType get_object_type() const { return object_type; }
 
-    _FORCE_INLINE_ fixed_transform2d get_transform() const { return transform; }
-    void set_transform(const fixed_transform2d &p_transform);
+    _FORCE_INLINE_ SGFixedTransform2DInternal get_transform() const { return transform; }
+    void set_transform(const SGFixedTransform2DInternal &p_transform);
 
     void add_shape(SGShape2DInternal *p_shape);
     void remove_shape(SGShape2DInternal *p_shape);
@@ -63,7 +63,7 @@ public:
         return shapes;
     }
 
-    fixed_rect2 get_bounds() const;
+    SGFixedRect2Internal get_bounds() const;
    
     void add_to_broadphase(SGBroadphase2DInternal *p_broadphase);
     void remove_from_broadphase();

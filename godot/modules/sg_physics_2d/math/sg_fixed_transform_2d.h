@@ -27,7 +27,7 @@
 #include <core/reference.h>
 
 #include "sg_fixed_vector2.h"
-#include "../internal/sg_fixed_math_internal.h"
+#include "../internal/sg_fixed_transform_2d_internal.h"
 
 class SGFixedTransform2D : public Reference {
     GDCLASS(SGFixedTransform2D, Reference);
@@ -51,11 +51,11 @@ public:
 	Ref<SGFixedVector2> get_origin() const;
 	void set_origin(const Ref<SGFixedVector2> &p_origin);
 
-	_FORCE_INLINE_ fixed_transform2d get_internal() const {
-		return fixed_transform2d(fixed(x->get_x()), fixed(x->get_y()), fixed(y->get_x()), fixed(y->get_y()), fixed(origin->get_x()), fixed(origin->get_y()));
+	_FORCE_INLINE_ SGFixedTransform2DInternal get_internal() const {
+		return SGFixedTransform2DInternal(fixed(x->get_x()), fixed(x->get_y()), fixed(y->get_x()), fixed(y->get_y()), fixed(origin->get_x()), fixed(origin->get_y()));
 	}
 
-	_FORCE_INLINE_ void set_internal(const fixed_transform2d &p_internal) {
+	_FORCE_INLINE_ void set_internal(const SGFixedTransform2DInternal &p_internal) {
 		x->set_x(p_internal[0][0].value);
 		x->set_y(p_internal[0][1].value);
 		y->set_x(p_internal[1][0].value);
@@ -64,7 +64,7 @@ public:
 		origin->set_y(p_internal[2][1].value);
 	}
 
-	_FORCE_INLINE_ static Ref<SGFixedTransform2D> from_internal(const fixed_transform2d &p_internal) {
+	_FORCE_INLINE_ static Ref<SGFixedTransform2D> from_internal(const SGFixedTransform2DInternal &p_internal) {
 		return Ref<SGFixedTransform2D>(memnew(SGFixedTransform2D(p_internal)));
 	}
 
@@ -94,7 +94,7 @@ public:
     Ref<SGFixedVector2> xform_inv(const Ref<SGFixedVector2> &p_vec) const;
 
 	SGFixedTransform2D();
-	SGFixedTransform2D(const fixed_transform2d &p_internal);
+	SGFixedTransform2D(const SGFixedTransform2DInternal &p_internal);
 };
 
 #endif

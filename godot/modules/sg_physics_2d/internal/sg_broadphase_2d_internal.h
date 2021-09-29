@@ -28,7 +28,7 @@
 
 struct SGBroadphase2DInternalElement {
 	SGCollisionObject2DInternal *object;
-	fixed_rect2 bounds;
+	SGFixedRect2Internal bounds;
 	Vector<uint64_t> indices;
 
 	_FORCE_INLINE_ SGBroadphase2DInternalElement() {
@@ -78,7 +78,7 @@ public:
 	void update_element(SGBroadphase2DInternalElement *p_element);
 	void delete_element(SGBroadphase2DInternalElement *p_element);
 
-	Set<SGCollisionObject2DInternal *> *find_nearby(const fixed_rect2 &p_bounds, SGCollisionObject2DInternal::ObjectType p_type = SGCollisionObject2DInternal::OBJECT_BOTH) const;
+	Set<SGCollisionObject2DInternal *> *find_nearby(const SGFixedRect2Internal &p_bounds, SGCollisionObject2DInternal::ObjectType p_type = SGCollisionObject2DInternal::OBJECT_BOTH) const;
 
 	void set_cell_size(int p_cell_size);
 

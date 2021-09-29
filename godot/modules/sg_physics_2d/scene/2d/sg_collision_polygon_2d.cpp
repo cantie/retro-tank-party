@@ -187,8 +187,8 @@ bool SGCollisionPolygon2D::is_convex(const Array &p_vertices) {
 		cur = next;
 		next = p_vertices.get(i);
 
-		fixed_vector2 previous_edge = cur->get_internal() - prev->get_internal();
-		fixed_vector2 next_edge = next->get_internal() - cur->get_internal();
+		SGFixedVector2Internal previous_edge = cur->get_internal() - prev->get_internal();
+		SGFixedVector2Internal next_edge = next->get_internal() - cur->get_internal();
 
 		if (next_edge.x > fixed::ZERO) {
 			if (x_sign == 0) {
@@ -334,7 +334,7 @@ Array SGCollisionPolygon2D::get_fixed_polygon() const {
 }
 
 void SGCollisionPolygon2D::update_internal_shape() const {
-	Vector<fixed_vector2> points;
+	Vector<SGFixedVector2Internal> points;
 	points.resize(fixed_polygon.size());
 
 	for (int i = 0; i < fixed_polygon.size(); i++) {

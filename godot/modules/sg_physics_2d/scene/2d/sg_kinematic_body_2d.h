@@ -38,15 +38,15 @@ public:
     struct Collision {
         SGCollisionObject2D *collider;
         // @todo How can we get the shape in here?
-        fixed_vector2 normal;
-        fixed_vector2 remainder;
+        SGFixedVector2Internal normal;
+        SGFixedVector2Internal remainder;
 
         Collision() {
             collider = nullptr;
         }
     };
 
-    bool move_and_collide(const fixed_vector2 &p_linear_velocity, Collision &p_collision);
+    bool move_and_collide(const SGFixedVector2Internal &p_linear_velocity, Collision &p_collision);
     Ref<SGFixedVector2> move_and_slide(const Ref<SGFixedVector2> &p_linear_velocity, int p_max_slides);
     bool rotate_and_slide(int64_t p_rotation, int p_max_slides);
 

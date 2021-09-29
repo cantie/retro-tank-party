@@ -26,8 +26,8 @@
 #include "sg_bodies_2d_internal.h"
 
 void SGBroadphase2DInternal::_add_element_to_cells(SGBroadphase2DInternalElement *p_element) {
-	fixed_vector2 min = p_element->bounds.get_min();
-	fixed_vector2 max = p_element->bounds.get_max();
+	SGFixedVector2Internal min = p_element->bounds.get_min();
+	SGFixedVector2Internal max = p_element->bounds.get_max();
 
 	int32_t from_x = min.x.to_int() / cell_size;
 	int32_t from_y = min.y.to_int() / cell_size;
@@ -107,11 +107,11 @@ void SGBroadphase2DInternal::delete_element(SGBroadphase2DInternalElement *p_ele
 	memdelete(p_element);
 }
 
-Set<SGCollisionObject2DInternal *> *SGBroadphase2DInternal::find_nearby(const fixed_rect2 &p_bounds, SGCollisionObject2DInternal::ObjectType p_type) const {
+Set<SGCollisionObject2DInternal *> *SGBroadphase2DInternal::find_nearby(const SGFixedRect2Internal &p_bounds, SGCollisionObject2DInternal::ObjectType p_type) const {
 	Set<SGCollisionObject2DInternal *> *results = memnew(Set<SGCollisionObject2DInternal *>);
 
-	fixed_vector2 min = p_bounds.get_min();
-	fixed_vector2 max = p_bounds.get_max();
+	SGFixedVector2Internal min = p_bounds.get_min();
+	SGFixedVector2Internal max = p_bounds.get_max();
 
 	int32_t from_x = min.x.to_int() / cell_size;
 	int32_t from_y = min.y.to_int() / cell_size;

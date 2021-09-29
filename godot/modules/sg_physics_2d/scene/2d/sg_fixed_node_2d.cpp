@@ -77,7 +77,7 @@ void SGFixedNode2D::_changed_callback(Object *p_changed, const char *p_prop) {
     }
 }
 
-fixed_transform2d SGFixedNode2D::get_global_fixed_transform_internal() const {
+SGFixedTransform2DInternal SGFixedNode2D::get_global_fixed_transform_internal() const {
     SGFixedNode2D *fixed_parent = Object::cast_to<SGFixedNode2D>(get_parent());
     if (fixed_parent) {
         return fixed_parent->get_global_fixed_transform_internal() * fixed_transform->get_internal();
@@ -85,7 +85,7 @@ fixed_transform2d SGFixedNode2D::get_global_fixed_transform_internal() const {
     return fixed_transform->get_internal();
 }
 
-void SGFixedNode2D::update_fixed_transform_internal(const fixed_transform2d &p_transform) {
+void SGFixedNode2D::update_fixed_transform_internal(const SGFixedTransform2DInternal &p_transform) {
     updating_transform = true;
     fixed_transform->set_internal(p_transform);
     fixed_position->set_internal(p_transform.get_origin());
@@ -98,7 +98,7 @@ void SGFixedNode2D::update_fixed_transform_internal(const fixed_transform2d &p_t
     updating_transform = false;
 }
 
-void SGFixedNode2D::update_global_fixed_transform_internal(const fixed_transform2d &p_global_transform) {
+void SGFixedNode2D::update_global_fixed_transform_internal(const SGFixedTransform2DInternal &p_global_transform) {
     SGFixedNode2D *fixed_parent = Object::cast_to<SGFixedNode2D>(get_parent());
     if (fixed_parent) {
         update_fixed_transform_internal(fixed_parent->get_global_fixed_transform_internal().affine_inverse() * p_global_transform);
@@ -108,7 +108,7 @@ void SGFixedNode2D::update_global_fixed_transform_internal(const fixed_transform
     }
 }
 
-void SGFixedNode2D::_set_fixed_position(const fixed_vector2 &p_fixed_position) {
+void SGFixedNode2D::_set_fixed_position(const SGFixedVector2Internal &p_fixed_position) {
     fixed_position->set_internal(p_fixed_position);
     updating_transform = true;
     set_position(fixed_position->to_float());
@@ -156,7 +156,7 @@ void SGFixedNode2D::set_fixed_scale(const Ref<SGFixedVector2> &p_fixed_scale) {
     updating_transform = true;
     set_scale(fixed_scale->to_float());
 
-    fixed_transform2d internal_transform = fixed_transform->get_internal();
+    SGFixedTransform2DInternal internal_transform = fixed_transform->get_internal();
     internal_transform.set_scale(fixed_scale->get_internal());
     fixed_transform->set_internal(internal_transform);
 
@@ -173,7 +173,7 @@ void SGFixedNode2D::set_fixed_rotation(int64_t p_fixed_rotation) {
     updating_transform = true;
     set_rotation(fixed(p_fixed_rotation).to_float());
 
-    fixed_transform2d internal_transform = fixed_transform->get_internal();
+    SGFixedTransform2DInternal internal_transform = fixed_transform->get_internal();
     internal_transform.set_rotation(fixed(p_fixed_rotation));
     fixed_transform->set_internal(internal_transform);
 
@@ -194,7 +194,7 @@ Ref<SGFixedTransform2D> SGFixedNode2D::get_global_fixed_transform() const {
 }
 
 void SGFixedNode2D::set_global_fixed_position(const Ref<SGFixedVector2> &p_fixed_position) {
-   fixed_transform2d t = get_global_fixed_transform_internal();
+   SGFixedTransform2DInternal t = get_global_fixed_transform_internal();
    t.set_origin(p_fixed_position->get_internal());
    update_global_fixed_transform_internal(t);
 }
@@ -225,7 +225,7 @@ SGFixedNode2D::SGFixedNode2D() {
     fixed_position = Ref<SGFixedVector2>(memnew(SGFixedVector2));
     fixed_position->connect("changed", this, "_fixed_position_changed");
 
-    fixed_scale = Ref<SGFixedVector2>(memnew(SGFixedVector2(fixed_vector2(fixed::ONE, fixed::ONE))));
+    fixed_scale = Ref<SGFixedVector2>(memnew(SGFixedVector2(SGFixedVector2Internal(fixed::ONE, fixed::ONE))));
     fixed_scale->connect("changed", this, "_fixed_scale_changed");
 
     fixed_rotation = 0;

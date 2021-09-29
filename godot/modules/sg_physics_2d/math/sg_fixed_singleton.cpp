@@ -23,7 +23,7 @@
 
 #include "sg_fixed_singleton.h"
 
-#include "../internal/sg_fixed_math_internal.h"
+#include "../internal/sg_fixed_number_internal.h"
 
 SGFixed *SGFixed::singleton = NULL;
 
@@ -118,9 +118,9 @@ int64_t SGFixed::sqrt(int64_t p_fixed_value) const {
 }
 
 Ref<SGFixedVector2> SGFixed::vector2(int64_t p_fixed_x, int64_t p_fixed_y) const {
-    return Ref<SGFixedVector2>(memnew(SGFixedVector2(fixed_vector2(fixed(p_fixed_x), fixed(p_fixed_y)))));
+    return Ref<SGFixedVector2>(memnew(SGFixedVector2(SGFixedVector2Internal(fixed(p_fixed_x), fixed(p_fixed_y)))));
 }
 
 Ref<SGFixedVector2> SGFixed::from_float_vector2(const Vector2 &p_float_vector) const {
-    return Ref<SGFixedVector2>(memnew(SGFixedVector2(fixed_vector2(fixed::from_float(p_float_vector.x), fixed::from_float(p_float_vector.y)))));
+    return Ref<SGFixedVector2>(memnew(SGFixedVector2(SGFixedVector2Internal(fixed::from_float(p_float_vector.x), fixed::from_float(p_float_vector.y)))));
 }

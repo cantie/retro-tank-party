@@ -25,29 +25,29 @@
 
 using Interval = SGCollisionDetector2DInternal::Interval;
 
-bool SGCollisionDetector2DInternal::AABB_overlaps_AABB(const fixed_rect2 &aabb1, const fixed_rect2 &aabb2) {
-    fixed_vector2 min_one = aabb1.get_min();
-    fixed_vector2 max_one = aabb1.get_max();
-    fixed_vector2 min_two = aabb2.get_min();
-    fixed_vector2 max_two = aabb2.get_max();
+bool SGCollisionDetector2DInternal::AABB_overlaps_AABB(const SGFixedRect2Internal &aabb1, const SGFixedRect2Internal &aabb2) {
+    SGFixedVector2Internal min_one = aabb1.get_min();
+    SGFixedVector2Internal max_one = aabb1.get_max();
+    SGFixedVector2Internal min_two = aabb2.get_min();
+    SGFixedVector2Internal max_two = aabb2.get_max();
 
     return (min_two.x <= max_one.x) && (min_one.x <= max_two.x) && \
            (min_two.y <= max_one.y) && (min_one.y <= max_two.y);
 }
 
-Interval SGCollisionDetector2DInternal::get_interval(const SGShape2DInternal &shape, const fixed_vector2 &axis) {
+Interval SGCollisionDetector2DInternal::get_interval(const SGShape2DInternal &shape, const SGFixedVector2Internal &axis) {
     Interval result;
 
     if (shape.get_shape_type() == SGShape2DInternal::ShapeType::SHAPE_CIRCLE) {
         const SGCircle2DInternal &circle = (const SGCircle2DInternal&)shape;
-        fixed_transform2d t = shape.get_global_transform();
+        SGFixedTransform2DInternal t = shape.get_global_transform();
         fixed center = axis.dot(t.get_origin());
         fixed radius = circle.get_radius() * t.get_scale().x;
         result.min = center - radius;
         result.max = center + radius;
     }
     else {
-        Vector<fixed_vector2> verts = shape.get_global_vertices();
+        Vector<SGFixedVector2Internal> verts = shape.get_global_vertices();
         result.min = result.max = axis.dot(verts[0]);
         for (int i = 1; i < verts.size(); i++) {
             fixed projection = axis.dot(verts[i]);
@@ -63,7 +63,7 @@ Interval SGCollisionDetector2DInternal::get_interval(const SGShape2DInternal &sh
     return result;
 }
 
-bool SGCollisionDetector2DInternal::overlaps_on_axis(const SGShape2DInternal &shape1, const SGShape2DInternal &shape2, const fixed_vector2 &axis, fixed &separation) {
+bool SGCollisionDetector2DInternal::overlaps_on_axis(const SGShape2DInternal &shape1, const SGShape2DInternal &shape2, const SGFixedVector2Internal &axis, fixed &separation) {
     Interval i1 = get_interval(shape1, axis);
     Interval i2 = get_interval(shape2, axis);
 
@@ -83,13 +83,13 @@ bool SGCollisionDetector2DInternal::overlaps_on_axis(const SGShape2DInternal &sh
     return false;
 }
 
-bool SGCollisionDetector2DInternal::sat_test(const SGShape2DInternal &shape1, const SGShape2DInternal &shape2, const Vector<fixed_vector2> &axes, fixed_vector2 &best_separation_vector) {
+bool SGCollisionDetector2DInternal::sat_test(const SGShape2DInternal &shape1, const SGShape2DInternal &shape2, const Vector<SGFixedVector2Internal> &axes, SGFixedVector2Internal &best_separation_vector) {
     fixed separation_component;
 
     for (int i = 0; i < axes.size(); i++) {
         if (overlaps_on_axis(shape1, shape2, axes[i], separation_component)) {
-            fixed_vector2 separation_vector = (axes[i] * separation_component);
-            if (best_separation_vector == fixed_vector2::ZERO || separation_vector.length() < best_separation_vector.length()) {
+            SGFixedVector2Internal separation_vector = (axes[i] * separation_component);
+            if (best_separation_vector == SGFixedVector2Internal::ZERO || separation_vector.length() < best_separation_vector.length()) {
                 best_separation_vector = separation_vector;
             }
         }
@@ -104,7 +104,7 @@ bool SGCollisionDetector2DInternal::sat_test(const SGShape2DInternal &shape1, co
 }
 
 bool SGCollisionDetector2DInternal::Rectangle_overlaps_Rectangle(const SGRectangle2DInternal &rectangle1, const SGRectangle2DInternal &rectangle2, OverlapInfo *p_info) {
-    fixed_vector2 best_separation_vector;
+    SGFixedVector2Internal best_separation_vector;
 
     if (!sat_test(rectangle1, rectangle2, rectangle1.get_global_axes(), best_separation_vector)) {
         return false;
@@ -122,10 +122,10 @@ bool SGCollisionDetector2DInternal::Rectangle_overlaps_Rectangle(const SGRectang
 }
 
 bool SGCollisionDetector2DInternal::Circle_overlaps_Circle(const SGCircle2DInternal &circle1, const SGCircle2DInternal &circle2, OverlapInfo *p_info) {
-    fixed_transform2d t1 = circle1.get_global_transform();
-    fixed_transform2d t2 = circle2.get_global_transform();
+    SGFixedTransform2DInternal t1 = circle1.get_global_transform();
+    SGFixedTransform2DInternal t2 = circle2.get_global_transform();
 
-    fixed_vector2 line = t1.get_origin() - t2.get_origin();
+    SGFixedVector2Internal line = t1.get_origin() - t2.get_origin();
 
     // We only multiply by the scale.x because we don't support non-uniform scaling.
     fixed combined_radius = circle1.get_radius() * t1.get_scale().x + circle2.get_radius() * t2.get_scale().x;
@@ -139,17 +139,17 @@ bool SGCollisionDetector2DInternal::Circle_overlaps_Circle(const SGCircle2DInter
     return overlapping;
 }
 
-bool SGCollisionDetector2DInternal::Circle_overlaps_AABB(const SGCircle2DInternal &circle, const fixed_rect2 &aabb, OverlapInfo *p_info) {
-    fixed_vector2 min = aabb.get_min();
-    fixed_vector2 max = aabb.get_max();
+bool SGCollisionDetector2DInternal::Circle_overlaps_AABB(const SGCircle2DInternal &circle, const SGFixedRect2Internal &aabb, OverlapInfo *p_info) {
+    SGFixedVector2Internal min = aabb.get_min();
+    SGFixedVector2Internal max = aabb.get_max();
 
-    fixed_transform2d t = circle.get_global_transform();
+    SGFixedTransform2DInternal t = circle.get_global_transform();
 
-    fixed_vector2 closest_point = t.get_origin();
+    SGFixedVector2Internal closest_point = t.get_origin();
     closest_point.x = CLAMP(closest_point.x, min.x, max.x);
     closest_point.y = CLAMP(closest_point.y, min.y, max.y);
 
-    fixed_vector2 line = t.get_origin() - closest_point;
+    SGFixedVector2Internal line = t.get_origin() - closest_point;
     // We only multiply by the scale.x because we don't support non-uniform scaling.
     fixed radius = circle.get_radius() * t.get_scale().x;
 
@@ -164,10 +164,10 @@ bool SGCollisionDetector2DInternal::Circle_overlaps_AABB(const SGCircle2DInterna
 
 bool SGCollisionDetector2DInternal::Circle_overlaps_Rectangle(const SGCircle2DInternal &circle, const SGRectangle2DInternal &rectangle, OverlapInfo *p_info) {
     // Convert first rectangle into its own local space.
-    fixed_rect2 aabb(-rectangle.get_extents(), rectangle.get_extents() * fixed::TWO);
+    SGFixedRect2Internal aabb(-rectangle.get_extents(), rectangle.get_extents() * fixed::TWO);
 
     // Transform the circle into the local space of the rectangle.
-    fixed_transform2d t = rectangle.get_global_transform();
+    SGFixedTransform2DInternal t = rectangle.get_global_transform();
     SGCircle2DInternal localized_circle(circle.get_radius());
     localized_circle.set_transform(t.affine_inverse() * circle.get_global_transform());
 
@@ -190,7 +190,7 @@ bool SGCollisionDetector2DInternal::Polygon_overlaps_Polygon(const SGPolygon2DIn
         return false;
     }
 
-    fixed_vector2 best_separation_vector;
+    SGFixedVector2Internal best_separation_vector;
 
     if (!sat_test(polygon1, polygon2, polygon1.get_global_axes(), best_separation_vector)) {
         return false;
@@ -212,7 +212,7 @@ bool SGCollisionDetector2DInternal::Polygon_overlaps_Circle(const SGPolygon2DInt
         return false;
     }
 
-    fixed_vector2 best_separation_vector;
+    SGFixedVector2Internal best_separation_vector;
 
     // First, we see if the circle has any seperation from the polygon's axes.
     if (!sat_test(polygon, circle, polygon.get_global_axes(), best_separation_vector)) {
@@ -222,9 +222,9 @@ bool SGCollisionDetector2DInternal::Polygon_overlaps_Circle(const SGPolygon2DInt
     // Next, we need to find the axis to check for the circle (it's a vector
     // from the closest vertex to the circle center).
 
-    Vector<fixed_vector2> vertices = polygon.get_global_vertices();
-    fixed_transform2d ct = circle.get_global_transform();
-    fixed_vector2 closest_vertex = vertices[0];
+    Vector<SGFixedVector2Internal> vertices = polygon.get_global_vertices();
+    SGFixedTransform2DInternal ct = circle.get_global_transform();
+    SGFixedVector2Internal closest_vertex = vertices[0];
     fixed closest_distance = (ct.get_origin() - vertices[0]).length_squared();
 
     for (int i = 1; i < vertices.size(); i++) {
@@ -235,7 +235,7 @@ bool SGCollisionDetector2DInternal::Polygon_overlaps_Circle(const SGPolygon2DInt
         }
     }
 
-    Vector<fixed_vector2> circle_axes;
+    Vector<SGFixedVector2Internal> circle_axes;
     circle_axes.push_back((ct.get_origin() - closest_vertex).normalized());
     if (!sat_test(polygon, circle, circle_axes, best_separation_vector)) {
         return false;
@@ -253,7 +253,7 @@ bool SGCollisionDetector2DInternal::Polygon_overlaps_Rectangle(const SGPolygon2D
         return false;
     }
     
-    fixed_vector2 best_separation_vector;
+    SGFixedVector2Internal best_separation_vector;
 
     if (!sat_test(polygon, rectangle, polygon.get_global_axes(), best_separation_vector)) {
         return false;
@@ -279,7 +279,7 @@ bool SGCollisionDetector2DInternal::Polygon_overlaps_Rectangle(const SGPolygon2D
 // r = p_cast_to_1
 // q = p_start_2
 // s = p_cast_to_2
-bool SGCollisionDetector2DInternal::segment_intersects_segment(const fixed_vector2 &p_start_1, const fixed_vector2 &p_cast_to_1, const fixed_vector2 &p_start_2, const fixed_vector2 &p_cast_to_2, fixed_vector2 &p_intersection_point) {
+bool SGCollisionDetector2DInternal::segment_intersects_segment(const SGFixedVector2Internal &p_start_1, const SGFixedVector2Internal &p_cast_to_1, const SGFixedVector2Internal &p_start_2, const SGFixedVector2Internal &p_cast_to_2, SGFixedVector2Internal &p_intersection_point) {
     fixed denominator = p_cast_to_1.cross(p_cast_to_2);
     fixed u_nominator = (p_start_2 - p_start_1).cross(p_cast_to_1);
 
@@ -315,26 +315,26 @@ bool SGCollisionDetector2DInternal::segment_intersects_segment(const fixed_vecto
     return true;
 }
 
-bool SGCollisionDetector2DInternal::segment_intersects_Polygon(const fixed_vector2 &p_start, const fixed_vector2 &p_cast_to, const SGShape2DInternal &polygon, fixed_vector2 &p_intersection_point, fixed_vector2 &p_collision_normal) {
-    Vector<fixed_vector2> verts = polygon.get_global_vertices();
+bool SGCollisionDetector2DInternal::segment_intersects_Polygon(const SGFixedVector2Internal &p_start, const SGFixedVector2Internal &p_cast_to, const SGShape2DInternal &polygon, SGFixedVector2Internal &p_intersection_point, SGFixedVector2Internal &p_collision_normal) {
+    Vector<SGFixedVector2Internal> verts = polygon.get_global_vertices();
 
     bool intersecting = false;
 
-    fixed_vector2 closest_intersection_point;
-    fixed_vector2 closest_collision_normal;
+    SGFixedVector2Internal closest_intersection_point;
+    SGFixedVector2Internal closest_collision_normal;
     fixed closest_distance_squared;
 
-    fixed_vector2 previous = verts[verts.size() - 1];
+    SGFixedVector2Internal previous = verts[verts.size() - 1];
     for (int i = 0; i < verts.size(); i++) {
-        fixed_vector2 cur = verts[i];
-        fixed_vector2 edge = cur - previous;
-        fixed_vector2 intersection_point;
+        SGFixedVector2Internal cur = verts[i];
+        SGFixedVector2Internal edge = cur - previous;
+        SGFixedVector2Internal intersection_point;
         if (segment_intersects_segment(p_start, p_cast_to, previous, edge, intersection_point)) {
             fixed distance_squared = (intersection_point - p_start).length_squared();
             if (!intersecting || distance_squared < closest_distance_squared) {
                 closest_distance_squared = distance_squared;
                 closest_intersection_point = intersection_point;
-                closest_collision_normal = fixed_vector2(edge.y, -edge.x).normalized();
+                closest_collision_normal = SGFixedVector2Internal(edge.y, -edge.x).normalized();
             }
             intersecting = true;
         }
@@ -358,11 +358,11 @@ bool SGCollisionDetector2DInternal::segment_intersects_Polygon(const fixed_vecto
 //
 // E = p_start
 // d = p_cast_to
-bool SGCollisionDetector2DInternal::segment_intersects_Circle(const fixed_vector2 &p_start, const fixed_vector2 &p_cast_to, const SGCircle2DInternal &circle, fixed_vector2 &p_intersection_point, fixed_vector2 &p_collision_normal) {
-    fixed_transform2d ct = circle.get_global_transform();
+bool SGCollisionDetector2DInternal::segment_intersects_Circle(const SGFixedVector2Internal &p_start, const SGFixedVector2Internal &p_cast_to, const SGCircle2DInternal &circle, SGFixedVector2Internal &p_intersection_point, SGFixedVector2Internal &p_collision_normal) {
+    SGFixedTransform2DInternal ct = circle.get_global_transform();
 
-    fixed_vector2 C = ct.get_origin();
-    fixed_vector2 f = p_start - C;
+    SGFixedVector2Internal C = ct.get_origin();
+    SGFixedVector2Internal f = p_start - C;
 
     fixed r = circle.get_radius() * ct.get_scale().x;
 

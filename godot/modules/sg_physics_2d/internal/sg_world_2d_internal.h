@@ -26,7 +26,8 @@
 
 #include <core/object.h>
 
-#include "sg_fixed_math_internal.h"
+#include "sg_fixed_vector2_internal.h"
+#include "sg_fixed_rect2_internal.h"
 
 class SGArea2DInternal;
 class SGBody2DInternal;
@@ -45,7 +46,7 @@ public:
     struct OverlapInfo {
         SGBody2DInternal *body;
         SGShape2DInternal *shape;
-        fixed_vector2 seperation;
+        SGFixedVector2Internal seperation;
 
         OverlapInfo() {
             body = nullptr;
@@ -55,8 +56,8 @@ public:
 
     struct RayCastInfo {
         SGBody2DInternal *body;
-        fixed_vector2 collision_point;
-        fixed_vector2 collision_normal;
+        SGFixedVector2Internal collision_point;
+        SGFixedVector2Internal collision_normal;
 
         RayCastInfo() {
             body = nullptr;
@@ -82,8 +83,8 @@ public:
     List<SGArea2DInternal *> *get_overlapping_areas(SGCollisionObject2DInternal *p_object) const;
     List<SGBody2DInternal *> *get_overlapping_bodies(SGCollisionObject2DInternal *p_object) const;
 
-    bool segment_intersects_shape(const fixed_vector2 &p_start, const fixed_vector2 &p_cast_to, SGShape2DInternal *p_shape, fixed_vector2 &p_intersection_point, fixed_vector2 &p_collision_normal) const;
-    bool cast_ray(const fixed_vector2 &p_start, const fixed_vector2 &p_cast_to, uint32_t p_collision_mask, Set<SGCollisionObject2DInternal *> *p_exceptions = nullptr, RayCastInfo *p_info = nullptr) const;
+    bool segment_intersects_shape(const SGFixedVector2Internal &p_start, const SGFixedVector2Internal &p_cast_to, SGShape2DInternal *p_shape, SGFixedVector2Internal &p_intersection_point, SGFixedVector2Internal &p_collision_normal) const;
+    bool cast_ray(const SGFixedVector2Internal &p_start, const SGFixedVector2Internal &p_cast_to, uint32_t p_collision_mask, Set<SGCollisionObject2DInternal *> *p_exceptions = nullptr, RayCastInfo *p_info = nullptr) const;
 
     SGWorld2DInternal();
     ~SGWorld2DInternal();

@@ -88,7 +88,7 @@ String SGCollisionObject2D::get_configuration_warning() const {
 }
 
 void SGCollisionObject2D::sync_from_physics_engine() {
-    fixed_transform2d physics_transform = internal->get_transform();
+    SGFixedTransform2DInternal physics_transform = internal->get_transform();
 
     SGFixedNode2D *fixed_parent = Object::cast_to<SGFixedNode2D>(get_parent());
     if (!fixed_parent) {
@@ -96,7 +96,7 @@ void SGCollisionObject2D::sync_from_physics_engine() {
         return;
     }
 
-    fixed_transform2d parent_transform = fixed_parent->get_global_fixed_transform_internal();
+    SGFixedTransform2DInternal parent_transform = fixed_parent->get_global_fixed_transform_internal();
     update_fixed_transform_internal(parent_transform.affine_inverse() * physics_transform);
 }
 

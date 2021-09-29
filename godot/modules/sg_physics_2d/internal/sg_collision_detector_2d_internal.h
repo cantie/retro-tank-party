@@ -24,7 +24,8 @@
 #ifndef SG_COLLISION_DETECTOR_2D_INTERNAL_H
 #define SG_COLLISION_DETECTOR_2D_INTERNAL_H
 
-#include "sg_fixed_math_internal.h"
+#include "sg_fixed_transform_2d_internal.h"
+#include "sg_fixed_rect2_internal.h"
 #include "sg_shapes_2d_internal.h"
 
 class SGCollisionDetector2DInternal {
@@ -40,20 +41,20 @@ public:
     };
 
     struct OverlapInfo {
-        fixed_vector2 separation;
+        SGFixedVector2Internal separation;
     };
 
-    static bool AABB_overlaps_AABB(const fixed_rect2 &aabb1, const fixed_rect2 &aabb2);
+    static bool AABB_overlaps_AABB(const SGFixedRect2Internal &aabb1, const SGFixedRect2Internal &aabb2);
 
     //
     // SAT testing utilities
     //
 
-    static Interval get_interval(const fixed_rect2 &aabb, const fixed_vector2 &axis);
-    static Interval get_interval(const SGShape2DInternal &shape, const fixed_vector2 &axis);
+    static Interval get_interval(const SGFixedRect2Internal &aabb, const SGFixedVector2Internal &axis);
+    static Interval get_interval(const SGShape2DInternal &shape, const SGFixedVector2Internal &axis);
 
-    static bool overlaps_on_axis(const SGShape2DInternal &shape1, const SGShape2DInternal &shape2, const fixed_vector2 &axis, fixed &separation);
-    static bool sat_test(const SGShape2DInternal &shape1, const SGShape2DInternal &shape2, const Vector<fixed_vector2> &axes, fixed_vector2 &best_separation_vector);
+    static bool overlaps_on_axis(const SGShape2DInternal &shape1, const SGShape2DInternal &shape2, const SGFixedVector2Internal &axis, fixed &separation);
+    static bool sat_test(const SGShape2DInternal &shape1, const SGShape2DInternal &shape2, const Vector<SGFixedVector2Internal> &axes, SGFixedVector2Internal &best_separation_vector);
 
     //
     // Rectangles
@@ -66,7 +67,7 @@ public:
     //
 
     static bool Circle_overlaps_Circle(const SGCircle2DInternal &circle1, const SGCircle2DInternal &circle2, OverlapInfo *p_info = nullptr);
-    static bool Circle_overlaps_AABB(const SGCircle2DInternal &circle, const fixed_rect2 &aabb, OverlapInfo *p_info = nullptr);
+    static bool Circle_overlaps_AABB(const SGCircle2DInternal &circle, const SGFixedRect2Internal &aabb, OverlapInfo *p_info = nullptr);
     static bool Circle_overlaps_Rectangle(const SGCircle2DInternal &circle, const SGRectangle2DInternal &rectangle, OverlapInfo *p_info = nullptr);
 
     //
@@ -82,12 +83,12 @@ public:
     // Line segments
     //
 
-    static bool segment_intersects_segment(const fixed_vector2 &p_start_1, const fixed_vector2 &p_cast_to_1, const fixed_vector2 &p_start_2, const fixed_vector2 &p_cast_to_2, fixed_vector2 &p_intersection_point);
+    static bool segment_intersects_segment(const SGFixedVector2Internal &p_start_1, const SGFixedVector2Internal &p_cast_to_1, const SGFixedVector2Internal &p_start_2, const SGFixedVector2Internal &p_cast_to_2, SGFixedVector2Internal &p_intersection_point);
     // This can handle either SGRectangle2DInternal or SGPolygon2DInternal,
     // since they are both polygons with connected vertices returned by
     // get_global_vertices().
-    static bool segment_intersects_Polygon(const fixed_vector2 &p_start, const fixed_vector2 &p_cast_to, const SGShape2DInternal &polygon, fixed_vector2 &p_intersection_point, fixed_vector2 &p_collision_normal);
-    static bool segment_intersects_Circle(const fixed_vector2 &p_start, const fixed_vector2 &p_cast_to, const SGCircle2DInternal &circle, fixed_vector2 &p_intersection_point, fixed_vector2 &p_collision_normal);
+    static bool segment_intersects_Polygon(const SGFixedVector2Internal &p_start, const SGFixedVector2Internal &p_cast_to, const SGShape2DInternal &polygon, SGFixedVector2Internal &p_intersection_point, SGFixedVector2Internal &p_collision_normal);
+    static bool segment_intersects_Circle(const SGFixedVector2Internal &p_start, const SGFixedVector2Internal &p_cast_to, const SGCircle2DInternal &circle, SGFixedVector2Internal &p_intersection_point, SGFixedVector2Internal &p_collision_normal);
 
 };
 

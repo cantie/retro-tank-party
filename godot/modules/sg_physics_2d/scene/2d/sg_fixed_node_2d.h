@@ -48,13 +48,13 @@ protected:
 
 	virtual void _changed_callback(Object *p_changed, const char *p_prop) override;
 
-    _FORCE_INLINE_ fixed_transform2d get_fixed_transform_internal() const { return fixed_transform->get_internal(); }
-    fixed_transform2d get_global_fixed_transform_internal() const;
+    _FORCE_INLINE_ SGFixedTransform2DInternal get_fixed_transform_internal() const { return fixed_transform->get_internal(); }
+    SGFixedTransform2DInternal get_global_fixed_transform_internal() const;
 
-    void update_fixed_transform_internal(const fixed_transform2d &p_transform);
-    void update_global_fixed_transform_internal(const fixed_transform2d &p_global_transform);
+    void update_fixed_transform_internal(const SGFixedTransform2DInternal &p_transform);
+    void update_global_fixed_transform_internal(const SGFixedTransform2DInternal &p_global_transform);
 
-    void _set_fixed_position(const fixed_vector2 &p_fixed_position);
+    void _set_fixed_position(const SGFixedVector2Internal &p_fixed_position);
 
     void _fixed_transform_changed();
     void _fixed_position_changed();
