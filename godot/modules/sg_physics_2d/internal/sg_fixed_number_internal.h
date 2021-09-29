@@ -29,6 +29,11 @@
 
 int64_t sg_sqrt_64(int64_t num);
 
+// To avoid overflow related to flipping the sign on twos-complement
+// representation of of the minimum integer, we effectively limit values to
+// 1 above the minimum.
+#define INT64_EFFECTIVE_MIN (INT64_MIN + 1)
+
 struct fixed {
     int64_t value;
 
@@ -46,7 +51,7 @@ struct fixed {
     static const fixed TAU;
     static const fixed PI_DIV_4;
     static const fixed EPSILON;
-    static const fixed OVERFLOW;
+    static const fixed ARITHMETIC_OVERFLOW;
 
     static _FORCE_INLINE_ fixed from_int(int64_t p_int_value) {
         return fixed(p_int_value << 16);
@@ -84,9 +89,9 @@ struct fixed {
 
     _FORCE_INLINE_ fixed operator+(const fixed& p_other) const {
         if (p_other.value > 0 && (value > INT64_MAX - p_other.value))
-            return fixed::OVERFLOW;
-        if (p_other.value < 0 && (value < INT64_MIN - p_other.value))
-            return fixed::OVERFLOW;
+            return fixed::ARITHMETIC_OVERFLOW;
+        if (p_other.value < 0 && (value < INT64_EFFECTIVE_MIN - p_other.value))
+            return fixed::ARITHMETIC_OVERFLOW;
         return fixed(value + p_other.value);
     }
 
@@ -96,9 +101,9 @@ struct fixed {
 
     _FORCE_INLINE_ fixed operator-(const fixed& p_other) const {
         if (p_other.value < 0 && (value > INT64_MAX + p_other.value))
-            return fixed::OVERFLOW;
-        if (p_other.value > 0 && (value < INT64_MIN + p_other.value))
-            return fixed::OVERFLOW;
+            return fixed::ARITHMETIC_OVERFLOW;
+        if (p_other.value > 0 && (value < INT64_EFFECTIVE_MIN + p_other.value))
+            return fixed::ARITHMETIC_OVERFLOW;
         return fixed(value - p_other.value);
     }
 
@@ -108,13 +113,13 @@ struct fixed {
 
     _FORCE_INLINE_ fixed operator*(const fixed& p_other) const {
         if (value == -1 && p_other.value == INT64_MAX)
-            return fixed::OVERFLOW;
+            return fixed::ARITHMETIC_OVERFLOW;
         if (p_other.value == -1 && value == INT64_MIN)
-            return fixed::OVERFLOW;
-        if (p_other.value > 0 && (value > (INT64_MAX / p_other.value) || value < ((INT64_MIN + 1) / p_other.value)))
-            return fixed::OVERFLOW;
-        if (p_other.value < 0 && (value < (INT64_MAX / p_other.value) || value > ((INT64_MIN + 1) / p_other.value)))
-            return fixed::OVERFLOW;
+            return fixed::ARITHMETIC_OVERFLOW;
+        if (p_other.value > 0 && (value > (INT64_MAX / p_other.value) || value < (INT64_EFFECTIVE_MIN / p_other.value)))
+            return fixed::ARITHMETIC_OVERFLOW;
+        if (p_other.value < 0 && (value < (INT64_MAX / p_other.value) || value > (INT64_EFFECTIVE_MIN / p_other.value)))
+            return fixed::ARITHMETIC_OVERFLOW;
         return fixed((value * p_other.value) >> 16);
     }
 
@@ -124,9 +129,9 @@ struct fixed {
 
     _FORCE_INLINE_ fixed operator/(const fixed& p_other) const {
         if (value == -1 && p_other.value == INT64_MAX)
-            return fixed::OVERFLOW;
+            return fixed::ARITHMETIC_OVERFLOW;
         if (p_other.value == -1 && value == INT64_MIN)
-            return fixed::OVERFLOW;
+            return fixed::ARITHMETIC_OVERFLOW;
         return fixed((value << 16) / p_other.value);
     }
 

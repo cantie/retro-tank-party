@@ -72,7 +72,7 @@ const fixed fixed::PI = fixed(fix16_pi);
 const fixed fixed::TAU = fixed(fix16_pi << 1);
 const fixed fixed::PI_DIV_4 = fixed(PI_DIV_4);
 const fixed fixed::EPSILON = fixed(fix16_eps);
-const fixed fixed::OVERFLOW = fixed(INT64_MIN);
+const fixed fixed::ARITHMETIC_OVERFLOW = fixed(INT64_MIN);
 
 fixed fixed::sin() const {
 	if (value < fix16_maximum && value > fix16_minimum) {
