@@ -22,7 +22,7 @@ func explode(type: String) -> void:
 
 func _network_process(delta: float, _input: Dictionary) -> void:
 	._network_process(delta, _input)
-	fixed_position.iadd(vector.mulf(speed))
+	fixed_position.iadd(vector.mul(speed))
 	sync_to_physics_engine()
 
 func _on_LifetimeTimer_timeout() -> void:

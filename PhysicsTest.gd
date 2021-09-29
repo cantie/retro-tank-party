@@ -7,7 +7,7 @@ var counter := 0
 
 func _physics_process(delta: float) -> void:
 	# Move 5 pixels per frame.
-	character.fixed_position.iadd(vector.mulf(5*65536))
+	character.fixed_position.iadd(vector.mul(5*65536))
 	
 	#print ("%s, %s" % [fixed_position.x, fixed_position.y])
 	character.sync_to_physics_engine()

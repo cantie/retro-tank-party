@@ -43,7 +43,7 @@ func _load_state(state: Dictionary) -> void:
 func _network_process(delta: float, input: Dictionary) -> void:
 	._network_process(delta, input)
 	if growing:
-		var increment = vector.mulf(speed)
+		var increment = vector.mul(speed)
 		ray_cast.cast_to = SGFixed.vector2(increment.length(), 0)
 		ray_cast.update_raycast_collision()
 		if ray_cast.is_colliding():

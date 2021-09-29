@@ -34,23 +34,14 @@ void SGFixedVector2::_bind_methods() {
 	ADD_PROPERTY(PropertyInfo(Variant::INT, "x", PROPERTY_HINT_NONE), "set_x", "get_x");
 	ADD_PROPERTY(PropertyInfo(Variant::INT, "y", PROPERTY_HINT_NONE), "set_y", "get_y");
 
-	ClassDB::bind_method(D_METHOD("add", "other_vector"), &SGFixedVector2::add);
-	ClassDB::bind_method(D_METHOD("iadd", "other_vector"), &SGFixedVector2::iadd);
-	ClassDB::bind_method(D_METHOD("sub", "other_vector"), &SGFixedVector2::sub);
-	ClassDB::bind_method(D_METHOD("isub", "other_vector"), &SGFixedVector2::isub);
-	ClassDB::bind_method(D_METHOD("mul", "other_vector"), &SGFixedVector2::mul);
-	ClassDB::bind_method(D_METHOD("imul", "other_vector"), &SGFixedVector2::imul);
-	ClassDB::bind_method(D_METHOD("div", "other_vector"), &SGFixedVector2::div);
-	ClassDB::bind_method(D_METHOD("idiv", "other_vector"), &SGFixedVector2::idiv);
-
-	ClassDB::bind_method(D_METHOD("addf", "fixed_value"), &SGFixedVector2::addf);
-	ClassDB::bind_method(D_METHOD("iaddf" "fixed_value"), &SGFixedVector2::iaddf);
-	ClassDB::bind_method(D_METHOD("subf", "fixed_value"), &SGFixedVector2::subf);
-	ClassDB::bind_method(D_METHOD("isubf", "fixed_value"), &SGFixedVector2::isubf);
-	ClassDB::bind_method(D_METHOD("mulf", "fixed_value"), &SGFixedVector2::mulf);
-	ClassDB::bind_method(D_METHOD("imulf", "fixed_value"), &SGFixedVector2::imulf);
-	ClassDB::bind_method(D_METHOD("divf", "fixed_value"), &SGFixedVector2::divf);
-	ClassDB::bind_method(D_METHOD("idivf", "fixed_value"), &SGFixedVector2::idivf);
+	ClassDB::bind_method(D_METHOD("add", "value"), &SGFixedVector2::add);
+	ClassDB::bind_method(D_METHOD("iadd", "value"), &SGFixedVector2::iadd);
+	ClassDB::bind_method(D_METHOD("sub", "value"), &SGFixedVector2::sub);
+	ClassDB::bind_method(D_METHOD("isub", "value"), &SGFixedVector2::isub);
+	ClassDB::bind_method(D_METHOD("mul", "value"), &SGFixedVector2::mul);
+	ClassDB::bind_method(D_METHOD("imul", "value"), &SGFixedVector2::imul);
+	ClassDB::bind_method(D_METHOD("div", "value"), &SGFixedVector2::div);
+	ClassDB::bind_method(D_METHOD("idiv", "value"), &SGFixedVector2::idiv);
 
 	ClassDB::bind_method(D_METHOD("copy"), &SGFixedVector2::copy);
 	ClassDB::bind_method(D_METHOD("abs"), &SGFixedVector2::abs);
@@ -71,75 +62,99 @@ void SGFixedVector2::_bind_methods() {
 	ADD_SIGNAL(MethodInfo("changed"));
 }
 
-Ref<SGFixedVector2> SGFixedVector2::add(const Ref<SGFixedVector2>& p_other) const {
-	return Ref<SGFixedVector2>(memnew(SGFixedVector2(value + p_other->value)));
+Variant SGFixedVector2::add(const Variant &p_other) const {
+	if (p_other.get_type() == Variant::INT) {
+		return SGFixedVector2::from_internal(value + fixed(p_other));
+	}
+	
+	Ref<SGFixedVector2> other_vector = Object::cast_to<SGFixedVector2>(p_other);
+	ERR_FAIL_COND_V_MSG(!other_vector.is_valid(), Variant(), "Invalid type.");
+
+	return SGFixedVector2::from_internal(value + other_vector->get_internal());
 }
 
-void SGFixedVector2::iadd(const Ref<SGFixedVector2>& p_other) {
-	value += p_other->value;
+void SGFixedVector2::iadd(const Variant &p_other) {
+	if (p_other.get_type() == Variant::INT) {
+		value += fixed(p_other);
+	}
+	else {
+		Ref<SGFixedVector2> other_vector = Object::cast_to<SGFixedVector2>(p_other);
+		ERR_FAIL_COND_MSG(!other_vector.is_valid(), "Invalid type.");
+
+		value += other_vector->get_internal();
+	}
 	emit_signal("changed");
 }
 
-Ref<SGFixedVector2> SGFixedVector2::sub(const Ref<SGFixedVector2>& p_other) const {
-	return Ref<SGFixedVector2>(memnew(SGFixedVector2(value - p_other->value)));
+Variant SGFixedVector2::sub(const Variant &p_other) const {
+	if (p_other.get_type() == Variant::INT) {
+		return SGFixedVector2::from_internal(value - fixed(p_other));
+	}
+	
+	Ref<SGFixedVector2> other_vector = Object::cast_to<SGFixedVector2>(p_other);
+	ERR_FAIL_COND_V_MSG(!other_vector.is_valid(), Variant(), "Invalid type.");
+
+	return SGFixedVector2::from_internal(value - other_vector->get_internal());
 }
 
-void SGFixedVector2::isub(const Ref<SGFixedVector2>& p_other) {
-	value -= p_other->value;
+void SGFixedVector2::isub(const Variant &p_other) {
+	if (p_other.get_type() == Variant::INT) {
+		value -= fixed(p_other);
+	}
+	else {
+		Ref<SGFixedVector2> other_vector = Object::cast_to<SGFixedVector2>(p_other);
+		ERR_FAIL_COND_MSG(!other_vector.is_valid(), "Invalid type.");
+
+		value -= other_vector->get_internal();
+	}
 	emit_signal("changed");
 }
 
-Ref<SGFixedVector2> SGFixedVector2::mul(const Ref<SGFixedVector2>& p_other) const {
-	return Ref<SGFixedVector2>(memnew(SGFixedVector2(value * p_other->value)));
+Variant SGFixedVector2::mul(const Variant &p_other) const {
+	if (p_other.get_type() == Variant::INT) {
+		return SGFixedVector2::from_internal(value * fixed(p_other));
+	}
+	
+	Ref<SGFixedVector2> other_vector = Object::cast_to<SGFixedVector2>(p_other);
+	ERR_FAIL_COND_V_MSG(!other_vector.is_valid(), Variant(), "Invalid type.");
+
+	return SGFixedVector2::from_internal(value * other_vector->get_internal());
 }
 
-void SGFixedVector2::imul(const Ref<SGFixedVector2>& p_other) {
-	value *= p_other->value;
+void SGFixedVector2::imul(const Variant &p_other) {
+	if (p_other.get_type() == Variant::INT) {
+		value *= fixed(p_other);
+	}
+	else {
+		Ref<SGFixedVector2> other_vector = Object::cast_to<SGFixedVector2>(p_other);
+		ERR_FAIL_COND_MSG(!other_vector.is_valid(), "Invalid type.");
+
+		value *= other_vector->get_internal();
+	}
 	emit_signal("changed");
 }
 
-Ref<SGFixedVector2> SGFixedVector2::div(const Ref<SGFixedVector2>& p_other) const {
-	return Ref<SGFixedVector2>(memnew(SGFixedVector2(value / p_other->value)));
+Variant SGFixedVector2::div(const Variant &p_other) const {
+	if (p_other.get_type() == Variant::INT) {
+		return SGFixedVector2::from_internal(value / fixed(p_other));
+	}
+	
+	Ref<SGFixedVector2> other_vector = Object::cast_to<SGFixedVector2>(p_other);
+	ERR_FAIL_COND_V_MSG(!other_vector.is_valid(), Variant(), "Invalid type.");
+
+	return SGFixedVector2::from_internal(value / other_vector->get_internal());
 }
 
-void SGFixedVector2::idiv(const Ref<SGFixedVector2>& p_other) {
-	value /= p_other->value;
-	emit_signal("changed");
-}
+void SGFixedVector2::idiv(const Variant &p_other) {
+	if (p_other.get_type() == Variant::INT) {
+		value /= fixed(p_other);
+	}
+	else {
+		Ref<SGFixedVector2> other_vector = Object::cast_to<SGFixedVector2>(p_other);
+		ERR_FAIL_COND_MSG(!other_vector.is_valid(), "Invalid type.");
 
-Ref<SGFixedVector2> SGFixedVector2::addf(int64_t p_other) const {
-	return Ref<SGFixedVector2>(memnew(SGFixedVector2(value + fixed(p_other))));
-}
-
-void SGFixedVector2::iaddf(int64_t p_other) {
-	value += fixed(p_other);
-	emit_signal("changed");
-}
-
-Ref<SGFixedVector2> SGFixedVector2::subf(int64_t p_other) const {
-	return Ref<SGFixedVector2>(memnew(SGFixedVector2(value - fixed(p_other))));
-}
-
-void SGFixedVector2::isubf(int64_t p_other) {
-	value -= fixed(p_other);
-	emit_signal("changed");
-}
-
-Ref<SGFixedVector2> SGFixedVector2::mulf(int64_t p_other) const {
-	return Ref<SGFixedVector2>(memnew(SGFixedVector2(value * fixed(p_other))));
-}
-
-void SGFixedVector2::imulf(int64_t p_other) {
-	value *= fixed(p_other);
-	emit_signal("changed");
-}
-
-Ref<SGFixedVector2> SGFixedVector2::divf(int64_t p_other) const {
-	return Ref<SGFixedVector2>(memnew(SGFixedVector2(value / fixed(p_other))));
-}
-
-void SGFixedVector2::idivf(int64_t p_other) {
-	value /= fixed(p_other);
+		value /= other_vector->get_internal();
+	}
 	emit_signal("changed");
 }
 

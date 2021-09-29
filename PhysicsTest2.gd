@@ -25,7 +25,7 @@ func _physics_process(delta: float) -> void:
 		velocity.x = -65536
 	
 	if velocity.x != 0:
-		velocity.imulf(65536*6)
+		velocity.imul(65536*6)
 		velocity.rotate(character.fixed_rotation)
 		var collision = character.move_and_collide(velocity)
 		if collision:

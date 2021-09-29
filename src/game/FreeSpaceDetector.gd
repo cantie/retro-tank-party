@@ -2,7 +2,7 @@ extends SGArea2D
 
 func detect_free_space(area_top_left: SGFixedVector2, area_bottom_right: SGFixedVector2, dimensions: SGFixedVector2) -> SGFixedVector2:
 	var area_dimensions = area_bottom_right.sub(area_top_left)
-	var half_dimensions = dimensions.divf(65536*2)
+	var half_dimensions = dimensions.div(65536*2)
 	
 	var shape = SGRectangleShape2D.new()
 	shape.extents = half_dimensions

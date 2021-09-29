@@ -367,7 +367,7 @@ func _network_process(delta: float, input: Dictionary) -> void:
 		#velocity.y = 0
 		velocity.x = movement_vector.x
 		velocity.rotate(fixed_rotation)
-		velocity.imulf(speed)
+		velocity.imul(speed)
 		move_and_slide(velocity)
 	
 	Globals.my_player_position = global_position

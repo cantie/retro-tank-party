@@ -25,6 +25,7 @@
 #define SG_FIXED_VECTOR2_H
 
 #include <core/reference.h>
+#include <core/variant.h>
 
 #include "../internal/sg_fixed_vector2_internal.h"
 
@@ -58,23 +59,14 @@ public:
         emit_signal("changed");
     }
 
-    Ref<SGFixedVector2> add(const Ref<SGFixedVector2> &p_other) const;
-    void iadd(const Ref<SGFixedVector2>& p_other);
-    Ref<SGFixedVector2> sub(const Ref<SGFixedVector2> &p_other) const;
-    void isub(const Ref<SGFixedVector2>& p_other);
-    Ref<SGFixedVector2> mul(const Ref<SGFixedVector2> &p_other) const;
-    void imul(const Ref<SGFixedVector2>& p_other);
-    Ref<SGFixedVector2> div(const Ref<SGFixedVector2> &p_other) const;
-    void idiv(const Ref<SGFixedVector2>& p_other);
-
-    Ref<SGFixedVector2> addf(int64_t p_fixed) const;
-    void iaddf(int64_t p_fixed);
-    Ref<SGFixedVector2> subf(int64_t p_fixed) const;
-    void isubf(int64_t p_fixed);
-    Ref<SGFixedVector2> mulf(int64_t p_fixed) const;
-    void imulf(int64_t p_fixed);
-    Ref<SGFixedVector2> divf(int64_t p_fixed) const;
-    void idivf(int64_t p_fixed);
+    Variant add(const Variant &p_other) const;
+    void iadd(const Variant &p_other);
+    Variant sub(const Variant &p_other) const;
+    void isub(const Variant &p_other);
+    Variant mul(const Variant &p_other) const;
+    void imul(const Variant &p_other);
+    Variant div(const Variant &p_other) const;
+    void idiv(const Variant &p_other);
 
     Ref<SGFixedVector2> copy() const;
 

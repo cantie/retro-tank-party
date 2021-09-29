@@ -4,7 +4,6 @@ TODO
 MILESTONE 1 (physics):
 
  - Code clean-up
-   o Change the SGFixedVector math functions to take a Variant (so we don't need vector and fixed versions of each method)
    o Port over more (all?) of Vector2's methods? Need in both fixed_vector2 and SGFixedVector2!
  - Attempt to put in game
    o Get all the weapons and abilities working
