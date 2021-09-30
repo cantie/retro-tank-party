@@ -103,6 +103,22 @@ fixed SGFixedVector2Internal::length_squared() const {
 	return x * x + y * y;
 }
 
+fixed SGFixedVector2Internal::distance_to(const SGFixedVector2Internal &p_other) const {
+	return fixed(sg_sqrt_64((p_other.x.value - x.value) * (p_other.x.value - x.value) + (p_other.y.value - y.value) * (p_other.y.value - y.value)));
+}
+
+fixed SGFixedVector2Internal::distance_squared_to(const SGFixedVector2Internal &p_other) const {
+	return fixed((p_other.x.value - x.value) * (p_other.x.value - x.value) + (p_other.y.value - y.value) * (p_other.y.value - y.value));
+}
+
+fixed SGFixedVector2Internal::angle_to(const SGFixedVector2Internal &p_other) const {
+	return cross(p_other).atan2(dot(p_other));
+}
+
+fixed SGFixedVector2Internal::angle_to_point(const SGFixedVector2Internal &p_other) const {
+	return (y - p_other.y).atan2(x - p_other.x);
+}
+
 fixed SGFixedVector2Internal::dot(const SGFixedVector2Internal &p_other) const {
 	return x * p_other.x + y * p_other.y;
 }
@@ -110,6 +126,20 @@ fixed SGFixedVector2Internal::dot(const SGFixedVector2Internal &p_other) const {
 fixed SGFixedVector2Internal::cross(const SGFixedVector2Internal &p_other) const {
 	return x * p_other.y - y * p_other.x;
 }
+
+/*
+fixed SGFixedVector2Internal::posmod(const fixed p_mod) const {
+
+}
+
+fixed SGFixedVector2Internal::posmodv(const SGFixedVector2Internal &p_modv) const {
+
+}
+
+SGFixedVector2Internal SGFixedVector2Internal::project(const SGFixedVector2Internal &p_to) const {
+	return p_to * (dot(p_to) / p_to.length_squared());
+}
+*/
 
 SGFixedVector2Internal SGFixedVector2Internal::slide(const SGFixedVector2Internal &p_normal) const {
 #ifdef MATH_CHECKS

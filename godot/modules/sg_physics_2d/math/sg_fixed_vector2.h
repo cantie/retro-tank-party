@@ -31,74 +31,90 @@
 
 class SGFixedVector2 : public Reference {
 
-    GDCLASS(SGFixedVector2, Reference);
+	GDCLASS(SGFixedVector2, Reference);
 
-    SGFixedVector2Internal value;
+	SGFixedVector2Internal value;
 
 protected:
-    static void _bind_methods();
+	static void _bind_methods();
 
 public:
 
-    _FORCE_INLINE_ int64_t get_x() const { return value.x.value; }
-    _FORCE_INLINE_ int64_t get_y() const { return value.y.value; }
+	_FORCE_INLINE_ int64_t get_x() const { return value.x.value; }
+	_FORCE_INLINE_ int64_t get_y() const { return value.y.value; }
 
-    void set_x(int64_t p_x) {
-        value.x.value = p_x;
-        emit_signal("changed");
-    }
+	void set_x(int64_t p_x) {
+		value.x.value = p_x;
+		emit_signal("changed");
+	}
 
-    void set_y(int64_t p_y) {
-        value.y.value = p_y;
-        emit_signal("changed");
-    }
+	void set_y(int64_t p_y) {
+		value.y.value = p_y;
+		emit_signal("changed");
+	}
 
-    void clear() {
-        value.x.value = 0;
-        value.y.value = 0;
-        emit_signal("changed");
-    }
+	void clear() {
+		value.x.value = 0;
+		value.y.value = 0;
+		emit_signal("changed");
+	}
 
-    Variant add(const Variant &p_other) const;
-    void iadd(const Variant &p_other);
-    Variant sub(const Variant &p_other) const;
-    void isub(const Variant &p_other);
-    Variant mul(const Variant &p_other) const;
-    void imul(const Variant &p_other);
-    Variant div(const Variant &p_other) const;
-    void idiv(const Variant &p_other);
+	Variant add(const Variant &p_other) const;
+	void iadd(const Variant &p_other);
+	Variant sub(const Variant &p_other) const;
+	void isub(const Variant &p_other);
+	Variant mul(const Variant &p_other) const;
+	void imul(const Variant &p_other);
+	Variant div(const Variant &p_other) const;
+	void idiv(const Variant &p_other);
 
-    Ref<SGFixedVector2> copy() const;
+	Ref<SGFixedVector2> copy() const;
 
-    Ref<SGFixedVector2> abs() const;
-    Ref<SGFixedVector2> normalized() const;
-    int64_t length() const;
+	Ref<SGFixedVector2> abs() const;
+	Ref<SGFixedVector2> normalized() const;
+	bool is_normalized() const;
 
-    void rotate(int64_t p_rotation);
-    Ref<SGFixedVector2> rotated(int64_t p_rotation) const;
-    int64_t angle() const;
+	int64_t length() const;
+	int64_t length_squared() const;
 
-    Ref<SGFixedVector2> slide(const Ref<SGFixedVector2> &p_normal) const;
-    Ref<SGFixedVector2> bounce(const Ref<SGFixedVector2> &p_normal) const;
-    Ref<SGFixedVector2> reflect(const Ref<SGFixedVector2> &p_normal) const;
+	int64_t distance_to(const Ref<SGFixedVector2> &p_other) const;
+	int64_t distance_squared_to(const Ref<SGFixedVector2> &p_other) const;
+	int64_t angle_to(const Ref<SGFixedVector2> &p_other) const;
+	int64_t angle_to_point(const Ref<SGFixedVector2> &p_other) const;
+	Ref<SGFixedVector2> direction_to(const Ref<SGFixedVector2> &p_other) const;
 
-    void from_float(Vector2 p_float_vector);
-    Vector2 to_float() const;
+	void rotate(int64_t p_rotation);
+	Ref<SGFixedVector2> rotated(int64_t p_rotation) const;
+	int64_t angle() const;
 
-    // Won't trigger the "changed" signal. Meant only for internal use.
-    _FORCE_INLINE_ SGFixedVector2Internal get_internal() const { return value; }
-    _FORCE_INLINE_ void set_internal(SGFixedVector2Internal p_value) { value = p_value; }
+	int64_t dot(const Ref<SGFixedVector2> &p_other) const;
+	int64_t cross(const Ref<SGFixedVector2> &p_other) const;
 
-    _FORCE_INLINE_ static Ref<SGFixedVector2> from_internal(const SGFixedVector2Internal &p_internal) {
-        return Ref<SGFixedVector2>(memnew(SGFixedVector2(p_internal)));
-    }
+	Ref<SGFixedVector2> linear_interpolate(const Ref<SGFixedVector2> &p_to, int64_t weight) const;
 
-    SGFixedVector2() { }
-    SGFixedVector2(const SGFixedVector2Internal& p_internal_vector) {
-        value = p_internal_vector;
-    }
+	Ref<SGFixedVector2> slide(const Ref<SGFixedVector2> &p_normal) const;
+	Ref<SGFixedVector2> bounce(const Ref<SGFixedVector2> &p_normal) const;
+	Ref<SGFixedVector2> reflect(const Ref<SGFixedVector2> &p_normal) const;
 
-    ~SGFixedVector2() { };
+	bool is_equal_approx(const Ref<SGFixedVector2> &p_other) const;
+
+	void from_float(Vector2 p_float_vector);
+	Vector2 to_float() const;
+
+	// Won't trigger the "changed" signal. Meant only for internal use.
+	_FORCE_INLINE_ SGFixedVector2Internal get_internal() const { return value; }
+	_FORCE_INLINE_ void set_internal(SGFixedVector2Internal p_value) { value = p_value; }
+
+	_FORCE_INLINE_ static Ref<SGFixedVector2> from_internal(const SGFixedVector2Internal &p_internal) {
+		return Ref<SGFixedVector2>(memnew(SGFixedVector2(p_internal)));
+	}
+
+	SGFixedVector2() { }
+	SGFixedVector2(const SGFixedVector2Internal& p_internal_vector) {
+		value = p_internal_vector;
+	}
+
+	~SGFixedVector2() { };
 
 };
 

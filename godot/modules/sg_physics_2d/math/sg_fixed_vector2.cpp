@@ -46,15 +46,30 @@ void SGFixedVector2::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("copy"), &SGFixedVector2::copy);
 	ClassDB::bind_method(D_METHOD("abs"), &SGFixedVector2::abs);
 	ClassDB::bind_method(D_METHOD("normalized"), &SGFixedVector2::normalized);
+	ClassDB::bind_method(D_METHOD("is_normalized"), &SGFixedVector2::is_normalized);
 	ClassDB::bind_method(D_METHOD("length"), &SGFixedVector2::length);
+	ClassDB::bind_method(D_METHOD("length_squared"), &SGFixedVector2::length_squared);
+
+	ClassDB::bind_method(D_METHOD("distance_to", "other_vector"), &SGFixedVector2::distance_to);
+	ClassDB::bind_method(D_METHOD("distance_squared_to", "other_vector"), &SGFixedVector2::distance_squared_to);
+	ClassDB::bind_method(D_METHOD("angle_to", "other_vector"), &SGFixedVector2::angle_to);
+	ClassDB::bind_method(D_METHOD("angle_to_point", "other_vector"), &SGFixedVector2::angle_to_point);
+	ClassDB::bind_method(D_METHOD("direction_to", "other_vector"), &SGFixedVector2::direction_to);
 
 	ClassDB::bind_method(D_METHOD("rotate", "radians"), &SGFixedVector2::rotate);
 	ClassDB::bind_method(D_METHOD("rotated", "radians"), &SGFixedVector2::rotated);
 	ClassDB::bind_method(D_METHOD("angle"), &SGFixedVector2::angle);
 
+	ClassDB::bind_method(D_METHOD("dot", "other_vector"), &SGFixedVector2::dot);
+	ClassDB::bind_method(D_METHOD("cross", "other_vector"), &SGFixedVector2::cross);
+
+	ClassDB::bind_method(D_METHOD("linear_interpolate", "other_vector", "weight"), &SGFixedVector2::linear_interpolate);
+
 	ClassDB::bind_method(D_METHOD("slide", "normal"), &SGFixedVector2::slide);
 	ClassDB::bind_method(D_METHOD("bounce", "normal"), &SGFixedVector2::bounce);
 	ClassDB::bind_method(D_METHOD("reflect", "normal"), &SGFixedVector2::reflect);
+
+	ClassDB::bind_method(D_METHOD("is_equal_approx", "other_vector"), &SGFixedVector2::is_equal_approx);
 
 	ClassDB::bind_method(D_METHOD("from_float", "float_vector"), &SGFixedVector2::from_float);
 	ClassDB::bind_method(D_METHOD("to_float"), &SGFixedVector2::to_float);
@@ -170,8 +185,36 @@ Ref<SGFixedVector2> SGFixedVector2::normalized() const {
 	return SGFixedVector2::from_internal(value.normalized());
 }
 
+bool SGFixedVector2::is_normalized() const {
+	return value.is_normalized();
+}
+
 int64_t SGFixedVector2::length() const {
 	return value.length().value;
+}
+
+int64_t SGFixedVector2::length_squared() const {
+	return value.length_squared().value;
+}
+
+int64_t SGFixedVector2::distance_to(const Ref<SGFixedVector2> &p_other) const {
+	return value.distance_to(p_other->get_internal()).value;
+}
+
+int64_t SGFixedVector2::distance_squared_to(const Ref<SGFixedVector2> &p_other) const {
+	return value.distance_squared_to(p_other->get_internal()).value;
+}
+
+int64_t SGFixedVector2::angle_to(const Ref<SGFixedVector2> &p_other) const {
+	return value.angle_to(p_other->get_internal()).value;
+}
+
+int64_t SGFixedVector2::angle_to_point(const Ref<SGFixedVector2> &p_other) const {
+	return value.angle_to_point(p_other->get_internal()).value;
+}
+
+Ref<SGFixedVector2> SGFixedVector2::direction_to(const Ref<SGFixedVector2> &p_other) const {
+	return SGFixedVector2::from_internal(value.direction_to(p_other->get_internal()));
 }
 
 void SGFixedVector2::rotate(int64_t p_rotation) {
@@ -183,18 +226,20 @@ int64_t SGFixedVector2::angle() const {
 	return value.angle().value;
 }
 
+int64_t SGFixedVector2::dot(const Ref<SGFixedVector2> &p_other) const {
+	return value.dot(p_other->get_internal()).value;
+}
+
+int64_t SGFixedVector2::cross(const Ref<SGFixedVector2> &p_other) const {
+	return value.cross(p_other->get_internal()).value;
+}
+
 Ref<SGFixedVector2> SGFixedVector2::rotated(int64_t p_rotation) const {
 	return SGFixedVector2::from_internal(value.rotated(fixed(p_rotation)));
 }
 
-void SGFixedVector2::from_float(Vector2 p_float_vector) {
-	value.x = fixed::from_float(p_float_vector.x);
-	value.y = fixed::from_float(p_float_vector.y);
-	emit_signal("changed");
-}
-
-Vector2 SGFixedVector2::to_float() const {
-	return Vector2(value.x.to_float(), value.y.to_float());
+Ref<SGFixedVector2> SGFixedVector2::linear_interpolate(const Ref<SGFixedVector2> &p_to, int64_t weight) const {
+	return SGFixedVector2::from_internal(SGFixedVector2Internal::linear_interpolate(value, p_to->get_internal(), fixed(weight)));
 }
 
 Ref<SGFixedVector2> SGFixedVector2::slide(const Ref<SGFixedVector2> &p_normal) const {
@@ -214,3 +259,18 @@ Ref<SGFixedVector2> SGFixedVector2::reflect(const Ref<SGFixedVector2> &p_normal)
 	v->value = value.reflect(p_normal->value);
 	return v;
 }
+
+bool SGFixedVector2::is_equal_approx(const Ref<SGFixedVector2> &p_other) const {
+	return value.is_equal_approx(p_other->get_internal());
+}
+
+void SGFixedVector2::from_float(Vector2 p_float_vector) {
+	value.x = fixed::from_float(p_float_vector.x);
+	value.y = fixed::from_float(p_float_vector.y);
+	emit_signal("changed");
+}
+
+Vector2 SGFixedVector2::to_float() const {
+	return Vector2(value.x.to_float(), value.y.to_float());
+}
+

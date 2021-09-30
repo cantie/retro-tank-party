@@ -27,95 +27,90 @@
 #include "sg_fixed_number_internal.h"
 
 struct SGFixedVector2Internal {
-    enum Axis {
-        AXIS_X,
-        AXIS_Y,
-    };
+	enum Axis {
+		AXIS_X,
+		AXIS_Y,
+	};
 
-    union {
-        fixed x;
-        fixed width;
-    };
-    union {
-        fixed y;
-        fixed height;
-    };
+	union {
+		fixed x;
+		fixed width;
+	};
+	union {
+		fixed y;
+		fixed height;
+	};
 
-    static const fixed FIXED_UNIT_EPSILON;
-    static const SGFixedVector2Internal ZERO;
+	static const fixed FIXED_UNIT_EPSILON;
+	static const SGFixedVector2Internal ZERO;
 
-	_FORCE_INLINE_ SGFixedVector2Internal(fixed p_x, fixed p_y) 
-        : x(p_x), y(p_y) {}
-	_FORCE_INLINE_ SGFixedVector2Internal()
-        : x(fixed::ZERO), y(fixed::ZERO) {}
-    
 	_FORCE_INLINE_ fixed &operator[](int p_idx) {
 		return p_idx ? y : x;
 	}
 	_FORCE_INLINE_ const fixed &operator[](int p_idx) const {
 		return p_idx ? y : x;
-    }
+	}
 
 	_FORCE_INLINE_ SGFixedVector2Internal operator+(const SGFixedVector2Internal &p_v) const {
-        return SGFixedVector2Internal(x + p_v.x, y + p_v.y);
-    }
+		return SGFixedVector2Internal(x + p_v.x, y + p_v.y);
+	}
 	_FORCE_INLINE_ void operator+=(const SGFixedVector2Internal &p_v) {
-        x += p_v.x;
-        y += p_v.y;
-    }
+		x += p_v.x;
+		y += p_v.y;
+	}
 	_FORCE_INLINE_ SGFixedVector2Internal operator-(const SGFixedVector2Internal &p_v) const {
-        return SGFixedVector2Internal(x - p_v.x, y - p_v.y);
-    }
+		return SGFixedVector2Internal(x - p_v.x, y - p_v.y);
+	}
 	_FORCE_INLINE_ void operator-=(const SGFixedVector2Internal &p_v) {
-        x -= p_v.x;
-        y -= p_v.y;
-    }
+		x -= p_v.x;
+		y -= p_v.y;
+	}
 	_FORCE_INLINE_ SGFixedVector2Internal operator*(const SGFixedVector2Internal &p_v) const {
-        return SGFixedVector2Internal(x * p_v.x, y * p_v.y);
-    }
+		return SGFixedVector2Internal(x * p_v.x, y * p_v.y);
+	}
 	_FORCE_INLINE_ void operator*=(const SGFixedVector2Internal &p_v) {
-        x *= p_v.x;
-        y *= p_v.y;
-    }
+		x *= p_v.x;
+		y *= p_v.y;
+	}
 	_FORCE_INLINE_ SGFixedVector2Internal operator/(const SGFixedVector2Internal &p_v) const {
-        return SGFixedVector2Internal(x / p_v.x, y / p_v.y);
-    }
+		return SGFixedVector2Internal(x / p_v.x, y / p_v.y);
+	}
 	_FORCE_INLINE_ void operator/=(const SGFixedVector2Internal &p_v) {
-        x /= p_v.x;
-        y /= p_v.y;
-    }
+		x /= p_v.x;
+		y /= p_v.y;
+	}
 
 	_FORCE_INLINE_ SGFixedVector2Internal operator+(const fixed &p_v) const {
-        return SGFixedVector2Internal(x + p_v, y + p_v);
-    }
+		return SGFixedVector2Internal(x + p_v, y + p_v);
+	}
 	_FORCE_INLINE_ void operator+=(const fixed &p_v) {
-        x += p_v;
-        y += p_v;
-    }
+		x += p_v;
+		y += p_v;
+	}
 	_FORCE_INLINE_ SGFixedVector2Internal operator-(const fixed &p_v) const {
-        return SGFixedVector2Internal(x - p_v, y - p_v);
-    }
+		return SGFixedVector2Internal(x - p_v, y - p_v);
+	}
 	_FORCE_INLINE_ void operator-=(const fixed &p_v) {
-        x -= p_v;
-        y -= p_v;
-    }
+		x -= p_v;
+		y -= p_v;
+	}
 	_FORCE_INLINE_ SGFixedVector2Internal operator*(const fixed &p_v) const {
-        return SGFixedVector2Internal(x * p_v, y * p_v);
-    }
+		return SGFixedVector2Internal(x * p_v, y * p_v);
+	}
 	_FORCE_INLINE_ void operator*=(const fixed &p_v) {
-        x *= p_v;
-        y *= p_v;
-    }
+		x *= p_v;
+		y *= p_v;
+	}
 	_FORCE_INLINE_ SGFixedVector2Internal operator/(const fixed &p_v) const {
-        return SGFixedVector2Internal(x / p_v, y / p_v);
-    }
+		return SGFixedVector2Internal(x / p_v, y / p_v);
+	}
 	_FORCE_INLINE_ void operator/=(const fixed &p_v) {
-        x /= p_v;
-        y /= p_v;
-    }
+		x /= p_v;
+		y /= p_v;
+	}
 
-    bool operator==(const SGFixedVector2Internal &p_v) const;
-    bool operator!=(const SGFixedVector2Internal &p_v) const;
+	bool operator==(const SGFixedVector2Internal &p_v) const;
+	bool operator!=(const SGFixedVector2Internal &p_v) const;
 
 	fixed angle() const;
 
@@ -124,39 +119,60 @@ struct SGFixedVector2Internal {
 		y = p_radians.sin();
 	}
 
-    _FORCE_INLINE_ SGFixedVector2Internal abs() const {
-        return SGFixedVector2Internal(x.abs(), y.abs());
-    }
-    _FORCE_INLINE_ SGFixedVector2Internal operator-() const {
-        return SGFixedVector2Internal(-x, -y);
-    }
+	_FORCE_INLINE_ SGFixedVector2Internal abs() const {
+		return SGFixedVector2Internal(x.abs(), y.abs());
+	}
+	_FORCE_INLINE_ SGFixedVector2Internal operator-() const {
+		return SGFixedVector2Internal(-x, -y);
+	}
 
-    SGFixedVector2Internal rotated(fixed p_rotation) const;
+	SGFixedVector2Internal rotated(fixed p_rotation) const;
 
-    void normalize();
-    SGFixedVector2Internal normalized() const;
-    bool is_normalized() const;
+	void normalize();
+	SGFixedVector2Internal normalized() const;
+	bool is_normalized() const;
 
-    fixed length() const;
-    fixed length_squared() const;
+	fixed length() const;
+	fixed length_squared() const;
 
-    fixed dot(const SGFixedVector2Internal &p_other) const;
-    fixed cross(const SGFixedVector2Internal &p_other) const;
+	fixed distance_to(const SGFixedVector2Internal &p_other) const;
+	fixed distance_squared_to(const SGFixedVector2Internal &p_other) const;
+	fixed angle_to(const SGFixedVector2Internal &p_other) const;
+	fixed angle_to_point(const SGFixedVector2Internal &p_other) const;
+	_FORCE_INLINE_ SGFixedVector2Internal direction_to(const SGFixedVector2Internal &p_to) const;
 
-    _FORCE_INLINE_ static SGFixedVector2Internal linear_interpolate(const SGFixedVector2Internal &p_a, const SGFixedVector2Internal &p_b, fixed p_weight);
+	fixed dot(const SGFixedVector2Internal &p_other) const;
+	fixed cross(const SGFixedVector2Internal &p_other) const;
+	//fixed posmod(const fixed p_mod) const;
+	//fixed posmodv(const SGFixedVector2Internal &p_modv) const;
+	//SGFixedVector2Internal project(const SGFixedVector2Internal &p_to) const;
 
-    SGFixedVector2Internal slide(const SGFixedVector2Internal &p_normal) const;
-    SGFixedVector2Internal bounce(const SGFixedVector2Internal &p_normal) const;
-    SGFixedVector2Internal reflect(const SGFixedVector2Internal &p_normal) const;
+	_FORCE_INLINE_ static SGFixedVector2Internal linear_interpolate(const SGFixedVector2Internal &p_a, const SGFixedVector2Internal &p_b, fixed p_weight);
 
-    bool is_equal_approx(const SGFixedVector2Internal &p_v) const;
+	SGFixedVector2Internal slide(const SGFixedVector2Internal &p_normal) const;
+	SGFixedVector2Internal bounce(const SGFixedVector2Internal &p_normal) const;
+	SGFixedVector2Internal reflect(const SGFixedVector2Internal &p_normal) const;
+
+	bool is_equal_approx(const SGFixedVector2Internal &p_v) const;
+
+	_FORCE_INLINE_ SGFixedVector2Internal(fixed p_x, fixed p_y) 
+		: x(p_x), y(p_y) {}
+	_FORCE_INLINE_ SGFixedVector2Internal()
+		: x(fixed::ZERO), y(fixed::ZERO) {}
+
 };
 
+SGFixedVector2Internal SGFixedVector2Internal::direction_to(const SGFixedVector2Internal &p_to) const {
+	SGFixedVector2Internal ret(p_to.x - x, p_to.y - y);
+	ret.normalize();
+	return ret;
+}
+
 SGFixedVector2Internal SGFixedVector2Internal::linear_interpolate(const SGFixedVector2Internal &p_a, const SGFixedVector2Internal &p_b, fixed p_weight) {
-    SGFixedVector2Internal res = p_a;
-    res.x += (p_weight * (p_b.x - p_a.x));
-    res.y += (p_weight * (p_b.y - p_a.y));
-    return res;
+	SGFixedVector2Internal res = p_a;
+	res.x += (p_weight * (p_b.x - p_a.x));
+	res.y += (p_weight * (p_b.y - p_a.y));
+	return res;
 }
 
 #endif
