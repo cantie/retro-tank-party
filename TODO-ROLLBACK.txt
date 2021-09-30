@@ -3,8 +3,6 @@ TODO
 
 MILESTONE 1 (physics):
 
- - Code clean-up
-   o Port over more (all?) of Vector2's methods? Need in both fixed_vector2 and SGFixedVector2!
  - Attempt to put in game
    o Get all the weapons and abilities working
      * Tracer
@@ -19,6 +17,9 @@ MILESTONE 1 (physics):
      * Test that movement works the same with interpolation disabled too
    o Share random seed with all clients at match start
    o ... what next?
+ - Code clean-up
+   o Make sure that all files (include .h files) are using tabs instead of spaces
+   o Port over more (all?) of Vector2's methods? Need in both fixed_vector2 and SGFixedVector2!
  - Move engine to its own repo
  - Unit tests!
    o Reintroduce the physics server to allow testing in GDScript?

@@ -22,7 +22,7 @@ class RTPMessageSerializer extends SyncManager.MessageSerializer:
 	
 	func serialize_input(all_input: Dictionary) -> PoolByteArray:
 		var buffer := StreamPeerBuffer.new()
-		buffer.resize(20)
+		buffer.resize(32)
 		
 		buffer.put_u8(all_input.size())
 		for path in all_input:
@@ -45,11 +45,11 @@ class RTPMessageSerializer extends SyncManager.MessageSerializer:
 				header |= HeaderFlags.USING_ABILITY
 			
 			buffer.put_u8(header)
-			buffer.put_float(input.get(Tank.PlayerInput.TURRET_ROTATION, 0.0))
+			buffer.put_64(input.get(Tank.PlayerInput.TURRET_ROTATION, 0))
 			if input.has(Tank.PlayerInput.INPUT_VECTOR):
 				var input_vector: SGFixedVector2 = input[Tank.PlayerInput.INPUT_VECTOR]
-				buffer.put_32(input_vector.x)
-				buffer.put_32(input_vector.y)
+				buffer.put_64(input_vector.x)
+				buffer.put_64(input_vector.y)
 		
 		buffer.resize(buffer.get_position())
 		return buffer.data_array
@@ -78,12 +78,12 @@ class RTPMessageSerializer extends SyncManager.MessageSerializer:
 			if header & HeaderFlags.USING_ABILITY:
 				input[Tank.PlayerInput.USING_ABILITY] = true
 			
-			input[Tank.PlayerInput.TURRET_ROTATION] = buffer.get_float()
+			input[Tank.PlayerInput.TURRET_ROTATION] = buffer.get_64()
 			
 			if header & HeaderFlags.HAS_INPUT_VECTOR:
-				input[Tank.PlayerInput.INPUT_VECTOR] = Vector2(
-					buffer.get_float(),
-					buffer.get_float())
+				input[Tank.PlayerInput.INPUT_VECTOR] = SGFixed.vector2(
+					buffer.get_64(),
+					buffer.get_64())
 			
 			var path = '/root/Match/Game/Players/' + str(mapped_path)
 			all_input[path] = input
