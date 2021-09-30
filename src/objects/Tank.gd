@@ -99,6 +99,14 @@ class GatherInputEvent extends TankEvent:
 	func _init(_tank, _input: Dictionary).(_tank) -> void:
 		input = _input
 
+class CalculateMovementVectorEvent extends TankEvent:
+	var input: Dictionary
+	var movement_vector: SGFixedVector2
+	
+	func _init(_tank, _input: Dictionary, _movement_vector: SGFixedVector2).(_tank) -> void:
+		input = _input
+		movement_vector = _movement_vector
+
 class NetworkSyncEvent extends TankEvent:
 	var data: Dictionary
 	
@@ -123,6 +131,7 @@ func _ready():
 	hooks.subscribe("restore_health", self, "_hook_default_restore_health", 0)
 	hooks.subscribe("die", self, "_hook_default_die", 0)
 	hooks.subscribe("gather_input", self, "_hook_default_gather_input", 0)
+	hooks.subscribe("calculate_movement_vector", self, "_hook_default_calculate_movement_vector", 0)
 	hooks.subscribe("send_remote_update", self, "_hook_default_send_remote_update", 0)
 	hooks.subscribe("receive_remote_update", self, "_hook_default_receive_remote_update", 0)
 	
@@ -300,14 +309,22 @@ func _hook_default_gather_input(event: GatherInputEvent) -> void:
 	_input_use_ability = false
 
 func _calculate_movement_vector(input: Dictionary) -> SGFixedVector2:
+	var event = CalculateMovementVectorEvent.new(self, input, SGFixed.vector2(0, 0))
+	hooks.dispatch_event("calculate_movement_vector", event)
+	return event.movement_vector
+	
+func _hook_default_calculate_movement_vector(event: CalculateMovementVectorEvent) -> void:
+	var input: Dictionary = event.input
 	if not input.has(PlayerInput.INPUT_VECTOR):
-		return SGFixed.vector2(0, 0)
+		return
 	
 	if input.get(PlayerInput.CONTROL_SCHEME, GameSettings.ControlScheme.MODERN) == GameSettings.ControlScheme.RETRO:
 		var input_vector = input[PlayerInput.INPUT_VECTOR]
 		# Movement is relative to a tank facing to the right, so Y turns to the
 		# left/right, and X moves forward backward.
-		return SGFixed.vector2(-input_vector.y, input_vector.x)
+		event.movement_vector.x = -input_vector.y
+		event.movement_vector.y = input_vector.x
+		return
 	
 	#var movement_vector: Vector2
 	#var current_vector = SGFixed.vector2(65536, 0)
@@ -336,7 +353,6 @@ func _calculate_movement_vector(input: Dictionary) -> SGFixedVector2:
 #	movement_vector.y = clamp(angle_to / (turn_speed * get_physics_process_delta_time()), -1.0, 1.0)
 #
 #	return movement_vector
-	return SGFixed.vector2(0, 0)
 
 func _predict_remote_input(previous_input: Dictionary, ticks_since_real_input: int) -> Dictionary:
 	var input = previous_input.duplicate()
@@ -388,8 +404,8 @@ func _network_process(delta: float, input: Dictionary) -> void:
 		shoot()
 		Globals.rumble.add_weak_rumble(shoot_rumble)
 
-#	if using_ability:
-#		use_ability()
+	if input.get(PlayerInput.USING_ABILITY, false):
+		use_ability()
 	
 	_after_update_position()
 	
@@ -411,7 +427,9 @@ func _save_state() -> Dictionary:
 		turret_rotation = turret_pivot.get_global_fixed_rotation(),
 		can_shoot = can_shoot,
 		health = health,
+		speed = speed,
 		weapon_type = weapon_type.resource_path,
+		ability_type = ability_type.resource_path if ability_type else null,
 	}
 
 func _load_state(state: Dictionary) -> void:
@@ -422,7 +440,9 @@ func _load_state(state: Dictionary) -> void:
 	turret_pivot.set_global_fixed_rotation(state['turret_rotation'])
 	can_shoot = state['can_shoot']
 	update_health(state['health'])
+	speed = state['speed']
 	set_weapon_type(load(state['weapon_type']))
+	set_ability_type(load(state['ability_type']) if state['ability_type'] else null)
 	_after_update_position()
 
 func _interpolate_state(old_state: Dictionary, new_state: Dictionary, weight: float) -> void:

@@ -5,8 +5,9 @@ MILESTONE 1 (physics):
 
  - Attempt to put in game
    o Get all the weapons and abilities working
-     * Tracer
      * Boost
+       - Fix crash when boost is used up
+       - Fix number of charges not changing in the UI
      * Zap
      * Invisible
    o Convert all the game modes (do Football last)

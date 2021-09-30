@@ -7,10 +7,21 @@ var marked_as_finished := false
 
 signal finished ()
 
+func _ready() -> void:
+	add_to_group('network_sync')
+
 func setup_ability(_tank, _ability_type) -> void:
 	tank = _tank
 	ability_type = _ability_type
 	charges = ability_type.charges
+
+func _save_state() -> Dictionary:
+	return {
+		charges = charges,
+	}
+
+func _load_state(state: Dictionary) -> void:
+	charges = state['charges']
 
 func recharge_ability() -> void:
 	charges = ability_type.charges
