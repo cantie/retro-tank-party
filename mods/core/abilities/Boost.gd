@@ -7,8 +7,7 @@ onready var timer = $Timer
 
 const BOOST_SPEED := 3495251
 
-var last_movement_direction := 65536
-var boosting := false
+var last_movement_direction := 0
 var spawn_rate := 2
 var spawn_counter := 0
 
@@ -28,49 +27,35 @@ func spawn() -> void:
 	shadow_tank.setup_shadow_tank(tank)
 
 func _save_state() -> Dictionary:
-	var state = ._save_state()
-	state['boosting'] = boosting
-	state['spawn_counter'] = spawn_counter
-	return state
+	return {
+		last_movement_direction = last_movement_direction,
+		spawn_counter = spawn_counter,
+	}
 
 func _load_state(state: Dictionary) -> void:
-	._load_state(state)
-	boosting = state['boosting']
+	last_movement_direction = state['last_movement_direction']
 	spawn_counter = state['spawn_counter']
 
 func _network_process(delta: float, input: Dictionary) -> void:
-	if boosting:
-		if spawn_counter <= 0:
-			spawn_counter = spawn_rate
-			spawn()
-		
-		spawn_counter -= 1
+	if spawn_counter <= 0:
+		spawn_counter = spawn_rate
+		spawn()
+	
+	spawn_counter -= 1
 
 func use_ability() -> void:
-	if charges > 0 and not boosting:
-		charges -= 1
-		tank.speed = BOOST_SPEED
-		timer.start()
-		boosting = true
+	tank.speed = BOOST_SPEED
+	timer.start()
 
 func _hook_tank_shoot(event: Tank.TankEvent) -> void:
-	if boosting:
-		event.stop_propagation()
+	event.stop_propagation()
 
 func _hook_tank_calculate_movement_vector(event: Tank.CalculateMovementVectorEvent) -> void:
-	if boosting:
-		event.movement_vector.x = last_movement_direction
-	elif event.movement_vector.x != 0:
+	if last_movement_direction == 0:
 		last_movement_direction = -65536 if event.movement_vector.x < 0 else 65536
-
-func mark_finished() -> void:
-	if boosting:
-		charges = 0
-	else:
-		.mark_finished()
+	
+	event.movement_vector.x = last_movement_direction
 
 func _on_Timer_timeout() -> void:
 	tank.speed = tank.DEFAULT_SPEED
-	boosting = false
-	if charges == 0:
-		emit_signal("finished")
+	mark_finished()

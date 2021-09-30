@@ -54,7 +54,7 @@ func _show_screen(info: Dictionary = {}) -> void:
 	health_slider.value = tank.health
 	invincible_field.set_value(tank.invincible, false)
 	weapon_field.set_value(tank.weapon_type.resource_path, false)
-	ability_field.set_value(tank.ability_type.resource_path if tank.ability_type != null else "None", false)
+	ability_field.set_value(tank.held_ability_type.resource_path if tank.held_ability_type != null else "None", false)
 
 func _network_process(delta, data: Dictionary) -> void:
 	emit_signal('network_process')
@@ -82,9 +82,9 @@ func _on_AbilityOptions_item_selected(value, index) -> void:
 		yield(self, 'network_process')
 		# For 'None', since we can't have a value null in OptionSwitcher.
 		if index == 0:
-			tank.set_ability_type(null)
-		if tank.ability_type == null or tank.ability_type.resource_path != value:
-			tank.set_ability_type(load(value))
+			tank.set_held_ability_type(null)
+		if tank.held_ability_type == null or tank.held_ability_type.resource_path != value:
+			tank.set_held_ability_type(load(value))
 
 func _on_DoneButton_pressed() -> void:
 	Sounds.play("Select")

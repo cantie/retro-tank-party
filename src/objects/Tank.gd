@@ -47,9 +47,8 @@ var camera: Camera2D = null
 
 var weapon_type: WeaponType
 var weapon
-var ability_type: AbilityType
-var ability
-var last_ability
+var held_ability_type: AbilityType
+var ability_charges := 1
 
 var player_index: int
 
@@ -107,12 +106,6 @@ class CalculateMovementVectorEvent extends TankEvent:
 		input = _input
 		movement_vector = _movement_vector
 
-class NetworkSyncEvent extends TankEvent:
-	var data: Dictionary
-	
-	func _init(_tank, _data: Dictionary).(_tank) -> void:
-		data = _data
-
 enum PlayerInput {
 	TURRET_ROTATION = -1,
 	
@@ -132,8 +125,6 @@ func _ready():
 	hooks.subscribe("die", self, "_hook_default_die", 0)
 	hooks.subscribe("gather_input", self, "_hook_default_gather_input", 0)
 	hooks.subscribe("calculate_movement_vector", self, "_hook_default_calculate_movement_vector", 0)
-	hooks.subscribe("send_remote_update", self, "_hook_default_send_remote_update", 0)
-	hooks.subscribe("receive_remote_update", self, "_hook_default_receive_remote_update", 0)
 	
 	player_info_node.set_as_toplevel(true)
 	player_info_node.position = global_position + player_info_offset
@@ -143,6 +134,8 @@ func _ready():
 	turret_sprite.material = sprite_material
 	
 	set_weapon_type(BaseWeaponType)
+	
+	SyncManager.connect("scene_spawned", self, "_on_SyncManager_scene_spawned")
 	
 	# If testing tank on its own, make player controlled
 	if get_tree().current_scene == self:
@@ -164,6 +157,10 @@ func _network_spawn_preprocess(data: Dictionary) -> Dictionary:
 	data['player_name'] = player.name
 	data['team'] = player.team
 	return data
+
+func _on_SyncManager_scene_spawned(spawned_name, spawned_node, scene, data):
+	if spawned_name == name + 'Ability':
+		_setup_and_use_ability(spawned_node, data['ability_type'])
 
 func _network_spawn(data: Dictionary) -> void:
 	game = get_node(data['game'])
@@ -211,61 +208,33 @@ func pickup_ability(_ability_type: AbilityType) -> void:
 	hooks.dispatch_event("pickup_ability", PickupAbilityEvent.new(self, _ability_type))
 
 func _hook_default_pickup_ability(event: PickupAbilityEvent) -> void:
-	set_ability_type(event.ability_type)
+	set_held_ability_type(event.ability_type)
 
-func set_ability_type(_ability_type: AbilityType) -> void:
-	# If the last ability is still in effect, and we just picked up the same
-	# ability, then we reinstate that ability.
-	if last_ability and is_instance_valid(last_ability) and is_a_parent_of(last_ability) and last_ability.ability_type == _ability_type:
-		var tmp = ability
-		ability_type = last_ability.ability_type
-		ability = last_ability
-		last_ability = tmp
-	
-	if ability_type == _ability_type and _ability_type != null:
-		if ability and player_controlled:
-			ability.recharge_ability()
-			_update_ability_label()
-			emit_signal("ability_recharged", ability)
+func get_ability():
+	return $Ability if has_node('Ability') else null
+
+func set_held_ability_type(_ability_type: AbilityType) -> void:
+	var ability = get_ability()
+	if _ability_type != null and ability and ability.ability_type == _ability_type:
+		ability_charges = _ability_type.charges
+		_update_ability_label()
+		emit_signal("ability_recharged", ability)
 	else:
-		if ability:
-			ability.mark_finished()
-		
-		ability_type = _ability_type
-		if ability_type != null:
-			ability = ability_type.ability_scene.instance()
-			ability.connect("finished", self, "_on_ability_finished", [ability])
-			add_child(ability)
-			ability.setup_ability(self, ability_type)
-			ability.attach_ability()
-		else:
-			ability = null
+		held_ability_type = _ability_type
+		if held_ability_type:
+			ability_charges = held_ability_type.charges
 		
 		_update_ability_label()
-		emit_signal("ability_type_changed", ability_type)
+		emit_signal("ability_type_changed", held_ability_type)
 
 func _update_ability_label() -> void:
 	if game and player_controlled:
-		if ability_type:
-			game.hud.set_ability_label(ability_type.name, ability.charges)
+		if held_ability_type:
+			game.hud.set_ability_label(held_ability_type.name, ability_charges)
 		else:
 			game.hud.clear_ability_label()
 
-func _on_ability_finished(old_ability) -> void:
-	old_ability.disconnect("finished", self, "_on_ability_finished")
-	
-	old_ability.detach_ability()
-	remove_child(old_ability)
-	old_ability.queue_free()
-	
-	# If this is the current ability, then clear it out.
-	if old_ability == ability:
-		ability = null
-		ability_type = null
-		_update_ability_label()
-	# If this is the last ability, then clear it out.
-	elif old_ability == last_ability:
-		last_ability = null
+
 
 func _get_local_input() -> Dictionary:
 	var event = GatherInputEvent.new(self, {})
@@ -408,10 +377,6 @@ func _network_process(delta: float, input: Dictionary) -> void:
 		use_ability()
 	
 	_after_update_position()
-	
-	#var sync_event = NetworkSyncEvent.new(self, {})
-	#hooks.dispatch_event('send_remote_update', sync_event)
-	#rpc("_receive_remote_update", sync_event.data)
 
 func _after_update_position() -> void:
 	# Make info follow the tank
@@ -429,7 +394,8 @@ func _save_state() -> Dictionary:
 		health = health,
 		speed = speed,
 		weapon_type = weapon_type.resource_path,
-		ability_type = ability_type.resource_path if ability_type else null,
+		held_ability_type = held_ability_type.resource_path if held_ability_type else null,
+		ability_charges = ability_charges,
 	}
 
 func _load_state(state: Dictionary) -> void:
@@ -442,8 +408,11 @@ func _load_state(state: Dictionary) -> void:
 	update_health(state['health'])
 	speed = state['speed']
 	set_weapon_type(load(state['weapon_type']))
-	set_ability_type(load(state['ability_type']) if state['ability_type'] else null)
+	set_held_ability_type(load(state['held_ability_type']) if state['held_ability_type'] else null)
+	ability_charges = state['ability_charges']
+	
 	_after_update_position()
+	_update_ability_label()
 
 func _interpolate_state(old_state: Dictionary, new_state: Dictionary, weight: float) -> void:
 	position = lerp(old_state['fixed_position'].to_float(), new_state['fixed_position'].to_float(), weight)
@@ -460,47 +429,6 @@ func _unhandled_input(event: InputEvent) -> void:
 		_input_shoot = true
 	if event.is_action_pressed("player1_use_ability"):
 		_input_use_ability = true
-
-puppet func _receive_remote_update(data: Dictionary) -> void:
-	var sync_event = NetworkSyncEvent.new(self, data)
-	hooks.dispatch_event("receive_remote_update", sync_event)
-
-func _hook_default_send_remote_update(event: NetworkSyncEvent) -> void:
-	var data = event.data
-	data['rotation'] = rotation
-	data['position'] = position
-	data['turret_rotation'] = turret_pivot.rotation
-	data['visible'] = visible
-	#data['shooting'] = shooting
-	data['weapon_type_path'] = weapon_type.resource_path
-	#data['using_ability'] = using_ability
-	data['ability_type_path'] = ability_type.resource_path if ability_type else null
-
-func _hook_default_receive_remote_update(event: NetworkSyncEvent) -> void:
-	var data = event.data
-	if data.has('rotation'):
-		rotation = data['rotation']
-	if data.has('position'):
-		position = data['position']
-		player_info_node.position = global_position + player_info_offset
-	if data.has('turret_rotation'):
-		turret_pivot.rotation = data['turret_rotation']
-	if data.has('visible'):
-		visible = data['visible']
-		player_info_node.visible = visible
-	if data.has('weapon_type_path'):
-		if weapon_type.resource_path != data['weapon_type_path']:
-			set_weapon_type(load(data['weapon_type_path']))
-	if data.get('shooting', false):
-		shoot()
-	if data.has('ability_type_path'):
-		if data['ability_type_path']:
-			if ability_type == null or ability_type.resource_path != data['ability_type_path']:
-				set_ability_type(load(data['ability_type_path']))
-		else:
-			set_ability_type(null)
-	if data.get('using_ability', false):
-		use_ability()
 
 func shoot() -> void:
 	hooks.dispatch_event("shoot", TankEvent.new(self))
@@ -520,18 +448,35 @@ func _hook_default_use_ability(event: TankEvent):
 	if not get_parent():
 		return
 	
-	if ability:
-		# If the last ability is still in effect, then we immediately stop it.
-		if last_ability and is_instance_valid(last_ability) and is_a_parent_of(last_ability):
-			_on_ability_finished(last_ability)
-			
-		ability.use_ability()
-		if ability.charges <= 0:
-			last_ability = ability
-			set_ability_type(null)
-		else:
-			_update_ability_label()
+	if held_ability_type:
+		var ability = get_ability()
+		if ability:
+			_on_ability_finished(ability)
+		
+		SyncManager.spawn('Ability', self, held_ability_type.ability_scene, {
+			ability_type = held_ability_type,
+		}, false, name + 'Ability')
+		
+		ability_charges -= 1
+		if ability_charges == 0:
+			held_ability_type = null
+		_update_ability_label()
+
+# Called via the 'scene_spawned' signal when the ability is created.
+func _setup_and_use_ability(ability, ability_type):
+	ability.connect("finished", self, "_on_ability_finished", [ability])
+	ability.setup_ability(self, ability_type)
+	ability.attach_ability()
 	
+	ability.use_ability()
+
+func _on_ability_finished(old_ability) -> void:
+	old_ability.disconnect("finished", self, "_on_ability_finished")
+	
+	old_ability.detach_ability()
+	remove_child(old_ability)
+	old_ability.queue_free()
+
 func _on_ShootCooldownTimer_timeout() -> void:
 	can_shoot = true
 

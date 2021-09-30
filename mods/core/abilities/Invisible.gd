@@ -34,20 +34,13 @@ func detach_ability() -> void:
 	tank.hooks.unsubscribe("send_remote_update", self, "_hook_tank_send_remote_update")
 
 func use_ability() -> void:
-	if charges > 0 and not used:
-		charges -= 1
+	if not used:
 		used = true
 		
 		set_tank_visible(false)
 		if tank.is_network_master():
 			warning_timer.start()
 			lifetime_timer.start()
-
-func mark_finished() -> void:
-	if used:
-		charges = 0
-	else:
-		.mark_finished()
 
 func set_tank_visible(_tank_visible: bool) -> void:
 	tank_visible = _tank_visible
@@ -57,10 +50,10 @@ func set_tank_visible(_tank_visible: bool) -> void:
 	else:
 		tank.visible = tank_visible
 
-func _hook_tank_send_remote_update(event: Tank.NetworkSyncEvent) -> void:
-	# Rather than sending the tank node's visibility (which will change for
-	# visual effect) we send the logic visibility per this powerup.
-	event.data['visible'] = tank_visible
+#func _hook_tank_send_remote_update(event: Tank.NetworkSyncEvent) -> void:
+#	# Rather than sending the tank node's visibility (which will change for
+#	# visual effect) we send the logic visibility per this powerup.
+#	event.data['visible'] = tank_visible
 
 func expose_hidden_tank() -> void:
 	if used:
@@ -96,7 +89,4 @@ func _on_LifetimeTimer_timeout() -> void:
 	# Make sure we don't get stuck invisible
 	set_tank_visible(true)
 
-	if charges > 0:
-		used = false
-	else:
-		emit_signal("finished")
+	mark_finished()

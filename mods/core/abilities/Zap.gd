@@ -36,16 +36,9 @@ func detach_ability() -> void:
 	tank.hooks.unsubscribe("gather_input", self, "_hook_tank_gather_input")
 
 func use_ability() -> void:
-	if charges > 0 and zap_stage == ZapStage.NONE and not detector.detecting:
-		charges -= 1
+	if zap_stage == ZapStage.NONE and not detector.detecting:
 		zap_stage = ZapStage.DETECTING
 		detector.start_detecting(map_rect, TANK_SIZE)
-
-func mark_finished() -> void:
-	if zap_stage != ZapStage.NONE:
-		charges = 0
-	else:
-		.mark_finished()
 
 func _on_free_space_found(_destination) -> void:
 	if zap_stage != ZapStage.DETECTING:
@@ -81,9 +74,7 @@ func _on_Tween_tween_all_completed() -> void:
 	elif zap_stage == ZapStage.SHOWING:
 		zap_stage = ZapStage.NONE
 		tank.collision_shape.disabled = false
-		
-		if charges <= 0:
-			emit_signal("finished")
+		mark_finished()
 
 func _hook_tank_gather_input(event: Tank.GatherInputEvent) -> void:
 	if zap_stage >= ZapStage.DETECTING:
