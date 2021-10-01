@@ -49,6 +49,7 @@ var weapon_type: WeaponType
 var weapon
 var held_ability_type: AbilityType
 var ability_charges := 1
+var ability
 
 var player_index: int
 
@@ -159,7 +160,7 @@ func _network_spawn_preprocess(data: Dictionary) -> Dictionary:
 	return data
 
 func _on_SyncManager_scene_spawned(spawned_name, spawned_node, scene, data):
-	if spawned_name == name + 'Ability':
+	if spawned_name == 'Player' + name + 'Ability':
 		_setup_and_use_ability(spawned_node, data['ability_type'])
 
 func _network_spawn(data: Dictionary) -> void:
@@ -210,11 +211,7 @@ func pickup_ability(_ability_type: AbilityType) -> void:
 func _hook_default_pickup_ability(event: PickupAbilityEvent) -> void:
 	set_held_ability_type(event.ability_type)
 
-func get_ability():
-	return $Ability if has_node('Ability') else null
-
 func set_held_ability_type(_ability_type: AbilityType) -> void:
-	var ability = get_ability()
 	if _ability_type != null and ability and ability.ability_type == _ability_type:
 		ability_charges = _ability_type.charges
 		_update_ability_label()
@@ -233,8 +230,6 @@ func _update_ability_label() -> void:
 			game.hud.set_ability_label(held_ability_type.name, ability_charges)
 		else:
 			game.hud.clear_ability_label()
-
-
 
 func _get_local_input() -> Dictionary:
 	var event = GatherInputEvent.new(self, {})
@@ -448,13 +443,9 @@ func _hook_default_use_ability(event: TankEvent):
 		return
 	
 	if held_ability_type:
-		var ability = get_ability()
-		if ability:
-			_on_ability_finished(ability)
-		
 		ability = SyncManager.spawn('Ability', self, held_ability_type.ability_scene, {
 			ability_type = held_ability_type,
-		}, false, name + 'Ability')
+		}, true, 'Player' + name + 'Ability')
 		
 		ability.use_ability()
 		
@@ -464,9 +455,16 @@ func _hook_default_use_ability(event: TankEvent):
 		_update_ability_label()
 
 # Called via the 'scene_spawned' signal when the ability is created.
-func _setup_and_use_ability(ability, ability_type):
+func _setup_and_use_ability(new_ability, new_ability_type):
+	if ability:
+		_on_ability_finished(ability)
+	
+	# We need to set the 'ability' member variable here for the case where
+	# the ability spawned by the SpawnManager due to a rollback.
+	ability = new_ability
+	
 	ability.connect("finished", self, "_on_ability_finished", [ability])
-	ability.setup_ability(self, ability_type)
+	ability.setup_ability(self, new_ability_type)
 	ability.attach_ability()
 
 func _on_ability_finished(old_ability) -> void:
@@ -475,6 +473,9 @@ func _on_ability_finished(old_ability) -> void:
 	old_ability.detach_ability()
 	remove_child(old_ability)
 	old_ability.queue_free()
+	
+	if old_ability == ability:
+		ability = null
 
 func _on_ShootCooldownTimer_timeout() -> void:
 	can_shoot = true

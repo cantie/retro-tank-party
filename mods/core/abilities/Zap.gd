@@ -112,3 +112,4 @@ func _hook_tank_gather_input(event: Tank.GatherInputEvent) -> void:
 	if zap_stage != ZapStage.NONE:
 		event.input.erase(Tank.PlayerInput.INPUT_VECTOR)
 		event.input.erase(Tank.PlayerInput.SHOOTING)
+		event.input.erase(Tank.PlayerInput.USING_ABILITY)
