@@ -51,6 +51,7 @@ void SGFixedTransform2D::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("xform", "vector"), &SGFixedTransform2D::xform);
 	ClassDB::bind_method(D_METHOD("xform_inv", "vector"), &SGFixedTransform2D::xform_inv);
 
+	ClassDB::bind_method(D_METHOD("copy"), &SGFixedTransform2D::copy);
 	ClassDB::bind_method(D_METHOD("_vector_changed"), &SGFixedTransform2D::_vector_changed);
 
 	ADD_SIGNAL(MethodInfo("changed"));
@@ -67,6 +68,14 @@ void SGFixedTransform2D::from_float(const Transform2D &p_float_transform) {
 	x->from_float(p_float_transform[0]);
 	y->from_float(p_float_transform[1]);
 	origin->from_float(p_float_transform[2]);
+}
+
+Ref<SGFixedTransform2D> SGFixedTransform2D::copy() const {
+	Ref<SGFixedTransform2D> ret(memnew(SGFixedTransform2D));
+	ret->x->set_internal(x->get_internal());
+	ret->y->set_internal(y->get_internal());
+	ret->origin->set_internal(origin->get_internal());
+	return ret;
 }
 
 void SGFixedTransform2D::_vector_changed() {

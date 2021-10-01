@@ -8,7 +8,7 @@ onready var timer = $Timer
 const BOOST_SPEED := 3495251
 
 var last_movement_direction := 0
-var spawn_rate := 2
+var spawn_rate := 1
 var spawn_counter := 0
 
 func attach_ability() -> void:

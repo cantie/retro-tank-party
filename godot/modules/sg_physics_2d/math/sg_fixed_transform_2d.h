@@ -71,6 +71,8 @@ public:
 	Transform2D to_float() const;
 	void from_float(const Transform2D &p_float_transform);
 
+	Ref<SGFixedTransform2D> copy() const;
+
     Ref<SGFixedTransform2D> inverse() const;
     Ref<SGFixedTransform2D> affine_inverse() const;
 

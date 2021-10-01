@@ -108,7 +108,7 @@ struct fixed {
     }
 
     _FORCE_INLINE_ void operator-=(const fixed& p_other) {
-        value = (*this + p_other).value;
+        value = (*this - p_other).value;
     }
 
     _FORCE_INLINE_ fixed operator*(const fixed& p_other) const {
