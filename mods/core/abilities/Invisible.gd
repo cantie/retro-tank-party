@@ -10,14 +10,9 @@ onready var warning_timer := $WarningTimer
 onready var visible_timer := $VisibleTimer
 onready var blink_timer := $BlinkTimer
 
-var tank_visible := true
-var used := false
-
 func attach_ability() -> void:
 	tank.connect("shoot", self, "_on_tank_shoot")
 	tank.connect("hurt", self, "_on_tank_hurt")
-	# Need to do both the weapon hook and event to account for picking up the
-	# football, and picking up weapons while holding the football.
 	tank.connect("weapon_type_changed", self, "_on_tank_weapon_type_changed")
 	tank.hooks.subscribe("pickup_weapon", self, "_hook_tank_pickup", -10)
 	tank.hooks.subscribe("pickup_ability", self, "_hook_tank_pickup", -10)
@@ -25,7 +20,6 @@ func attach_ability() -> void:
 
 func detach_ability() -> void:
 	set_tank_visible(true)
-	used = false
 	tank.disconnect("shoot", self, "_on_tank_shoot")
 	tank.disconnect("hurt", self, "_on_tank_hurt")
 	tank.disconnect("weapon_type_changed", self, "_on_tank_weapon_type_changed")
@@ -34,31 +28,21 @@ func detach_ability() -> void:
 	tank.hooks.unsubscribe("send_remote_update", self, "_hook_tank_send_remote_update")
 
 func use_ability() -> void:
-	if not used:
-		used = true
-		
-		set_tank_visible(false)
-		if tank.is_network_master():
-			warning_timer.start()
-			lifetime_timer.start()
+	set_tank_visible(false)
+	if tank.is_network_master():
+		warning_timer.start()
+		lifetime_timer.start()
 
-func set_tank_visible(_tank_visible: bool) -> void:
-	tank_visible = _tank_visible
+func set_tank_visible(tank_visible: bool) -> void:
 	if tank.is_network_master():
 		tank.visible = true
 		tank.modulate = VISIBLE_COLOR if tank_visible else INVISIBLE_COLOR
 	else:
 		tank.visible = tank_visible
 
-#func _hook_tank_send_remote_update(event: Tank.NetworkSyncEvent) -> void:
-#	# Rather than sending the tank node's visibility (which will change for
-#	# visual effect) we send the logic visibility per this powerup.
-#	event.data['visible'] = tank_visible
-
 func expose_hidden_tank() -> void:
-	if used:
-		set_tank_visible(true)
-		visible_timer.start()
+	set_tank_visible(true)
+	visible_timer.start()
 
 func _on_tank_shoot() -> void:
 	expose_hidden_tank()

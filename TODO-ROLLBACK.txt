@@ -3,18 +3,6 @@ TODO
 
 MILESTONE 1 (physics):
 
- - Attempt to put in game
-   o Get all the weapons and abilities working
-     * Zap
-     * Invisible
-   o Convert all the game modes (do Football last)
-   o Implement a sound manager to prevent double playing sounds
-     * Affects Pickup.gd
-     * Can we avoid playing sounds on the first frame when interpolating?
-   o Get interpolation working again
-     * Test that movement works the same with interpolation disabled too
-   o Share random seed with all clients at match start
-   o ... what next?
  - Code clean-up
    o Make sure that all files (include .h files) are using tabs instead of spaces
    o Port over more (all?) of Vector2's methods? Need in both fixed_vector2 and SGFixedVector2!
@@ -24,10 +12,16 @@ MILESTONE 1 (physics):
 
 MILESTOE 2 (finish porting all the things):
 
- - Bug: sometimes bullet doesn't explode when hitting DropCrate - it just keeps going (even though crate opens)
- - Fix Railgun
- - Re-implement abilities
-   o Maybe we shouldn't actually create the ability node until we use the ability?
+ - Share random seed with all clients at match start
+   o Get DropCrates working on all clients
+ - Make sure all weapons and abilities work on other client
+ - Fix using an ability while having another (ex. using boost while invisible)
+ - Convert all the game modes (do Football last)
+ - Implement a sound manager to prevent double playing sounds
+   o Affects Pickup.gd
+   o Can we avoid playing sounds on the first frame when interpolating?
+ - Get interpolation working again
+   * Test that movement works the same with interpolation disabled too
  - Search for time Timers in the game and make sure they are switched to NetworkTimer
  - Figure out how to handle physics
  - Figure out how to handle sound!
