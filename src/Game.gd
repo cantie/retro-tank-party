@@ -53,7 +53,7 @@ func _ready() -> void:
 	SyncManager.connect("scene_spawned", self, "_on_SyncManager_scene_spawned")
 
 # Initializes the game so that it is ready to really start.
-func game_setup(_players: Dictionary, map_path: String, random_seed: int, player_start_transforms = null, operation: RemoteOperations.ClientOperation = null) -> void:
+func game_setup(_players: Dictionary, map_path: String, random_seed: int, player_start_transforms = null) -> void:
 	get_tree().paused = true
 	
 	if game_started:
@@ -67,9 +67,6 @@ func game_setup(_players: Dictionary, map_path: String, random_seed: int, player
 	
 	if not load_map(map_path):
 		emit_signal("game_error", "Unable to load map")
-		if operation:
-			operation.mark_done(false)
-		return
 	
 	# Build up a list of possible contents for drawing randomly.
 	for pickup_path in Modding.find_resources("pickups"):
@@ -84,9 +81,6 @@ func game_setup(_players: Dictionary, map_path: String, random_seed: int, player
 	
 	var my_id: int = get_tree().get_network_unique_id()
 	make_player_controlled(my_id)
-	
-	if operation:
-		operation.mark_done(true)
 
 func respawn_player(peer_id: int, start_transform = null) -> void:
 	if players_node.has_node(str(peer_id)):
