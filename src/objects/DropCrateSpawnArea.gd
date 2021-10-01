@@ -8,15 +8,16 @@ var crate_size = SGFixed.vector2(3932160, 3932160)
 onready var collision_shape = $CollisionShape2D
 onready var drop_timer = $DropTimer
 onready var spawns = $Spawns
+onready var rng = $RandomNumberGenerator
 
 var possible_contents := []
 var detector
 
 func map_object_start(map, game):
-	if is_network_master():
-		possible_contents = game.possible_pickups
-		detector = game.create_free_space_detector()
-		drop_timer.start()
+	rng.set_seed(game.generate_random_seed())
+	possible_contents = game.possible_pickups
+	detector = game.create_free_space_detector(rng)
+	drop_timer.start()
 
 func map_object_stop(map, game):
 	drop_timer.stop()
@@ -35,7 +36,7 @@ func spawn_drop_crate() -> void:
 		var area_bottom_right = fixed_global_position.add(extents)
 		
 		var crate_position = detector.detect_free_space(area_top_left, area_bottom_right, crate_size)
-		var contents = possible_contents[randi() % possible_contents.size()]
+		var contents = possible_contents[rng.randi() % possible_contents.size()]
 		
 		SyncManager.spawn('DropCrate', spawns, DropCrate, {
 			fixed_position = crate_position,

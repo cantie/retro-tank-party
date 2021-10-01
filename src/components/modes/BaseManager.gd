@@ -8,6 +8,7 @@ var match_scene
 var map_path: String
 var teams := []
 var use_teams := false
+var random_seed := 0
 var game
 var ui_layer: UILayer
 var players := {}
@@ -21,6 +22,7 @@ func match_setup(_info: Dictionary, _match_scene, _game, _ui_layer) -> void:
 	map_path = _info['map_path']
 	teams = _info['teams']
 	use_teams = config.get('teams', false)
+	random_seed = _info['random_seed']
 	match_scene = _match_scene
 	game = _game
 	ui_layer = _ui_layer
@@ -76,7 +78,7 @@ func _load_state(state: Dictionary) -> void:
 
 func _do_match_setup() -> void:
 	# A sensible default.
-	game.game_setup(players, map_path)
+	game.game_setup(players, map_path, random_seed)
 
 func match_start() -> void:
 	# A sensible default.

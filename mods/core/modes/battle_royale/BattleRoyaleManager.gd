@@ -15,7 +15,7 @@ func _do_match_setup() -> void:
 	game.connect("player_dead", self, "_on_game_player_dead")
 
 func start_new_round() -> void:
-	game.game_setup(players, map_path)
+	game.game_setup(players, map_path, random_seed)
 	game.game_start()
 	round_over = false
 

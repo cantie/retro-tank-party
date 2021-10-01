@@ -4,6 +4,7 @@ const Tank = preload("res://src/objects/Tank.gd")
 
 onready var hiding_sound := $HidingSound
 onready var showing_sound := $ShowingSound
+onready var rng := $RandomNumberGenerator
 
 const TANK_DIMENSION = 8388608 # 128
 const SCALE_INCREMENT := 8192
@@ -31,7 +32,8 @@ var move_increment: SGFixedVector2
 func attach_ability() -> void:
 	game = tank.game
 	map_rect = game.map.get_map_rect()
-	detector = game.create_free_space_detector()
+	detector = game.create_free_space_detector(rng)
+	rng.set_seed(game.generate_random_seed())
 	tank.hooks.subscribe("gather_input", self, "_hook_tank_gather_input", 10)
 
 func detach_ability() -> void:

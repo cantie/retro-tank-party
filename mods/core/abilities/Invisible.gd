@@ -31,7 +31,7 @@ func use_ability() -> void:
 	set_tank_visible(false)
 	if tank.is_network_master():
 		warning_timer.start()
-		lifetime_timer.start()
+	lifetime_timer.start()
 
 func set_tank_visible(tank_visible: bool) -> void:
 	if tank.is_network_master():
@@ -39,6 +39,7 @@ func set_tank_visible(tank_visible: bool) -> void:
 		tank.modulate = VISIBLE_COLOR if tank_visible else INVISIBLE_COLOR
 	else:
 		tank.visible = tank_visible
+		tank.player_info_node.visible = tank_visible
 
 func expose_hidden_tank() -> void:
 	set_tank_visible(true)

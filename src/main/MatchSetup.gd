@@ -89,11 +89,15 @@ func _on_MapScreen_map_changed(map_scene_path) -> void:
 	map_scene.scale = get_viewport_rect().size / map_rect.size
 
 func _on_ReadyScreen_ready_pressed() -> void:
+	var rng = RandomNumberGenerator.new()
+	rng.randomize()
+	
 	var match_info = {
 		manager_path = mode_screen.get_mode_manager_scene_path(),
 		config = mode_screen.get_config_values(),
 		map_path = map_screen.get_map_scene_path(),
 		teams = team_screen.get_teams(),
+		random_seed = rng.seed,
 	}
 	RemoteOperations.change_scene("res://src/main/Match.tscn", match_info)
 
