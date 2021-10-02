@@ -100,7 +100,7 @@ func _ready() -> void:
 	SyncManager.message_serializer = RTPMessageSerializer.new()
 	
 	# Just for debugging
-	SyncManager.rollback_debug_ticks = 1
+	SyncManager.rollback_debug_ticks = 5
 	SyncManager.debug_message_bytes = 600
 	SyncManager.debug_skip_nth_message = 0
 	
@@ -108,7 +108,7 @@ func _ready() -> void:
 	#SyncManager.max_buffer_size = 20
 	SyncManager.max_input_frames_per_message = 20
 	SyncManager.max_messages_at_once = 2
-	SyncManager.interpolation = false
+	SyncManager.interpolation = true
 	SyncManager.skip_ticks_after_sync_regained = 5
 	#SyncManager.message_resend_frequency = (1.0 / Engine.iterations_per_second) / 2.0
 	

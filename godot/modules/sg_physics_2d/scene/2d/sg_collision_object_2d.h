@@ -29,6 +29,7 @@
 #include "../../math/sg_fixed_vector2.h"
 
 class SGShape2DInternal;
+class SGWorld2DInternal;
 class SGCollisionObject2DInternal;
 
 class SGCollisionObject2D : public SGFixedNode2D {
@@ -45,6 +46,9 @@ protected:
 
     static void _bind_methods();
     void _notification(int p_what);
+
+    void add_to_world(SGWorld2DInternal *p_world) const;
+    void remove_from_world(SGWorld2DInternal *p_world) const;
 
     void add_shape(SGShape2DInternal *p_shape);
     void remove_shape(SGShape2DInternal *p_shape);

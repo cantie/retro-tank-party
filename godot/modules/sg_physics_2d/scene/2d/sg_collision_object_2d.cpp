@@ -27,6 +27,7 @@
 
 #include "sg_collision_shape_2d.h"
 #include "sg_collision_polygon_2d.h"
+#include "../../internal/sg_world_2d_internal.h"
 #include "../../internal/sg_bodies_2d_internal.h"
 
 void SGCollisionObject2D::_bind_methods() {
@@ -49,9 +50,35 @@ void SGCollisionObject2D::_bind_methods() {
 
 void SGCollisionObject2D::_notification(int p_what) {
 	switch (p_what) {
+		case NOTIFICATION_ENTER_TREE:
+			add_to_world(SGWorld2DInternal::get_singleton());
+			break;
+		
 		case NOTIFICATION_READY:
 			sync_to_physics_engine();
 			break;
+
+		case NOTIFICATION_EXIT_CANVAS:
+			remove_from_world(SGWorld2DInternal::get_singleton());
+			break;
+	}
+}
+
+void SGCollisionObject2D::add_to_world(SGWorld2DInternal *p_world) const {
+	if (internal->get_object_type() == SGCollisionObject2DInternal::OBJECT_AREA) {
+		p_world->add_area((SGArea2DInternal *)internal);
+	}
+	else {
+		p_world->add_body((SGBody2DInternal *)internal);
+	}
+}
+
+void SGCollisionObject2D::remove_from_world(SGWorld2DInternal *p_world) const {
+	if (internal->get_object_type() == SGCollisionObject2DInternal::OBJECT_AREA) {
+		p_world->remove_area((SGArea2DInternal *)internal);
+	}
+	else {
+		p_world->remove_body((SGBody2DInternal *)internal);
 	}
 }
 

@@ -102,26 +102,21 @@ SGCollisionObject2DInternal::SGCollisionObject2DInternal(ObjectType p_type) {
 }
 
 SGCollisionObject2DInternal::~SGCollisionObject2DInternal() {
-	remove_from_broadphase();
 }
 
 SGArea2DInternal::SGArea2DInternal()
 	: SGCollisionObject2DInternal(OBJECT_AREA)
 {
-	SGWorld2DInternal::get_singleton()->add_area(this);
 }
 
 SGArea2DInternal::~SGArea2DInternal() {
-	SGWorld2DInternal::get_singleton()->remove_area(this);
 }
 
 SGBody2DInternal::SGBody2DInternal(BodyType p_type)
 	: SGCollisionObject2DInternal(OBJECT_BODY)
 {
 	body_type = p_type;
-	SGWorld2DInternal::get_singleton()->add_body(this);
 }
 
 SGBody2DInternal::~SGBody2DInternal() {
-	SGWorld2DInternal::get_singleton()->remove_body(this);
 }
