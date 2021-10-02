@@ -16,7 +16,6 @@ var game
 var detector
 var map_rect: Rect2
 
-
 enum ZapStage {
 	NONE,
 	HIDING,
@@ -31,23 +30,28 @@ var move_increment: SGFixedVector2
 
 func attach_ability() -> void:
 	game = tank.game
-	map_rect = game.map.get_map_rect()
-	detector = game.create_free_space_detector(rng)
 	rng.set_seed(game.generate_random_seed())
-	tank.hooks.subscribe("gather_input", self, "_hook_tank_gather_input", 10)
-
-func detach_ability() -> void:
-	detector.queue_free()
-	tank.hooks.unsubscribe("gather_input", self, "_hook_tank_gather_input")
-
-func use_ability() -> void:
+	
+	var map_rect = game.map.get_map_rect()
 	# It *should* be OK to convert from floats here because the values are
 	# actually all integers, and floats should have full precision at the
 	# sort of values we're using here.
-	var area_top_left = SGFixed.from_float_vector2(map_rect.position)
-	var area_bottom_right = SGFixed.from_float_vector2(map_rect.position + map_rect.size)
-	destination = detector.detect_free_space(area_top_left, area_bottom_right, SGFixed.vector2(TANK_DIMENSION, TANK_DIMENSION))
+	detector = game.create_free_space_detector(
+		SGFixed.from_float_vector2(map_rect.position),
+		SGFixed.from_float_vector2(map_rect.size),
+		SGFixed.vector2(TANK_DIMENSION, TANK_DIMENSION),
+		rng)
 	
+	tank.hooks.subscribe("gather_input", self, "_hook_tank_gather_input", 10)
+
+func detach_ability() -> void:
+	if detector:
+		detector.queue_free()
+		detector = null
+	tank.hooks.unsubscribe("gather_input", self, "_hook_tank_gather_input")
+
+func use_ability() -> void:
+	destination = detector.detect_free_space()
 	move_increment = destination.sub(tank.get_global_fixed_position()).div(MOVE_FRAME_COUNT*65536)
 	
 	tank.collision_shape.disabled = true

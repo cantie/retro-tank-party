@@ -13,8 +13,11 @@ MILESTONE 1 (physics):
 MILESTOE 2 (finish porting all the things):
 
  - Convert all the game modes:
-   o Battle Royale
    o Deathmatch
+     - Countdown
+     - Winning
+     - Instant death
+     - Do we need match_start() anymore? We aren't really doing a host synchronized start anymore. Is it even correct?
    o Football
  - Bug: trying to move too early can send tank to origin?
  - Implement a sound manager to prevent double playing sounds

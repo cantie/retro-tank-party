@@ -7,8 +7,8 @@ onready var weapon_timeout_field = $WeaponTimeout
 
 func _ready() -> void:
 	for i in range(1, 11):
-		timelimit_field.add_item("%s min" % i, i)
-	timelimit_field.set_value(5, false)
+		timelimit_field.add_item("%s min" % i, int(i * 1800))
+	timelimit_field.set_value(int(5 * 1800), false)
 	
 	teams_field.add_item("No", false)
 	teams_field.add_item("Yes", true)
@@ -20,8 +20,8 @@ func _ready() -> void:
 	
 	weapon_timeout_field.add_item("Forever", 0)
 	for i in range(10, 70, 10):
-		weapon_timeout_field.add_item("%s sec" % i, i)
-	weapon_timeout_field.set_value(20, false)
+		weapon_timeout_field.add_item("%s sec" % i, int(i * 30))
+	weapon_timeout_field.set_value(int(20 * 30), false)
 
 func set_disabled(_disabled: bool) -> void:
 	disabled = _disabled

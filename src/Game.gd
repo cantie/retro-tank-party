@@ -22,7 +22,6 @@ signal game_error (message)
 signal game_started ()
 signal player_spawned (tank)
 signal player_dead (player_id, killer_id)
-signal make_player_controlled (my_tank, player_id)
 
 class Player:
 	var peer_id: int
@@ -126,7 +125,6 @@ func make_player_controlled(peer_id) -> void:
 	if my_player and not my_player.player_controlled:
 		my_player.player_controlled = true
 		_setup_player_camera(my_player)
-		emit_signal("make_player_controlled", my_player, peer_id)
 	else:
 		print ("Unable to make player controlled: node not found")
 
@@ -262,9 +260,9 @@ func _simple_integer_hash(x: int):
 func generate_random_seed() -> int:
 	return _simple_integer_hash(johnny.randi())
 
-func create_free_space_detector(random_number_generator):
+func create_free_space_detector(area_position: SGFixedVector2, area_size: SGFixedVector2, dimensions: SGFixedVector2, rng: NetworkRandomNumberGenerator):
 	var detector = FreeSpaceDetector.instance()
-	detector.setup_free_space_detector(random_number_generator)
+	detector.setup_free_space_detector(area_position, area_size, dimensions, rng)
 	add_child(detector)
 	return detector
 
