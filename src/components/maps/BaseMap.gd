@@ -3,10 +3,10 @@ extends Node2D
 var _map_rect
 
 func map_start(game) -> void:
-	get_tree().call_group("map_object", "map_object_start", self, game)
+	get_tree().call_group_flags(SceneTree.GROUP_CALL_REALTIME, "map_object", "map_object_start", self, game)
 
 func map_stop(game) -> void:
-	get_tree().call_group("map_object", "map_object_stop", self, game)
+	get_tree().call_group_flags(SceneTree.GROUP_CALL_REALTIME, "map_object", "map_object_stop", self, game)
 
 func get_map_rect() -> Rect2:
 	if _map_rect != null:

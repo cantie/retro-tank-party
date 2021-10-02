@@ -6,16 +6,13 @@ onready var next_round_timer := $NextRoundTimer
 var round_over := false
 var match_over := false
 
-func _get_synchronized_rpc_methods() -> Array:
-	return ['_setup_new_round']
-
 func _do_match_setup() -> void:
 	._do_match_setup()
 	
 	game.connect("player_dead", self, "_on_game_player_dead")
 
 func start_new_round() -> void:
-	game.game_setup(players, map_path, random_seed)
+	game.game_reset()
 	game.game_start()
 	round_over = false
 
@@ -58,7 +55,7 @@ func _check_team_alive(player_id: int) -> bool:
 			return true
 	return false
 
-remotesync func show_winner(winner_name: String) -> void:
+func show_winner(winner_name: String) -> void:
 	if match_over:
 		ui_layer.show_message(winner_name + " WINS THE WHOLE MATCH!")
 	else:

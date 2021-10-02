@@ -175,6 +175,8 @@ func _network_spawn(data: Dictionary) -> void:
 	
 	if data['team'] != -1:
 		player_info_node.set_team(data['team'])
+	
+	sync_to_physics_engine()
 
 func pickup_weapon(_weapon_type: WeaponType) -> void:
 	hooks.dispatch_event("pickup_weapon", PickupWeaponEvent.new(self, _weapon_type))
@@ -385,6 +387,7 @@ func _save_state() -> Dictionary:
 		fixed_transform = fixed_transform.copy(),
 		turret_rotation = turret_pivot.get_global_fixed_rotation(),
 		can_shoot = can_shoot,
+		dead = dead,
 		health = health,
 		speed = speed,
 		weapon_type = weapon_type.resource_path,
@@ -397,6 +400,7 @@ func _load_state(state: Dictionary) -> void:
 	
 	turret_pivot.set_global_fixed_rotation(state['turret_rotation'])
 	can_shoot = state['can_shoot']
+	dead = state['dead']
 	update_health(state['health'])
 	speed = state['speed']
 	set_weapon_type(load(state['weapon_type']))
@@ -508,17 +512,16 @@ func restore_health(_health: int) -> void:
 	hooks.dispatch_event("restore_health", RestoreHealthEvent.new(self, _health))
 
 func _hook_default_restore_health(event: RestoreHealthEvent) -> void:
-	if is_network_master():
-		health += event.health
-		if health > 100:
-			health = 100
-		update_health(health)
+	health += event.health
+	if health > 100:
+		health = 100
+	update_health(health)
 
-remotesync func update_health(_health) -> void:
+func update_health(_health) -> void:
 	health = clamp(_health, 0, 100)
 	player_info_node.update_health(health)
 
-remotesync func die(killer_id: int = -1) -> void:
+func die(killer_id: int = -1) -> void:
 	hooks.dispatch_event("die", DieEvent.new(self, killer_id))
 
 func _hook_default_die(event: DieEvent) -> void:

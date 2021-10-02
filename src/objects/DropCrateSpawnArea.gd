@@ -23,6 +23,7 @@ func map_object_stop(map, game):
 	drop_timer.stop()
 	if detector:
 		detector.queue_free()
+		detector = null
 	clear()
 
 func has_drop_crate_or_powerup() -> bool:
@@ -48,5 +49,5 @@ func _on_DropTimer_timeout() -> void:
 
 func clear():
 	for child in spawns.get_children():
-		remove_child(child)
+		spawns.remove_child(child)
 		child.queue_free()

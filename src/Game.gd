@@ -16,6 +16,7 @@ var game_started := false
 var players := {}
 var players_alive := {}
 var possible_pickups := []
+var player_start_transforms
 
 signal game_error (message)
 signal game_started ()
@@ -53,26 +54,30 @@ func _ready() -> void:
 	SyncManager.connect("scene_spawned", self, "_on_SyncManager_scene_spawned")
 
 # Initializes the game so that it is ready to really start.
-func game_setup(_players: Dictionary, map_path: String, random_seed: int, player_start_transforms = null) -> void:
+func game_setup(_players: Dictionary, map_path: String, random_seed: int, _player_start_transforms = null) -> void:
 	get_tree().paused = true
 	
 	if game_started:
 		game_stop()
 	
-	hud.clear_all_labels()
+	if not load_map(map_path):
+		emit_signal("game_error", "Unable to load map")
+		return
 	
 	players = _players
 	johnny.set_seed(random_seed)
-	game_started = true
-	
-	if not load_map(map_path):
-		emit_signal("game_error", "Unable to load map")
-	
+	player_start_transforms = _player_start_transforms
+
 	# Build up a list of possible contents for drawing randomly.
 	for pickup_path in Modding.find_resources("pickups"):
 		var pickup = load(pickup_path)
 		for i in range(pickup.rarity):
 			possible_pickups.append(pickup)
+	
+	_game_setup()
+
+func _game_setup() -> void:
+	hud.clear_all_labels()
 	
 	for peer_id in players:
 		var player = players[peer_id]
@@ -81,6 +86,13 @@ func game_setup(_players: Dictionary, map_path: String, random_seed: int, player
 	
 	var my_id: int = get_tree().get_network_unique_id()
 	make_player_controlled(my_id)
+
+func game_reset() -> void:
+	print ("game reset - started %s" % game_started)
+	if game_started:
+		game_stop()
+	#reload_map()
+	_game_setup()
 
 func respawn_player(peer_id: int, start_transform = null) -> void:
 	if players_node.has_node(str(peer_id)):
@@ -130,6 +142,7 @@ func get_my_tank():
 
 # Actually start the game on this client.
 remotesync func game_start() -> void:
+	game_started = true
 	if map.has_method('map_start'):
 		map.map_start(self)
 	emit_signal("game_started")
@@ -260,10 +273,12 @@ func _save_state() -> Dictionary:
 	for peer_id in players_alive:
 		serialized_players_alive[peer_id] = players_alive[peer_id].to_dict()
 	return {
+		game_started = game_started,
 		players_alive = serialized_players_alive,
 	}
 
 func _load_state(state: Dictionary) -> void:
+	game_started = state['game_started']
 	var serialized_players_alive = state['players_alive']
 	for peer_id in serialized_players_alive:
 		players_alive[peer_id] = Player.from_dict(serialized_players_alive[peer_id])

@@ -99,30 +99,16 @@ func _ready() -> void:
 	SyncManager.network_adaptor = network_adaptor
 	SyncManager.message_serializer = RTPMessageSerializer.new()
 	
+	# Just for debugging
+	SyncManager.rollback_debug_ticks = 1
+	SyncManager.debug_message_bytes = 600
+	SyncManager.debug_skip_nth_message = 0
+	
 	# Tweak some settings
 	#SyncManager.max_buffer_size = 20
-	SyncManager.debug_message_bytes = 600
 	SyncManager.max_input_frames_per_message = 20
 	SyncManager.max_messages_at_once = 2
-	SyncManager.debug_skip_nth_message = 0
-	SyncManager.interpolation = true
+	SyncManager.interpolation = false
 	SyncManager.skip_ticks_after_sync_regained = 5
 	#SyncManager.message_resend_frequency = (1.0 / Engine.iterations_per_second) / 2.0
 	
-	SyncManager.connect("state_loaded", self, "_on_SyncManager_state_loaded")
-	SyncManager.connect("tick_finished", self, "_on_SyncManager_tick_finished")
-
-func _on_SyncManager_state_loaded(_rollback_ticks: int) -> void:
-	# After loading all the positions from the end of the tick before the
-	# tick we are going to re-run, we need to manually run a physics tick,
-	# in order to clear the old collsion data, and set things up as they
-	# were before running this tick last time.
-	Physics.simulate()
-	# Apparently, we actually have to run it twice, otherwise newly
-	# respawned body's won't detect their collisions because the body won't
-	# really be in the physics server until the next tick.
-	Physics.simulate()
-
-func _on_SyncManager_tick_finished(is_rollback: bool) -> void:
-	if is_rollback:
-		Physics.simulate()
