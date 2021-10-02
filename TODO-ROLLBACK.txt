@@ -18,6 +18,8 @@ MILESTOE 2 (finish porting all the things):
    o Football
  - Bug: Pick up non-chargable powerup while using the same power-up (ie. pickup invisible while invisible)
  - Bug: trying to move too early can send tank to origin?
+ - Grep through the codebase for remote/master/puppet/etc and remove if possible
+ - Grep through the codebase for _synchronized_rpc() and remove if possible
  - Implement a sound manager to prevent double playing sounds
    o Affects Pickup.gd
    o Can we avoid playing sounds on the first frame when interpolating?
