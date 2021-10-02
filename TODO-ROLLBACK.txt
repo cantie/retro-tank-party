@@ -16,6 +16,7 @@ MILESTOE 2 (finish porting all the things):
    o Battle Royale
    o Deathmatch
    o Football
+ - Bug: trying to move too early can send tank to origin?
  - Implement a sound manager to prevent double playing sounds
    o Affects Pickup.gd
    o Can we avoid playing sounds on the first frame when interpolating?
