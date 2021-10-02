@@ -448,7 +448,7 @@ func _save_current_state() -> void:
 	if log_state and not get_tree().is_network_server() and is_player_input_complete(current_tick):
 		rpc_id(1, "_log_saved_state", current_tick, state_data)
 
-func _do_tick(delta: float, is_rollback: bool = false) -> void:
+func _do_tick(delta: float, is_rollback: bool = false) -> bool:
 	var input_frame := get_input_frame(current_tick)
 	var previous_frame := get_input_frame(current_tick - 1)
 	
@@ -466,9 +466,18 @@ func _do_tick(delta: float, is_rollback: bool = false) -> void:
 			input_frame.players[peer_id] = InputForPlayer.new(predicted_input, true)
 	
 	_call_network_process(delta, input_frame)
+	
+	# If the game was stopped during the last network process, then we return
+	# false here, to indicate that a full tick didn't complete and we need to
+	# abort.
+	if not started:
+		return false
+	
 	_save_current_state()
 	
 	emit_signal("tick_finished", is_rollback)
+	
+	return true
 
 func _get_or_create_input_frame(tick: int) -> InputBufferFrame:
 	var input_frame: InputBufferFrame
@@ -703,7 +712,8 @@ func _physics_process(delta: float) -> void:
 		# Iterate forward until we're at the same spot we left off.
 		while rollback_ticks > 0:
 			current_tick += 1
-			_do_tick(delta, true)
+			if not _do_tick(delta, true):
+				return
 			rollback_ticks -= 1
 		assert(current_tick == original_tick, "Rollback didn't return to the original tick")
 	
@@ -778,7 +788,8 @@ func _physics_process(delta: float) -> void:
 	_time_since_last_tick = 0.0
 	
 	if current_tick > 0:
-		_do_tick(delta)
+		if not _do_tick(delta):
+			return
 		
 		if interpolation:
 			# Capture the state data to interpolate between.

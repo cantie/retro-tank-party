@@ -5,8 +5,10 @@ const PlayerManager := preload("res://mods/core/modes/deathmatch/DeathmatchPlaye
 const TANK_DIMENSION = 8388608 # 128
 
 onready var hud := $CanvasLayer/TimedMatchHUD
-onready var rng := $RandomNumberGenerator
 onready var player_managers_node := $PlayerManagers
+onready var rng := $RandomNumberGenerator
+onready var show_score_timer := $ShowScoreTimer
+onready var match_finished_timer := $MatchFinishedTimer
 
 var instant_death := false
 var winners := []
@@ -55,7 +57,7 @@ func _do_match_setup() -> void:
 	
 	game.connect("player_dead", self, "_on_game_player_dead")
 	
-	hud.countdown_timer.start_countdown(config['timelimit'])
+	hud.countdown_timer.start_countdown(config['timelimit'] * 60)
 	hud.countdown_timer.connect("countdown_finished", self, "_on_countdown_finished")
 
 func _save_state() -> Dictionary:
@@ -117,12 +119,12 @@ func _on_game_player_dead(player_id: int, killer_id: int) -> void:
 
 		if instant_death:
 			if player_id == my_id:
-				enable_watch_camera()
+				game.enable_watch_camera()
 			
 			winners = score.find_highest()
 			if winners.size() == 1:
 				game_over = true
-				show_winner(score.get_name(winners[0]), score.to_dict())
+				show_winner(score.get_name(winners[0]))
 		elif player_managers.has(player_id):
 			var player_manager = player_managers[player_id]
 			player_manager.start_respawn_timer()
@@ -148,7 +150,7 @@ func _on_countdown_finished() -> void:
 	
 	if winners.size() == 1:
 		game_over = true
-		rpc("show_winner", score.get_name(winners[0]), score.to_dict())
+		show_winner(score.get_name(winners[0]))
 	else:
 		instant_death = true
 		
@@ -157,26 +159,17 @@ func _on_countdown_finished() -> void:
 			var players_alive = game.players_alive.duplicate()
 			for player_id in players_alive:
 				if not player_id in winners:
-					rpc("kill_player", player_id)
+					game.kill_player(player_id)
 		
-		hud.rpc("show_instant_death_label")
+		hud.show_instant_death_label()
 
-remotesync func kill_player(peer_id: int) -> void:
-	if get_tree().get_rpc_sender_id() != 1:
-		return
-	game.kill_player(peer_id)
-
-remotesync func enable_watch_camera() -> void:
-	game.enable_watch_camera()
-
-remotesync func show_winner(winner_name: String, host_score: Dictionary) -> void:
+func show_winner(winner_name: String) -> void:
 	ui_layer.show_message(winner_name + " WINS THIS DEATHMATCH!")
-	
-	yield(get_tree().create_timer(2.0), "timeout")
-	
-	ui_layer.show_screen("RoundScreen", {score = host_score})
-	
-	yield(get_tree().create_timer(2.0), "timeout")
-	
-	match_scene.finish_match()
+	show_score_timer.start()
 
+func _on_ShowScoreTimer_timeout() -> void:
+	ui_layer.show_screen("RoundScreen", {score = score.to_dict()})
+	match_finished_timer.start()
+
+func _on_MatchFinishedTimer_timeout() -> void:
+	match_scene.finish_match()

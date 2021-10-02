@@ -7,8 +7,8 @@ onready var weapon_timeout_field = $WeaponTimeout
 
 func _ready() -> void:
 	for i in range(1, 11):
-		timelimit_field.add_item("%s min" % i, int(i * 1800))
-	timelimit_field.set_value(int(5 * 1800), false)
+		timelimit_field.add_item("%s min" % i, i)
+	timelimit_field.set_value(5, false)
 	
 	teams_field.add_item("No", false)
 	teams_field.add_item("Yes", true)
