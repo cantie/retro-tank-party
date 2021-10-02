@@ -12,6 +12,9 @@ MILESTONE 1 (physics):
 
 MILESTOE 2 (finish porting all the things):
 
+ - Fix issue with free space detector jumping around with rollback
+   o The problem is that the free space detector is see the object it placed itself
+   o Remove/add body or area to the SGWorldInternal depending on if the node is in the tree
  - Convert all the game modes:
    o Battle Royale
    o Deathmatch
