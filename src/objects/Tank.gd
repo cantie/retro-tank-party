@@ -9,8 +9,8 @@ export (bool) var player_controlled = false
 signal player_dead (killer_id)
 signal shoot ()
 signal hurt (damage, attacker_id, attack_vector)
-signal weapon_type_changed (weapon_type)
-signal ability_type_changed (ability_type)
+signal weapon_type_changed (weapon_type, old_weapon_type)
+signal ability_type_changed (ability_type, old_ability_type)
 signal ability_recharged (ability)
 
 onready var player_info_node := $PlayerInfo
@@ -189,6 +189,7 @@ func set_weapon_type(_weapon_type: WeaponType) -> void:
 		_weapon_type = BaseWeaponType
 	
 	if weapon_type != _weapon_type:
+		var old_weapon_type = weapon_type
 		weapon_type = _weapon_type
 		
 		if weapon:
@@ -205,7 +206,7 @@ func set_weapon_type(_weapon_type: WeaponType) -> void:
 			else:
 				game.hud.set_weapon_label(weapon_type.name)
 		
-		emit_signal("weapon_type_changed", weapon_type)
+		emit_signal("weapon_type_changed", weapon_type, old_weapon_type)
 
 func pickup_ability(_ability_type: AbilityType) -> void:
 	hooks.dispatch_event("pickup_ability", PickupAbilityEvent.new(self, _ability_type))
@@ -219,12 +220,13 @@ func set_held_ability_type(_ability_type: AbilityType) -> void:
 		_update_ability_label()
 		emit_signal("ability_recharged", ability)
 	else:
+		var old_held_ability_type = held_ability_type
 		held_ability_type = _ability_type
 		if held_ability_type:
 			ability_charges = held_ability_type.charges
 		
 		_update_ability_label()
-		emit_signal("ability_type_changed", held_ability_type)
+		emit_signal("ability_type_changed", held_ability_type, old_held_ability_type)
 
 func _update_ability_label() -> void:
 	if game and player_controlled:

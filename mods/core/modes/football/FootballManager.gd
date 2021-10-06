@@ -39,6 +39,7 @@ func _do_match_setup() -> void:
 		player_manager.setup_player_manager(players[player_id], config, game)
 		player_manager.connect("respawn_player", self, "_on_player_manager_respawn_player")
 		player_managers[player_id] = player_manager
+	game.connect("player_spawned", self, "_on_game_player_spawned")
 	
 	var map_temp = load(map_path).instance()
 	team_start_transforms.resize(2)
@@ -55,8 +56,9 @@ func _do_match_setup() -> void:
 	game.add_child(football)
 	football.setup_football(bounds_rect)
 	football.set_global_fixed_position(ball_start_position)
+	football.sync_to_physics_engine()
 	football.connect("out_of_bounds", self, "_on_football_out_of_bounds")
-	football.connect("grabbed", self, "_on_football_grabbed")
+	football.connect("grabbed", self, "grab_football")
 	
 	var goal_transforms = game.map.get_goal_transforms()
 	for i in range(2):
@@ -92,6 +94,15 @@ func _load_state(state: Dictionary) -> void:
 	instant_death = state['instant_death']
 	round_over = state['round_over']
 
+func _on_game_player_spawned(tank) -> void:
+	var player_id = tank.get_network_master()
+	if player_managers.has(player_id):
+		var player_manager = player_managers[player_id]
+		player_manager.set_player_tank(tank)
+	
+	tank.connect("player_dead", self, "_on_tank_player_dead", [tank])
+	tank.connect("hurt", self, "_on_tank_hurt", [tank])
+
 func _on_OnlineMatch_player_left(online_player) -> void:
 	var player_manager = player_managers[online_player.peer_id]
 	player_manager.shutdown_player_manager()
@@ -106,21 +117,21 @@ func _on_football_out_of_bounds() -> void:
 		round_over = true
 		start_new_round("OUT OF BOUNDS!", -1)
 
-func _on_football_grabbed(tank) -> void:
-	grab_football(tank.get_path())
-
-func grab_football(tank_path: NodePath) -> void:
-	var tank = get_node(tank_path)
+func grab_football(tank) -> void:
 	if tank:
-		var previous_weapon_type = tank.weapon_type
 		tank.set_weapon_type(FootballWeaponType)
-		tank.weapon.previous_weapon_type = previous_weapon_type
 		football.mark_as_held(tank)
 		
 		# Just in case the ball was passed to a tank already in the goal.
 		check_goals()
 
 func pass_football(_position: SGFixedVector2, _vector: SGFixedVector2) -> void:
+	if football.held:
+		var player_id = football.held.get_network_master()
+		if player_managers.has(player_id):
+			var player_manager = player_managers[player_id]
+			player_manager.restore_previous_weapon()
+	
 	football.pass_football(_position, _vector)
 
 func _on_goal_tank_present(tank, goal) -> void:
@@ -186,23 +197,32 @@ func _setup_new_round(player_with_ball: int, player_health: Dictionary) -> void:
 	
 	if player_with_ball == -1:
 		# Restore the football to its starting position.
-		football.pass_football(ball_start_position, Vector2.ZERO)
+		football.pass_football(ball_start_position, SGFixed.vector2(0, 0))
 	else:
-		grab_football(game.get_tank(player_with_ball).get_path())
+		grab_football(game.get_tank(player_with_ball))
 
 remotesync func _start_new_round() -> void:
 	round_over = false
 	ui_layer.hide_message()
 	game.game_start()
 
-func _on_game_player_dead(player_id: int, killer_id: int) -> void:
+func _on_tank_player_dead(killer_id: int, tank) -> void:
+	var player_id = tank.get_network_master()
+	
 	var my_id = get_tree().get_network_unique_id()
-	if player_id == my_id:
+	if my_id == tank.get_network_master():
 		ui_layer.show_message("Wasted!")
+	
+	if tank == football.held:
+		emit_signal("dropped_football", tank.get_global_fixed_position(), SGFixed.vector2(0, 0))
 	
 	if player_managers.has(player_id):
 		var player_manager = player_managers[player_id]
 		player_manager.start_respawn_timer()
+
+func _on_tank_hurt(damage: int, attacker_id: int, attack_vector: SGFixedVector2, tank) -> void:
+	if tank == football.held:
+		pass_football(tank.get_global_fixed_position(), attack_vector)
 
 func _on_player_manager_respawn_player(player_id: int) -> void:
 	var player = players[player_id]

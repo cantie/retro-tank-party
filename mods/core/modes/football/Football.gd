@@ -31,6 +31,30 @@ func pass_football(_position: SGFixedVector2, _vector: SGFixedVector2) -> void:
 	pass_timer.start()
 	sliding_over_obstruction = false
 	mark_as_held(null)
+	sync_to_physics_engine()
+
+func _save_state() -> Dictionary:
+	return {
+		in_bounds = in_bounds,
+		frames_countdown = frames_countdown,
+		fixed_position = fixed_position.copy(),
+		fixed_rotation = fixed_rotation,
+		vector = vector.copy(),
+		sliding_over_obstruction = sliding_over_obstruction,
+		held = held.get_path() if held else null,
+		visible = visible,
+	}
+
+func _load_state(state: Dictionary) -> void:
+	in_bounds = state['in_bounds']
+	frames_countdown = state['frames_countdown']
+	fixed_position = state['fixed_position'].copy()
+	fixed_rotation = state['fixed_rotation']
+	vector = state['vector'].copy()
+	sliding_over_obstruction = state['sliding_over_obstruction']
+	held = get_node(state['held']) if state['held'] else null
+	visible = state['visible']
+	sync_to_physics_engine()
 
 func mark_as_held(_held) -> void:
 	held = _held
@@ -42,12 +66,17 @@ func mark_as_held(_held) -> void:
 	else:
 		visible = true
 
-func _physics_process(delta: float) -> void:
+func _network_process(delta: float, input: Dictionary) -> void:
 	if frames_countdown > 0:
 		frames_countdown -= 1
 	
+	for body in get_overlapping_bodies():
+		if _on_Football_body_entered(body):
+			break
+	
 	if held and is_instance_valid(held):
 		set_global_fixed_position(held.get_global_fixed_position())
+		sync_to_physics_engine()
 		return
 	
 	if vector.x == 0 and vector.y == 0:
@@ -59,15 +88,13 @@ func _physics_process(delta: float) -> void:
 		sliding_over_obstruction = false
 		return
 	
-	# @todo Why times 4? Shouldn't we just be looking at how far we're moving
-	# this frame? And if so, this could be set on the scene rather than here.
-	ray_cast.cast_to = SGFixed.vector2(speed * 4, 0)
+	ray_cast.cast_to = SGFixed.vector2(speed, 0)
 	ray_cast.update_raycast_collision()
 	# If it collided with things that collide with bullets (2 = bullet).
 	if ray_cast.is_colliding() and ray_cast.get_collider().get_collision_mask_bit(2):
 		var old_fixed_position = fixed_position.copy()
 		# Move football to stop short of the obstruction.
-		set_global_fixed_position(ray_cast.get_collision_point() - (vector.mul(1048576)))
+		set_global_fixed_position(ray_cast.get_collision_point().sub(vector.mul(1048576)))
 		sync_to_physics_engine()
 		
 		if check_on_obstruction():
@@ -87,24 +114,28 @@ func _physics_process(delta: float) -> void:
 #		if not in_bounds:
 #			emit_signal("out_of_bounds")
 
+func _interpolate_state(old_state: Dictionary, new_state: Dictionary, weight: float) -> void:
+	position = lerp(old_state['fixed_position'].to_float(), new_state['fixed_position'].to_float(), weight)
+
 func check_on_obstruction() -> bool:
 	for body in get_overlapping_bodies():
 		if body.get_collision_layer_bit(0):
 			return true
 	return false
 
-func _on_Football_body_entered(body: PhysicsBody2D) -> void:
+func _on_Football_body_entered(body: SGCollisionObject2D) -> bool:
 	# Prevent multiple tanks grabbing the football.
 	if held:
-		return
+		return true
 	# Only collide with tanks.
 	if not body.get_collision_layer_bit(1):
-		return
+		return false
 	# Prevent hitting self.
 	if frames_countdown > 0:
-		return
+		return false
 	
 	emit_signal("grabbed", body)
+	return true
 
 func _on_PassTimer_timeout() -> void:
 	if not check_on_obstruction():

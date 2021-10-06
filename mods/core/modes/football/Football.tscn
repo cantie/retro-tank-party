@@ -11,7 +11,9 @@ extents = Object(SGFixedVector2,"x":655360,"y":851968,"script":null)
 [sub_resource type="SGCircleShape2D" id=2]
 radius = 851968
 
-[node name="Football" type="SGArea2D"]
+[node name="Football" type="SGArea2D" groups=[
+"network_sync",
+]]
 fixed_position = Object(SGFixedVector2,"x":0,"y":0,"script":null)
 
 fixed_scale = Object(SGFixedVector2,"x":65536,"y":65536,"script":null)
