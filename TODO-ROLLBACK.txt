@@ -16,10 +16,9 @@ MILESTOE 2 (finish porting all the things):
  - Convert all the game modes:
    o Football
 	 - Get passing the football working
-     - Add a SGFixedTransform2D constructor to SGFixed
 	 - Maybe make weapons into nodes so that we can save football state (previous_weapon_type)? Or do that as an "attachment"?
 	 - Implement capsule shape?
-	 - Expose an SGFixedRect2 to GDScript? Would be useful in a couple places (map_rect, bounds_rect, etc)
+	 - game.create_free_space_detector() should take an SGFixedRect2
  - Bug: Pick up non-chargable powerup while using the same power-up (ie. pickup invisible while invisible)
  - Bug: trying to move too early can send tank to origin?
  - Grep through the codebase for remote/master/puppet/etc and remove if possible

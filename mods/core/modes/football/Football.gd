@@ -5,7 +5,7 @@ onready var ray_cast = $RayCast2D
 
 const SIXTEEN = 1048576
 
-var vector: SGFixedVector2
+var vector: SGFixedVector2 = SGFixed.vector2(0, 0)
 var speed := 1529173
 var sliding_over_obstruction := false
 var frames_countdown := 0
@@ -13,7 +13,7 @@ var frames_countdown := 0
 # The tank holding the football or null.
 var held
 
-var bounds_rect: Rect2
+var bounds_rect: SGFixedRect2
 var in_bounds := true
 
 signal out_of_bounds ()

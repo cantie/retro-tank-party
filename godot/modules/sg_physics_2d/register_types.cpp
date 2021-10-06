@@ -50,6 +50,7 @@ static SGWorld2DInternal *world_singleton;
 void register_sg_physics_2d_types() {
 	ClassDB::register_class<SGFixed>();
 	ClassDB::register_class<SGFixedVector2>();
+	ClassDB::register_class<SGFixedRect2>();
 	ClassDB::register_class<SGFixedTransform2D>();
 
 	ClassDB::register_class<SGFixedNode2D>();

@@ -43,13 +43,10 @@ func _do_match_setup() -> void:
 			var player = players[player_id]
 			hud.score.set_entity_name(player.index, player.name)
 
-	var map_rect = game.map.get_map_rect()
-	# It *should* be OK to convert from floats here because the values are
-	# actually all integers, and floats should have full precision at the
-	# sort of values we're using here.
+	var fixed_map_rect = game.map.get_fixed_map_rect()
 	detector = game.create_free_space_detector(
-		SGFixed.from_float_vector2(map_rect.position),
-		SGFixed.from_float_vector2(map_rect.size),
+		fixed_map_rect.position,
+		fixed_map_rect.size,
 		SGFixed.vector2(TANK_DIMENSION, TANK_DIMENSION),
 		rng)
 	

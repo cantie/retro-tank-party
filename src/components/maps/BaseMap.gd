@@ -1,5 +1,7 @@
 extends Node2D
 
+const FIXED_PI = 205887
+
 var _map_rect
 
 func map_start(game) -> void:
@@ -32,7 +34,10 @@ func get_map_rect() -> Rect2:
 	return _map_rect
 
 func get_fixed_map_rect() -> SGFixedRect2:
-	pass
+	# It *should* be OK to convert from floats here because the values are
+	# actually all integers, and floats should have full precision at the
+	# sort of values we're using here.
+	return SGFixed.from_float_rect2(get_map_rect())
 
 func _get_child_transforms(parent: Node2D) -> Array:
 	var transforms := []
@@ -66,7 +71,7 @@ func get_goal_transforms() -> Array:
 		goal_positions_parent = get_node("GoalPositions")
 	
 	var goal_transforms := []
-	var map_rect = get_map_rect()
+	var fixed_map_rect = get_fixed_map_rect()
 	
 	for i in range(2):
 		if goal_positions_parent and goal_positions_parent.get_child_count() > i:
@@ -74,8 +79,8 @@ func get_goal_transforms() -> Array:
 			goal_transforms.append(goal_position_node.get_global_fixed_transform())
 		else:
 			if i == 0:
-				goal_transforms.append(SGFixed.transform2d(0.0, map_rect.position + Vector2(196, map_rect.size.y / 2.0)))
+				goal_transforms.append(SGFixed.transform2d(0, fixed_map_rect.position.add(SGFixed.vector2(12845056, fixed_map_rect.size.y / 2))))
 			else:
-				goal_transforms.append(SGFixed.transform2d(PI, map_rect.position + Vector2(map_rect.size.x - 196, map_rect.size.y / 2.0)))
+				goal_transforms.append(SGFixed.transform2d(FIXED_PI, fixed_map_rect.position.add(SGFixed.vector2(fixed_map_rect.size.x - 12845056, fixed_map_rect.size.y / 2))))
 	
 	return goal_transforms
