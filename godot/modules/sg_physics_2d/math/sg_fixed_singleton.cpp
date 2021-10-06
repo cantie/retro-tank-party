@@ -59,6 +59,11 @@ void SGFixed::_bind_methods() {
 
 	ClassDB::bind_method(D_METHOD("vector2", "fixed_x", "fixed_y"), &SGFixed::vector2);
 	ClassDB::bind_method(D_METHOD("from_float_vector2", "float_vector"), &SGFixed::from_float_vector2);
+
+	ClassDB::bind_method(D_METHOD("rect2", "position", "size"), &SGFixed::rect2);
+	ClassDB::bind_method(D_METHOD("from_float_rect2", "float_rect"), &SGFixed::from_float_rect2);
+
+	ClassDB::bind_method(D_METHOD("transform2d", "rotation", "origin"), &SGFixed::transform2d);
 }
 
 int64_t SGFixed::from_int(int64_t p_int_value) const {
@@ -123,4 +128,23 @@ Ref<SGFixedVector2> SGFixed::vector2(int64_t p_fixed_x, int64_t p_fixed_y) const
 
 Ref<SGFixedVector2> SGFixed::from_float_vector2(const Vector2 &p_float_vector) const {
 	return Ref<SGFixedVector2>(memnew(SGFixedVector2(SGFixedVector2Internal(fixed::from_float(p_float_vector.x), fixed::from_float(p_float_vector.y)))));
+}
+
+Ref<SGFixedRect2> SGFixed::rect2(const Ref<SGFixedVector2> &p_position, const Ref<SGFixedVector2> &p_size) const {
+	Ref<SGFixedRect2> ret(memnew(SGFixedRect2));
+	ret->set_position(p_position);
+	ret->set_size(p_size);
+	return ret;
+}
+
+Ref<SGFixedRect2> SGFixed::from_float_rect2(const Rect2 &p_float_rect) const {
+	Ref<SGFixedRect2> ret(memnew(SGFixedRect2));
+	ret->set_internal(SGFixedRect2Internal::from_float(p_float_rect));
+	return ret;
+}
+
+Ref<SGFixedTransform2D> SGFixed::transform2d(int64_t p_rotation, const Ref<SGFixedVector2> &p_origin) const {
+	Ref<SGFixedTransform2D> ret(memnew(SGFixedTransform2D));
+	ret->set_internal(SGFixedTransform2DInternal(fixed(p_rotation), p_origin->get_internal()));
+	return ret;
 }

@@ -31,6 +31,9 @@ func get_map_rect() -> Rect2:
 	
 	return _map_rect
 
+func get_fixed_map_rect() -> SGFixedRect2:
+	pass
+
 func _get_child_transforms(parent: Node2D) -> Array:
 	var transforms := []
 	for i in range(parent.get_child_count()):
@@ -42,12 +45,12 @@ func get_player_start_transforms() -> Array:
 		return []
 	return _get_child_transforms(get_node("PlayerStartPositions"))
 
-func get_ball_start_position() -> Vector2:
+func get_ball_start_position() -> SGFixedVector2:
 	if not has_node('BallStartPosition'):
 		var map_rect = get_map_rect()
-		return map_rect.position + (map_rect.size / 2.0)
+		return SGFixed.from_float_vector2(map_rect.position + (map_rect.size / 2))
 		
-	return get_node('BallStartPosition').global_position
+	return get_node('BallStartPosition').get_global_fixed_position()
 
 func get_team_start_transforms(team: int) -> Array:
 	if not has_node("TeamStartPositions"):
@@ -67,12 +70,12 @@ func get_goal_transforms() -> Array:
 	
 	for i in range(2):
 		if goal_positions_parent and goal_positions_parent.get_child_count() > i:
-			var goal_position_node: Node2D = goal_positions_parent.get_child(i)
-			goal_transforms.append(goal_position_node.global_transform)
+			var goal_position_node: SGFixedNode2D = goal_positions_parent.get_child(i)
+			goal_transforms.append(goal_position_node.get_global_fixed_transform())
 		else:
 			if i == 0:
-				goal_transforms.append(Transform2D(0.0, map_rect.position + Vector2(196, map_rect.size.y / 2.0)))
+				goal_transforms.append(SGFixed.transform2d(0.0, map_rect.position + Vector2(196, map_rect.size.y / 2.0)))
 			else:
-				goal_transforms.append(Transform2D(PI, map_rect.position + Vector2(map_rect.size.x - 196, map_rect.size.y / 2.0)))
+				goal_transforms.append(SGFixed.transform2d(PI, map_rect.position + Vector2(map_rect.size.x - 196, map_rect.size.y / 2.0)))
 	
 	return goal_transforms

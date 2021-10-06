@@ -21,55 +21,38 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
 /*************************************************************************/
 
-#ifndef SG_FIXED_SINGLETON_H
-#define SG_FIXED_SINGLETON_H
-
-#include <core/object.h>
-
-#include "sg_fixed_vector2.h"
 #include "sg_fixed_rect2.h"
-#include "sg_fixed_transform_2d.h"
 
-class SGFixed : public Object {
+void SGFixedRect2::_bind_methods() {
+	ClassDB::bind_method(D_METHOD("get_position"), &SGFixedRect2::get_position);
+	ClassDB::bind_method(D_METHOD("set_position", "position"), &SGFixedRect2::set_position);
+	ClassDB::bind_method(D_METHOD("get_size"), &SGFixedRect2::get_size);
+	ClassDB::bind_method(D_METHOD("set_size", "size"), &SGFixedRect2::set_size);
 
-    GDCLASS(SGFixed, Object);
+	ADD_PROPERTY(PropertyInfo(Variant::OBJECT, "position", PROPERTY_HINT_TYPE_STRING, "SGFixedVector2"), "set_position", "get_position");
+	ADD_PROPERTY(PropertyInfo(Variant::OBJECT, "size", PROPERTY_HINT_TYPE_STRING, "SGFixedVector2"), "set_size", "get_size");
+}
 
-    static SGFixed *singleton;
+Ref<SGFixedVector2> SGFixedRect2::get_position() {
+	return position;
+}
 
-protected:
-    static void _bind_methods();
+void SGFixedRect2::set_position(const Ref<SGFixedVector2> &p_position) {
+	position->set_internal(p_position->get_internal());
+}
 
-public:
-    static SGFixed *get_singleton();
+Ref<SGFixedVector2> SGFixedRect2::get_size() {
+	return size;
+}
 
-    int64_t from_int(int64_t p_int_value) const;
-    int64_t from_float(float p_float_value) const;
+void SGFixedRect2::set_size(const Ref<SGFixedVector2> &p_size) {
+	size->set_internal(p_size->get_internal());
+}
 
-    int64_t to_int(int64_t p_fixed_value) const;
-    float to_float(int64_t p_fixed_value) const;
+SGFixedRect2::SGFixedRect2()
+	: position(memnew(SGFixedVector2)), size(memnew(SGFixedVector2))
+{
+}
 
-    int64_t mul(int64_t p_fixed_one, int64_t p_fixed_two) const;
-    int64_t div(int64_t p_fixed_one, int64_t p_fixed_two) const;
-
-    int64_t sin(int64_t p_fixed_value) const;
-    int64_t cos(int64_t p_fixed_value) const;
-    int64_t tan(int64_t p_fixed_value) const;
-    int64_t asin(int64_t p_fixed_value) const;
-    int64_t acos(int64_t p_fixed_value) const;
-    int64_t atan(int64_t p_fixed_value) const;
-    int64_t atan2(int64_t p_fixed_y_value, int64_t p_fixed_x_value) const;
-    int64_t sqrt(int64_t p_fixed_value) const;
-
-    Ref<SGFixedVector2> vector2(int64_t p_fixed_x, int64_t p_fixed_y) const;
-    Ref<SGFixedVector2> from_float_vector2(const Vector2 &p_float_vector) const;
-
-    Ref<SGFixedRect2> rect2(const Ref<SGFixedVector2> &p_position, const Ref<SGFixedVector2> &p_size) const;
-    Ref<SGFixedRect2> from_float_rect2(const Rect2 &p_float_rect) const;
-
-    Ref<SGFixedTransform2D> transform2d(int64_t p_rotation, const Ref<SGFixedVector2> &p_origin) const;
-
-    SGFixed();
-    ~SGFixed();
-};
-
-#endif
+SGFixedRect2::~SGFixedRect2() {
+}

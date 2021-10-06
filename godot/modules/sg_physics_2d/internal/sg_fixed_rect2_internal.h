@@ -24,6 +24,8 @@
 #ifndef SG_FIXED_RECT2_INTERNAL_H
 #define SG_FIXED_RECT2_INTERNAL_H
 
+#include <core/math/rect2.h>
+
 #include "sg_fixed_vector2_internal.h"
 
 struct SGFixedRect2Internal {
@@ -85,6 +87,10 @@ struct SGFixedRect2Internal {
         position = begin;
         size = end - begin;
 	}
+
+    _FORCE_INLINE_ static SGFixedRect2Internal from_float(const Rect2 &p_float_rect) {
+        return SGFixedRect2Internal(SGFixedVector2Internal::from_float(p_float_rect.position), SGFixedVector2Internal::from_float(p_float_rect.size));
+    }
 };
 
 #endif

@@ -28,6 +28,7 @@
 
 #include "./math/sg_fixed_singleton.h"
 #include "./math/sg_fixed_vector2.h"
+#include "./math/sg_fixed_rect2.h"
 #include "./math/sg_fixed_transform_2d.h"
 #include "./scene/2d/sg_fixed_position_2d.h"
 #include "./scene/2d/sg_area_2d.h"

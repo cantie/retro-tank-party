@@ -19,7 +19,7 @@ var goals := []
 
 var map_rect: Rect2
 var bounds_rect: Rect2
-var ball_start_position: Vector2
+var ball_start_position: SGFixedVector2
 
 func _get_synchronized_rpc_methods() -> Array:
 	return ['_setup_new_round']
@@ -29,7 +29,7 @@ func _do_match_setup() -> void:
 	team_start_transforms.resize(2)
 	for i in range(2):
 		team_start_transforms[i] = map_temp.get_team_start_transforms(i)
-	_game_setup_with_start_positions()
+	game.game_setup(players, map_path, random_seed, _get_player_start_transforms())
 	
 	map_rect = game.map.get_map_rect()
 	bounds_rect = Rect2(map_rect.position + Vector2(32, 32), map_rect.size - Vector2(64, 64))
@@ -64,11 +64,8 @@ func _do_match_setup() -> void:
 	if get_tree().is_network_server():
 		game.connect("game_started", self, "_on_game_started")
 	
-	hud.countdown_timer.connect("countdown_finished", self, "_on_countdown_finished")
-
-func match_start() -> void:
-	.match_start()
 	hud.countdown_timer.start_countdown(config['timelimit'] * 60)
+	hud.countdown_timer.connect("countdown_finished", self, "_on_countdown_finished")
 
 func _on_game_started() -> void:
 	get_tree().call_group_flags(SceneTree.GROUP_CALL_REALTIME, "drop_crate_spawn_area", "spawn_drop_crate")
@@ -92,7 +89,7 @@ remotesync func grab_football(tank_path: NodePath) -> void:
 		# Just in case the ball was passed to a tank already in the goal.
 		check_goals()
 
-remotesync func pass_football(_position: Vector2, _vector: Vector2) -> void:
+func pass_football(_position: SGFixedVector2, _vector: SGFixedVector2) -> void:
 	football.pass_football(_position, _vector)
 
 func _on_goal_tank_present(tank, goal) -> void:
@@ -155,11 +152,8 @@ func _get_player_start_transforms() -> Array:
 			player_start_transforms[player.index - 1] = team_start_transforms[team_id][team_player_index]
 	return player_start_transforms
 
-func _game_setup_with_start_positions() -> void:
-	game.game_setup(players, map_path, _get_player_start_transforms())
-
 func _setup_new_round(player_with_ball: int, player_health: Dictionary) -> void:
-	_game_setup_with_start_positions()
+	game.game_reset()
 	
 	for player_id in game.players_alive:
 		var tank = game.get_tank(player_id)
