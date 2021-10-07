@@ -2,6 +2,9 @@ extends Sprite
 
 onready var animation_player := $AnimationPlayer
 
+func _network_spawn(data: Dictionary) -> void:
+	position = data['position']
+
 func _on_Timer_timeout() -> void:
 	animation_player.play('Dissolve')
 

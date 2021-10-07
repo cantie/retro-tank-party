@@ -3,7 +3,7 @@ extends "res://src/components/weapons/BaseBullet.gd"
 onready var ray_cast := $RayCast2D
 onready var line := $Line2D
 
-var speed = 2800
+var speed = 6116693
 var growing := true
 var bounced := false
 
@@ -18,37 +18,53 @@ func _ready():
 	line.set_as_toplevel(true)
 	line.global_position = Vector2(0, 0)
 
-func setup_bullet(tank, weapon_type) -> void:
-	.setup_bullet(tank, weapon_type)
+func _network_spawn(data: Dictionary) -> void:
+	._network_spawn(data)
 	line.default_color = LASER_COLORS[player_index]
 	line.add_point(global_position)
 
-func can_hit(body: PhysicsBody2D) -> bool:
+func can_hit(body: SGCollisionObject2D) -> bool:
 	# Only allow to hit ourselves after the first bounce.
 	return bounced or body != tank
 
-func _physics_process(delta: float) -> void:
+func _save_state() -> Dictionary:
+	var state = ._save_state()
+	state['points'] = line.points
+	state['growing'] = growing
+	state['exceptions'] = ray_cast.get_exceptions()
+	return state
+
+func _load_state(state: Dictionary) -> void:
+	line.points = state['points']
+	growing = state['growing']
+	ray_cast.set_exceptions(state['exceptions'])
+	._load_state(state)
+
+func _network_process(delta: float, input: Dictionary) -> void:
+	._network_process(delta, input)
 	if growing:
-		var increment = vector * delta * speed
-		ray_cast.cast_to = Vector2(increment.length(), 0)
-		ray_cast.force_raycast_update()
+		var increment = vector.mul(speed)
+		ray_cast.cast_to = SGFixed.vector2(increment.length(), 0)
+		ray_cast.update_raycast_collision()
 		if ray_cast.is_colliding():
-			global_position = ray_cast.get_collision_point()
+			set_global_fixed_position(ray_cast.get_collision_point())
 			
 			var collider = ray_cast.get_collider()
 			# bit 2 = bullets
 			if collider.get_collision_mask_bit(2):
 				var collision_normal = ray_cast.get_collision_normal()
-				if collision_normal != Vector2.ZERO:
+				if !(collision_normal.x == 0 and collision_normal.y == 0):
 					vector = vector.bounce(collision_normal).normalized()
-					rotation = vector.angle()
+					fixed_rotation = vector.angle()
 					bounced = true
 			
 			ray_cast.clear_exceptions()
 			ray_cast.add_exception(collider)
 		else:
-			global_position += increment
+			set_global_fixed_position(get_global_fixed_position().add(increment))
 		
+		sync_to_physics_engine()
+
 		line.add_point(global_position)
 	else:
 		line.remove_point(0)

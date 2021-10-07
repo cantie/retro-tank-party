@@ -1,12 +1,14 @@
 extends Node2D
 
+const FIXED_PI = 205887
+
 var _map_rect
 
 func map_start(game) -> void:
-	get_tree().call_group("map_object", "map_object_start", self, game)
+	get_tree().call_group_flags(SceneTree.GROUP_CALL_REALTIME, "map_object", "map_object_start", self, game)
 
 func map_stop(game) -> void:
-	get_tree().call_group("map_object", "map_object_stop", self, game)
+	get_tree().call_group_flags(SceneTree.GROUP_CALL_REALTIME, "map_object", "map_object_stop", self, game)
 
 func get_map_rect() -> Rect2:
 	if _map_rect != null:
@@ -31,10 +33,16 @@ func get_map_rect() -> Rect2:
 	
 	return _map_rect
 
+func get_map_fixed_rect() -> SGFixedRect2:
+	# It *should* be OK to convert from floats here because the values are
+	# actually all integers, and floats should have full precision at the
+	# sort of values we're using here.
+	return SGFixed.from_float_rect2(get_map_rect())
+
 func _get_child_transforms(parent: Node2D) -> Array:
 	var transforms := []
 	for i in range(parent.get_child_count()):
-		transforms.append(parent.get_child(i).global_transform)
+		transforms.append(parent.get_child(i).get_global_fixed_transform())
 	return transforms
 
 func get_player_start_transforms() -> Array:
@@ -42,12 +50,12 @@ func get_player_start_transforms() -> Array:
 		return []
 	return _get_child_transforms(get_node("PlayerStartPositions"))
 
-func get_ball_start_position() -> Vector2:
+func get_ball_start_position() -> SGFixedVector2:
 	if not has_node('BallStartPosition'):
 		var map_rect = get_map_rect()
-		return map_rect.position + (map_rect.size / 2.0)
+		return SGFixed.from_float_vector2(map_rect.position + (map_rect.size / 2))
 		
-	return get_node('BallStartPosition').global_position
+	return get_node('BallStartPosition').get_global_fixed_position()
 
 func get_team_start_transforms(team: int) -> Array:
 	if not has_node("TeamStartPositions"):
@@ -63,16 +71,16 @@ func get_goal_transforms() -> Array:
 		goal_positions_parent = get_node("GoalPositions")
 	
 	var goal_transforms := []
-	var map_rect = get_map_rect()
+	var fixed_map_rect = get_map_fixed_rect()
 	
 	for i in range(2):
 		if goal_positions_parent and goal_positions_parent.get_child_count() > i:
-			var goal_position_node: Node2D = goal_positions_parent.get_child(i)
-			goal_transforms.append(goal_position_node.global_transform)
+			var goal_position_node: SGFixedNode2D = goal_positions_parent.get_child(i)
+			goal_transforms.append(goal_position_node.get_global_fixed_transform())
 		else:
 			if i == 0:
-				goal_transforms.append(Transform2D(0.0, map_rect.position + Vector2(196, map_rect.size.y / 2.0)))
+				goal_transforms.append(SGFixed.transform2d(0, fixed_map_rect.position.add(SGFixed.vector2(12845056, fixed_map_rect.size.y / 2))))
 			else:
-				goal_transforms.append(Transform2D(PI, map_rect.position + Vector2(map_rect.size.x - 196, map_rect.size.y / 2.0)))
+				goal_transforms.append(SGFixed.transform2d(FIXED_PI, fixed_map_rect.position.add(SGFixed.vector2(fixed_map_rect.size.x - 12845056, fixed_map_rect.size.y / 2))))
 	
 	return goal_transforms

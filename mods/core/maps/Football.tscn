@@ -22,596 +22,1365 @@ tile_data = PoolIntArray( -1, -1610612736, 0, -65536, -1610612736, 0, -65535, -1
 
 [node name="Team1" type="Node2D" parent="TeamStartPositions"]
 
-[node name="Player1" type="Position2D" parent="TeamStartPositions/Team1"]
+[node name="Player1" type="SGFixedPosition2D" parent="TeamStartPositions/Team1"]
 position = Vector2( 1024, 704 )
-rotation = 0.643801
+rotation = 0.643799
+scale = Vector2( 1, 1 )
+fixed_position = Object(SGFixedVector2,"x":67108864,"y":46137344,"script":null)
 
-[node name="Player2" type="Position2D" parent="TeamStartPositions/Team1"]
+fixed_scale = Object(SGFixedVector2,"x":65536,"y":65536,"script":null)
+
+fixed_rotation = 42192
+
+[node name="Player2" type="SGFixedPosition2D" parent="TeamStartPositions/Team1"]
 position = Vector2( 1024, 1088 )
-rotation = -0.922228
-scale = Vector2( 1, 1 )
+rotation = -0.922226
+fixed_position = Object(SGFixedVector2,"x":67108864,"y":71303168,"script":null)
 
-[node name="Player3" type="Position2D" parent="TeamStartPositions/Team1"]
+fixed_scale = Object(SGFixedVector2,"x":65536,"y":65536,"script":null)
+
+fixed_rotation = -60439
+
+[node name="Player3" type="SGFixedPosition2D" parent="TeamStartPositions/Team1"]
 position = Vector2( 799, 896 )
-scale = Vector2( 1, 1 )
+fixed_position = Object(SGFixedVector2,"x":52363264,"y":58720256,"script":null)
+
+fixed_scale = Object(SGFixedVector2,"x":65536,"y":65536,"script":null)
+
 
 [node name="Team2" type="Node2D" parent="TeamStartPositions"]
 
-[node name="Player1" type="Position2D" parent="TeamStartPositions/Team2"]
+[node name="Player1" type="SGFixedPosition2D" parent="TeamStartPositions/Team2"]
 position = Vector2( 1664, 1088 )
-rotation = -2.28443
+rotation = -2.28442
+fixed_position = Object(SGFixedVector2,"x":109051904,"y":71303168,"script":null)
 
-[node name="Player2" type="Position2D" parent="TeamStartPositions/Team2"]
+fixed_scale = Object(SGFixedVector2,"x":65536,"y":65536,"script":null)
+
+fixed_rotation = -149712
+
+[node name="Player2" type="SGFixedPosition2D" parent="TeamStartPositions/Team2"]
 position = Vector2( 1664, 704 )
 rotation = 2.21715
+fixed_position = Object(SGFixedVector2,"x":109051904,"y":46137344,"script":null)
 
-[node name="Player3" type="Position2D" parent="TeamStartPositions/Team2"]
+fixed_scale = Object(SGFixedVector2,"x":65536,"y":65536,"script":null)
+
+fixed_rotation = 145303
+
+[node name="Player3" type="SGFixedPosition2D" parent="TeamStartPositions/Team2"]
 position = Vector2( 1891, 898 )
 rotation = 3.14159
+fixed_position = Object(SGFixedVector2,"x":123928576,"y":58851328,"script":null)
+
+fixed_scale = Object(SGFixedVector2,"x":65536,"y":65536,"script":null)
+
+fixed_rotation = 205887
 
 [node name="GoalPositions" type="Node2D" parent="."]
 
-[node name="Team1" type="Position2D" parent="GoalPositions"]
+[node name="Team1" type="SGFixedPosition2D" parent="GoalPositions"]
 position = Vector2( 192, 896 )
+fixed_position = Object(SGFixedVector2,"x":12582912,"y":58720256,"script":null)
 
-[node name="Team2" type="Position2D" parent="GoalPositions"]
+fixed_scale = Object(SGFixedVector2,"x":65536,"y":65536,"script":null)
+
+
+[node name="Team2" type="SGFixedPosition2D" parent="GoalPositions"]
 position = Vector2( 2496, 896 )
 rotation = 3.14159
+fixed_position = Object(SGFixedVector2,"x":163577856,"y":58720256,"script":null)
+
+fixed_scale = Object(SGFixedVector2,"x":65536,"y":65536,"script":null)
+
+fixed_rotation = 205887
 
 [node name="Objects" type="Node2D" parent="."]
 
 [node name="SandbagBiege" parent="Objects" instance=ExtResource( 5 )]
 position = Vector2( 583, 1769 )
+fixed_position = Object(SGFixedVector2,"x":38207488,"y":115933184,"script":null)
+
+fixed_scale = Object(SGFixedVector2,"x":65536,"y":65536,"script":null)
+
 
 [node name="SandbagBiege2" parent="Objects" instance=ExtResource( 5 )]
 position = Vector2( 521, 1763 )
+fixed_position = Object(SGFixedVector2,"x":34144256,"y":115539968,"script":null)
+
+fixed_scale = Object(SGFixedVector2,"x":65536,"y":65536,"script":null)
+
 
 [node name="SandbagBiege3" parent="Objects" instance=ExtResource( 5 )]
 position = Vector2( 467, 1773 )
+fixed_position = Object(SGFixedVector2,"x":30605312,"y":116195328,"script":null)
+
+fixed_scale = Object(SGFixedVector2,"x":65536,"y":65536,"script":null)
+
 
 [node name="SandbagBiege4" parent="Objects" instance=ExtResource( 5 )]
 position = Vector2( 408, 1768 )
+fixed_position = Object(SGFixedVector2,"x":26738688,"y":115867648,"script":null)
+
+fixed_scale = Object(SGFixedVector2,"x":65536,"y":65536,"script":null)
+
 
 [node name="SandbagBiege5" parent="Objects" instance=ExtResource( 5 )]
 position = Vector2( 345, 1785 )
+fixed_position = Object(SGFixedVector2,"x":22609920,"y":116981760,"script":null)
+
+fixed_scale = Object(SGFixedVector2,"x":65536,"y":65536,"script":null)
+
 
 [node name="SandbagBiege6" parent="Objects" instance=ExtResource( 5 )]
 position = Vector2( 288, 1772 )
+fixed_position = Object(SGFixedVector2,"x":18874368,"y":116129792,"script":null)
+
+fixed_scale = Object(SGFixedVector2,"x":65536,"y":65536,"script":null)
+
 
 [node name="SandbagBiege7" parent="Objects" instance=ExtResource( 5 )]
 position = Vector2( 226, 1782 )
+fixed_position = Object(SGFixedVector2,"x":14811136,"y":116785152,"script":null)
+
+fixed_scale = Object(SGFixedVector2,"x":65536,"y":65536,"script":null)
+
 
 [node name="SandbagBiege8" parent="Objects" instance=ExtResource( 5 )]
 position = Vector2( 166, 1771 )
+fixed_position = Object(SGFixedVector2,"x":10878976,"y":116064256,"script":null)
+
+fixed_scale = Object(SGFixedVector2,"x":65536,"y":65536,"script":null)
+
 
 [node name="SandbagBiege9" parent="Objects" instance=ExtResource( 5 )]
 position = Vector2( 109, 1776 )
+fixed_position = Object(SGFixedVector2,"x":7143424,"y":116391936,"script":null)
+
+fixed_scale = Object(SGFixedVector2,"x":65536,"y":65536,"script":null)
+
 
 [node name="SandbagBiege10" parent="Objects" instance=ExtResource( 5 )]
 position = Vector2( 60, 1752 )
-rotation = 0.256921
+rotation = 0.256912
+fixed_position = Object(SGFixedVector2,"x":3932160,"y":114819072,"script":null)
+
+fixed_scale = Object(SGFixedVector2,"x":65536,"y":65536,"script":null)
+
+fixed_rotation = 16837
 
 [node name="SandbagBiege11" parent="Objects" instance=ExtResource( 5 )]
 position = Vector2( 22.0001, 1711 )
-rotation = -1.98205
+rotation = -1.98204
+scale = Vector2( 1, 1 )
+fixed_position = Object(SGFixedVector2,"x":1441798,"y":112132096,"script":null)
+
+fixed_scale = Object(SGFixedVector2,"x":65536,"y":65536,"script":null)
+
+fixed_rotation = -129895
 
 [node name="SandbagBiege12" parent="Objects" instance=ExtResource( 5 )]
 position = Vector2( 16, 1652 )
-rotation = -1.61331
+rotation = -1.6133
+fixed_position = Object(SGFixedVector2,"x":1048576,"y":108265472,"script":null)
+
+fixed_scale = Object(SGFixedVector2,"x":65536,"y":65536,"script":null)
+
+fixed_rotation = -105729
 
 [node name="SandbagBiege13" parent="Objects" instance=ExtResource( 5 )]
 position = Vector2( 10, 1595 )
-rotation = -1.5708
+rotation = -1.57079
+fixed_position = Object(SGFixedVector2,"x":655360,"y":104529920,"script":null)
+
+fixed_scale = Object(SGFixedVector2,"x":65536,"y":65536,"script":null)
+
+fixed_rotation = -102943
 
 [node name="SandbagBiege14" parent="Objects" instance=ExtResource( 5 )]
 position = Vector2( -6, 1541 )
-rotation = -1.5708
+rotation = -1.57079
+fixed_position = Object(SGFixedVector2,"x":-393216,"y":100990976,"script":null)
+
+fixed_scale = Object(SGFixedVector2,"x":65536,"y":65536,"script":null)
+
+fixed_rotation = -102943
 
 [node name="SandbagBiege15" parent="Objects" instance=ExtResource( 5 )]
 position = Vector2( 8, 1484 )
-rotation = -1.5708
+rotation = -1.57079
+fixed_position = Object(SGFixedVector2,"x":524288,"y":97255424,"script":null)
+
+fixed_scale = Object(SGFixedVector2,"x":65536,"y":65536,"script":null)
+
+fixed_rotation = -102943
 
 [node name="SandbagBiege16" parent="Objects" instance=ExtResource( 5 )]
 position = Vector2( 3, 1425 )
-rotation = -1.5708
+rotation = -1.57079
+fixed_position = Object(SGFixedVector2,"x":196608,"y":93388800,"script":null)
+
+fixed_scale = Object(SGFixedVector2,"x":65536,"y":65536,"script":null)
+
+fixed_rotation = -102943
 
 [node name="SandbagBiege17" parent="Objects" instance=ExtResource( 5 )]
 position = Vector2( 20, 1369 )
-rotation = -1.5708
+rotation = -1.57079
+fixed_position = Object(SGFixedVector2,"x":1310720,"y":89718784,"script":null)
+
+fixed_scale = Object(SGFixedVector2,"x":65536,"y":65536,"script":null)
+
+fixed_rotation = -102943
 
 [node name="SandbagBiege99" parent="Objects" instance=ExtResource( 5 )]
 position = Vector2( -4, 1323 )
-rotation = -1.5708
+rotation = -1.57079
+fixed_position = Object(SGFixedVector2,"x":-262144,"y":86704128,"script":null)
+
+fixed_scale = Object(SGFixedVector2,"x":65536,"y":65536,"script":null)
+
+fixed_rotation = -102943
 
 [node name="SandbagBiege100" parent="Objects" instance=ExtResource( 5 )]
 position = Vector2( -20, 1269 )
-rotation = -1.5708
+rotation = -1.57079
+fixed_position = Object(SGFixedVector2,"x":-1310720,"y":83165184,"script":null)
+
+fixed_scale = Object(SGFixedVector2,"x":65536,"y":65536,"script":null)
+
+fixed_rotation = -102943
 
 [node name="SandbagBiege101" parent="Objects" instance=ExtResource( 5 )]
 position = Vector2( -6, 1212 )
-rotation = -1.5708
+rotation = -1.57079
+fixed_position = Object(SGFixedVector2,"x":-393216,"y":79429632,"script":null)
+
+fixed_scale = Object(SGFixedVector2,"x":65536,"y":65536,"script":null)
+
+fixed_rotation = -102943
 
 [node name="SandbagBiege102" parent="Objects" instance=ExtResource( 5 )]
 position = Vector2( -11, 1153 )
-rotation = -1.5708
+rotation = -1.57079
+fixed_position = Object(SGFixedVector2,"x":-720896,"y":75563008,"script":null)
+
+fixed_scale = Object(SGFixedVector2,"x":65536,"y":65536,"script":null)
+
+fixed_rotation = -102943
 
 [node name="SandbagBiege103" parent="Objects" instance=ExtResource( 5 )]
 position = Vector2( 6, 1097 )
-rotation = -1.5708
+rotation = -1.57079
+fixed_position = Object(SGFixedVector2,"x":393216,"y":71892992,"script":null)
+
+fixed_scale = Object(SGFixedVector2,"x":65536,"y":65536,"script":null)
+
+fixed_rotation = -102943
 
 [node name="SandbagBiege18" parent="Objects" instance=ExtResource( 5 )]
 position = Vector2( 532, 16 )
+fixed_position = Object(SGFixedVector2,"x":34865152,"y":1048576,"script":null)
+
+fixed_scale = Object(SGFixedVector2,"x":65536,"y":65536,"script":null)
+
 
 [node name="SandbagBiege19" parent="Objects" instance=ExtResource( 5 )]
 position = Vector2( 472, 3 )
+fixed_position = Object(SGFixedVector2,"x":30932992,"y":196608,"script":null)
+
+fixed_scale = Object(SGFixedVector2,"x":65536,"y":65536,"script":null)
+
 
 [node name="SandbagBiege20" parent="Objects" instance=ExtResource( 5 )]
 position = Vector2( 415, 16 )
+fixed_position = Object(SGFixedVector2,"x":27197440,"y":1048576,"script":null)
+
+fixed_scale = Object(SGFixedVector2,"x":65536,"y":65536,"script":null)
+
 
 [node name="SandbagBiege21" parent="Objects" instance=ExtResource( 5 )]
 position = Vector2( 358, 21 )
+fixed_position = Object(SGFixedVector2,"x":23461888,"y":1376256,"script":null)
+
+fixed_scale = Object(SGFixedVector2,"x":65536,"y":65536,"script":null)
+
 
 [node name="SandbagBiege22" parent="Objects" instance=ExtResource( 5 )]
 position = Vector2( 304, 7 )
+fixed_position = Object(SGFixedVector2,"x":19922944,"y":458752,"script":null)
+
+fixed_scale = Object(SGFixedVector2,"x":65536,"y":65536,"script":null)
+
 
 [node name="SandbagBiege23" parent="Objects" instance=ExtResource( 5 )]
 position = Vector2( 247, 10 )
+fixed_position = Object(SGFixedVector2,"x":16187392,"y":655360,"script":null)
+
+fixed_scale = Object(SGFixedVector2,"x":65536,"y":65536,"script":null)
+
 
 [node name="SandbagBiege25" parent="Objects" instance=ExtResource( 5 )]
 position = Vector2( 131, 10 )
+fixed_position = Object(SGFixedVector2,"x":8585216,"y":655360,"script":null)
+
+fixed_scale = Object(SGFixedVector2,"x":65536,"y":65536,"script":null)
+
 
 [node name="SandbagBiege26" parent="Objects" instance=ExtResource( 5 )]
 position = Vector2( 72, 12 )
-rotation = -0.328559
+rotation = -0.328552
+fixed_position = Object(SGFixedVector2,"x":4718592,"y":786432,"script":null)
+
+fixed_scale = Object(SGFixedVector2,"x":65536,"y":65536,"script":null)
+
+fixed_rotation = -21532
 
 [node name="SandbagBiege27" parent="Objects" instance=ExtResource( 5 )]
 position = Vector2( 72, 12 )
-rotation = -0.247916
+rotation = -0.24791
+scale = Vector2( 1, 1 )
+fixed_position = Object(SGFixedVector2,"x":4718592,"y":786432,"script":null)
+
+fixed_scale = Object(SGFixedVector2,"x":65536,"y":65536,"script":null)
+
+fixed_rotation = -16247
 
 [node name="SandbagBiege28" parent="Objects" instance=ExtResource( 5 )]
 position = Vector2( 24, 41 )
 rotation = -1.02213
+fixed_position = Object(SGFixedVector2,"x":1572864,"y":2686976,"script":null)
+
+fixed_scale = Object(SGFixedVector2,"x":65536,"y":65536,"script":null)
+
+fixed_rotation = -66986
 
 [node name="SandbagBiege29" parent="Objects" instance=ExtResource( 5 )]
 position = Vector2( 13, 97 )
-rotation = -1.68756
+rotation = -1.68755
+scale = Vector2( 1, 1 )
+fixed_position = Object(SGFixedVector2,"x":851968,"y":6356992,"script":null)
+
+fixed_scale = Object(SGFixedVector2,"x":65536,"y":65536,"script":null)
+
+fixed_rotation = -110595
 
 [node name="SandbagBiege30" parent="Objects" instance=ExtResource( 5 )]
 position = Vector2( 10, 148 )
-rotation = -1.5708
+rotation = -1.57079
+fixed_position = Object(SGFixedVector2,"x":655360,"y":9699328,"script":null)
+
+fixed_scale = Object(SGFixedVector2,"x":65536,"y":65536,"script":null)
+
+fixed_rotation = -102943
 
 [node name="SandbagBiege31" parent="Objects" instance=ExtResource( 5 )]
 position = Vector2( -9, 205 )
-rotation = -1.5708
+rotation = -1.57079
+fixed_position = Object(SGFixedVector2,"x":-589824,"y":13434880,"script":null)
+
+fixed_scale = Object(SGFixedVector2,"x":65536,"y":65536,"script":null)
+
+fixed_rotation = -102943
 
 [node name="SandbagBiege32" parent="Objects" instance=ExtResource( 5 )]
 position = Vector2( 2, 262 )
-rotation = -1.5708
+rotation = -1.57079
+fixed_position = Object(SGFixedVector2,"x":131072,"y":17170432,"script":null)
+
+fixed_scale = Object(SGFixedVector2,"x":65536,"y":65536,"script":null)
+
+fixed_rotation = -102943
 
 [node name="SandbagBiege33" parent="Objects" instance=ExtResource( 5 )]
 position = Vector2( -1, 322 )
-rotation = -1.5708
+rotation = -1.57079
+fixed_position = Object(SGFixedVector2,"x":-65536,"y":21102592,"script":null)
+
+fixed_scale = Object(SGFixedVector2,"x":65536,"y":65536,"script":null)
+
+fixed_rotation = -102943
 
 [node name="SandbagBiege34" parent="Objects" instance=ExtResource( 5 )]
 position = Vector2( 1, 385 )
-rotation = -1.5708
+rotation = -1.57079
+fixed_position = Object(SGFixedVector2,"x":65536,"y":25231360,"script":null)
+
+fixed_scale = Object(SGFixedVector2,"x":65536,"y":65536,"script":null)
+
+fixed_rotation = -102943
 
 [node name="SandbagBiege94" parent="Objects" instance=ExtResource( 5 )]
 position = Vector2( 4, 457 )
-rotation = -1.68756
+rotation = -1.68755
+scale = Vector2( 1, 1 )
+fixed_position = Object(SGFixedVector2,"x":262144,"y":29949952,"script":null)
+
+fixed_scale = Object(SGFixedVector2,"x":65536,"y":65536,"script":null)
+
+fixed_rotation = -110595
 
 [node name="SandbagBiege95" parent="Objects" instance=ExtResource( 5 )]
 position = Vector2( 4, 516 )
-rotation = -1.5708
+rotation = -1.57079
+fixed_position = Object(SGFixedVector2,"x":262144,"y":33816576,"script":null)
+
+fixed_scale = Object(SGFixedVector2,"x":65536,"y":65536,"script":null)
+
+fixed_rotation = -102943
 
 [node name="SandbagBiege127" parent="Objects" instance=ExtResource( 5 )]
 position = Vector2( 2682, 487 )
-rotation = -1.5708
+rotation = -1.57079
+fixed_position = Object(SGFixedVector2,"x":175767552,"y":31916032,"script":null)
+
+fixed_scale = Object(SGFixedVector2,"x":65536,"y":65536,"script":null)
+
+fixed_rotation = -102943
 
 [node name="SandbagBiege131" parent="Objects" instance=ExtResource( 5 )]
 position = Vector2( 2693, 544 )
-rotation = -1.5708
+rotation = -1.57079
+fixed_position = Object(SGFixedVector2,"x":176488448,"y":35651584,"script":null)
+
+fixed_scale = Object(SGFixedVector2,"x":65536,"y":65536,"script":null)
+
+fixed_rotation = -102943
 
 [node name="SandbagBiege132" parent="Objects" instance=ExtResource( 5 )]
 position = Vector2( 2690, 604 )
-rotation = -1.5708
+rotation = -1.57079
+fixed_position = Object(SGFixedVector2,"x":176291840,"y":39583744,"script":null)
+
+fixed_scale = Object(SGFixedVector2,"x":65536,"y":65536,"script":null)
+
+fixed_rotation = -102943
 
 [node name="SandbagBiege133" parent="Objects" instance=ExtResource( 5 )]
 position = Vector2( 2692, 667 )
-rotation = -1.5708
+rotation = -1.57079
+fixed_position = Object(SGFixedVector2,"x":176422912,"y":43712512,"script":null)
+
+fixed_scale = Object(SGFixedVector2,"x":65536,"y":65536,"script":null)
+
+fixed_rotation = -102943
 
 [node name="SandbagBiege96" parent="Objects" instance=ExtResource( 5 )]
 position = Vector2( -15, 573 )
-rotation = -1.5708
+rotation = -1.57079
+fixed_position = Object(SGFixedVector2,"x":-983040,"y":37552128,"script":null)
+
+fixed_scale = Object(SGFixedVector2,"x":65536,"y":65536,"script":null)
+
+fixed_rotation = -102943
 
 [node name="SandbagBiege97" parent="Objects" instance=ExtResource( 5 )]
 position = Vector2( -4, 633 )
-rotation = -1.5708
+rotation = -1.57079
+fixed_position = Object(SGFixedVector2,"x":-262144,"y":41484288,"script":null)
+
+fixed_scale = Object(SGFixedVector2,"x":65536,"y":65536,"script":null)
+
+fixed_rotation = -102943
 
 [node name="SandbagBiege98" parent="Objects" instance=ExtResource( 5 )]
 position = Vector2( -7, 696 )
-rotation = -1.5708
+rotation = -1.57079
+fixed_position = Object(SGFixedVector2,"x":-458752,"y":45613056,"script":null)
+
+fixed_scale = Object(SGFixedVector2,"x":65536,"y":65536,"script":null)
+
+fixed_rotation = -102943
 
 [node name="SandbagBiege24" parent="Objects" instance=ExtResource( 5 )]
 position = Vector2( 187, 4 )
-rotation = -0.139493
+rotation = -0.139481
+scale = Vector2( 1, 1 )
+fixed_position = Object(SGFixedVector2,"x":12255232,"y":262144,"script":null)
+
+fixed_scale = Object(SGFixedVector2,"x":65536,"y":65536,"script":null)
+
+fixed_rotation = -9141
 
 [node name="SandbagBiege67" parent="Objects" instance=ExtResource( 5 )]
 position = Vector2( 996, 16 )
+fixed_position = Object(SGFixedVector2,"x":65273856,"y":1048576,"script":null)
+
+fixed_scale = Object(SGFixedVector2,"x":65536,"y":65536,"script":null)
+
 
 [node name="SandbagBiege68" parent="Objects" instance=ExtResource( 5 )]
 position = Vector2( 936, 3 )
+fixed_position = Object(SGFixedVector2,"x":61341696,"y":196608,"script":null)
+
+fixed_scale = Object(SGFixedVector2,"x":65536,"y":65536,"script":null)
+
 
 [node name="SandbagBiege69" parent="Objects" instance=ExtResource( 5 )]
 position = Vector2( 879, 10 )
+fixed_position = Object(SGFixedVector2,"x":57606144,"y":655360,"script":null)
+
+fixed_scale = Object(SGFixedVector2,"x":65536,"y":65536,"script":null)
+
 
 [node name="SandbagBiege70" parent="Objects" instance=ExtResource( 5 )]
 position = Vector2( 822, 21 )
+fixed_position = Object(SGFixedVector2,"x":53870592,"y":1376256,"script":null)
+
+fixed_scale = Object(SGFixedVector2,"x":65536,"y":65536,"script":null)
+
 
 [node name="SandbagBiege71" parent="Objects" instance=ExtResource( 5 )]
 position = Vector2( 768, 7 )
+fixed_position = Object(SGFixedVector2,"x":50331648,"y":458752,"script":null)
+
+fixed_scale = Object(SGFixedVector2,"x":65536,"y":65536,"script":null)
+
 
 [node name="SandbagBiege72" parent="Objects" instance=ExtResource( 5 )]
 position = Vector2( 711, 10 )
+fixed_position = Object(SGFixedVector2,"x":46596096,"y":655360,"script":null)
+
+fixed_scale = Object(SGFixedVector2,"x":65536,"y":65536,"script":null)
+
 
 [node name="SandbagBiege73" parent="Objects" instance=ExtResource( 5 )]
 position = Vector2( 595, 10 )
+fixed_position = Object(SGFixedVector2,"x":38993920,"y":655360,"script":null)
+
+fixed_scale = Object(SGFixedVector2,"x":65536,"y":65536,"script":null)
+
 
 [node name="SandbagBiege74" parent="Objects" instance=ExtResource( 5 )]
 position = Vector2( 651, 4 )
-rotation = -0.139493
+rotation = -0.139481
+scale = Vector2( 1, 1 )
+fixed_position = Object(SGFixedVector2,"x":42663936,"y":262144,"script":null)
+
+fixed_scale = Object(SGFixedVector2,"x":65536,"y":65536,"script":null)
+
+fixed_rotation = -9141
 
 [node name="SandbagBiege75" parent="Objects" instance=ExtResource( 5 )]
 position = Vector2( 1460, 10 )
+fixed_position = Object(SGFixedVector2,"x":95682560,"y":655360,"script":null)
+
+fixed_scale = Object(SGFixedVector2,"x":65536,"y":65536,"script":null)
+
 
 [node name="SandbagBiege76" parent="Objects" instance=ExtResource( 5 )]
 position = Vector2( 1400, -3 )
+fixed_position = Object(SGFixedVector2,"x":91750400,"y":-196608,"script":null)
+
+fixed_scale = Object(SGFixedVector2,"x":65536,"y":65536,"script":null)
+
 
 [node name="SandbagBiege77" parent="Objects" instance=ExtResource( 5 )]
 position = Vector2( 1343, 10 )
+fixed_position = Object(SGFixedVector2,"x":88014848,"y":655360,"script":null)
+
+fixed_scale = Object(SGFixedVector2,"x":65536,"y":65536,"script":null)
+
 
 [node name="SandbagBiege78" parent="Objects" instance=ExtResource( 5 )]
 position = Vector2( 1286, 15 )
+fixed_position = Object(SGFixedVector2,"x":84279296,"y":983040,"script":null)
+
+fixed_scale = Object(SGFixedVector2,"x":65536,"y":65536,"script":null)
+
 
 [node name="SandbagBiege79" parent="Objects" instance=ExtResource( 5 )]
 position = Vector2( 1232, 1 )
+fixed_position = Object(SGFixedVector2,"x":80740352,"y":65536,"script":null)
+
+fixed_scale = Object(SGFixedVector2,"x":65536,"y":65536,"script":null)
+
 
 [node name="SandbagBiege80" parent="Objects" instance=ExtResource( 5 )]
 position = Vector2( 1175, 4 )
+fixed_position = Object(SGFixedVector2,"x":77004800,"y":262144,"script":null)
+
+fixed_scale = Object(SGFixedVector2,"x":65536,"y":65536,"script":null)
+
 
 [node name="SandbagBiege81" parent="Objects" instance=ExtResource( 5 )]
 position = Vector2( 1059, 4 )
+fixed_position = Object(SGFixedVector2,"x":69402624,"y":262144,"script":null)
+
+fixed_scale = Object(SGFixedVector2,"x":65536,"y":65536,"script":null)
+
 
 [node name="SandbagBiege82" parent="Objects" instance=ExtResource( 5 )]
 position = Vector2( 1115, 4 )
-rotation = 0.165954
+rotation = 0.165939
+fixed_position = Object(SGFixedVector2,"x":73072640,"y":262144,"script":null)
+
+fixed_scale = Object(SGFixedVector2,"x":65536,"y":65536,"script":null)
+
+fixed_rotation = 10875
 
 [node name="SandbagBiege83" parent="Objects" instance=ExtResource( 5 )]
 position = Vector2( 1921, 10 )
+fixed_position = Object(SGFixedVector2,"x":125894656,"y":655360,"script":null)
+
+fixed_scale = Object(SGFixedVector2,"x":65536,"y":65536,"script":null)
+
 
 [node name="SandbagBiege84" parent="Objects" instance=ExtResource( 5 )]
 position = Vector2( 1864, -9 )
+fixed_position = Object(SGFixedVector2,"x":122159104,"y":-589824,"script":null)
+
+fixed_scale = Object(SGFixedVector2,"x":65536,"y":65536,"script":null)
+
 
 [node name="SandbagBiege85" parent="Objects" instance=ExtResource( 5 )]
 position = Vector2( 1807, 4 )
+fixed_position = Object(SGFixedVector2,"x":118423552,"y":262144,"script":null)
+
+fixed_scale = Object(SGFixedVector2,"x":65536,"y":65536,"script":null)
+
 
 [node name="SandbagBiege91" parent="Objects" instance=ExtResource( 5 )]
 position = Vector2( 2097, 4 )
+fixed_position = Object(SGFixedVector2,"x":137428992,"y":262144,"script":null)
+
+fixed_scale = Object(SGFixedVector2,"x":65536,"y":65536,"script":null)
+
 
 [node name="SandbagBiege92" parent="Objects" instance=ExtResource( 5 )]
 position = Vector2( 2037, -9 )
+fixed_position = Object(SGFixedVector2,"x":133496832,"y":-589824,"script":null)
+
+fixed_scale = Object(SGFixedVector2,"x":65536,"y":65536,"script":null)
+
 
 [node name="SandbagBiege93" parent="Objects" instance=ExtResource( 5 )]
 position = Vector2( 1980, 12 )
+fixed_position = Object(SGFixedVector2,"x":129761280,"y":786432,"script":null)
+
+fixed_scale = Object(SGFixedVector2,"x":65536,"y":65536,"script":null)
+
 
 [node name="SandbagBiege86" parent="Objects" instance=ExtResource( 5 )]
 position = Vector2( 1750, 9 )
+fixed_position = Object(SGFixedVector2,"x":114688000,"y":589824,"script":null)
+
+fixed_scale = Object(SGFixedVector2,"x":65536,"y":65536,"script":null)
+
 
 [node name="SandbagBiege87" parent="Objects" instance=ExtResource( 5 )]
 position = Vector2( 1696, -5 )
+fixed_position = Object(SGFixedVector2,"x":111149056,"y":-327680,"script":null)
+
+fixed_scale = Object(SGFixedVector2,"x":65536,"y":65536,"script":null)
+
 
 [node name="SandbagBiege88" parent="Objects" instance=ExtResource( 5 )]
 position = Vector2( 1639, -2 )
+fixed_position = Object(SGFixedVector2,"x":107413504,"y":-131072,"script":null)
+
+fixed_scale = Object(SGFixedVector2,"x":65536,"y":65536,"script":null)
+
 
 [node name="SandbagBiege89" parent="Objects" instance=ExtResource( 5 )]
 position = Vector2( 1523, -2 )
+fixed_position = Object(SGFixedVector2,"x":99811328,"y":-131072,"script":null)
+
+fixed_scale = Object(SGFixedVector2,"x":65536,"y":65536,"script":null)
+
 
 [node name="SandbagBiege90" parent="Objects" instance=ExtResource( 5 )]
 position = Vector2( 1579, -8 )
-rotation = -0.139493
+rotation = -0.139481
+scale = Vector2( 1, 1 )
+fixed_position = Object(SGFixedVector2,"x":103481344,"y":-524288,"script":null)
+
+fixed_scale = Object(SGFixedVector2,"x":65536,"y":65536,"script":null)
+
+fixed_rotation = -9141
 
 [node name="SandbagBiege104" parent="Objects" instance=ExtResource( 5 )]
 position = Vector2( 1050, 1787 )
+fixed_position = Object(SGFixedVector2,"x":68812800,"y":117112832,"script":null)
+
+fixed_scale = Object(SGFixedVector2,"x":65536,"y":65536,"script":null)
+
 
 [node name="SandbagBiege105" parent="Objects" instance=ExtResource( 5 )]
 position = Vector2( 990, 1774 )
+fixed_position = Object(SGFixedVector2,"x":64880640,"y":116260864,"script":null)
+
+fixed_scale = Object(SGFixedVector2,"x":65536,"y":65536,"script":null)
+
 
 [node name="SandbagBiege106" parent="Objects" instance=ExtResource( 5 )]
 position = Vector2( 933, 1781 )
+fixed_position = Object(SGFixedVector2,"x":61145088,"y":116719616,"script":null)
+
+fixed_scale = Object(SGFixedVector2,"x":65536,"y":65536,"script":null)
+
 
 [node name="SandbagBiege107" parent="Objects" instance=ExtResource( 5 )]
 position = Vector2( 876, 1792 )
+fixed_position = Object(SGFixedVector2,"x":57409536,"y":117440512,"script":null)
+
+fixed_scale = Object(SGFixedVector2,"x":65536,"y":65536,"script":null)
+
 
 [node name="SandbagBiege108" parent="Objects" instance=ExtResource( 5 )]
 position = Vector2( 822, 1778 )
+fixed_position = Object(SGFixedVector2,"x":53870592,"y":116523008,"script":null)
+
+fixed_scale = Object(SGFixedVector2,"x":65536,"y":65536,"script":null)
+
 
 [node name="SandbagBiege109" parent="Objects" instance=ExtResource( 5 )]
 position = Vector2( 765, 1781 )
+fixed_position = Object(SGFixedVector2,"x":50135040,"y":116719616,"script":null)
+
+fixed_scale = Object(SGFixedVector2,"x":65536,"y":65536,"script":null)
+
 
 [node name="SandbagBiege110" parent="Objects" instance=ExtResource( 5 )]
 position = Vector2( 649, 1781 )
+fixed_position = Object(SGFixedVector2,"x":42532864,"y":116719616,"script":null)
+
+fixed_scale = Object(SGFixedVector2,"x":65536,"y":65536,"script":null)
+
 
 [node name="SandbagBiege111" parent="Objects" instance=ExtResource( 5 )]
 position = Vector2( 705, 1775 )
-rotation = -0.139493
+rotation = -0.139481
+scale = Vector2( 1, 1 )
+fixed_position = Object(SGFixedVector2,"x":46202880,"y":116326400,"script":null)
+
+fixed_scale = Object(SGFixedVector2,"x":65536,"y":65536,"script":null)
+
+fixed_rotation = -9141
 
 [node name="SandbagBiege112" parent="Objects" instance=ExtResource( 5 )]
 position = Vector2( 1514, 1781 )
+fixed_position = Object(SGFixedVector2,"x":99221504,"y":116719616,"script":null)
+
+fixed_scale = Object(SGFixedVector2,"x":65536,"y":65536,"script":null)
+
 
 [node name="SandbagBiege113" parent="Objects" instance=ExtResource( 5 )]
 position = Vector2( 1454, 1768 )
+fixed_position = Object(SGFixedVector2,"x":95289344,"y":115867648,"script":null)
+
+fixed_scale = Object(SGFixedVector2,"x":65536,"y":65536,"script":null)
+
 
 [node name="SandbagBiege114" parent="Objects" instance=ExtResource( 5 )]
 position = Vector2( 1397, 1781 )
+fixed_position = Object(SGFixedVector2,"x":91553792,"y":116719616,"script":null)
+
+fixed_scale = Object(SGFixedVector2,"x":65536,"y":65536,"script":null)
+
 
 [node name="SandbagBiege115" parent="Objects" instance=ExtResource( 5 )]
 position = Vector2( 1340, 1786 )
+fixed_position = Object(SGFixedVector2,"x":87818240,"y":117047296,"script":null)
+
+fixed_scale = Object(SGFixedVector2,"x":65536,"y":65536,"script":null)
+
 
 [node name="SandbagBiege116" parent="Objects" instance=ExtResource( 5 )]
 position = Vector2( 1286, 1772 )
+fixed_position = Object(SGFixedVector2,"x":84279296,"y":116129792,"script":null)
+
+fixed_scale = Object(SGFixedVector2,"x":65536,"y":65536,"script":null)
+
 
 [node name="SandbagBiege117" parent="Objects" instance=ExtResource( 5 )]
 position = Vector2( 1229, 1775 )
+fixed_position = Object(SGFixedVector2,"x":80543744,"y":116326400,"script":null)
+
+fixed_scale = Object(SGFixedVector2,"x":65536,"y":65536,"script":null)
+
 
 [node name="SandbagBiege118" parent="Objects" instance=ExtResource( 5 )]
 position = Vector2( 1113, 1775 )
+fixed_position = Object(SGFixedVector2,"x":72941568,"y":116326400,"script":null)
+
+fixed_scale = Object(SGFixedVector2,"x":65536,"y":65536,"script":null)
+
 
 [node name="SandbagBiege119" parent="Objects" instance=ExtResource( 5 )]
 position = Vector2( 1169, 1775 )
-rotation = 0.165954
+rotation = 0.165939
+fixed_position = Object(SGFixedVector2,"x":76611584,"y":116326400,"script":null)
+
+fixed_scale = Object(SGFixedVector2,"x":65536,"y":65536,"script":null)
+
+fixed_rotation = 10875
 
 [node name="SandbagBiege128" parent="Objects" instance=ExtResource( 5 )]
 position = Vector2( 2081, 1778 )
+fixed_position = Object(SGFixedVector2,"x":136380416,"y":116523008,"script":null)
+
+fixed_scale = Object(SGFixedVector2,"x":65536,"y":65536,"script":null)
+
 
 [node name="SandbagBiege129" parent="Objects" instance=ExtResource( 5 )]
 position = Vector2( 1965, 1778 )
+fixed_position = Object(SGFixedVector2,"x":128778240,"y":116523008,"script":null)
+
+fixed_scale = Object(SGFixedVector2,"x":65536,"y":65536,"script":null)
+
 
 [node name="SandbagBiege130" parent="Objects" instance=ExtResource( 5 )]
 position = Vector2( 2021, 1778 )
-rotation = 0.165954
+rotation = 0.165939
+fixed_position = Object(SGFixedVector2,"x":132448256,"y":116523008,"script":null)
+
+fixed_scale = Object(SGFixedVector2,"x":65536,"y":65536,"script":null)
+
+fixed_rotation = 10875
 
 [node name="SandbagBiege120" parent="Objects" instance=ExtResource( 5 )]
 position = Vector2( 1918, 1762 )
+fixed_position = Object(SGFixedVector2,"x":125698048,"y":115474432,"script":null)
+
+fixed_scale = Object(SGFixedVector2,"x":65536,"y":65536,"script":null)
+
 
 [node name="SandbagBiege121" parent="Objects" instance=ExtResource( 5 )]
 position = Vector2( 1861, 1775 )
+fixed_position = Object(SGFixedVector2,"x":121962496,"y":116326400,"script":null)
+
+fixed_scale = Object(SGFixedVector2,"x":65536,"y":65536,"script":null)
+
 
 [node name="SandbagBiege122" parent="Objects" instance=ExtResource( 5 )]
 position = Vector2( 1804, 1780 )
+fixed_position = Object(SGFixedVector2,"x":118226944,"y":116654080,"script":null)
+
+fixed_scale = Object(SGFixedVector2,"x":65536,"y":65536,"script":null)
+
 
 [node name="SandbagBiege123" parent="Objects" instance=ExtResource( 5 )]
 position = Vector2( 1750, 1766 )
+fixed_position = Object(SGFixedVector2,"x":114688000,"y":115736576,"script":null)
+
+fixed_scale = Object(SGFixedVector2,"x":65536,"y":65536,"script":null)
+
 
 [node name="SandbagBiege124" parent="Objects" instance=ExtResource( 5 )]
 position = Vector2( 1693, 1769 )
+fixed_position = Object(SGFixedVector2,"x":110952448,"y":115933184,"script":null)
+
+fixed_scale = Object(SGFixedVector2,"x":65536,"y":65536,"script":null)
+
 
 [node name="SandbagBiege125" parent="Objects" instance=ExtResource( 5 )]
 position = Vector2( 1577, 1769 )
+fixed_position = Object(SGFixedVector2,"x":103350272,"y":115933184,"script":null)
+
+fixed_scale = Object(SGFixedVector2,"x":65536,"y":65536,"script":null)
+
 
 [node name="SandbagBiege126" parent="Objects" instance=ExtResource( 5 )]
 position = Vector2( 1633, 1763 )
-rotation = -0.139493
+rotation = -0.139481
+scale = Vector2( 1, 1 )
+fixed_position = Object(SGFixedVector2,"x":107020288,"y":115539968,"script":null)
+
+fixed_scale = Object(SGFixedVector2,"x":65536,"y":65536,"script":null)
+
+fixed_rotation = -9141
 
 [node name="SandbagBiege35" parent="Objects" instance=ExtResource( 5 )]
 position = Vector2( 2129, 1771 )
+fixed_position = Object(SGFixedVector2,"x":139526144,"y":116064256,"script":null)
+
+fixed_scale = Object(SGFixedVector2,"x":65536,"y":65536,"script":null)
+
 
 [node name="SandbagBiege36" parent="Objects" instance=ExtResource( 5 )]
 position = Vector2( 2182, 1759 )
+fixed_position = Object(SGFixedVector2,"x":142999552,"y":115277824,"script":null)
+
+fixed_scale = Object(SGFixedVector2,"x":65536,"y":65536,"script":null)
+
 
 [node name="SandbagBiege37" parent="Objects" instance=ExtResource( 5 )]
 position = Vector2( 2238, 1772 )
+fixed_position = Object(SGFixedVector2,"x":146669568,"y":116129792,"script":null)
+
+fixed_scale = Object(SGFixedVector2,"x":65536,"y":65536,"script":null)
+
 
 [node name="SandbagBiege38" parent="Objects" instance=ExtResource( 5 )]
 position = Vector2( 2290, 1753 )
+fixed_position = Object(SGFixedVector2,"x":150077440,"y":114884608,"script":null)
+
+fixed_scale = Object(SGFixedVector2,"x":65536,"y":65536,"script":null)
+
 
 [node name="SandbagBiege39" parent="Objects" instance=ExtResource( 5 )]
 position = Vector2( 2344, 1766 )
+fixed_position = Object(SGFixedVector2,"x":153616384,"y":115736576,"script":null)
+
+fixed_scale = Object(SGFixedVector2,"x":65536,"y":65536,"script":null)
+
 
 [node name="SandbagBiege40" parent="Objects" instance=ExtResource( 5 )]
 position = Vector2( 2403, 1763 )
+fixed_position = Object(SGFixedVector2,"x":157483008,"y":115539968,"script":null)
+
+fixed_scale = Object(SGFixedVector2,"x":65536,"y":65536,"script":null)
+
 
 [node name="SandbagBiege41" parent="Objects" instance=ExtResource( 5 )]
 position = Vector2( 2462, 1769 )
+fixed_position = Object(SGFixedVector2,"x":161349632,"y":115933184,"script":null)
+
+fixed_scale = Object(SGFixedVector2,"x":65536,"y":65536,"script":null)
+
 
 [node name="SandbagBiege42" parent="Objects" instance=ExtResource( 5 )]
 position = Vector2( 2518, 1764 )
-rotation = 0.11924
+rotation = 0.119232
+fixed_position = Object(SGFixedVector2,"x":165019648,"y":115605504,"script":null)
+
+fixed_scale = Object(SGFixedVector2,"x":65536,"y":65536,"script":null)
+
+fixed_rotation = 7814
 
 [node name="SandbagBiege134" parent="Objects" instance=ExtResource( 5 )]
 position = Vector2( 2564, 1774 )
-rotation = 0.11924
+rotation = 0.119232
+fixed_position = Object(SGFixedVector2,"x":168034304,"y":116260864,"script":null)
+
+fixed_scale = Object(SGFixedVector2,"x":65536,"y":65536,"script":null)
+
+fixed_rotation = 7814
 
 [node name="SandbagBiege43" parent="Objects" instance=ExtResource( 5 )]
 position = Vector2( 2627, 1769 )
-rotation = -0.524014
+rotation = -0.524002
+fixed_position = Object(SGFixedVector2,"x":172163072,"y":115933184,"script":null)
+
+fixed_scale = Object(SGFixedVector2,"x":65536,"y":65536,"script":null)
+
+fixed_rotation = -34341
 
 [node name="SandbagBiege44" parent="Objects" instance=ExtResource( 5 )]
 position = Vector2( 2656, 1718 )
-rotation = -1.03599
+rotation = -1.03598
+scale = Vector2( 1, 1 )
+fixed_position = Object(SGFixedVector2,"x":174063616,"y":112590848,"script":null)
+
+fixed_scale = Object(SGFixedVector2,"x":65536,"y":65536,"script":null)
+
+fixed_rotation = -67894
 
 [node name="SandbagBiege45" parent="Objects" instance=ExtResource( 5 )]
 position = Vector2( 2677, 1662 )
-rotation = -1.68463
+rotation = -1.68462
+scale = Vector2( 1, 1 )
+fixed_position = Object(SGFixedVector2,"x":175439872,"y":108920832,"script":null)
+
+fixed_scale = Object(SGFixedVector2,"x":65536,"y":65536,"script":null)
+
+fixed_rotation = -110403
 
 [node name="SandbagBiege63" parent="Objects" instance=ExtResource( 5 )]
 position = Vector2( 2680, 1601 )
-rotation = -1.50173
+rotation = -1.50172
+scale = Vector2( 1, 1 )
+fixed_position = Object(SGFixedVector2,"x":175636480,"y":104923136,"script":null)
+
+fixed_scale = Object(SGFixedVector2,"x":65536,"y":65536,"script":null)
+
+fixed_rotation = -98417
 
 [node name="SandbagBiege64" parent="Objects" instance=ExtResource( 5 )]
 position = Vector2( 2693, 1540 )
-rotation = -1.79495
+rotation = -1.79494
+scale = Vector2( 1, 1 )
+fixed_position = Object(SGFixedVector2,"x":176488448,"y":100925440,"script":null)
+
+fixed_scale = Object(SGFixedVector2,"x":65536,"y":65536,"script":null)
+
+fixed_rotation = -117633
 
 [node name="SandbagBiege46" parent="Objects" instance=ExtResource( 5 )]
 position = Vector2( 2683, 1222 )
-rotation = -1.5708
+rotation = -1.57079
+fixed_position = Object(SGFixedVector2,"x":175833088,"y":80084992,"script":null)
+
+fixed_scale = Object(SGFixedVector2,"x":65536,"y":65536,"script":null)
+
+fixed_rotation = -102943
 
 [node name="SandbagBiege47" parent="Objects" instance=ExtResource( 5 )]
 position = Vector2( 2689, 1285 )
-rotation = -1.5708
+rotation = -1.57079
+fixed_position = Object(SGFixedVector2,"x":176226304,"y":84213760,"script":null)
+
+fixed_scale = Object(SGFixedVector2,"x":65536,"y":65536,"script":null)
+
+fixed_rotation = -102943
 
 [node name="SandbagBiege48" parent="Objects" instance=ExtResource( 5 )]
 position = Vector2( 2684, 1347 )
-rotation = -1.5708
+rotation = -1.57079
+fixed_position = Object(SGFixedVector2,"x":175898624,"y":88276992,"script":null)
+
+fixed_scale = Object(SGFixedVector2,"x":65536,"y":65536,"script":null)
+
+fixed_rotation = -102943
 
 [node name="SandbagBiege136" parent="Objects" instance=ExtResource( 5 )]
 position = Vector2( 2695, 1162 )
-rotation = -1.46672
+rotation = -1.46671
+fixed_position = Object(SGFixedVector2,"x":176619520,"y":76152832,"script":null)
+
+fixed_scale = Object(SGFixedVector2,"x":65536,"y":65536,"script":null)
+
+fixed_rotation = -96122
 
 [node name="SandbagBiege137" parent="Objects" instance=ExtResource( 5 )]
 position = Vector2( 2709, 1105 )
 rotation = -1.56409
+scale = Vector2( 1, 1 )
+fixed_position = Object(SGFixedVector2,"x":177537024,"y":72417280,"script":null)
+
+fixed_scale = Object(SGFixedVector2,"x":65536,"y":65536,"script":null)
+
+fixed_rotation = -102504
 
 [node name="SandbagBiege49" parent="Objects" instance=ExtResource( 5 )]
 position = Vector2( 2687, 1407 )
-rotation = -1.5708
+rotation = -1.57079
+fixed_position = Object(SGFixedVector2,"x":176095232,"y":92209152,"script":null)
+
+fixed_scale = Object(SGFixedVector2,"x":65536,"y":65536,"script":null)
+
+fixed_rotation = -102943
 
 [node name="SandbagBiege50" parent="Objects" instance=ExtResource( 5 )]
 position = Vector2( 2685, 1477 )
-rotation = -1.38456
+rotation = -1.38455
+fixed_position = Object(SGFixedVector2,"x":175964160,"y":96796672,"script":null)
+
+fixed_scale = Object(SGFixedVector2,"x":65536,"y":65536,"script":null)
+
+fixed_rotation = -90738
 
 [node name="SandbagBiege51" parent="Objects" instance=ExtResource( 5 )]
 position = Vector2( 2150, 18 )
+fixed_position = Object(SGFixedVector2,"x":140902400,"y":1179648,"script":null)
+
+fixed_scale = Object(SGFixedVector2,"x":65536,"y":65536,"script":null)
+
 
 [node name="SandbagBiege52" parent="Objects" instance=ExtResource( 5 )]
 position = Vector2( 2210, 13 )
+fixed_position = Object(SGFixedVector2,"x":144834560,"y":851968,"script":null)
+
+fixed_scale = Object(SGFixedVector2,"x":65536,"y":65536,"script":null)
+
 
 [node name="SandbagBiege53" parent="Objects" instance=ExtResource( 5 )]
 position = Vector2( 2272, 24 )
+fixed_position = Object(SGFixedVector2,"x":148897792,"y":1572864,"script":null)
+
+fixed_scale = Object(SGFixedVector2,"x":65536,"y":65536,"script":null)
+
 
 [node name="SandbagBiege54" parent="Objects" instance=ExtResource( 5 )]
 position = Vector2( 2339, 12 )
+fixed_position = Object(SGFixedVector2,"x":153288704,"y":786432,"script":null)
+
+fixed_scale = Object(SGFixedVector2,"x":65536,"y":65536,"script":null)
+
 
 [node name="SandbagBiege55" parent="Objects" instance=ExtResource( 5 )]
 position = Vector2( 2399, 15 )
+fixed_position = Object(SGFixedVector2,"x":157220864,"y":983040,"script":null)
+
+fixed_scale = Object(SGFixedVector2,"x":65536,"y":65536,"script":null)
+
 
 [node name="SandbagBiege56" parent="Objects" instance=ExtResource( 5 )]
 position = Vector2( 2465, 10 )
+fixed_position = Object(SGFixedVector2,"x":161546240,"y":655360,"script":null)
+
+fixed_scale = Object(SGFixedVector2,"x":65536,"y":65536,"script":null)
+
 
 [node name="SandbagBiege57" parent="Objects" instance=ExtResource( 5 )]
 position = Vector2( 2535, 15 )
-rotation = 0.267366
+rotation = 0.267365
+fixed_position = Object(SGFixedVector2,"x":166133760,"y":983040,"script":null)
+
+fixed_scale = Object(SGFixedVector2,"x":65536,"y":65536,"script":null)
+
+fixed_rotation = 17522
 
 [node name="SandbagBiege135" parent="Objects" instance=ExtResource( 5 )]
 position = Vector2( 2583, 3 )
-rotation = 0.267366
+rotation = 0.267365
+fixed_position = Object(SGFixedVector2,"x":169279488,"y":196608,"script":null)
+
+fixed_scale = Object(SGFixedVector2,"x":65536,"y":65536,"script":null)
+
+fixed_rotation = 17522
 
 [node name="SandbagBiege58" parent="Objects" instance=ExtResource( 5 )]
 position = Vector2( 2677, 136 )
-rotation = -1.5708
+rotation = -1.57079
+fixed_position = Object(SGFixedVector2,"x":175439872,"y":8912896,"script":null)
+
+fixed_scale = Object(SGFixedVector2,"x":65536,"y":65536,"script":null)
+
+fixed_rotation = -102943
 
 [node name="SandbagBiege65" parent="Objects" instance=ExtResource( 5 )]
 position = Vector2( 2675, 74.0001 )
-rotation = -1.95036
+rotation = -1.95035
+scale = Vector2( 1, 1 )
+fixed_position = Object(SGFixedVector2,"x":175308800,"y":4849670,"script":null)
+
+fixed_scale = Object(SGFixedVector2,"x":65536,"y":65536,"script":null)
+
+fixed_rotation = -127818
 
 [node name="SandbagBiege66" parent="Objects" instance=ExtResource( 5 )]
 position = Vector2( 2645, 17.0001 )
 rotation = -2.55655
+fixed_position = Object(SGFixedVector2,"x":173342720,"y":1114118,"script":null)
+
+fixed_scale = Object(SGFixedVector2,"x":65536,"y":65536,"script":null)
+
+fixed_rotation = -167546
 
 [node name="SandbagBiege59" parent="Objects" instance=ExtResource( 5 )]
 position = Vector2( 2685, 196 )
-rotation = -1.5708
+rotation = -1.57079
+fixed_position = Object(SGFixedVector2,"x":175964160,"y":12845056,"script":null)
+
+fixed_scale = Object(SGFixedVector2,"x":65536,"y":65536,"script":null)
+
+fixed_rotation = -102943
 
 [node name="SandbagBiege61" parent="Objects" instance=ExtResource( 5 )]
 position = Vector2( 2688, 312 )
-rotation = -1.5708
+rotation = -1.57079
+fixed_position = Object(SGFixedVector2,"x":176160768,"y":20447232,"script":null)
+
+fixed_scale = Object(SGFixedVector2,"x":65536,"y":65536,"script":null)
+
+fixed_rotation = -102943
 
 [node name="SandbagBiege62" parent="Objects" instance=ExtResource( 5 )]
 position = Vector2( 2688, 422 )
-rotation = -1.27714
+rotation = -1.27713
+fixed_position = Object(SGFixedVector2,"x":176160768,"y":27656192,"script":null)
+
+fixed_scale = Object(SGFixedVector2,"x":65536,"y":65536,"script":null)
+
+fixed_rotation = -83698
 
 [node name="SandbagBiege138" parent="Objects" instance=ExtResource( 5 )]
 position = Vector2( 2698, 368 )
 rotation = -1.65195
+fixed_position = Object(SGFixedVector2,"x":176816128,"y":24117248,"script":null)
+
+fixed_scale = Object(SGFixedVector2,"x":65536,"y":65536,"script":null)
+
+fixed_rotation = -108262
 
 [node name="SandbagBiege60" parent="Objects" instance=ExtResource( 5 )]
 position = Vector2( 2674, 255 )
-rotation = -1.93344
+rotation = -1.93343
+fixed_position = Object(SGFixedVector2,"x":175243264,"y":16711680,"script":null)
+
+fixed_scale = Object(SGFixedVector2,"x":65536,"y":65536,"script":null)
+
+fixed_rotation = -126709
 
 [node name="FenceRed" parent="Objects" instance=ExtResource( 7 )]
 position = Vector2( 4, 830 )
-rotation = -1.55004
+rotation = -1.55003
+fixed_position = Object(SGFixedVector2,"x":262144,"y":54394880,"script":null)
+
+fixed_scale = Object(SGFixedVector2,"x":65536,"y":65536,"script":null)
+
+fixed_rotation = -101583
 
 [node name="FenceYellow" parent="Objects" instance=ExtResource( 8 )]
 position = Vector2( 0, 959 )
-rotation = -1.56861
+rotation = -1.5686
+fixed_position = Object(SGFixedVector2,"x":0,"y":62849024,"script":null)
+
+fixed_scale = Object(SGFixedVector2,"x":65536,"y":65536,"script":null)
+
+fixed_rotation = -102800
 
 [node name="FenceRed2" parent="Objects" instance=ExtResource( 7 )]
 position = Vector2( 2683, 830 )
-rotation = -1.55004
+rotation = -1.55003
+fixed_position = Object(SGFixedVector2,"x":175833088,"y":54394880,"script":null)
+
+fixed_scale = Object(SGFixedVector2,"x":65536,"y":65536,"script":null)
+
+fixed_rotation = -101583
 
 [node name="FenceYellow2" parent="Objects" instance=ExtResource( 8 )]
 position = Vector2( 2682, 963 )
-rotation = -1.56861
+rotation = -1.5686
+fixed_position = Object(SGFixedVector2,"x":175767552,"y":63111168,"script":null)
+
+fixed_scale = Object(SGFixedVector2,"x":65536,"y":65536,"script":null)
+
+fixed_rotation = -102800
 
 [node name="CrateMetal" parent="Objects" instance=ExtResource( 4 )]
 position = Vector2( 1307, 464 )
-rotation = 0.0680258
+rotation = 0.0680237
+fixed_position = Object(SGFixedVector2,"x":85655552,"y":30408704,"script":null)
+
+fixed_scale = Object(SGFixedVector2,"x":65536,"y":65536,"script":null)
+
+fixed_rotation = 4458
 
 [node name="CrateMetal2" parent="Objects" instance=ExtResource( 4 )]
 position = Vector2( 1371, 462 )
-rotation = -0.317008
+rotation = -0.317001
+fixed_position = Object(SGFixedVector2,"x":89849856,"y":30277632,"script":null)
+
+fixed_scale = Object(SGFixedVector2,"x":65536,"y":65536,"script":null)
+
+fixed_rotation = -20775
 
 [node name="CrateMetal3" parent="Objects" instance=ExtResource( 4 )]
 position = Vector2( 1373, 524 )
-rotation = -0.0036928
+rotation = -0.00369263
+fixed_position = Object(SGFixedVector2,"x":89980928,"y":34340864,"script":null)
+
+fixed_scale = Object(SGFixedVector2,"x":65536,"y":65536,"script":null)
+
+fixed_rotation = -242
 
 [node name="CrateMetal4" parent="Objects" instance=ExtResource( 4 )]
 position = Vector2( 1310, 529 )
-rotation = -0.177659
+rotation = -0.177658
+scale = Vector2( 1, 1 )
+fixed_position = Object(SGFixedVector2,"x":85852160,"y":34668544,"script":null)
+
+fixed_scale = Object(SGFixedVector2,"x":65536,"y":65536,"script":null)
+
+fixed_rotation = -11643
 
 [node name="CrateMetal5" parent="Objects" instance=ExtResource( 4 )]
 position = Vector2( 1315, 588 )
-rotation = 0.088398
+rotation = 0.0883942
+fixed_position = Object(SGFixedVector2,"x":86179840,"y":38535168,"script":null)
+
+fixed_scale = Object(SGFixedVector2,"x":65536,"y":65536,"script":null)
+
+fixed_rotation = 5793
 
 [node name="CrateMetal6" parent="Objects" instance=ExtResource( 4 )]
 position = Vector2( 1375, 583 )
-rotation = -0.0442052
+rotation = -0.0442047
+fixed_position = Object(SGFixedVector2,"x":90112000,"y":38207488,"script":null)
+
+fixed_scale = Object(SGFixedVector2,"x":65536,"y":65536,"script":null)
+
+fixed_rotation = -2897
 
 [node name="CrateMetal7" parent="Objects" instance=ExtResource( 4 )]
 position = Vector2( 1380, 1190 )
-rotation = -0.0836851
+rotation = -0.0836792
+scale = Vector2( 1, 1 )
+fixed_position = Object(SGFixedVector2,"x":90439680,"y":77987840,"script":null)
+
+fixed_scale = Object(SGFixedVector2,"x":65536,"y":65536,"script":null)
+
+fixed_rotation = -5484
 
 [node name="CrateMetal8" parent="Objects" instance=ExtResource( 4 )]
 position = Vector2( 1375, 1254 )
-rotation = 0.160092
+rotation = 0.16008
+fixed_position = Object(SGFixedVector2,"x":90112000,"y":82182144,"script":null)
+
+fixed_scale = Object(SGFixedVector2,"x":65536,"y":65536,"script":null)
+
+fixed_rotation = 10491
 
 [node name="CrateMetal9" parent="Objects" instance=ExtResource( 4 )]
 position = Vector2( 1310, 1255 )
-rotation = 0.106834
+rotation = 0.106827
+fixed_position = Object(SGFixedVector2,"x":85852160,"y":82247680,"script":null)
+
+fixed_scale = Object(SGFixedVector2,"x":65536,"y":65536,"script":null)
+
+fixed_rotation = 7001
 
 [node name="CrateMetal10" parent="Objects" instance=ExtResource( 4 )]
 position = Vector2( 1308, 1314 )
-rotation = -0.0810613
+rotation = -0.0810547
+fixed_position = Object(SGFixedVector2,"x":85721088,"y":86114304,"script":null)
+
+fixed_scale = Object(SGFixedVector2,"x":65536,"y":65536,"script":null)
+
+fixed_rotation = -5312
 
 [node name="CrateMetal11" parent="Objects" instance=ExtResource( 4 )]
 position = Vector2( 1367, 1316 )
-rotation = 0.0107145
+rotation = 0.0107117
+fixed_position = Object(SGFixedVector2,"x":89587712,"y":86245376,"script":null)
+
+fixed_scale = Object(SGFixedVector2,"x":65536,"y":65536,"script":null)
+
+fixed_rotation = 702
 
 [node name="CrateMetal12" parent="Objects" instance=ExtResource( 4 )]
 position = Vector2( 1320, 1193 )
-rotation = -0.0896566
+rotation = -0.0896454
+fixed_position = Object(SGFixedVector2,"x":86507520,"y":78184448,"script":null)
+
+fixed_scale = Object(SGFixedVector2,"x":65536,"y":65536,"script":null)
+
+fixed_rotation = -5875
 
 [node name="BarricadeWood" parent="Objects" instance=ExtResource( 6 )]
 position = Vector2( 1347, 88 )
+fixed_position = Object(SGFixedVector2,"x":88276992,"y":5767168,"script":null)
+
+fixed_scale = Object(SGFixedVector2,"x":65536,"y":65536,"script":null)
+
 
 [node name="BarricadeWood2" parent="Objects" instance=ExtResource( 6 )]
 position = Vector2( 1342, 1701 )
+fixed_position = Object(SGFixedVector2,"x":87949312,"y":111476736,"script":null)
+
+fixed_scale = Object(SGFixedVector2,"x":65536,"y":65536,"script":null)
+
 
 [node name="DropCrateSpawnArea1" parent="." instance=ExtResource( 2 )]
 position = Vector2( 640, 896 )
+fixed_position = Object(SGFixedVector2,"x":41943040,"y":58720256,"script":null)
+
+fixed_scale = Object(SGFixedVector2,"x":65536,"y":65536,"script":null)
+
 
 [node name="DropCrateSpawnArea2" parent="." instance=ExtResource( 2 )]
 position = Vector2( 2048, 896 )
+fixed_position = Object(SGFixedVector2,"x":134217728,"y":58720256,"script":null)
 
-[node name="BallStartPosition" type="Position2D" parent="."]
+fixed_scale = Object(SGFixedVector2,"x":65536,"y":65536,"script":null)
+
+
+[node name="BallStartPosition" type="SGFixedPosition2D" parent="."]
 position = Vector2( 1340, 898 )
+fixed_position = Object(SGFixedVector2,"x":87818240,"y":58851328,"script":null)
+
+fixed_scale = Object(SGFixedVector2,"x":65536,"y":65536,"script":null)
+

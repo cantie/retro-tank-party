@@ -8,18 +8,20 @@ onready var players_node := $Players
 onready var player_camera := $PlayerCamera
 onready var watch_camera := $WatchCamera
 onready var hud := $CanvasLayer/HUD
+# Johnny passes out random seeds!
+onready var johnny := $RandomNumberGenerator
 
 var map_scene: PackedScene
 var game_started := false
 var players := {}
 var players_alive := {}
 var possible_pickups := []
+var player_start_transforms
 
 signal game_error (message)
 signal game_started ()
 signal player_spawned (tank)
 signal player_dead (player_id, killer_id)
-signal make_player_controlled (my_tank, player_id)
 
 class Player:
 	var peer_id: int
@@ -51,29 +53,30 @@ func _ready() -> void:
 	SyncManager.connect("scene_spawned", self, "_on_SyncManager_scene_spawned")
 
 # Initializes the game so that it is ready to really start.
-func game_setup(_players: Dictionary, map_path: String, player_start_transforms = null, operation: RemoteOperations.ClientOperation = null) -> void:
+func game_setup(_players: Dictionary, map_path: String, random_seed: int, _player_start_transforms = null) -> void:
 	get_tree().paused = true
 	
 	if game_started:
 		game_stop()
 	
-	hud.clear_all_labels()
-	
-	players = _players
-	game_started = true
-	
 	if not load_map(map_path):
 		emit_signal("game_error", "Unable to load map")
-		if operation:
-			operation.mark_done(false)
 		return
 	
-	if is_network_master():
-		# Build up a list of possible contents for drawing randomly.
-		for pickup_path in Modding.find_resources("pickups"):
-			var pickup = load(pickup_path)
-			for i in range(pickup.rarity):
-				possible_pickups.append(pickup)
+	players = _players
+	johnny.set_seed(random_seed)
+	player_start_transforms = _player_start_transforms
+
+	# Build up a list of possible contents for drawing randomly.
+	for pickup_path in Modding.find_resources("pickups"):
+		var pickup = load(pickup_path)
+		for i in range(pickup.rarity):
+			possible_pickups.append(pickup)
+	
+	_game_setup()
+
+func _game_setup() -> void:
+	hud.clear_all_labels()
 	
 	for peer_id in players:
 		var player = players[peer_id]
@@ -82,9 +85,13 @@ func game_setup(_players: Dictionary, map_path: String, player_start_transforms 
 	
 	var my_id: int = get_tree().get_network_unique_id()
 	make_player_controlled(my_id)
-	
-	if operation:
-		operation.mark_done(true)
+
+func game_reset() -> void:
+	print ("game reset - started %s" % game_started)
+	if game_started:
+		game_stop()
+	#reload_map()
+	_game_setup()
 
 func respawn_player(peer_id: int, start_transform = null) -> void:
 	if players_node.has_node(str(peer_id)):
@@ -118,7 +125,6 @@ func make_player_controlled(peer_id) -> void:
 	if my_player and not my_player.player_controlled:
 		my_player.player_controlled = true
 		_setup_player_camera(my_player)
-		emit_signal("make_player_controlled", my_player, peer_id)
 	else:
 		print ("Unable to make player controlled: node not found")
 
@@ -134,6 +140,7 @@ func get_my_tank():
 
 # Actually start the game on this client.
 remotesync func game_start() -> void:
+	game_started = true
 	if map.has_method('map_start'):
 		map.map_start(self)
 	emit_signal("game_started")
@@ -240,8 +247,22 @@ func _on_player_dead(killer_id, tank) -> void:
 		
 		emit_signal("player_dead", peer_id, killer_id)
 
-func create_free_space_detector():
+# From https://stackoverflow.com/a/12996028/364763
+#
+# License: CC BY-SA 4.0
+# Author: Thomas Mueller
+func _simple_integer_hash(x: int):
+	x = ((x >> 16) ^ x) * 0x45d9f3b;
+	x = ((x >> 16) ^ x) * 0x45d9f3b;
+	x = (x >> 16) ^ x;
+	return x
+
+func generate_random_seed() -> int:
+	return _simple_integer_hash(johnny.randi())
+
+func create_free_space_detector(area: SGFixedRect2, dimensions: SGFixedVector2, rng: NetworkRandomNumberGenerator):
 	var detector = FreeSpaceDetector.instance()
+	detector.setup_free_space_detector(area, dimensions, rng)
 	add_child(detector)
 	return detector
 
@@ -250,10 +271,12 @@ func _save_state() -> Dictionary:
 	for peer_id in players_alive:
 		serialized_players_alive[peer_id] = players_alive[peer_id].to_dict()
 	return {
+		game_started = game_started,
 		players_alive = serialized_players_alive,
 	}
 
 func _load_state(state: Dictionary) -> void:
+	game_started = state['game_started']
 	var serialized_players_alive = state['players_alive']
 	for peer_id in serialized_players_alive:
 		players_alive[peer_id] = Player.from_dict(serialized_players_alive[peer_id])

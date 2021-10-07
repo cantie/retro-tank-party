@@ -54,18 +54,18 @@ func spawn(name: String, parent: Node, scene: PackedScene, data: Dictionary, ren
 	return spawned_node
 
 func _save_state() -> Dictionary:
-	for node_path in spawned_nodes.keys():
+	for node_path in spawned_nodes.keys().duplicate():
 		var node = spawned_nodes[node_path]
 		if not is_instance_valid(node):
 			spawned_nodes.erase(node_path)
 			spawn_records.erase(node_path)
-			#print ("[SAVE] removing invalid: %s" % node_path)
+			#print ("[SAVE %s] removing invalid: %s" % [SyncManager.current_tick, node_path])
 		elif node.is_queued_for_deletion():
-			#print ("[SAVE] removing deleted: %s" % node_path)
 			if node.get_parent():
 				node.get_parent().remove_child(node)
 			spawned_nodes.erase(node_path)
 			spawn_records.erase(node_path)
+			#print ("[SAVE %s] removing deleted: %s" % [SyncManager.current_tick, node_path])
 	
 	return {
 		spawn_records = spawn_records.duplicate(),
@@ -77,7 +77,7 @@ func _load_state(state: Dictionary) -> void:
 	counter = state['counter'].duplicate()
 	
 	# Remove nodes that aren't in the state we are loading.
-	for node_path in spawned_nodes.keys():
+	for node_path in spawned_nodes.keys().duplicate():
 		if not spawn_records.has(node_path):
 			var node = spawned_nodes[node_path]
 			if node.has_method('_network_despawn'):
@@ -86,7 +86,7 @@ func _load_state(state: Dictionary) -> void:
 				node.get_parent().remove_child(node)
 			node.queue_free()
 			spawned_nodes.erase(node_path)
-			#print ("[LOAD] de-spawned: %s" % node.name)
+			#print ("[LOAD %s] de-spawned: %s" % [SyncManager.current_tick, node_path])
 	
 	# Spawn nodes that don't already exist.
 	for node_path in spawn_records.keys():
@@ -99,6 +99,7 @@ func _load_state(state: Dictionary) -> void:
 			var spawn_record = spawn_records[node_path]
 			
 			var parent = get_tree().current_scene.get_node(spawn_record['parent'])
+			assert(parent != null, "Can't re-spawn node when parent doesn't exist")
 			var scene = load(spawn_record['scene'])
 			
 			var spawned_node = scene.instance()
@@ -111,4 +112,4 @@ func _load_state(state: Dictionary) -> void:
 			spawned_nodes[node_path] = spawned_node
 			emit_signal("scene_spawned", spawn_record['signal_name'], spawned_node, scene, spawn_record['data'])
 			
-			#print ("[LOAD] re-spawned: %s" % spawned_node.name)
+			#print ("[LOAD %s] re-spawned: %s" % [SyncManager.current_tick, node_path])

@@ -9,8 +9,8 @@ export (bool) var player_controlled = false
 signal player_dead (killer_id)
 signal shoot ()
 signal hurt (damage, attacker_id, attack_vector)
-signal weapon_type_changed (weapon_type)
-signal ability_type_changed (ability_type)
+signal weapon_type_changed (weapon_type, old_weapon_type)
+signal ability_type_changed (ability_type, old_ability_type)
 signal ability_recharged (ability)
 
 onready var player_info_node := $PlayerInfo
@@ -21,12 +21,12 @@ onready var animation_player := $AnimationPlayer
 onready var shoot_sound := $ShootSound
 onready var engine_sound := $EngineSound
 
-const DEFAULT_TURN_SPEED := 5
-const DEFAULT_SPEED := 400
+const DEFAULT_TURN_SPEED := 10923
+const DEFAULT_SPEED := 873726
 
 var turn_speed := DEFAULT_TURN_SPEED
 var speed := DEFAULT_SPEED
-var velocity: Vector2
+var velocity: SGFixedVector2 = SGFixed.vector2(0, 0)
 
 var health := 100
 var dead := false
@@ -47,9 +47,9 @@ var camera: Camera2D = null
 
 var weapon_type: WeaponType
 var weapon
-var ability_type: AbilityType
+var held_ability_type: AbilityType
+var ability_charges := 1
 var ability
-var last_ability
 
 var player_index: int
 
@@ -74,9 +74,9 @@ class PickupAbilityEvent extends TankEvent:
 class TakeDamageEvent extends TankEvent:
 	var damage: int
 	var attacker_id: int
-	var attack_vector: Vector2
+	var attack_vector: SGFixedVector2
 	
-	func _init(_tank, _damage: int, _attacker_id: int, _attack_vector: Vector2).(_tank) -> void:
+	func _init(_tank, _damage: int, _attacker_id: int, _attack_vector: SGFixedVector2).(_tank) -> void:
 		damage = _damage
 		attacker_id = _attacker_id
 		attack_vector = _attack_vector
@@ -99,11 +99,13 @@ class GatherInputEvent extends TankEvent:
 	func _init(_tank, _input: Dictionary).(_tank) -> void:
 		input = _input
 
-class NetworkSyncEvent extends TankEvent:
-	var data: Dictionary
+class CalculateMovementVectorEvent extends TankEvent:
+	var input: Dictionary
+	var movement_vector: SGFixedVector2
 	
-	func _init(_tank, _data: Dictionary).(_tank) -> void:
-		data = _data
+	func _init(_tank, _input: Dictionary, _movement_vector: SGFixedVector2).(_tank) -> void:
+		input = _input
+		movement_vector = _movement_vector
 
 enum PlayerInput {
 	TURRET_ROTATION = -1,
@@ -123,8 +125,7 @@ func _ready():
 	hooks.subscribe("restore_health", self, "_hook_default_restore_health", 0)
 	hooks.subscribe("die", self, "_hook_default_die", 0)
 	hooks.subscribe("gather_input", self, "_hook_default_gather_input", 0)
-	hooks.subscribe("send_remote_update", self, "_hook_default_send_remote_update", 0)
-	hooks.subscribe("receive_remote_update", self, "_hook_default_receive_remote_update", 0)
+	hooks.subscribe("calculate_movement_vector", self, "_hook_default_calculate_movement_vector", 0)
 	
 	player_info_node.set_as_toplevel(true)
 	player_info_node.position = global_position + player_info_offset
@@ -134,6 +135,8 @@ func _ready():
 	turret_sprite.material = sprite_material
 	
 	set_weapon_type(BaseWeaponType)
+	
+	SyncManager.connect("scene_spawned", self, "_on_SyncManager_scene_spawned")
 	
 	# If testing tank on its own, make player controlled
 	if get_tree().current_scene == self:
@@ -156,10 +159,14 @@ func _network_spawn_preprocess(data: Dictionary) -> Dictionary:
 	data['team'] = player.team
 	return data
 
+func _on_SyncManager_scene_spawned(spawned_name, spawned_node, scene, data):
+	if spawned_name == 'Player' + name + 'Ability':
+		_setup_and_use_ability(spawned_node, data['ability_type'])
+
 func _network_spawn(data: Dictionary) -> void:
 	game = get_node(data['game'])
 	
-	global_transform = data['start_transform']
+	set_global_fixed_transform(data['start_transform'])
 	
 	player_index = data['player_index']
 	set_network_master(data['peer_id'])
@@ -168,6 +175,8 @@ func _network_spawn(data: Dictionary) -> void:
 	
 	if data['team'] != -1:
 		player_info_node.set_team(data['team'])
+	
+	sync_to_physics_engine()
 
 func pickup_weapon(_weapon_type: WeaponType) -> void:
 	hooks.dispatch_event("pickup_weapon", PickupWeaponEvent.new(self, _weapon_type))
@@ -180,6 +189,7 @@ func set_weapon_type(_weapon_type: WeaponType) -> void:
 		_weapon_type = BaseWeaponType
 	
 	if weapon_type != _weapon_type:
+		var old_weapon_type = weapon_type
 		weapon_type = _weapon_type
 		
 		if weapon:
@@ -196,67 +206,34 @@ func set_weapon_type(_weapon_type: WeaponType) -> void:
 			else:
 				game.hud.set_weapon_label(weapon_type.name)
 		
-		emit_signal("weapon_type_changed", weapon_type)
+		emit_signal("weapon_type_changed", weapon_type, old_weapon_type)
 
 func pickup_ability(_ability_type: AbilityType) -> void:
 	hooks.dispatch_event("pickup_ability", PickupAbilityEvent.new(self, _ability_type))
 
 func _hook_default_pickup_ability(event: PickupAbilityEvent) -> void:
-	set_ability_type(event.ability_type)
+	set_held_ability_type(event.ability_type)
 
-func set_ability_type(_ability_type: AbilityType) -> void:
-	# If the last ability is still in effect, and we just picked up the same
-	# ability, then we reinstate that ability.
-	if last_ability and is_instance_valid(last_ability) and is_a_parent_of(last_ability) and last_ability.ability_type == _ability_type:
-		var tmp = ability
-		ability_type = last_ability.ability_type
-		ability = last_ability
-		last_ability = tmp
-	
-	if ability_type == _ability_type and _ability_type != null:
-		if ability and player_controlled:
-			ability.recharge_ability()
-			_update_ability_label()
-			emit_signal("ability_recharged", ability)
+func set_held_ability_type(_ability_type: AbilityType) -> void:
+	if _ability_type != null and ability and ability.ability_type == _ability_type:
+		ability_charges = _ability_type.charges
+		_update_ability_label()
+		emit_signal("ability_recharged", ability)
 	else:
-		if ability:
-			ability.mark_finished()
-		
-		ability_type = _ability_type
-		if ability_type != null:
-			ability = ability_type.ability_scene.instance()
-			ability.connect("finished", self, "_on_ability_finished", [ability])
-			add_child(ability)
-			ability.setup_ability(self, ability_type)
-			ability.attach_ability()
-		else:
-			ability = null
+		var old_held_ability_type = held_ability_type
+		held_ability_type = _ability_type
+		if held_ability_type:
+			ability_charges = held_ability_type.charges
 		
 		_update_ability_label()
-		emit_signal("ability_type_changed", ability_type)
+		emit_signal("ability_type_changed", held_ability_type, old_held_ability_type)
 
 func _update_ability_label() -> void:
 	if game and player_controlled:
-		if ability_type:
-			game.hud.set_ability_label(ability_type.name, ability.charges)
+		if held_ability_type:
+			game.hud.set_ability_label(held_ability_type.name, ability_charges)
 		else:
 			game.hud.clear_ability_label()
-
-func _on_ability_finished(old_ability) -> void:
-	old_ability.disconnect("finished", self, "_on_ability_finished")
-	
-	old_ability.detach_ability()
-	remove_child(old_ability)
-	old_ability.queue_free()
-	
-	# If this is the current ability, then clear it out.
-	if old_ability == ability:
-		ability = null
-		ability_type = null
-		_update_ability_label()
-	# If this is the last ability, then clear it out.
-	elif old_ability == last_ability:
-		last_ability = null
 
 func _get_local_input() -> Dictionary:
 	var event = GatherInputEvent.new(self, {})
@@ -280,16 +257,16 @@ func _hook_default_gather_input(event: GatherInputEvent) -> void:
 		input_vector.y += min(Input.get_action_strength("player1_backward") + 0.5, 1.0)
 	
 	if input_vector != Vector2.ZERO:
-		input[PlayerInput.INPUT_VECTOR] = input_vector
+		input[PlayerInput.INPUT_VECTOR] = SGFixed.from_float_vector2(input_vector)
 	
 	if _input_mouse_control:
-		input[PlayerInput.TURRET_ROTATION] = (get_global_mouse_position() - turret_pivot.global_position).angle()
+		input[PlayerInput.TURRET_ROTATION] = SGFixed.from_float((get_global_mouse_position() - turret_pivot.global_position).angle())
 	else:
 		if Input.is_action_pressed("player1_aim_up") or Input.is_action_pressed("player1_aim_down") or Input.is_action_pressed("player1_aim_left") or Input.is_action_pressed("player1_aim_right"):
 			var joy_vector = Vector2()
 			joy_vector.x = Input.get_action_strength("player1_aim_right") - Input.get_action_strength("player1_aim_left")
 			joy_vector.y = Input.get_action_strength("player1_aim_down") - Input.get_action_strength("player1_aim_up")
-			input[PlayerInput.TURRET_ROTATION] = joy_vector.angle()
+			input[PlayerInput.TURRET_ROTATION] = SGFixed.from_float(joy_vector.angle())
 	
 	if _input_shoot:
 		input[PlayerInput.SHOOTING] = true
@@ -299,42 +276,51 @@ func _hook_default_gather_input(event: GatherInputEvent) -> void:
 	_input_shoot = false
 	_input_use_ability = false
 
-func _calculate_movement_vector(input: Dictionary) -> Vector2:
+func _calculate_movement_vector(input: Dictionary) -> SGFixedVector2:
+	var event = CalculateMovementVectorEvent.new(self, input, SGFixed.vector2(0, 0))
+	hooks.dispatch_event("calculate_movement_vector", event)
+	return event.movement_vector
+	
+func _hook_default_calculate_movement_vector(event: CalculateMovementVectorEvent) -> void:
+	var input: Dictionary = event.input
 	if not input.has(PlayerInput.INPUT_VECTOR):
-		return Vector2.ZERO
+		return
 	
 	if input.get(PlayerInput.CONTROL_SCHEME, GameSettings.ControlScheme.MODERN) == GameSettings.ControlScheme.RETRO:
 		var input_vector = input[PlayerInput.INPUT_VECTOR]
 		# Movement is relative to a tank facing to the right, so Y turns to the
 		# left/right, and X moves forward backward.
-		return Vector2(-input_vector.y, input_vector.x)
+		event.movement_vector.x = -input_vector.y
+		event.movement_vector.y = input_vector.x
+		return
 	
-	var movement_vector: Vector2
-	var current_vector = Vector2.RIGHT.rotated(rotation)
+	#var movement_vector: Vector2
+	#var current_vector = SGFixed.vector2(65536, 0)
+	#current_vector.rotate(fixed_rotation)
 	
-	var desired_vector: Vector2 = input.get(PlayerInput.INPUT_VECTOR, Vector2.ZERO)
-	if desired_vector.length() > 0.85:
-		desired_vector = desired_vector.normalized()
-	
-	# If going backwards is a shorter rotation, move backwards.
-	if abs(current_vector.angle_to(desired_vector)) > PI / 2.0:
-		# Flip the vector for the angle calculations.
-		current_vector = current_vector.rotated(PI)
-		
-		# Set us moving backwards ...
-		movement_vector.x = -desired_vector.length()
-	else:
-		# ... or forwards
-		movement_vector.x = desired_vector.length()
-	
-	# Normalize the angle to the desired vector
-	var angle_to = current_vector.angle_to(desired_vector)
-	if abs(angle_to) > PI / 2.0:
-		angle_to = TAU - angle_to
-	
-	movement_vector.y = clamp(angle_to / (turn_speed * get_physics_process_delta_time()), -1.0, 1.0)
-	
-	return movement_vector
+#	var desired_vector: Vector2 = input.get(PlayerInput.INPUT_VECTOR, Vector2.ZERO)
+#	if desired_vector.length() > 0.85:
+#		desired_vector = desired_vector.normalized()
+#
+#	# If going backwards is a shorter rotation, move backwards.
+#	if abs(current_vector.angle_to(desired_vector)) > PI / 2.0:
+#		# Flip the vector for the angle calculations.
+#		current_vector = current_vector.rotated(PI)
+#
+#		# Set us moving backwards ...
+#		movement_vector.x = -desired_vector.length()
+#	else:
+#		# ... or forwards
+#		movement_vector.x = desired_vector.length()
+#
+#	# Normalize the angle to the desired vector
+#	var angle_to = current_vector.angle_to(desired_vector)
+#	if abs(angle_to) > PI / 2.0:
+#		angle_to = TAU - angle_to
+#
+#	movement_vector.y = clamp(angle_to / (turn_speed * get_physics_process_delta_time()), -1.0, 1.0)
+#
+#	return movement_vector
 
 func _predict_remote_input(previous_input: Dictionary, ticks_since_real_input: int) -> Dictionary:
 	var input = previous_input.duplicate()
@@ -357,12 +343,16 @@ func _network_process(delta: float, input: Dictionary) -> void:
 	if movement_vector.y > 0:
 		engine_sound.turning = true
 	
-	rotation += movement_vector.y * turn_speed * delta
+	if movement_vector.y != 0:
+		rotate_and_slide(SGFixed.mul(movement_vector.y, turn_speed))
 
-	velocity = Vector2()
-	velocity.x = movement_vector.x
-	velocity = velocity.rotated(rotation) * speed
-	move_and_slide(velocity)
+	if movement_vector.x != 0:
+		velocity.clear()
+		#velocity.y = 0
+		velocity.x = movement_vector.x
+		velocity.rotate(fixed_rotation)
+		velocity.imul(speed)
+		move_and_slide(velocity)
 	
 	Globals.my_player_position = global_position
 	
@@ -372,9 +362,9 @@ func _network_process(delta: float, input: Dictionary) -> void:
 		engine_sound.engine_state = engine_sound.EngineState.IDLE
 	
 	if input.has(PlayerInput.TURRET_ROTATION):
-		turret_pivot.global_rotation = input[PlayerInput.TURRET_ROTATION]
+		turret_pivot.set_global_fixed_rotation(input[PlayerInput.TURRET_ROTATION])
 	else:
-		turret_pivot.rotation = 0.0
+		turret_pivot.fixed_rotation = 0
 	
 	if input.get(PlayerInput.SHOOTING, false) and can_shoot:
 		can_shoot = false
@@ -382,14 +372,10 @@ func _network_process(delta: float, input: Dictionary) -> void:
 		shoot()
 		Globals.rumble.add_weak_rumble(shoot_rumble)
 
-#	if using_ability:
-#		use_ability()
+	if input.get(PlayerInput.USING_ABILITY, false):
+		use_ability()
 	
 	_after_update_position()
-	
-	#var sync_event = NetworkSyncEvent.new(self, {})
-	#hooks.dispatch_event('send_remote_update', sync_event)
-	#rpc("_receive_remote_update", sync_event.data)
 
 func _after_update_position() -> void:
 	# Make info follow the tank
@@ -400,27 +386,38 @@ func _after_update_position() -> void:
 
 func _save_state() -> Dictionary:
 	return {
-		position = position,
-		rotation = rotation,
-		turret_rotation = turret_pivot.global_rotation,
+		fixed_transform = fixed_transform.copy(),
+		turret_rotation = turret_pivot.get_global_fixed_rotation(),
 		can_shoot = can_shoot,
+		dead = dead,
 		health = health,
+		speed = speed,
 		weapon_type = weapon_type.resource_path,
+		held_ability_type = held_ability_type.resource_path if held_ability_type else null,
+		ability_charges = ability_charges,
 	}
 
 func _load_state(state: Dictionary) -> void:
-	position = state['position']
-	rotation = state['rotation']
-	turret_pivot.global_rotation = state['turret_rotation']
+	fixed_transform = state['fixed_transform']
+	
+	turret_pivot.set_global_fixed_rotation(state['turret_rotation'])
 	can_shoot = state['can_shoot']
+	dead = state['dead']
 	update_health(state['health'])
+	speed = state['speed']
 	set_weapon_type(load(state['weapon_type']))
+	set_held_ability_type(load(state['held_ability_type']) if state['held_ability_type'] else null)
+	ability_charges = state['ability_charges']
+	
+	sync_to_physics_engine()
 	_after_update_position()
+	_update_ability_label()
 
 func _interpolate_state(old_state: Dictionary, new_state: Dictionary, weight: float) -> void:
-	position = lerp(old_state['position'], new_state['position'], weight)
-	rotation = lerp_angle(old_state['rotation'], new_state['rotation'], weight)
-	turret_pivot.global_rotation = lerp_angle(old_state['turret_rotation'], new_state['turret_rotation'], weight)
+	position = lerp(old_state['fixed_transform'].origin.to_float(), new_state['fixed_transform'].origin.to_float(), weight)
+	scale = lerp(old_state['fixed_transform'].get_scale().to_float(), new_state['fixed_transform'].get_scale().to_float(), weight)
+	rotation = lerp_angle(SGFixed.to_float(old_state['fixed_transform'].get_rotation()), SGFixed.to_float(new_state['fixed_transform'].get_rotation()), weight)
+	turret_pivot.global_rotation = lerp_angle(SGFixed.to_float(old_state['turret_rotation']), SGFixed.to_float(new_state['turret_rotation']), weight)
 	_after_update_position()
 
 func _unhandled_input(event: InputEvent) -> void:
@@ -432,47 +429,6 @@ func _unhandled_input(event: InputEvent) -> void:
 		_input_shoot = true
 	if event.is_action_pressed("player1_use_ability"):
 		_input_use_ability = true
-
-puppet func _receive_remote_update(data: Dictionary) -> void:
-	var sync_event = NetworkSyncEvent.new(self, data)
-	hooks.dispatch_event("receive_remote_update", sync_event)
-
-func _hook_default_send_remote_update(event: NetworkSyncEvent) -> void:
-	var data = event.data
-	data['rotation'] = rotation
-	data['position'] = position
-	data['turret_rotation'] = turret_pivot.rotation
-	data['visible'] = visible
-	#data['shooting'] = shooting
-	data['weapon_type_path'] = weapon_type.resource_path
-	#data['using_ability'] = using_ability
-	data['ability_type_path'] = ability_type.resource_path if ability_type else null
-
-func _hook_default_receive_remote_update(event: NetworkSyncEvent) -> void:
-	var data = event.data
-	if data.has('rotation'):
-		rotation = data['rotation']
-	if data.has('position'):
-		position = data['position']
-		player_info_node.position = global_position + player_info_offset
-	if data.has('turret_rotation'):
-		turret_pivot.rotation = data['turret_rotation']
-	if data.has('visible'):
-		visible = data['visible']
-		player_info_node.visible = visible
-	if data.has('weapon_type_path'):
-		if weapon_type.resource_path != data['weapon_type_path']:
-			set_weapon_type(load(data['weapon_type_path']))
-	if data.get('shooting', false):
-		shoot()
-	if data.has('ability_type_path'):
-		if data['ability_type_path']:
-			if ability_type == null or ability_type.resource_path != data['ability_type_path']:
-				set_ability_type(load(data['ability_type_path']))
-		else:
-			set_ability_type(null)
-	if data.get('using_ability', false):
-		use_ability()
 
 func shoot() -> void:
 	hooks.dispatch_event("shoot", TankEvent.new(self))
@@ -492,22 +448,45 @@ func _hook_default_use_ability(event: TankEvent):
 	if not get_parent():
 		return
 	
-	if ability:
-		# If the last ability is still in effect, then we immediately stop it.
-		if last_ability and is_instance_valid(last_ability) and is_a_parent_of(last_ability):
-			_on_ability_finished(last_ability)
-			
+	if held_ability_type:
+		ability = SyncManager.spawn('Ability', self, held_ability_type.ability_scene, {
+			ability_type = held_ability_type,
+		}, true, 'Player' + name + 'Ability')
+		
 		ability.use_ability()
-		if ability.charges <= 0:
-			last_ability = ability
-			set_ability_type(null)
-		else:
-			_update_ability_label()
+		
+		ability_charges -= 1
+		if ability_charges == 0:
+			held_ability_type = null
+		_update_ability_label()
+
+# Called via the 'scene_spawned' signal when the ability is created.
+func _setup_and_use_ability(new_ability, new_ability_type):
+	if ability:
+		_on_ability_finished(ability)
 	
+	# We need to set the 'ability' member variable here for the case where
+	# the ability spawned by the SpawnManager due to a rollback.
+	ability = new_ability
+	
+	ability.connect("finished", self, "_on_ability_finished", [ability])
+	ability.setup_ability(self, new_ability_type)
+	ability.attach_ability()
+
+func _on_ability_finished(old_ability) -> void:
+	old_ability.disconnect("finished", self, "_on_ability_finished")
+	
+	old_ability.detach_ability()
+	remove_child(old_ability)
+	old_ability.queue_free()
+	
+	if old_ability == ability:
+		ability = null
+
 func _on_ShootCooldownTimer_timeout() -> void:
 	can_shoot = true
 
-func take_damage(damage: int, attacker_id: int = -1, attack_vector: Vector2 = Vector2.ZERO) -> void:
+func take_damage(damage: int, attacker_id: int = -1, attack_vector: SGFixedVector2 = SGFixed.vector2(0, 0)) -> void:
 	hooks.dispatch_event("take_damage", TakeDamageEvent.new(self, damage, attacker_id, attack_vector))
 
 func _hook_default_take_damage(event: TakeDamageEvent) -> void:
@@ -535,17 +514,16 @@ func restore_health(_health: int) -> void:
 	hooks.dispatch_event("restore_health", RestoreHealthEvent.new(self, _health))
 
 func _hook_default_restore_health(event: RestoreHealthEvent) -> void:
-	if is_network_master():
-		health += event.health
-		if health > 100:
-			health = 100
-		update_health(health)
+	health += event.health
+	if health > 100:
+		health = 100
+	update_health(health)
 
-remotesync func update_health(_health) -> void:
+func update_health(_health) -> void:
 	health = clamp(_health, 0, 100)
 	player_info_node.update_health(health)
 
-remotesync func die(killer_id: int = -1) -> void:
+func die(killer_id: int = -1) -> void:
 	hooks.dispatch_event("die", DieEvent.new(self, killer_id))
 
 func _hook_default_die(event: DieEvent) -> void:

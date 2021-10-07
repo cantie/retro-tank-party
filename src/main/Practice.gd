@@ -25,7 +25,10 @@ func restart_game() -> void:
 		1: Game.Player.new(1, "Practice", 1),
 	}
 	
-	game.game_setup(players, "res://mods/core/maps/Battlefield.tscn")
+	var rng = RandomNumberGenerator.new()
+	rng.randomize()
+	
+	game.game_setup(players, "res://mods/core/maps/Battlefield.tscn", rng.seed)
 	game.game_start()
 
 func _unhandled_input(event: InputEvent) -> void:

@@ -1,18 +1,33 @@
 TODO
 ====
 
-MILESTONE 1:
+MILESTONE 1 (physics):
 
- - Do more real world tests with different regions
+ - Code clean-up
+   o Port over more (all?) of Vector2's methods? Need in both fixed_vector2 and SGFixedVector2!
+ - Figure out how to expose constants to GDscript (ie. SGFixedVector2.ZERO, SGFixed.ONE)
+ - Move engine to its own repo
+ - Unit tests!
+   o Reintroduce the physics server to allow testing in GDScript?
 
- - Solve problems with latency and packet loss
-   o Dig deeper into WebRTC and try to see where things are going awry!
+MILESTOE 2 (finish porting all the things):
 
-INTERMISSION:
+ - Bug: Pick up non-chargable powerup while using the same power-up (ie. pickup invisible while invisible)
+ - Bug: trying to move too early can send tank to origin?
+ - Grep through the codebase for remote/master/puppet/etc and remove if possible
+ - Grep through the codebase for _synchronized_rpc() and remove if possible
+ - Implement a sound manager to prevent double playing sounds
+   o Affects Pickup.gd
+   o Can we avoid playing sounds on the first frame when interpolating?
+ - Get interpolation working again
+   * Test that movement works the same with interpolation disabled too
+ - Search for time Timers in the game and make sure they are switched to NetworkTimer
+ - Figure out how to handle physics
+ - Figure out how to handle sound!
+ - Re-implement the modern control scheme
+   o Make sure we're good in Boost.gd
 
- - Decide whether this is a viable way forward or not
-
-MILESTONE 2 (internal cleanup):
+MILESTONE 3 (internal cleanup):
 
  - Profile our rollbacks so we can see how close we are to the frame budget
  - Move ping and other RPCs out of SyncManager and into NetworkAdaptor - will hepl with unit tests
@@ -20,17 +35,28 @@ MILESTONE 2 (internal cleanup):
  - Setup the debug_rollback_ticks to compare the save states with the original save states so we can know the exact same things happened
  - Switch to storing state before starting the next tick? This would ensure that deferred stuff would happen...
 
-MILESTOE 3 (finish porting all the things):
-
- - Fix Railgun
- - Re-implement abilities
-   o Maybe we shouldn't actually create the ability node until we use the ability?
- - Figure out how to handle physics
- - Figure out how to handle sound!
- - Implement spectators
-
 BEFORE RELEASE:
 
  - Implement a way to kick problematic peers, rather than 
  - Smooth out our frame skipping so we don't do it all at once
+ - Document and release stuff that was created:
+   o Rollback addon
+   o Physics engine
+
+BACKLOG:
+
+ - Implement spectators
+ - Solve problems packet loss
+   o Dig deeper into WebRTC and try to see where things are going awry!
+ - Convert concave polygons to a set of convex via triangulation?
+   * https://stackoverflow.com/questions/5247994/simple-2d-polygon-triangulation
+   * http://gamma.cs.unc.edu/SEIDEL/
+   * https://en.wikipedia.org/wiki/Polygon_triangulation
+   * Header only library:
+     - https://github.com/mapbox/earcut.hpp 
+   * Easy to read C library:
+     - https://people.sc.fsu.edu/~jburkardt/c_src/polygon_triangulate/polygon_triangulate.html
+ - Physics: Have SGArea2D directly build its Array to avoid allocating the intermediate vector
+   o OR, pass in a function pointer and use that to build the Array
+ - Physics: Implement capsule shape?
 

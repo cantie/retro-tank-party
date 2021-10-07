@@ -1,4 +1,4 @@
-extends Area2D
+extends SGArea2D
 
 onready var label := $Visual/OuterRect/InnerRect/Label
 onready var outer_rect := $Visual/OuterRect
@@ -31,13 +31,24 @@ func setup_pickup(pickup) -> void:
 	_pickup = pickup
 	set_letter(pickup.letter)
 
-func _on_Powerup_body_entered(body: PhysicsBody2D) -> void:
+func _network_spawn(data: Dictionary) -> void:
+	fixed_position = data['fixed_position']
+	setup_pickup(load(data['pickup_path']))
+	sync_to_physics_engine()
+
+func _network_process(delta: float, _input: Dictionary) -> void:
+	var overlapping_bodies = get_overlapping_bodies()
+	if overlapping_bodies.size() > 0:
+		_on_Powerup_body_entered(overlapping_bodies[0])
+
+func _on_Powerup_body_entered(body) -> void:
 	if _pickup:
 		_pickup.pickup(body)
 	
-	visible = false
-	collision_shape.set_deferred("disabled", true)
-	sound.play()
-
-func _on_Sound_finished() -> void:
 	queue_free()
+	
+	# Duplicate sound and put on parent so it won't get freed when we do.
+	Sounds.play_multiple(sound, get_path())
+	#var new_sound = sound.duplicate(0)
+	#get_parent().add_child(new_sound)
+	#new_sound.play()
