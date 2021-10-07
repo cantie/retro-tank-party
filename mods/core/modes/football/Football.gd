@@ -26,8 +26,11 @@ func pass_football(_position: SGFixedVector2, _vector: SGFixedVector2) -> void:
 	in_bounds = true
 	frames_countdown = 5
 	set_global_fixed_position(_position)
-	set_global_fixed_rotation(_vector.angle())
 	vector = _vector
+	if vector.x == 0 and vector.y == 0:
+		fixed_rotation = 0
+	else:
+		set_global_fixed_rotation(_vector.angle())
 	pass_timer.start()
 	sliding_over_obstruction = false
 	mark_as_held(null)
@@ -108,11 +111,10 @@ func _network_process(delta: float, input: Dictionary) -> void:
 	fixed_position.iadd(vector.mul(speed))
 	sync_to_physics_engine()
 	
-	# @todo Re-enable bounds checking
-#	if in_bounds:
-#		in_bounds = bounds_rect.has_point(global_position)
-#		if not in_bounds:
-#			emit_signal("out_of_bounds")
+	if in_bounds:
+		in_bounds = bounds_rect.has_point(get_global_fixed_position())
+		if not in_bounds:
+			emit_signal("out_of_bounds")
 
 func _interpolate_state(old_state: Dictionary, new_state: Dictionary, weight: float) -> void:
 	position = lerp(old_state['fixed_position'].to_float(), new_state['fixed_position'].to_float(), weight)

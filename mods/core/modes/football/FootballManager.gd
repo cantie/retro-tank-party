@@ -12,7 +12,7 @@ const SIXTY_FOUR = 4194304
 
 onready var hud := $CanvasLayer/TimedMatchHUD
 onready var player_managers_node := $PlayerManagers
-onready var rng := $RandomNumberGenerator
+onready var next_round_timer := $NextRoundTimer
 onready var show_score_timer := $ShowScoreTimer
 onready var match_finished_timer := $MatchFinishedTimer
 
@@ -20,6 +20,7 @@ var football
 
 var round_over := false
 var instant_death := false
+var next_team_with_ball := -1
 
 var team_starters := [0, 0]
 var team_start_transforms := []
@@ -83,16 +84,28 @@ func _do_match_setup() -> void:
 	hud.countdown_timer.start_countdown(config['timelimit'] * 60)
 	hud.countdown_timer.connect("countdown_finished", self, "_on_countdown_finished")
 
+func _get_player_start_transforms() -> Array:
+	var player_start_transforms := []
+	player_start_transforms.resize(players.size())
+	for team_id in range(teams.size()):
+		for team_player_index in range(teams[team_id].size()):
+			var player_id = teams[team_id][team_player_index]
+			var player = players[player_id]
+			player_start_transforms[player.index - 1] = team_start_transforms[team_id][team_player_index]
+	return player_start_transforms
+
 func _save_state() -> Dictionary:
 	var state = ._save_state()
 	state['instant_death'] = instant_death
 	state['round_over'] = round_over
+	state['next_team_with_ball'] = next_team_with_ball
 	return state
 
 func _load_state(state: Dictionary) -> void:
 	._load_state(state)
 	instant_death = state['instant_death']
 	round_over = state['round_over']
+	next_team_with_ball = state['next_team_with_ball']
 
 func _on_game_player_spawned(tank) -> void:
 	var player_id = tank.get_network_master()
@@ -155,40 +168,29 @@ func check_goals() -> void:
 		for goal in goals:
 			goal.check_for_tanks()
 
-remotesync func start_new_round(message: String, team_with_ball: int) -> void:
+func start_new_round(message: String, team_with_ball: int) -> void:
 	ui_layer.show_message(message)
-	
-	# @todo Replace with timer!
-	yield(get_tree().create_timer(4.0), "timeout")
-	
+	round_over = true
+	next_round_timer.start()
+
+func _on_NextRoundTimer_timeout() -> void:	
 	# Get the specific player with the ball.
 	var player_with_ball = -1
-	if team_with_ball != -1:
-		if teams[team_with_ball].size() > 1:
-			player_with_ball = team_starters[team_with_ball]
-			team_starters[team_with_ball] = 1 if player_with_ball == 0 else 0
-			player_with_ball = teams[team_with_ball][player_with_ball]
+	if next_team_with_ball != -1:
+		if teams[next_team_with_ball].size() > 1:
+			player_with_ball = team_starters[next_team_with_ball]
+			team_starters[next_team_with_ball] = 1 if player_with_ball == 0 else 0
+			player_with_ball = teams[next_team_with_ball][player_with_ball]
 		else:
-			player_with_ball = teams[team_with_ball][0]
+			player_with_ball = teams[next_team_with_ball][0]
+	
+	next_team_with_ball = -1
 	
 	var player_health := {}
 	for player_id in game.players_alive:
 		var tank = game.get_tank(player_id)
 		player_health[player_id] = tank.health
 	
-	_setup_new_round(player_with_ball, player_health)
-
-func _get_player_start_transforms() -> Array:
-	var player_start_transforms := []
-	player_start_transforms.resize(players.size())
-	for team_id in range(teams.size()):
-		for team_player_index in range(teams[team_id].size()):
-			var player_id = teams[team_id][team_player_index]
-			var player = players[player_id]
-			player_start_transforms[player.index - 1] = team_start_transforms[team_id][team_player_index]
-	return player_start_transforms
-
-func _setup_new_round(player_with_ball: int, player_health: Dictionary) -> void:
 	game.game_reset()
 	
 	for player_id in game.players_alive:
@@ -200,8 +202,7 @@ func _setup_new_round(player_with_ball: int, player_health: Dictionary) -> void:
 		football.pass_football(ball_start_position, SGFixed.vector2(0, 0))
 	else:
 		grab_football(game.get_tank(player_with_ball))
-
-remotesync func _start_new_round() -> void:
+	
 	round_over = false
 	ui_layer.hide_message()
 	game.game_start()
@@ -252,3 +253,4 @@ func _on_ShowScoreTimer_timeout() -> void:
 
 func _on_MatchFinishedTimer_timeout() -> void:
 	match_scene.finish_match()
+

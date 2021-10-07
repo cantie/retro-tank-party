@@ -15,9 +15,9 @@ MILESTOE 2 (finish porting all the things):
 
  - Convert all the game modes:
    o Football
-     - Add bounds checking back (may need some SGFixedRect2 methods)
+     - Goals and scoring points
+     - Match end, winning and instant death
      - game.create_free_space_detector() should take an SGFixedRect2
-     - Implement capsule shape?
  - Bug: Pick up non-chargable powerup while using the same power-up (ie. pickup invisible while invisible)
  - Bug: trying to move too early can send tank to origin?
  - Grep through the codebase for remote/master/puppet/etc and remove if possible
@@ -62,6 +62,7 @@ BACKLOG:
      - https://github.com/mapbox/earcut.hpp 
    * Easy to read C library:
      - https://people.sc.fsu.edu/~jburkardt/c_src/polygon_triangulate/polygon_triangulate.html
- - Have SGArea2D directly build its Array to avoid allocating the intermediate vector
+ - Physics: Have SGArea2D directly build its Array to avoid allocating the intermediate vector
    o OR, pass in a function pointer and use that to build the Array
+ - Physics: Implement capsule shape?
 

@@ -31,6 +31,11 @@ void SGFixedRect2::_bind_methods() {
 
 	ADD_PROPERTY(PropertyInfo(Variant::OBJECT, "position", PROPERTY_HINT_TYPE_STRING, "SGFixedVector2"), "set_position", "get_position");
 	ADD_PROPERTY(PropertyInfo(Variant::OBJECT, "size", PROPERTY_HINT_TYPE_STRING, "SGFixedVector2"), "set_size", "get_size");
+
+	ClassDB::bind_method(D_METHOD("has_point", "point"), &SGFixedRect2::has_point);
+	ClassDB::bind_method(D_METHOD("intersects", "rect"), &SGFixedRect2::intersects);
+	ClassDB::bind_method(D_METHOD("merge", "rect"), &SGFixedRect2::merge);
+	ClassDB::bind_method(D_METHOD("expanded", "point"), &SGFixedRect2::expanded);
 }
 
 Ref<SGFixedVector2> SGFixedRect2::get_position() {
@@ -47,6 +52,24 @@ Ref<SGFixedVector2> SGFixedRect2::get_size() {
 
 void SGFixedRect2::set_size(const Ref<SGFixedVector2> &p_size) {
 	size->set_internal(p_size->get_internal());
+}
+
+bool SGFixedRect2::has_point(const Ref<SGFixedVector2> &p_point) const {
+	return get_internal().has_point(p_point->get_internal());
+}
+
+bool SGFixedRect2::intersects(const Ref<SGFixedRect2> &p_other) const {
+	return get_internal().intersects(p_other->get_internal());
+}
+
+Ref<SGFixedRect2> SGFixedRect2::merge(const Ref<SGFixedRect2> &p_rect) const {
+	return SGFixedRect2::from_internal(get_internal().merge(p_rect->get_internal()));
+}
+
+Ref<SGFixedRect2> SGFixedRect2::expanded(const Ref<SGFixedVector2> &p_vector) {
+	SGFixedRect2Internal internal = get_internal();
+	internal.expand_to(p_vector->get_internal());
+	return SGFixedRect2::from_internal(internal);
 }
 
 SGFixedRect2::SGFixedRect2()

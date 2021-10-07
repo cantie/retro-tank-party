@@ -45,6 +45,20 @@ struct SGFixedRect2Internal {
         return position + size;
     }
 
+	inline bool has_point(const SGFixedVector2Internal &p_point) const {
+		if (p_point.x < position.x)
+			return false;
+		if (p_point.y < position.y)
+			return false;
+
+		if (p_point.x >= (position.x + size.x))
+			return false;
+		if (p_point.y >= (position.y + size.y))
+			return false;
+
+		return true;
+	}
+
     inline bool intersects(const SGFixedRect2Internal &p_other) const {
         SGFixedVector2Internal min_one = get_min();
         SGFixedVector2Internal max_one = get_max();

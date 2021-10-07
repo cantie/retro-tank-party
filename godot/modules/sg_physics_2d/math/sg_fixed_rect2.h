@@ -56,7 +56,19 @@ public:
 	Ref<SGFixedVector2> get_size();
 	void set_size(const Ref<SGFixedVector2> &p_size);
 
+	bool has_point(const Ref<SGFixedVector2> &p_point) const;
+    bool intersects(const Ref<SGFixedRect2> &p_other) const;
+	Ref<SGFixedRect2> merge(const Ref<SGFixedRect2> &p_rect) const;
+	Ref<SGFixedRect2> expanded(const Ref<SGFixedVector2> &p_vector);
+
+	_FORCE_INLINE_ static Ref<SGFixedRect2> from_internal(const SGFixedRect2Internal &p_internal) {
+		Ref<SGFixedRect2> ret(memnew(SGFixedRect2));
+		ret->set_internal(p_internal);
+		return ret;
+	}
+
 	SGFixedRect2();
+	SGFixedRect2(const SGFixedRect2Internal &p_internal);
 	~SGFixedRect2();
 };
 
