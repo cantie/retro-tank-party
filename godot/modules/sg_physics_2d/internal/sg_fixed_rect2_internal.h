@@ -24,6 +24,8 @@
 #ifndef SG_FIXED_RECT2_INTERNAL_H
 #define SG_FIXED_RECT2_INTERNAL_H
 
+#include <core/math/rect2.h>
+
 #include "sg_fixed_vector2_internal.h"
 
 struct SGFixedRect2Internal {
@@ -42,6 +44,20 @@ struct SGFixedRect2Internal {
     _FORCE_INLINE_ SGFixedVector2Internal get_max() const {
         return position + size;
     }
+
+	inline bool has_point(const SGFixedVector2Internal &p_point) const {
+		if (p_point.x < position.x)
+			return false;
+		if (p_point.y < position.y)
+			return false;
+
+		if (p_point.x >= (position.x + size.x))
+			return false;
+		if (p_point.y >= (position.y + size.y))
+			return false;
+
+		return true;
+	}
 
     inline bool intersects(const SGFixedRect2Internal &p_other) const {
         SGFixedVector2Internal min_one = get_min();
@@ -85,6 +101,10 @@ struct SGFixedRect2Internal {
         position = begin;
         size = end - begin;
 	}
+
+    _FORCE_INLINE_ static SGFixedRect2Internal from_float(const Rect2 &p_float_rect) {
+        return SGFixedRect2Internal(SGFixedVector2Internal::from_float(p_float_rect.position), SGFixedVector2Internal::from_float(p_float_rect.size));
+    }
 };
 
 #endif

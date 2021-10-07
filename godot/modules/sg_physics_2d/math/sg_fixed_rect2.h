@@ -21,55 +21,55 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
 /*************************************************************************/
 
-#ifndef SG_FIXED_SINGLETON_H
-#define SG_FIXED_SINGLETON_H
+#ifndef SG_FIXED_RECT2_H
+#define SG_FIXED_RECT2_H
 
-#include <core/object.h>
+#include <core/reference.h>
 
 #include "sg_fixed_vector2.h"
-#include "sg_fixed_rect2.h"
-#include "sg_fixed_transform_2d.h"
+#include "../internal/sg_fixed_rect2_internal.h"
 
-class SGFixed : public Object {
+class SGFixedRect2 : public Reference {
 
-    GDCLASS(SGFixed, Object);
+	GDCLASS(SGFixedRect2, Reference);
 
-    static SGFixed *singleton;
+	Ref<SGFixedVector2> position;
+	Ref<SGFixedVector2> size;
 
 protected:
-    static void _bind_methods();
+	static void _bind_methods();
 
 public:
-    static SGFixed *get_singleton();
 
-    int64_t from_int(int64_t p_int_value) const;
-    int64_t from_float(float p_float_value) const;
+	_FORCE_INLINE_ SGFixedRect2Internal get_internal() const {
+		return SGFixedRect2Internal(position->get_internal(), size->get_internal());
+	}
 
-    int64_t to_int(int64_t p_fixed_value) const;
-    float to_float(int64_t p_fixed_value) const;
+	_FORCE_INLINE_ void set_internal(const SGFixedRect2Internal &p_internal) {
+		position->set_internal(p_internal.position);
+		size->set_internal(p_internal.size);
+	}
 
-    int64_t mul(int64_t p_fixed_one, int64_t p_fixed_two) const;
-    int64_t div(int64_t p_fixed_one, int64_t p_fixed_two) const;
+	Ref<SGFixedVector2> get_position();
+	void set_position(const Ref<SGFixedVector2> &p_position);
 
-    int64_t sin(int64_t p_fixed_value) const;
-    int64_t cos(int64_t p_fixed_value) const;
-    int64_t tan(int64_t p_fixed_value) const;
-    int64_t asin(int64_t p_fixed_value) const;
-    int64_t acos(int64_t p_fixed_value) const;
-    int64_t atan(int64_t p_fixed_value) const;
-    int64_t atan2(int64_t p_fixed_y_value, int64_t p_fixed_x_value) const;
-    int64_t sqrt(int64_t p_fixed_value) const;
+	Ref<SGFixedVector2> get_size();
+	void set_size(const Ref<SGFixedVector2> &p_size);
 
-    Ref<SGFixedVector2> vector2(int64_t p_fixed_x, int64_t p_fixed_y) const;
-    Ref<SGFixedVector2> from_float_vector2(const Vector2 &p_float_vector) const;
+	bool has_point(const Ref<SGFixedVector2> &p_point) const;
+    bool intersects(const Ref<SGFixedRect2> &p_other) const;
+	Ref<SGFixedRect2> merge(const Ref<SGFixedRect2> &p_rect) const;
+	Ref<SGFixedRect2> expanded(const Ref<SGFixedVector2> &p_vector);
 
-    Ref<SGFixedRect2> rect2(const Ref<SGFixedVector2> &p_position, const Ref<SGFixedVector2> &p_size) const;
-    Ref<SGFixedRect2> from_float_rect2(const Rect2 &p_float_rect) const;
+	_FORCE_INLINE_ static Ref<SGFixedRect2> from_internal(const SGFixedRect2Internal &p_internal) {
+		Ref<SGFixedRect2> ret(memnew(SGFixedRect2));
+		ret->set_internal(p_internal);
+		return ret;
+	}
 
-    Ref<SGFixedTransform2D> transform2d(int64_t p_rotation, const Ref<SGFixedVector2> &p_origin) const;
-
-    SGFixed();
-    ~SGFixed();
+	SGFixedRect2();
+	SGFixedRect2(const SGFixedRect2Internal &p_internal);
+	~SGFixedRect2();
 };
 
 #endif

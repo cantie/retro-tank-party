@@ -4,18 +4,15 @@ TODO
 MILESTONE 1 (physics):
 
  - Code clean-up
-   o Make sure that all files (include .h files) are using tabs instead of spaces
+   o Make sure that all files (including .h files) are using tabs instead of spaces
    o Port over more (all?) of Vector2's methods? Need in both fixed_vector2 and SGFixedVector2!
+ - Figure out how to expose constants to GDscript (ie. SGFixedVector2.ZERO, SGFixed.ONE)
  - Move engine to its own repo
  - Unit tests!
    o Reintroduce the physics server to allow testing in GDScript?
 
 MILESTOE 2 (finish porting all the things):
 
- - Convert all the game modes:
-   o Deathmatch
-     - Do we need match_start() anymore? We aren't really doing a host synchronized start anymore. Is it even correct?
-   o Football
  - Bug: Pick up non-chargable powerup while using the same power-up (ie. pickup invisible while invisible)
  - Bug: trying to move too early can send tank to origin?
  - Grep through the codebase for remote/master/puppet/etc and remove if possible
@@ -60,6 +57,7 @@ BACKLOG:
      - https://github.com/mapbox/earcut.hpp 
    * Easy to read C library:
      - https://people.sc.fsu.edu/~jburkardt/c_src/polygon_triangulate/polygon_triangulate.html
- - Have SGArea2D directly build its Array to avoid allocating the intermediate vector
+ - Physics: Have SGArea2D directly build its Array to avoid allocating the intermediate vector
    o OR, pass in a function pointer and use that to build the Array
+ - Physics: Implement capsule shape?
 

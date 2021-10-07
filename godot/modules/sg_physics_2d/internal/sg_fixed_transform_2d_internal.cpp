@@ -37,7 +37,7 @@ SGFixedTransform2DInternal SGFixedTransform2DInternal::inverse() const {
 void SGFixedTransform2DInternal::affine_invert() {
 	fixed det = basis_determinant();
 #ifdef MATH_CHECKS
-	ERR_FAIL_COND(det == 0);
+	ERR_FAIL_COND(det == fixed::ZERO);
 #endif
 	fixed idet = fixed::ONE / det;
 

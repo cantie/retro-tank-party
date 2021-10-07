@@ -24,6 +24,8 @@
 #ifndef SG_FIXED_VECTOR2_INTERNAL_H
 #define SG_FIXED_VECTOR2_INTERNAL_H
 
+#include <core/math/vector2.h>
+
 #include "sg_fixed_number_internal.h"
 
 struct SGFixedVector2Internal {
@@ -154,6 +156,10 @@ struct SGFixedVector2Internal {
 	SGFixedVector2Internal reflect(const SGFixedVector2Internal &p_normal) const;
 
 	bool is_equal_approx(const SGFixedVector2Internal &p_v) const;
+
+	_FORCE_INLINE_ static SGFixedVector2Internal from_float(const Vector2 &p_float_vector) {
+		return SGFixedVector2Internal(fixed::from_float(p_float_vector.x), fixed::from_float(p_float_vector.y));
+	}
 
 	_FORCE_INLINE_ SGFixedVector2Internal(fixed p_x, fixed p_y) 
 		: x(p_x), y(p_y) {}

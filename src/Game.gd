@@ -260,9 +260,9 @@ func _simple_integer_hash(x: int):
 func generate_random_seed() -> int:
 	return _simple_integer_hash(johnny.randi())
 
-func create_free_space_detector(area_position: SGFixedVector2, area_size: SGFixedVector2, dimensions: SGFixedVector2, rng: NetworkRandomNumberGenerator):
+func create_free_space_detector(area: SGFixedRect2, dimensions: SGFixedVector2, rng: NetworkRandomNumberGenerator):
 	var detector = FreeSpaceDetector.instance()
-	detector.setup_free_space_detector(area_position, area_size, dimensions, rng)
+	detector.setup_free_space_detector(area, dimensions, rng)
 	add_child(detector)
 	return detector
 
