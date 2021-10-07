@@ -33,7 +33,7 @@ func get_map_rect() -> Rect2:
 	
 	return _map_rect
 
-func get_fixed_map_rect() -> SGFixedRect2:
+func get_map_fixed_rect() -> SGFixedRect2:
 	# It *should* be OK to convert from floats here because the values are
 	# actually all integers, and floats should have full precision at the
 	# sort of values we're using here.
@@ -71,7 +71,7 @@ func get_goal_transforms() -> Array:
 		goal_positions_parent = get_node("GoalPositions")
 	
 	var goal_transforms := []
-	var fixed_map_rect = get_fixed_map_rect()
+	var fixed_map_rect = get_map_fixed_rect()
 	
 	for i in range(2):
 		if goal_positions_parent and goal_positions_parent.get_child_count() > i:

@@ -29,12 +29,12 @@ func set_goal_color(_goal_color: int) -> void:
 			yield(self, "ready")
 		sprite.texture = sprites[_goal_color]
 
+func _network_process(delta: float, input: Dictionary) -> void:
+	check_for_tanks()
+
 func check_for_tanks() -> void:
 	for body in get_overlapping_bodies():
 		emit_signal("tank_present", body, self)
-
-func _on_Goal_body_entered(body: Node) -> void:
-	emit_signal("tank_present", body, self)
 
 func celebrate() -> void:
 	goal_horn.play()
@@ -42,13 +42,13 @@ func celebrate() -> void:
 		get_tree().create_timer(randf()).connect("timeout", self, "_launch_fireworks")
 
 func _launch_fireworks() -> void:
-	pass
-#	var top_left = collision_shape.global_position - collision_shape.shape.extents
-#
-#	var fireworks = Fireworks.instance()
-#	get_tree().get_root().add_child(fireworks)
-#	fireworks.global_position = Vector2(
-#		top_left.x + (randi() % int(collision_shape.shape.extents.x * 2)),
-#		top_left.y + (randi() % int(collision_shape.shape.extents.y * 2)))
-#	fireworks.color = Globals.TEAM_COLORS[Globals.Teams.RED if goal_color == GoalColor.BLUE else Globals.Teams.BLUE]
+	var shape_float_extents = collision_shape.shape.extents.to_float()
+	var top_left = collision_shape.global_position - shape_float_extents
+	
+	var fireworks = Fireworks.instance()
+	get_tree().get_root().add_child(fireworks)
+	fireworks.global_position = Vector2(
+		top_left.x + (randi() % int(shape_float_extents.x * 2)),
+		top_left.y + (randi() % int(shape_float_extents.y * 2)))
+	fireworks.color = Globals.TEAM_COLORS[Globals.Teams.RED if goal_color == GoalColor.BLUE else Globals.Teams.BLUE]
 

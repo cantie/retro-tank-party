@@ -8,7 +8,9 @@
 extents = Object(SGFixedVector2,"x":8388608,"y":8388608,"script":null)
 
 
-[node name="Goal" type="SGArea2D"]
+[node name="Goal" type="SGArea2D" groups=[
+"network_sync",
+]]
 fixed_position = Object(SGFixedVector2,"x":0,"y":0,"script":null)
 
 fixed_scale = Object(SGFixedVector2,"x":65536,"y":65536,"script":null)

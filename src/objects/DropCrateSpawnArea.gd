@@ -4,6 +4,7 @@ const DropCrate = preload("res://src/objects/DropCrate.tscn")
 
 # 3932160 = 60
 const CRATE_DIMENSION = 3932160
+const TWO = 131072
 
 onready var collision_shape = $CollisionShape2D
 onready var drop_timer = $DropTimer
@@ -18,11 +19,9 @@ func map_object_start(map, game):
 	possible_contents = game.possible_pickups
 	
 	var extents = collision_shape.shape.extents
-	var area_position = get_global_fixed_position().sub(extents)
-	var area_size = extents.mul(131072) # 2.0
+	var area = SGFixed.rect2(get_global_fixed_position().sub(extents), extents.mul(TWO))
 	detector = game.create_free_space_detector(
-		area_position,
-		area_size,
+		area,
 		SGFixed.vector2(CRATE_DIMENSION, CRATE_DIMENSION),
 		rng)
 	

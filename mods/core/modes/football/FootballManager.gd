@@ -48,7 +48,7 @@ func _do_match_setup() -> void:
 		team_start_transforms[i] = map_temp.get_team_start_transforms(i)
 	game.game_setup(players, map_path, random_seed, _get_player_start_transforms())
 	
-	map_rect = game.map.get_fixed_map_rect()
+	map_rect = game.map.get_map_fixed_rect()
 	bounds_rect = SGFixed.rect2(map_rect.position.sub(THIRTY_TWO), map_rect.size.sub(SIXTY_FOUR))
 	ball_start_position = game.map.get_ball_start_position()
 	
@@ -68,6 +68,7 @@ func _do_match_setup() -> void:
 		goal.goal_color = i
 		game.add_child_below_node(game.map, goal)
 		goal.set_global_fixed_transform(goal_transforms[i])
+		goal.sync_to_physics_engine()
 		goal.connect("tank_present", self, "_on_goal_tank_present")
 		goals.append(goal)
 	

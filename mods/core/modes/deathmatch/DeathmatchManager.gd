@@ -42,11 +42,9 @@ func _do_match_setup() -> void:
 		for player_id in players:
 			var player = players[player_id]
 			hud.score.set_entity_name(player.index, player.name)
-
-	var fixed_map_rect = game.map.get_fixed_map_rect()
+	
 	detector = game.create_free_space_detector(
-		fixed_map_rect.position,
-		fixed_map_rect.size,
+		game.map.get_map_fixed_rect(),
 		SGFixed.vector2(TANK_DIMENSION, TANK_DIMENSION),
 		rng)
 	
