@@ -4,7 +4,6 @@ TODO
 MILESTONE 1 (physics):
 
  - Code clean-up
-   o Make sure that all files (including .h files) are using tabs instead of spaces
    o Port over more (all?) of Vector2's methods? Need in both fixed_vector2 and SGFixedVector2!
  - Figure out how to expose constants to GDscript (ie. SGFixedVector2.ZERO, SGFixed.ONE)
  - Move engine to its own repo
