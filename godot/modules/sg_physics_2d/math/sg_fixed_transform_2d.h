@@ -30,14 +30,14 @@
 #include "../internal/sg_fixed_transform_2d_internal.h"
 
 class SGFixedTransform2D : public Reference {
-    GDCLASS(SGFixedTransform2D, Reference);
+	GDCLASS(SGFixedTransform2D, Reference);
 
 	Ref<SGFixedVector2> x;
 	Ref<SGFixedVector2> y;
 	Ref<SGFixedVector2> origin;
 
 protected:
-    static void _bind_methods();
+	static void _bind_methods();
 
 	void _vector_changed();
 
@@ -73,27 +73,27 @@ public:
 
 	Ref<SGFixedTransform2D> copy() const;
 
-    Ref<SGFixedTransform2D> inverse() const;
-    Ref<SGFixedTransform2D> affine_inverse() const;
+	Ref<SGFixedTransform2D> inverse() const;
+	Ref<SGFixedTransform2D> affine_inverse() const;
 
-    int64_t get_rotation() const;
+	int64_t get_rotation() const;
 	Ref<SGFixedTransform2D> rotated(int64_t p_radians) const;
 
-    Ref<SGFixedVector2> get_scale() const;
+	Ref<SGFixedVector2> get_scale() const;
 	Ref<SGFixedTransform2D> scaled(const Ref<SGFixedVector2> &p_scale) const;
 	Ref<SGFixedTransform2D> translated(const Ref<SGFixedVector2> &p_offset) const;
 
-    Ref<SGFixedTransform2D> orthonormalized() const;
-    bool is_equal_approx(const Ref<SGFixedTransform2D> &p_transform) const;
+	Ref<SGFixedTransform2D> orthonormalized() const;
+	bool is_equal_approx(const Ref<SGFixedTransform2D> &p_transform) const;
 
-    Ref<SGFixedTransform2D> mul(const Ref<SGFixedTransform2D> &p_transform) const;
+	Ref<SGFixedTransform2D> mul(const Ref<SGFixedTransform2D> &p_transform) const;
 
-    Ref<SGFixedTransform2D> interpolate_with(const Ref<SGFixedTransform2D> &p_transform, int64_t p_weight) const;
+	Ref<SGFixedTransform2D> interpolate_with(const Ref<SGFixedTransform2D> &p_transform, int64_t p_weight) const;
 
-    Ref<SGFixedVector2> basis_xform(const Ref<SGFixedVector2> &p_vec) const;
-    Ref<SGFixedVector2> basis_xform_inv(const Ref<SGFixedVector2> &p_vec) const;
-    Ref<SGFixedVector2> xform(const Ref<SGFixedVector2> &p_vec) const;
-    Ref<SGFixedVector2> xform_inv(const Ref<SGFixedVector2> &p_vec) const;
+	Ref<SGFixedVector2> basis_xform(const Ref<SGFixedVector2> &p_vec) const;
+	Ref<SGFixedVector2> basis_xform_inv(const Ref<SGFixedVector2> &p_vec) const;
+	Ref<SGFixedVector2> xform(const Ref<SGFixedVector2> &p_vec) const;
+	Ref<SGFixedVector2> xform_inv(const Ref<SGFixedVector2> &p_vec) const;
 
 	SGFixedTransform2D();
 	SGFixedTransform2D(const SGFixedTransform2DInternal &p_internal);

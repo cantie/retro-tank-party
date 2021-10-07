@@ -29,31 +29,31 @@
 class SGKinematicCollision2D;
 
 class SGKinematicBody2D : public SGCollisionObject2D {
-    GDCLASS(SGKinematicBody2D, SGCollisionObject2D);
+	GDCLASS(SGKinematicBody2D, SGCollisionObject2D);
 
 protected:
-    static void _bind_methods();
+	static void _bind_methods();
 
 public:
-    struct Collision {
-        SGCollisionObject2D *collider;
-        // @todo How can we get the shape in here?
-        SGFixedVector2Internal normal;
-        SGFixedVector2Internal remainder;
+	struct Collision {
+		SGCollisionObject2D *collider;
+		// @todo How can we get the shape in here?
+		SGFixedVector2Internal normal;
+		SGFixedVector2Internal remainder;
 
-        Collision() {
-            collider = nullptr;
-        }
-    };
+		Collision() {
+			collider = nullptr;
+		}
+	};
 
-    bool move_and_collide(const SGFixedVector2Internal &p_linear_velocity, Collision &p_collision);
-    Ref<SGFixedVector2> move_and_slide(const Ref<SGFixedVector2> &p_linear_velocity, int p_max_slides);
-    bool rotate_and_slide(int64_t p_rotation, int p_max_slides);
+	bool move_and_collide(const SGFixedVector2Internal &p_linear_velocity, Collision &p_collision);
+	Ref<SGFixedVector2> move_and_slide(const Ref<SGFixedVector2> &p_linear_velocity, int p_max_slides);
+	bool rotate_and_slide(int64_t p_rotation, int p_max_slides);
 
-    Ref<SGKinematicCollision2D> _move(const Ref<SGFixedVector2> &p_linear_velocity);
+	Ref<SGKinematicCollision2D> _move(const Ref<SGFixedVector2> &p_linear_velocity);
 
-    SGKinematicBody2D();
-    ~SGKinematicBody2D();
+	SGKinematicBody2D();
+	~SGKinematicBody2D();
 
 };
 
@@ -63,18 +63,18 @@ class SGKinematicCollision2D : public Reference {
 	friend class SGKinematicBody2D;
 
 	SGKinematicBody2D::Collision collision;
-    Ref<SGFixedVector2> normal;
-    Ref<SGFixedVector2> remainder;
+	Ref<SGFixedVector2> normal;
+	Ref<SGFixedVector2> remainder;
 
-    void set_collision(const SGKinematicBody2D::Collision &p_collision);
+	void set_collision(const SGKinematicBody2D::Collision &p_collision);
 
 protected:
 	static void _bind_methods();
 
 public:
-    Object *get_collider() const;
-    Ref<SGFixedVector2> get_normal() const;
-    Ref<SGFixedVector2> get_remainder() const;
+	Object *get_collider() const;
+	Ref<SGFixedVector2> get_normal() const;
+	Ref<SGFixedVector2> get_remainder() const;
 
 	SGKinematicCollision2D();
 };

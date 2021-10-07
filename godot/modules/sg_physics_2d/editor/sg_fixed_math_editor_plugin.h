@@ -44,29 +44,29 @@ public:
 };
 
 class SGFixedMathEditorInspectorPlugin : public EditorInspectorPlugin {
-    GDCLASS(SGFixedMathEditorInspectorPlugin, EditorInspectorPlugin);
+	GDCLASS(SGFixedMathEditorInspectorPlugin, EditorInspectorPlugin);
 
 public:
 
-    bool can_handle(Object *p_object);
-    void parse_begin(Object *p_object);
+	bool can_handle(Object *p_object);
+	void parse_begin(Object *p_object);
 	bool parse_property(Object *p_object, Variant::Type p_type, const String &p_path, PropertyHint p_hint, const String &p_hint_text, int p_usage);
 	void parse_end();
 };
 
 class SGFixedMathEditorPlugin : public EditorPlugin {
-    GDCLASS(SGFixedMathEditorPlugin, EditorPlugin);
+	GDCLASS(SGFixedMathEditorPlugin, EditorPlugin);
 
-    SGFixedMathEditorInspectorPlugin *fixed_math_editor_inspector_plugin;
+	SGFixedMathEditorInspectorPlugin *fixed_math_editor_inspector_plugin;
 
 protected:
 
-    void _notification(int p_what);
+	void _notification(int p_what);
 
 public:
 
-    SGFixedMathEditorPlugin(EditorNode *p_editor);
-    ~SGFixedMathEditorPlugin();
+	SGFixedMathEditorPlugin(EditorNode *p_editor);
+	~SGFixedMathEditorPlugin();
 
 };
 

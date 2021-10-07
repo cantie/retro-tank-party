@@ -32,59 +32,59 @@
 class SGCollisionObject2D;
 
 class SGFixedNode2D : public Node2D {
-    GDCLASS(SGFixedNode2D, Node2D);
+	GDCLASS(SGFixedNode2D, Node2D);
 
-    friend SGCollisionObject2D;
+	friend SGCollisionObject2D;
 
-    Ref<SGFixedTransform2D> fixed_transform;
-    Ref<SGFixedVector2> fixed_position;
-    Ref<SGFixedVector2> fixed_scale;
-    int64_t fixed_rotation;
+	Ref<SGFixedTransform2D> fixed_transform;
+	Ref<SGFixedVector2> fixed_position;
+	Ref<SGFixedVector2> fixed_scale;
+	int64_t fixed_rotation;
 
-    bool updating_transform;
+	bool updating_transform;
 
 protected:
-    static void _bind_methods();
+	static void _bind_methods();
 
 	virtual void _changed_callback(Object *p_changed, const char *p_prop) override;
 
-    _FORCE_INLINE_ SGFixedTransform2DInternal get_fixed_transform_internal() const { return fixed_transform->get_internal(); }
-    SGFixedTransform2DInternal get_global_fixed_transform_internal() const;
+	_FORCE_INLINE_ SGFixedTransform2DInternal get_fixed_transform_internal() const { return fixed_transform->get_internal(); }
+	SGFixedTransform2DInternal get_global_fixed_transform_internal() const;
 
-    void update_fixed_transform_internal(const SGFixedTransform2DInternal &p_transform);
-    void update_global_fixed_transform_internal(const SGFixedTransform2DInternal &p_global_transform);
+	void update_fixed_transform_internal(const SGFixedTransform2DInternal &p_transform);
+	void update_global_fixed_transform_internal(const SGFixedTransform2DInternal &p_global_transform);
 
-    void _set_fixed_position(const SGFixedVector2Internal &p_fixed_position);
+	void _set_fixed_position(const SGFixedVector2Internal &p_fixed_position);
 
-    void _fixed_transform_changed();
-    void _fixed_position_changed();
-    void _fixed_scale_changed();
+	void _fixed_transform_changed();
+	void _fixed_position_changed();
+	void _fixed_scale_changed();
 
 public:
-    void set_fixed_transform(const Ref<SGFixedTransform2D> &p_transform);
-    Ref<SGFixedTransform2D> get_fixed_transform() const;
+	void set_fixed_transform(const Ref<SGFixedTransform2D> &p_transform);
+	Ref<SGFixedTransform2D> get_fixed_transform() const;
 
-    void set_fixed_position(const Ref<SGFixedVector2> &p_fixed_position);
-    Ref<SGFixedVector2> get_fixed_position();
+	void set_fixed_position(const Ref<SGFixedVector2> &p_fixed_position);
+	Ref<SGFixedVector2> get_fixed_position();
 
-    void set_fixed_scale(const Ref<SGFixedVector2> &p_fixed_scale);
-    Ref<SGFixedVector2> get_fixed_scale();
+	void set_fixed_scale(const Ref<SGFixedVector2> &p_fixed_scale);
+	Ref<SGFixedVector2> get_fixed_scale();
 
-    void set_fixed_rotation(int64_t p_fixed_rotation);
-    int64_t get_fixed_rotation() const;
+	void set_fixed_rotation(int64_t p_fixed_rotation);
+	int64_t get_fixed_rotation() const;
 
-    void set_global_fixed_transform(const Ref<SGFixedTransform2D> &p_global_transform);
-    Ref<SGFixedTransform2D> get_global_fixed_transform() const;
+	void set_global_fixed_transform(const Ref<SGFixedTransform2D> &p_global_transform);
+	Ref<SGFixedTransform2D> get_global_fixed_transform() const;
 
-    void set_global_fixed_position(const Ref<SGFixedVector2> &p_fixed_position);
-    Ref<SGFixedVector2> get_global_fixed_position();
+	void set_global_fixed_position(const Ref<SGFixedVector2> &p_fixed_position);
+	Ref<SGFixedVector2> get_global_fixed_position();
 
-    void set_global_fixed_rotation(int64_t p_fixed_rotation);
-    int64_t get_global_fixed_rotation() const;
+	void set_global_fixed_rotation(int64_t p_fixed_rotation);
+	int64_t get_global_fixed_rotation() const;
 
 
-    SGFixedNode2D();
-    ~SGFixedNode2D();
+	SGFixedNode2D();
+	~SGFixedNode2D();
 };
 
 #endif

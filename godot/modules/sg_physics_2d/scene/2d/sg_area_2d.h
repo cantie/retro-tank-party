@@ -29,17 +29,17 @@
 #include "../../math/sg_fixed_vector2.h"
 
 class SGArea2D : public SGCollisionObject2D {
-    GDCLASS(SGArea2D, SGCollisionObject2D);
+	GDCLASS(SGArea2D, SGCollisionObject2D);
 
 protected:
-    static void _bind_methods();
+	static void _bind_methods();
 
 public:
-    Array get_overlapping_areas() const;
-    Array get_overlapping_bodies() const;
+	Array get_overlapping_areas() const;
+	Array get_overlapping_bodies() const;
 
-    SGArea2D();
-    ~SGArea2D();
+	SGArea2D();
+	~SGArea2D();
 
 };
 

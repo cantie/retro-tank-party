@@ -27,7 +27,7 @@
 #include "sg_fixed_node_2d.h"
 
 class SGFixedPosition2D : public SGFixedNode2D {
-    GDCLASS(SGFixedPosition2D, SGFixedNode2D);
+	GDCLASS(SGFixedPosition2D, SGFixedNode2D);
 
 protected:
 	void _notification(int p_what);

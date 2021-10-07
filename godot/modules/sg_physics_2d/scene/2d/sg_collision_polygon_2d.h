@@ -31,10 +31,10 @@
 
 class SGCollisionPolygon2D : public SGFixedNode2D {
 
-    GDCLASS(SGCollisionPolygon2D, SGFixedNode2D);
+	GDCLASS(SGCollisionPolygon2D, SGFixedNode2D);
 
 protected:
-    SGCollisionObject2D *collision_object;
+	SGCollisionObject2D *collision_object;
 	mutable Rect2 aabb;
 	mutable Vector<Point2> polygon;
 	Array fixed_polygon;
@@ -60,8 +60,8 @@ public:
 	virtual bool _edit_use_rect() const;
 	virtual bool _edit_is_selected_on_click(const Point2 &p_point, double p_tolerance) const;
 #endif
-    void set_disabled(bool p_disabled);
-    bool get_disabled() const;
+	void set_disabled(bool p_disabled);
+	bool get_disabled() const;
 
 	void set_polygon(const Vector<Point2> &p_polygon);
 	Vector<Point2> get_polygon() const;
@@ -70,7 +70,7 @@ public:
 	Array get_fixed_polygon() const;
 
 	void update_internal_shape() const;
-    void sync_to_physics_engine() const;
+	void sync_to_physics_engine() const;
 
 	virtual String get_configuration_warning() const;
 

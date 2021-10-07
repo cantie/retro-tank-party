@@ -57,7 +57,7 @@ public:
 	void set_size(const Ref<SGFixedVector2> &p_size);
 
 	bool has_point(const Ref<SGFixedVector2> &p_point) const;
-    bool intersects(const Ref<SGFixedRect2> &p_other) const;
+	bool intersects(const Ref<SGFixedRect2> &p_other) const;
 	Ref<SGFixedRect2> merge(const Ref<SGFixedRect2> &p_rect) const;
 	Ref<SGFixedRect2> expanded(const Ref<SGFixedVector2> &p_vector);
 

@@ -27,15 +27,15 @@
 #include "sg_collision_object_2d.h"
 
 class SGStaticBody2D : public SGCollisionObject2D {
-    GDCLASS(SGStaticBody2D, SGCollisionObject2D);
+	GDCLASS(SGStaticBody2D, SGCollisionObject2D);
 
 protected:
-    static void _bind_methods();
+	static void _bind_methods();
 
 public:
 
-    SGStaticBody2D();
-    ~SGStaticBody2D();
+	SGStaticBody2D();
+	~SGStaticBody2D();
 
 };
 

@@ -30,10 +30,10 @@
 #include "../../math/sg_fixed_vector2.h"
 
 class SGRayCast2D : public SGFixedNode2D {
-    GDCLASS(SGRayCast2D, SGFixedNode2D);
+	GDCLASS(SGRayCast2D, SGFixedNode2D);
 
 	Ref<SGFixedVector2> cast_to;
-    uint32_t collision_mask;
+	uint32_t collision_mask;
 
 	bool colliding;
 	ObjectID collider;
@@ -43,17 +43,17 @@ class SGRayCast2D : public SGFixedNode2D {
 	Set<SGCollisionObject2DInternal *> exceptions;
 
 protected:
-    static void _bind_methods();
-    void _notification(int p_what);
+	static void _bind_methods();
+	void _notification(int p_what);
 
 public:
 	Ref<SGFixedVector2> get_cast_to() const;
 	void set_cast_to(const Ref<SGFixedVector2> &p_cast_to);
 
-    uint32_t get_collision_mask() const;
-    void set_collision_mask(uint32_t p_collision_mask);
+	uint32_t get_collision_mask() const;
+	void set_collision_mask(uint32_t p_collision_mask);
 
-    void set_collision_mask_bit(int p_bit, bool p_value);
+	void set_collision_mask_bit(int p_bit, bool p_value);
 
 	void update_raycast_collision();
 
@@ -68,8 +68,8 @@ public:
 	void set_exceptions(const Array &p_exceptions);
 	void clear_exceptions();
 
-    SGRayCast2D();
-    ~SGRayCast2D();
+	SGRayCast2D();
+	~SGRayCast2D();
 };
 
 #endif

@@ -33,81 +33,81 @@ class SGBroadphase2DInternalElement;
 
 class SGCollisionObject2DInternal {
 public:
-    enum ObjectType {
-        OBJECT_AREA = 1,
-        OBJECT_BODY = 2,
-        OBJECT_BOTH = (OBJECT_AREA | OBJECT_BODY),
-    };
+	enum ObjectType {
+		OBJECT_AREA = 1,
+		OBJECT_BODY = 2,
+		OBJECT_BOTH = (OBJECT_AREA | OBJECT_BODY),
+	};
 
 private:
-    ObjectType object_type;
-    SGFixedTransform2DInternal transform;
-    List<SGShape2DInternal *> shapes;
-    SGBroadphase2DInternal *broadphase;
-    SGBroadphase2DInternalElement *broadphase_element;
-    void *data;
+	ObjectType object_type;
+	SGFixedTransform2DInternal transform;
+	List<SGShape2DInternal *> shapes;
+	SGBroadphase2DInternal *broadphase;
+	SGBroadphase2DInternalElement *broadphase_element;
+	void *data;
 
-    uint32_t collision_layer;
-    uint32_t collision_mask;
-    
+	uint32_t collision_layer;
+	uint32_t collision_mask;
+	
 public:
-    _FORCE_INLINE_ ObjectType get_object_type() const { return object_type; }
+	_FORCE_INLINE_ ObjectType get_object_type() const { return object_type; }
 
-    _FORCE_INLINE_ SGFixedTransform2DInternal get_transform() const { return transform; }
-    void set_transform(const SGFixedTransform2DInternal &p_transform);
+	_FORCE_INLINE_ SGFixedTransform2DInternal get_transform() const { return transform; }
+	void set_transform(const SGFixedTransform2DInternal &p_transform);
 
-    void add_shape(SGShape2DInternal *p_shape);
-    void remove_shape(SGShape2DInternal *p_shape);
+	void add_shape(SGShape2DInternal *p_shape);
+	void remove_shape(SGShape2DInternal *p_shape);
 
-    _FORCE_INLINE_ const List<SGShape2DInternal *> &get_shapes() const {
-        return shapes;
-    }
+	_FORCE_INLINE_ const List<SGShape2DInternal *> &get_shapes() const {
+		return shapes;
+	}
 
-    SGFixedRect2Internal get_bounds() const;
+	SGFixedRect2Internal get_bounds() const;
    
-    void add_to_broadphase(SGBroadphase2DInternal *p_broadphase);
-    void remove_from_broadphase();
+	void add_to_broadphase(SGBroadphase2DInternal *p_broadphase);
+	void remove_from_broadphase();
 
-    _FORCE_INLINE_ void set_data(void *p_data) { data = p_data; }
-    _FORCE_INLINE_ void *get_data() const { return data; }
+	_FORCE_INLINE_ void set_data(void *p_data) { data = p_data; }
+	_FORCE_INLINE_ void *get_data() const { return data; }
 
-    _FORCE_INLINE_ void set_collision_layer(uint32_t p_collision_layer) { collision_layer = p_collision_layer; }
-    _FORCE_INLINE_ uint32_t get_collision_layer() const { return collision_layer; }
+	_FORCE_INLINE_ void set_collision_layer(uint32_t p_collision_layer) { collision_layer = p_collision_layer; }
+	_FORCE_INLINE_ uint32_t get_collision_layer() const { return collision_layer; }
 
-    _FORCE_INLINE_ void set_collision_mask(uint32_t p_collision_mask) { collision_mask = p_collision_mask; }
-    _FORCE_INLINE_ uint32_t get_collision_mask() const { return collision_mask; }
+	_FORCE_INLINE_ void set_collision_mask(uint32_t p_collision_mask) { collision_mask = p_collision_mask; }
+	_FORCE_INLINE_ uint32_t get_collision_mask() const { return collision_mask; }
 
-    _FORCE_INLINE_ bool test_collision_layers(SGCollisionObject2DInternal *p_other) const {
-        return (collision_layer & p_other->collision_mask) || (p_other->collision_layer & collision_mask);
-    }
+	_FORCE_INLINE_ bool test_collision_layers(SGCollisionObject2DInternal *p_other) const {
+		return (collision_layer & p_other->collision_mask) || (p_other->collision_layer & collision_mask);
+	}
 
-    SGCollisionObject2DInternal(ObjectType p_type);
-    virtual ~SGCollisionObject2DInternal();
+	SGCollisionObject2DInternal(ObjectType p_type);
+	virtual ~SGCollisionObject2DInternal();
 
 };
 
 class SGArea2DInternal : public SGCollisionObject2DInternal {
 public:
-    SGArea2DInternal();
-    ~SGArea2DInternal();
+	SGArea2DInternal();
+	~SGArea2DInternal();
 };
 
 class SGBody2DInternal : public SGCollisionObject2DInternal {
 public:
 
-    enum BodyType {
-        BODY_STATIC,
-        BODY_KINEMATIC,
-    };
+	enum BodyType {
+		BODY_STATIC,
+		BODY_KINEMATIC,
+	};
 
 protected:
-    BodyType body_type;
+	BodyType body_type;
 
 public:
-    _FORCE_INLINE_ BodyType get_body_type() const { return body_type; }
+	_FORCE_INLINE_ BodyType get_body_type() const { return body_type; }
 
-    SGBody2DInternal(BodyType p_type);
-    ~SGBody2DInternal();
+	SGBody2DInternal(BodyType p_type);
+	~SGBody2DInternal();
 };
 
 #endif
