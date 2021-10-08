@@ -17,8 +17,12 @@ MILESTOE 2 (finish porting all the things):
  - Grep through the codebase for remote/master/puppet/etc and remove if possible
  - Grep through the codebase for _synchronized_rpc() and remove if possible
  - Implement a sound manager to prevent double playing sounds
-   o Affects Pickup.gd
+   o We need to spawn a new AudioStreamPlayer or AudioStreamPlayer2D somewhere
+   o Need to be able to configure default audio bus
+   o Need to be able to control sound volume
+   o AudioStreamPlayer2D's need a position and/or a node to follow
    o Can we avoid playing sounds on the first frame when interpolating?
+   o Affects Pickup.gd
  - Re-implement the modern control scheme
    o Make sure we're good in Boost.gd
 

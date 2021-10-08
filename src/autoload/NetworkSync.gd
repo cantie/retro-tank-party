@@ -105,6 +105,7 @@ func _ready() -> void:
 	SyncManager.debug_skip_nth_message = 0
 	
 	# Tweak some settings
+	SyncManager.set_default_sound_bus("Sound")
 	#SyncManager.max_buffer_size = 20
 	SyncManager.max_input_frames_per_message = 20
 	SyncManager.max_messages_at_once = 2

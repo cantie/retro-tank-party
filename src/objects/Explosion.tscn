@@ -43,7 +43,9 @@ tracks/0/keys = {
 "values": [ 5, 6, 7, 8, 9 ]
 }
 
-[node name="Explosion" type="Node2D"]
+[node name="Explosion" type="Node2D" groups=[
+"network_sync",
+]]
 script = ExtResource( 11 )
 
 [node name="Sprite" type="Sprite" parent="."]
@@ -77,6 +79,3 @@ bus = "Sound"
 script = ExtResource( 17 )
 
 [connection signal="animation_finished" from="AnimationPlayer" to="." method="_on_AnimationPlayer_animation_finished"]
-[connection signal="finished" from="Sounds/Miss" to="." method="_on_Sounds_finished"]
-[connection signal="finished" from="Sounds/Hit" to="." method="_on_Sounds_finished"]
-[connection signal="finished" from="Sounds/Big" to="." method="_on_Sounds_finished"]

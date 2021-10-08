@@ -1,6 +1,7 @@
 extends Node
 
 const SpawnManager = preload("res://addons/network-sync-rollback/SpawnManager.gd")
+const SoundManager = preload("res://addons/network-sync-rollback/SoundManager.gd")
 const NetworkAdaptor = preload("res://addons/network-sync-rollback/NetworkAdaptor.gd")
 const RPCNetworkAdaptor = preload("res://addons/network-sync-rollback/RPCNetworkAdaptor.gd")
 
@@ -175,6 +176,7 @@ var started := false setget _set_readonly_variable
 
 var _ping_timer: Timer
 var _spawn_manager
+var _sound_manager
 var _tick_time: float
 var _input_buffer_start_tick: int
 var _state_buffer_start_tick: int
@@ -220,6 +222,10 @@ func _ready() -> void:
 	_spawn_manager.name = "SpawnManager"
 	add_child(_spawn_manager)
 	_spawn_manager.connect("scene_spawned", self, "_on_SpawnManager_scene_spawned")
+	
+	_sound_manager = SoundManager.new()
+	_sound_manager.name = "SoundManager"
+	add_child(_sound_manager)
 	
 	if network_adaptor == null:
 		set_network_adaptor(RPCNetworkAdaptor.new())
@@ -949,3 +955,25 @@ func spawn(name: String, parent: Node, scene: PackedScene, data: Dictionary = {}
 
 func _on_SpawnManager_scene_spawned(name: String, spawned_node: Node, scene: PackedScene, data: Dictionary) -> void:
 	emit_signal("scene_spawned", name, spawned_node, scene, data)
+
+func make_identifier(node: Node, name: String, include_tick: bool = true) -> String:
+	var path: String
+	if not node.is_inside_tree():
+		push_warning("Identifiers for nodes that aren't in the tree are less likely to be unique")
+		path = node.name
+	else:
+		path = str(node.get_path())
+	
+	var identifier = path + ":" + name
+	if include_tick:
+		identifier += ":" + str(current_tick)
+		
+	return identifier
+
+func set_default_sound_bus(bus: String) -> void:
+	if _sound_manager == null:
+		yield(self, "ready")
+	_sound_manager.default_bus = bus
+
+func play_sound(identifier: String, sound: AudioStream, volume_db: float = 0.0, bus: String = "", pitch_scale: float = 1.0) -> AudioStreamPlayer:
+	return _sound_manager.play_sound(identifier, sound, volume_db, bus, pitch_scale)

@@ -4,6 +4,8 @@ const BaseWeaponType = preload("res://mods/core/weapons/base.tres")
 const Explosion = preload("res://src/objects/Explosion.tscn")
 const EventDispatcher = preload("res://src/utils/EventDispatcher.gd")
 
+const ShootSoundStream = preload("res://assets/sounds/Bass Drum__003.wav")
+
 export (bool) var player_controlled = false
 
 signal player_dead (killer_id)
@@ -438,7 +440,8 @@ func _hook_default_shoot(event: TankEvent) -> void:
 		return
 	
 	emit_signal("shoot")
-	shoot_sound.play()
+	SyncManager.play_sound(SyncManager.make_identifier(self, "ShootSound"), ShootSoundStream, 10.0)
+	#shoot_sound.play()
 	weapon.fire_weapon()
 
 func use_ability() -> void:
