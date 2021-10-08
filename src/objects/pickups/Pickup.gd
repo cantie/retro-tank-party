@@ -1,9 +1,10 @@
 extends SGArea2D
 
+const Sound = preload("res://assets/sounds/Pickup__010.wav")
+
 onready var label := $Visual/OuterRect/InnerRect/Label
 onready var outer_rect := $Visual/OuterRect
 onready var collision_shape := $CollisionShape2D
-onready var sound := $Sound
 
 export (String) var letter := "P" setget set_letter
 export (Color) var color := Color('#00ff00') setget set_color
@@ -45,10 +46,12 @@ func _on_Powerup_body_entered(body) -> void:
 	if _pickup:
 		_pickup.pickup(body)
 	
+	var parent = get_parent()
+	if parent:
+		parent.remove_child(self)
 	queue_free()
 	
-	# Duplicate sound and put on parent so it won't get freed when we do.
-	Sounds.play_multiple(sound, get_path())
-	#var new_sound = sound.duplicate(0)
-	#get_parent().add_child(new_sound)
-	#new_sound.play()
+	
+	SyncManager.play_sound(str(get_path()), Sound, {
+		position = global_position,
+	})

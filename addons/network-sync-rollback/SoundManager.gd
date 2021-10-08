@@ -1,30 +1,51 @@
 extends Node
 
 var default_bus = "Master"
+var ticks := {}
 
-var _sounds := {}
+var SyncManager
 
-func play_sound(identifier: String, sound: AudioStream, volume_db: float = 0.0, bus: String = "", pitch_scale: float = 1.0) -> AudioStreamPlayer:
-	if _sounds.has(identifier):
-		return _sounds[identifier]
+func setup_sound_manager(_sync_manager) -> void:
+	SyncManager = _sync_manager
+	SyncManager.connect("tick_retired", self, "_on_SyncManager_tick_retired")
+	SyncManager.connect("sync_stopped", self, "_on_SyncManager_sync_stopped")
+
+func play_sound(identifier: String, sound: AudioStream, info: Dictionary = {}) -> void:
+	if SyncManager.is_respawning():
+		return
 	
-	var node = AudioStreamPlayer.new()
+	if ticks.has(SyncManager.current_tick):
+		if ticks[SyncManager.current_tick].has(identifier):
+			return
+	else:
+		ticks[SyncManager.current_tick] = {}
+	ticks[SyncManager.current_tick][identifier] = true
+	
+	var node
+	if info.has('position'):
+		node = AudioStreamPlayer2D.new()
+	else:
+		node = AudioStreamPlayer.new()
+	
 	node.stream = sound
-	node.volume_db = volume_db
-	node.pitch_scale = pitch_scale
-	node.bus = bus if bus != "" else default_bus
+	node.volume_db = info.get('volume_db', 0.0)
+	node.pitch_scale = info.get('pitch_scale', 1.0)
+	node.bus = info.get('bus', default_bus)
 	
 	add_child(node)
+	if info.has('position'):
+		node.global_position = info['position']
+	
 	node.play()
 	
-	node.connect("finished", self, "_on_audio_finished", [identifier])
-	
-	_sounds[identifier] = node
-	return node
+	node.connect("finished", self, "_on_audio_finished", [node])
 
-func _on_audio_finished(identifier: String) -> void:
-	if _sounds.has(identifier):
-		var node = _sounds[identifier]
-		remove_child(node)
-		node.queue_free()
-		_sounds.erase(identifier)
+func _on_audio_finished(node: Node) -> void:
+	remove_child(node)
+	node.queue_free()
+
+func _on_SyncManager_tick_retired(tick) -> void:
+	ticks.erase(tick)
+
+func _on_SyncManager_sync_stopped() -> void:
+	ticks.clear()

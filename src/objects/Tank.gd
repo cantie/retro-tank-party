@@ -4,7 +4,7 @@ const BaseWeaponType = preload("res://mods/core/weapons/base.tres")
 const Explosion = preload("res://src/objects/Explosion.tscn")
 const EventDispatcher = preload("res://src/utils/EventDispatcher.gd")
 
-const ShootSoundStream = preload("res://assets/sounds/Bass Drum__003.wav")
+const ShootSound = preload("res://assets/sounds/Bass Drum__003.wav")
 
 export (bool) var player_controlled = false
 
@@ -20,7 +20,6 @@ onready var player_info_offset: Vector2 = player_info_node.position
 
 onready var shoot_cooldown_timer := $ShootCooldownTimer
 onready var animation_player := $AnimationPlayer
-onready var shoot_sound := $ShootSound
 onready var engine_sound := $EngineSound
 
 const DEFAULT_TURN_SPEED := 10923
@@ -440,8 +439,10 @@ func _hook_default_shoot(event: TankEvent) -> void:
 		return
 	
 	emit_signal("shoot")
-	SyncManager.play_sound(SyncManager.make_identifier(self, "ShootSound"), ShootSoundStream, 10.0)
-	#shoot_sound.play()
+	SyncManager.play_sound(str(get_path()) + ':Shoot', ShootSound, {
+		volume_db = 10.0,
+		position = global_position,
+	})
 	weapon.fire_weapon()
 
 func use_ability() -> void:

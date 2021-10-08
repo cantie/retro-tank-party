@@ -203,6 +203,7 @@ signal peer_pinged_back (peer)
 
 signal state_loaded (rollback_ticks)
 signal tick_finished (is_rollback)
+signal tick_retired (tick)
 signal scene_spawned (name, spawned_node, scene, data)
 
 func _ready() -> void:
@@ -221,11 +222,13 @@ func _ready() -> void:
 	_spawn_manager = SpawnManager.new()
 	_spawn_manager.name = "SpawnManager"
 	add_child(_spawn_manager)
+	_spawn_manager.setup_spawn_manager(self)
 	_spawn_manager.connect("scene_spawned", self, "_on_SpawnManager_scene_spawned")
 	
 	_sound_manager = SoundManager.new()
 	_sound_manager.name = "SoundManager"
 	add_child(_sound_manager)
+	_sound_manager.setup_sound_manager(self)
 	
 	if network_adaptor == null:
 		set_network_adaptor(RPCNetworkAdaptor.new())
@@ -521,6 +524,8 @@ func _cleanup_buffers() -> bool:
 		
 		state_buffer.pop_front()
 		_state_buffer_start_tick += 1
+		
+		emit_signal("tick_retired", state_frame_to_retire.tick)
 	
 	# Clean-up old input buffer frames. Unlike state frames, we can have many
 	# frames from the future if we are running behind. We don't want having too
@@ -956,24 +961,13 @@ func spawn(name: String, parent: Node, scene: PackedScene, data: Dictionary = {}
 func _on_SpawnManager_scene_spawned(name: String, spawned_node: Node, scene: PackedScene, data: Dictionary) -> void:
 	emit_signal("scene_spawned", name, spawned_node, scene, data)
 
-func make_identifier(node: Node, name: String, include_tick: bool = true) -> String:
-	var path: String
-	if not node.is_inside_tree():
-		push_warning("Identifiers for nodes that aren't in the tree are less likely to be unique")
-		path = node.name
-	else:
-		path = str(node.get_path())
-	
-	var identifier = path + ":" + name
-	if include_tick:
-		identifier += ":" + str(current_tick)
-		
-	return identifier
+func is_respawning() -> bool:
+	return _spawn_manager.is_respawning
 
 func set_default_sound_bus(bus: String) -> void:
 	if _sound_manager == null:
 		yield(self, "ready")
 	_sound_manager.default_bus = bus
 
-func play_sound(identifier: String, sound: AudioStream, volume_db: float = 0.0, bus: String = "", pitch_scale: float = 1.0) -> AudioStreamPlayer:
-	return _sound_manager.play_sound(identifier, sound, volume_db, bus, pitch_scale)
+func play_sound(identifier: String, sound: AudioStream, info: Dictionary = {}) -> void:
+	_sound_manager.play_sound(identifier, sound, info)

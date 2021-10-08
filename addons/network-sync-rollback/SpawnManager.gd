@@ -4,10 +4,14 @@ var spawn_records := {}
 var spawned_nodes := {}
 var counter := {}
 
+var is_respawning := false
+
 signal scene_spawned (name, spawned_node, scene, data)
 
 func _ready() -> void:
 	add_to_group('network_sync')
+
+func setup_spawn_manager(SyncManager) -> void:
 	SyncManager.connect("sync_stopped", self, "_on_SyncManager_sync_stopped")
 
 func _on_SyncManager_sync_stopped() -> void:
@@ -95,6 +99,8 @@ func _load_state(state: Dictionary) -> void:
 			if not is_instance_valid(old_node) or old_node.is_queued_for_deletion():
 				spawned_nodes.erase(node_path)
 		
+		is_respawning = true
+		
 		if not spawned_nodes.has(node_path):
 			var spawn_record = spawn_records[node_path]
 			
@@ -113,3 +119,6 @@ func _load_state(state: Dictionary) -> void:
 			emit_signal("scene_spawned", spawn_record['signal_name'], spawned_node, scene, spawn_record['data'])
 			
 			#print ("[LOAD %s] re-spawned: %s" % [SyncManager.current_tick, node_path])
+		
+		is_respawning = false
+
