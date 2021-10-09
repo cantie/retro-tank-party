@@ -25,6 +25,9 @@ onready var engine_sound := $EngineSound
 const DEFAULT_TURN_SPEED := 10923
 const DEFAULT_SPEED := 873726
 
+const FIXED_PI = 205887
+const FIXED_TAU = 411775
+
 var turn_speed := DEFAULT_TURN_SPEED
 var speed := DEFAULT_SPEED
 var velocity: SGFixedVector2 = SGFixed.vector2(0, 0)
@@ -295,33 +298,31 @@ func _hook_default_calculate_movement_vector(event: CalculateMovementVectorEvent
 		event.movement_vector.y = input_vector.x
 		return
 	
-	#var movement_vector: Vector2
-	#var current_vector = SGFixed.vector2(65536, 0)
-	#current_vector.rotate(fixed_rotation)
+	var current_vector = SGFixed.vector2(65536, 0)
+	current_vector.rotate(fixed_rotation)
 	
-#	var desired_vector: Vector2 = input.get(PlayerInput.INPUT_VECTOR, Vector2.ZERO)
-#	if desired_vector.length() > 0.85:
-#		desired_vector = desired_vector.normalized()
-#
-#	# If going backwards is a shorter rotation, move backwards.
-#	if abs(current_vector.angle_to(desired_vector)) > PI / 2.0:
-#		# Flip the vector for the angle calculations.
-#		current_vector = current_vector.rotated(PI)
-#
-#		# Set us moving backwards ...
-#		movement_vector.x = -desired_vector.length()
-#	else:
-#		# ... or forwards
-#		movement_vector.x = desired_vector.length()
-#
-#	# Normalize the angle to the desired vector
-#	var angle_to = current_vector.angle_to(desired_vector)
-#	if abs(angle_to) > PI / 2.0:
-#		angle_to = TAU - angle_to
-#
-#	movement_vector.y = clamp(angle_to / (turn_speed * get_physics_process_delta_time()), -1.0, 1.0)
-#
-#	return movement_vector
+	var desired_vector: SGFixedVector2 = input.get(PlayerInput.INPUT_VECTOR, SGFixed.vector2(0, 0))
+	# 55706 = 0.85
+	if desired_vector.length() > 55706:
+		desired_vector = desired_vector.normalized()
+
+	# If going backwards is a shorter rotation, move backwards.
+	if abs(current_vector.angle_to(desired_vector)) > (FIXED_PI / 2):
+		# Flip the vector for the angle calculations.
+		current_vector = current_vector.rotated(FIXED_PI)
+
+		# Set us moving backwards ...
+		event.movement_vector.x = -desired_vector.length()
+	else:
+		# ... or forwards
+		event.movement_vector.x = desired_vector.length()
+
+	# Normalize the angle to the desired vector
+	var angle_to = current_vector.angle_to(desired_vector)
+	if abs(angle_to) > (FIXED_PI / 2):
+		angle_to = (FIXED_TAU - angle_to)
+	
+	event.movement_vector.y = clamp(SGFixed.div(angle_to, turn_speed), -65536, 65536)
 
 func _predict_remote_input(previous_input: Dictionary, ticks_since_real_input: int) -> Dictionary:
 	var input = previous_input.duplicate()
