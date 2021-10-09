@@ -46,12 +46,11 @@ func _on_Powerup_body_entered(body) -> void:
 	if _pickup:
 		_pickup.pickup(body)
 	
+	SyncManager.play_sound(str(get_path()), Sound, {
+		position = global_position,
+	})
+	
 	var parent = get_parent()
 	if parent:
 		parent.remove_child(self)
 	queue_free()
-	
-	
-	SyncManager.play_sound(str(get_path()), Sound, {
-		position = global_position,
-	})
