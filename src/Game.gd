@@ -87,7 +87,6 @@ func _game_setup() -> void:
 	make_player_controlled(my_id)
 
 func game_reset() -> void:
-	print ("game reset - started %s" % game_started)
 	if game_started:
 		game_stop()
 	#reload_map()

@@ -10,17 +10,6 @@ func _ready() -> void:
 	faux_multiplayer.initialize(1)
 	get_tree().set_network_peer(faux_multiplayer)
 	
-	restart_game()
-	
-	ui_layer.show_back_button()
-	
-	var songs := ['Track1', 'Track2', 'Track3']
-	Music.play(songs[randi() % songs.size()])
-	
-	if OS.has_feature('editor'):
-		ui_layer.add_screen(load("res://src/ui/DebugScreen.tscn").instance())
-
-func restart_game() -> void:
 	var players = {
 		1: Game.Player.new(1, "Practice", 1),
 	}
@@ -30,6 +19,14 @@ func restart_game() -> void:
 	
 	game.game_setup(players, "res://mods/core/maps/Battlefield.tscn", rng.seed)
 	game.game_start()
+	
+	ui_layer.show_back_button()
+	
+	var songs := ['Track1', 'Track2', 'Track3']
+	Music.play(songs[randi() % songs.size()])
+	
+	if OS.has_feature('editor'):
+		ui_layer.add_screen(load("res://src/ui/DebugScreen.tscn").instance())
 
 func _unhandled_input(event: InputEvent) -> void:
 	if OS.has_feature('editor') and event.is_action_pressed('special_debug'):
@@ -51,4 +48,7 @@ func _on_Game_game_error(message) -> void:
 
 func _on_Game_player_dead(player_id, killer_id) -> void:
 	yield(get_tree().create_timer(2.0), "timeout")
-	restart_game()
+	
+	SyncManager.stop()
+	game.game_reset()
+	game.game_start()
