@@ -12,8 +12,6 @@ MILESTONE 1 (physics):
 
 MILESTOE 2 (finish porting all the things):
 
- - Implement a sound manager to prevent double playing sounds
-   o Revert weird stuff that was done to Sound.gd
  - Bug: Pick up non-chargable powerup while using the same power-up (ie. pickup invisible while invisible)
  - Bug: trying to move too early can send tank to origin?
  - Grep through the codebase for remote/master/puppet/etc and remove if possible
