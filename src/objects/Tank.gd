@@ -216,7 +216,7 @@ func _hook_default_pickup_ability(event: PickupAbilityEvent) -> void:
 	set_held_ability_type(event.ability_type)
 
 func set_held_ability_type(_ability_type: AbilityType) -> void:
-	if _ability_type != null and ability and ability.ability_type == _ability_type:
+	if _ability_type != null and held_ability_type == _ability_type and _ability_type.charges > 1:
 		ability_charges = _ability_type.charges
 		_update_ability_label()
 		emit_signal("ability_recharged", ability)
