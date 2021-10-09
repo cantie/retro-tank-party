@@ -60,6 +60,16 @@ protected:
 	void _fixed_position_changed();
 	void _fixed_scale_changed();
 
+	int64_t _get_fixed_position_x() const;
+	void _set_fixed_position_x(int64_t p_x);
+	int64_t _get_fixed_position_y() const;
+	void _set_fixed_position_y(int64_t p_y);
+
+	int64_t _get_fixed_scale_x() const;
+	void _set_fixed_scale_x(int64_t p_x);
+	int64_t _get_fixed_scale_y() const;
+	void _set_fixed_scale_y(int64_t p_y);
+
 public:
 	void set_fixed_transform(const Ref<SGFixedTransform2D> &p_transform);
 	Ref<SGFixedTransform2D> get_fixed_transform() const;

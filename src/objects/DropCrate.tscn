@@ -23,10 +23,6 @@ tracks/0/keys = {
 [node name="DropCrate" type="SGStaticBody2D" groups=[
 "DropCrate",
 ]]
-fixed_position = Object(SGFixedVector2,"x":0,"y":0,"script":null)
-
-fixed_scale = Object(SGFixedVector2,"x":65536,"y":65536,"script":null)
-
 collision_mask = 6
 script = ExtResource( 1 )
 
@@ -37,17 +33,7 @@ region_enabled = true
 region_rect = Rect2( 592, 420, 56, 56 )
 
 [node name="CollisionPolygon2D" type="SGCollisionPolygon2D" parent="."]
-fixed_position = Object(SGFixedVector2,"x":0,"y":0,"script":null)
-
-fixed_scale = Object(SGFixedVector2,"x":65536,"y":65536,"script":null)
-
-fixed_polygon = [ Object(SGFixedVector2,"x":-1835008,"y":-1179648,"script":null)
-, Object(SGFixedVector2,"x":0,"y":-1835008,"script":null)
-, Object(SGFixedVector2,"x":1769472,"y":-1179648,"script":null)
-, Object(SGFixedVector2,"x":1703936,"y":1310720,"script":null)
-, Object(SGFixedVector2,"x":0,"y":1900544,"script":null)
-, Object(SGFixedVector2,"x":-1835008,"y":1245184,"script":null)
- ]
+fixed_polygon_pairs = [ [ -1835008, -1179648 ], [ 0, -1835008 ], [ 1769472, -1179648 ], [ 1703936, 1310720 ], [ 0, 1900544 ], [ -1835008, 1245184 ] ]
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="."]
 anims/glow = SubResource( 1 )

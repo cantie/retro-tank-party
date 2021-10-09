@@ -8,10 +8,6 @@
 radius = 524288
 
 [node name="Bullet" instance=ExtResource( 2 )]
-fixed_position = Object(SGFixedVector2,"x":0,"y":0,"script":null)
-
-fixed_scale = Object(SGFixedVector2,"x":65536,"y":65536,"script":null)
-
 script = ExtResource( 3 )
 
 [node name="BulletPivot" type="Position2D" parent="." index="1"]
@@ -25,8 +21,5 @@ region_rect = Rect2( 570, 584, 16, 28 )
 
 [node name="CollisionShape2D" type="SGCollisionShape2D" parent="." index="2"]
 position = Vector2( 8, 0 )
-fixed_position = Object(SGFixedVector2,"x":524288,"y":0,"script":null)
-
-fixed_scale = Object(SGFixedVector2,"x":65536,"y":65536,"script":null)
-
+fixed_position_x = 524288
 shape = SubResource( 1 )

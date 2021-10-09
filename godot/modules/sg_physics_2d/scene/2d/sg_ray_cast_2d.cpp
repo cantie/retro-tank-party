@@ -32,7 +32,7 @@ void SGRayCast2D::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("get_cast_to"), &SGRayCast2D::get_cast_to);
 	ClassDB::bind_method(D_METHOD("set_cast_to", "cast_to"), &SGRayCast2D::set_cast_to);
 
-	ADD_PROPERTY(PropertyInfo(Variant::OBJECT, "cast_to", PROPERTY_HINT_TYPE_STRING, "SGFixedVector2"), "set_cast_to", "get_cast_to");
+	ADD_PROPERTY(PropertyInfo(Variant::OBJECT, "cast_to", PROPERTY_HINT_TYPE_STRING, "SGFixedVector2", PROPERTY_USAGE_EDITOR), "set_cast_to", "get_cast_to");
 
 	ClassDB::bind_method(D_METHOD("get_collision_mask"), &SGRayCast2D::get_collision_mask);
 	ClassDB::bind_method(D_METHOD("set_collision_mask", "collision_mask"), &SGRayCast2D::set_collision_mask);
@@ -52,6 +52,19 @@ void SGRayCast2D::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("get_exceptions"), &SGRayCast2D::get_exceptions);
 	ClassDB::bind_method(D_METHOD("set_exceptions", "exceptions"), &SGRayCast2D::set_exceptions);
 	ClassDB::bind_method(D_METHOD("clear_exceptions"), &SGRayCast2D::clear_exceptions);
+
+	//
+	// For storage in TSCN and SCN files only.
+	//
+
+	ClassDB::bind_method(D_METHOD("_get_cast_to_x"), &SGRayCast2D::_get_cast_to_x);
+	ClassDB::bind_method(D_METHOD("_set_cast_to_x", "x"), &SGRayCast2D::_set_cast_to_x);
+	ClassDB::bind_method(D_METHOD("_get_cast_to_y"), &SGRayCast2D::_get_cast_to_y);
+	ClassDB::bind_method(D_METHOD("_set_cast_to_y", "y"), &SGRayCast2D::_set_cast_to_y);
+
+	ADD_PROPERTY(PropertyInfo(Variant::INT, "cast_to_x", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_STORAGE), "_set_cast_to_x", "_get_cast_to_x");
+	ADD_PROPERTY(PropertyInfo(Variant::INT, "cast_to_y", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_STORAGE), "_set_cast_to_y", "_get_cast_to_y");
+
 }
 
 void SGRayCast2D::_notification(int p_what) {
@@ -90,6 +103,22 @@ void SGRayCast2D::set_cast_to(const Ref<SGFixedVector2> &p_cast_to) {
 	ERR_FAIL_COND(!p_cast_to.is_valid());
 	cast_to->set_internal(p_cast_to->get_internal());
 	update();
+}
+
+int64_t SGRayCast2D::_get_cast_to_x() const {
+	return cast_to->get_x();
+}
+
+void SGRayCast2D::_set_cast_to_x(int64_t p_x) {
+	cast_to->set_x(p_x);
+}
+
+int64_t SGRayCast2D::_get_cast_to_y() const {
+	return cast_to->get_y();
+}
+
+void SGRayCast2D::_set_cast_to_y(int64_t p_y) {
+	cast_to->set_y(p_y);
 }
 
 uint32_t SGRayCast2D::get_collision_mask() const {

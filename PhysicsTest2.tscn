@@ -6,15 +6,15 @@
 [ext_resource path="res://src/objects/DropCrate.tscn" type="PackedScene" id=4]
 
 [sub_resource type="SGRectangleShape2D" id=1]
-extents = Object(SGFixedVector2,"x":3276800,"y":3276800,"script":null)
-
+extents_x = 3276800
+extents_y = 3276800
 
 [sub_resource type="SGCircleShape2D" id=2]
 radius = 3635322
 
 [sub_resource type="SGRectangleShape2D" id=3]
-extents = Object(SGFixedVector2,"x":4259840,"y":4259840,"script":null)
-
+extents_x = 4259840
+extents_y = 4259840
 
 [node name="PhysicsTest2" type="Node2D"]
 position = Vector2( -1, 0 )
@@ -22,20 +22,16 @@ script = ExtResource( 1 )
 
 [node name="StaticBody" type="SGStaticBody2D" parent="."]
 position = Vector2( 679, 257 )
-fixed_position = Object(SGFixedVector2,"x":44498948,"y":16842752,"script":null)
-
-fixed_scale = Object(SGFixedVector2,"x":65536,"y":65536,"script":null)
-
+fixed_position_x = 44498948
+fixed_position_y = 16842752
 collision_mask = 2
 
 [node name="Rectangle" type="SGCollisionShape2D" parent="StaticBody"]
 position = Vector2( -97.0001, -6 )
 rotation = -0.802277
-fixed_position = Object(SGFixedVector2,"x":-6356996,"y":-393216,"script":null)
-
-fixed_scale = Object(SGFixedVector2,"x":65536,"y":65536,"script":null)
-
 fixed_rotation = -52578
+fixed_position_x = -6356996
+fixed_position_y = -393216
 shape = SubResource( 1 )
 
 [node name="ColorRect" type="ColorRect" parent="StaticBody/Rectangle"]
@@ -50,32 +46,23 @@ __meta__ = {
 [node name="Circle" type="SGCollisionShape2D" parent="StaticBody"]
 position = Vector2( -297, 86 )
 rotation = -0.781479
-fixed_position = Object(SGFixedVector2,"x":-19464196,"y":5636096,"script":null)
-
-fixed_scale = Object(SGFixedVector2,"x":65536,"y":65536,"script":null)
-
 fixed_rotation = -51215
+fixed_position_x = -19464196
+fixed_position_y = 5636096
 shape = SubResource( 2 )
 
 [node name="SGCollisionPolygon2D" type="SGCollisionPolygon2D" parent="StaticBody"]
 position = Vector2( -105, 234 )
-fixed_position = Object(SGFixedVector2,"x":-6881284,"y":15335424,"script":null)
-
-fixed_scale = Object(SGFixedVector2,"x":65536,"y":65536,"script":null)
-
-fixed_polygon = [ Object(SGFixedVector2,"x":-3080192,"y":-2686976,"script":null)
-, Object(SGFixedVector2,"x":6291456,"y":-917504,"script":null)
-, Object(SGFixedVector2,"x":1376256,"y":8257536,"script":null)
- ]
+fixed_position_x = -6881284
+fixed_position_y = 15335424
+fixed_polygon_pairs = [ [ -3080192, -2686976 ], [ 6291456, -917504 ], [ 1376256, 8257536 ] ]
 
 [node name="Character" type="SGKinematicBody2D" parent="."]
 position = Vector2( 581, 374 )
 rotation = -1.57079
-fixed_position = Object(SGFixedVector2,"x":38076416,"y":24510462,"script":null)
-
-fixed_scale = Object(SGFixedVector2,"x":65536,"y":65536,"script":null)
-
 fixed_rotation = -102943
+fixed_position_x = 38076416
+fixed_position_y = 24510462
 collision_layer = 2
 collision_mask = 0
 
@@ -84,62 +71,34 @@ rotation = 1.5708
 texture = ExtResource( 3 )
 
 [node name="SGCollisionPolygon2D" type="SGCollisionPolygon2D" parent="Character"]
-fixed_position = Object(SGFixedVector2,"x":0,"y":0,"script":null)
-
-fixed_scale = Object(SGFixedVector2,"x":65536,"y":65536,"script":null)
-
-fixed_polygon = [ Object(SGFixedVector2,"x":1048556,"y":-1638412,"script":null)
-, Object(SGFixedVector2,"x":1507314,"y":-1048592,"script":null)
-, Object(SGFixedVector2,"x":1507336,"y":1048560,"script":null)
-, Object(SGFixedVector2,"x":1114128,"y":1638388,"script":null)
-, Object(SGFixedVector2,"x":-1441776,"y":1638416,"script":null)
-, Object(SGFixedVector2,"x":-1900534,"y":1179668,"script":null)
-, Object(SGFixedVector2,"x":-1900560,"y":-1179628,"script":null)
-, Object(SGFixedVector2,"x":-1507348,"y":-1638384,"script":null)
- ]
+fixed_polygon_pairs = [ [ 1048556, -1638412 ], [ 1507314, -1048592 ], [ 1507336, 1048560 ], [ 1114128, 1638388 ], [ -1441776, 1638416 ], [ -1900534, 1179668 ], [ -1900560, -1179628 ], [ -1507348, -1638384 ] ]
 
 [node name="SGRayCast2D" type="SGRayCast2D" parent="Character"]
-fixed_position = Object(SGFixedVector2,"x":0,"y":0,"script":null)
-
-fixed_scale = Object(SGFixedVector2,"x":65536,"y":65536,"script":null)
-
-cast_to = Object(SGFixedVector2,"x":3276800,"y":0,"script":null)
-
+cast_to_x = 3276800
+cast_to_y = 0
 
 [node name="TreeBig" parent="." instance=ExtResource( 2 )]
 position = Vector2( 900, 370 )
-fixed_position = Object(SGFixedVector2,"x":58982400,"y":24248320,"script":null)
-
-fixed_scale = Object(SGFixedVector2,"x":65536,"y":65536,"script":null)
-
+fixed_position_x = 58982400
+fixed_position_y = 24248320
 
 [node name="TreeBig2" parent="." instance=ExtResource( 2 )]
 position = Vector2( 893, 219 )
-fixed_position = Object(SGFixedVector2,"x":58523648,"y":14352384,"script":null)
-
-fixed_scale = Object(SGFixedVector2,"x":65536,"y":65536,"script":null)
-
+fixed_position_x = 58523648
+fixed_position_y = 14352384
 
 [node name="DropCrate" parent="." instance=ExtResource( 4 )]
 position = Vector2( 783, 498 )
-fixed_position = Object(SGFixedVector2,"x":51314688,"y":32636928,"script":null)
-
-fixed_scale = Object(SGFixedVector2,"x":65536,"y":65536,"script":null)
-
+fixed_position_x = 51314688
+fixed_position_y = 32636928
 
 [node name="Area" type="SGArea2D" parent="."]
 position = Vector2( 406, 512 )
-fixed_position = Object(SGFixedVector2,"x":26607616,"y":33554432,"script":null)
-
-fixed_scale = Object(SGFixedVector2,"x":65536,"y":65536,"script":null)
-
+fixed_position_x = 26607616
+fixed_position_y = 33554432
 collision_mask = 2
 
 [node name="SGCollisionShape2D" type="SGCollisionShape2D" parent="Area"]
-fixed_position = Object(SGFixedVector2,"x":0,"y":0,"script":null)
-
-fixed_scale = Object(SGFixedVector2,"x":65536,"y":65536,"script":null)
-
 shape = SubResource( 3 )
 
 [node name="Spot" type="ColorRect" parent="."]

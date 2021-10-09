@@ -29,29 +29,7 @@ tracks/0/keys = {
 [node name="Tank" groups=[
 "network_sync",
 ] instance=ExtResource( 11 )]
-fixed_position = Object(SGFixedVector2,"x":0,"y":0,"script":null)
-
-fixed_scale = Object(SGFixedVector2,"x":65536,"y":65536,"script":null)
-
 script = ExtResource( 4 )
-
-[node name="CollisionPolygon2D" parent="." index="0"]
-fixed_position = Object(SGFixedVector2,"x":0,"y":0,"script":null)
-
-fixed_scale = Object(SGFixedVector2,"x":65536,"y":65536,"script":null)
-
-
-[node name="TurretPivot" parent="." index="2"]
-fixed_position = Object(SGFixedVector2,"x":0,"y":0,"script":null)
-
-fixed_scale = Object(SGFixedVector2,"x":65536,"y":65536,"script":null)
-
-
-[node name="BulletStartPosition" parent="TurretPivot" index="1"]
-fixed_position = Object(SGFixedVector2,"x":3604480,"y":0,"script":null)
-
-fixed_scale = Object(SGFixedVector2,"x":65536,"y":65536,"script":null)
-
 
 [node name="PlayerInfo" parent="." index="3" instance=ExtResource( 3 )]
 position = Vector2( 0, -85 )

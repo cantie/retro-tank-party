@@ -61,6 +61,11 @@ protected:
 
 	virtual SGShape2DInternal *create_internal_shape() const override;
 
+	int64_t _get_extents_x() const;
+	void _set_extents_x(int64_t p_x);
+	int64_t _get_extents_y() const;
+	void _set_extents_y(int64_t p_y);
+
 public:
 	void set_extents(const Ref<SGFixedVector2>& p_extents);
 	Ref<SGFixedVector2> get_extents();

@@ -4,14 +4,10 @@
 [ext_resource path="res://src/objects/cover/TreeBig.gd" type="Script" id=2]
 
 [sub_resource type="SGRectangleShape2D" id=1]
-extents = Object(SGFixedVector2,"x":3735552,"y":3604480,"script":null)
-
+extents_x = 3735552
+extents_y = 3604480
 
 [node name="TreeBig" type="SGStaticBody2D"]
-fixed_position = Object(SGFixedVector2,"x":0,"y":0,"script":null)
-
-fixed_scale = Object(SGFixedVector2,"x":65536,"y":65536,"script":null)
-
 collision_mask = 6
 script = ExtResource( 2 )
 
@@ -21,8 +17,4 @@ region_enabled = true
 region_rect = Rect2( 0, 128, 128, 128 )
 
 [node name="CollisionShape2D" type="SGCollisionShape2D" parent="."]
-fixed_position = Object(SGFixedVector2,"x":0,"y":0,"script":null)
-
-fixed_scale = Object(SGFixedVector2,"x":65536,"y":65536,"script":null)
-
 shape = SubResource( 1 )

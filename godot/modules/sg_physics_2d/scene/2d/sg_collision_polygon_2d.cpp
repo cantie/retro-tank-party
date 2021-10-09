@@ -37,8 +37,18 @@ void SGCollisionPolygon2D::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("get_disabled"), &SGCollisionPolygon2D::get_disabled);
 
 	ADD_PROPERTY(PropertyInfo(Variant::POOL_VECTOR2_ARRAY, "polygon", PROPERTY_HINT_NONE, "", 0), "set_polygon", "get_polygon");
-	ADD_PROPERTY(PropertyInfo(Variant::ARRAY, "fixed_polygon"), "set_fixed_polygon", "get_fixed_polygon");
+	ADD_PROPERTY(PropertyInfo(Variant::ARRAY, "fixed_polygon", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_EDITOR), "set_fixed_polygon", "get_fixed_polygon");
 	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "disabled"), "set_disabled", "get_disabled");
+
+	//
+	// For storage in TSCN and SCN files only.
+	//
+
+	ClassDB::bind_method(D_METHOD("_get_fixed_polygon_pairs"), &SGCollisionPolygon2D::_get_fixed_polygon_pairs);
+	ClassDB::bind_method(D_METHOD("_set_fixed_polygon_pairs", "pairs"), &SGCollisionPolygon2D::_set_fixed_polygon_pairs);
+
+	ADD_PROPERTY(PropertyInfo(Variant::ARRAY, "fixed_polygon_pairs", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_STORAGE), "_set_fixed_polygon_pairs", "_get_fixed_polygon_pairs");
+
 }
 
 void SGCollisionPolygon2D::_notification(int p_what) {
@@ -269,6 +279,35 @@ bool SGCollisionPolygon2D::is_convex(const Array &p_vertices) {
 
 	// We've passed all the tests!
 	return true;
+}
+
+Array SGCollisionPolygon2D::_get_fixed_polygon_pairs() const {
+	Array ret;
+	for (int i = 0; i < fixed_polygon.size(); i++) {
+		Ref<SGFixedVector2> p = fixed_polygon.get(i);
+		if (p.is_valid()) {
+			Array pair;
+			pair.resize(2);
+			pair[0] = p->get_x();
+			pair[1] = p->get_y();
+			ret.push_back(pair);
+		}
+	}
+	return ret;
+}
+
+void SGCollisionPolygon2D::_set_fixed_polygon_pairs(const Array &p_pairs) {
+	Array points;
+	for (int i = 0; i < p_pairs.size(); i++) {
+		Array pair = p_pairs.get(i);
+		if (pair.size() == 2) {
+			int64_t x = pair[0];
+			int64_t y = pair[1];
+			Ref<SGFixedVector2> point = SGFixedVector2::from_internal(SGFixedVector2Internal(fixed(x), fixed(y)));
+			points.push_back(point);
+		}
+	}
+	set_fixed_polygon(points);
 }
 
 #ifdef TOOLS_ENABLED

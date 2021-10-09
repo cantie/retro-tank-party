@@ -46,6 +46,11 @@ protected:
 	static void _bind_methods();
 	void _notification(int p_what);
 
+	int64_t _get_cast_to_x() const;
+	void _set_cast_to_x(int64_t p_x);
+	int64_t _get_cast_to_y() const;
+	void _set_cast_to_y(int64_t p_y);
+
 public:
 	Ref<SGFixedVector2> get_cast_to() const;
 	void set_cast_to(const Ref<SGFixedVector2> &p_cast_to);

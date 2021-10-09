@@ -6,10 +6,6 @@
 [node name="Bullet" type="SGArea2D" groups=[
 "network_sync",
 ]]
-fixed_position = Object(SGFixedVector2,"x":0,"y":0,"script":null)
-
-fixed_scale = Object(SGFixedVector2,"x":65536,"y":65536,"script":null)
-
 collision_layer = 4
 collision_mask = 2
 script = ExtResource( 1 )

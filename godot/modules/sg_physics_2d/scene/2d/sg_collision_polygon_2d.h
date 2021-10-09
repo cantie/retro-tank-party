@@ -54,6 +54,9 @@ protected:
 
 	static bool is_convex(const Array &p_vertices);
 
+	Array _get_fixed_polygon_pairs() const;
+	void _set_fixed_polygon_pairs(const Array &p_pairs);
+
 public:
 #ifdef TOOLS_ENABLED
 	virtual Rect2 _edit_get_rect() const;

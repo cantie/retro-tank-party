@@ -42,8 +42,8 @@ void SGFixedNode2D::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("set_fixed_rotation", "fixed_scale"), &SGFixedNode2D::set_fixed_rotation);
 
 	ADD_PROPERTY(PropertyInfo(Variant::OBJECT, "fixed_transform", PROPERTY_HINT_NONE, "", 0), "set_fixed_transform", "get_fixed_transform");
-	ADD_PROPERTY(PropertyInfo(Variant::OBJECT, "fixed_position", PROPERTY_HINT_TYPE_STRING, "SGFixedVector2"), "set_fixed_position", "get_fixed_position");
-	ADD_PROPERTY(PropertyInfo(Variant::OBJECT, "fixed_scale", PROPERTY_HINT_TYPE_STRING, "SGFixedVector2"), "set_fixed_scale", "get_fixed_scale");
+	ADD_PROPERTY(PropertyInfo(Variant::OBJECT, "fixed_position", PROPERTY_HINT_TYPE_STRING, "SGFixedVector2", PROPERTY_USAGE_EDITOR), "set_fixed_position", "get_fixed_position");
+	ADD_PROPERTY(PropertyInfo(Variant::OBJECT, "fixed_scale", PROPERTY_HINT_TYPE_STRING, "SGFixedVector2", PROPERTY_USAGE_EDITOR), "set_fixed_scale", "get_fixed_scale");
 	ADD_PROPERTY(PropertyInfo(Variant::INT, "fixed_rotation"), "set_fixed_rotation", "get_fixed_rotation");
 
 	ClassDB::bind_method(D_METHOD("get_global_fixed_transform"), &SGFixedNode2D::get_global_fixed_transform);
@@ -54,6 +54,25 @@ void SGFixedNode2D::_bind_methods() {
 
 	ClassDB::bind_method(D_METHOD("get_global_fixed_rotation"), &SGFixedNode2D::get_global_fixed_rotation);
 	ClassDB::bind_method(D_METHOD("set_global_fixed_rotation", "fixed_rotation"), &SGFixedNode2D::set_global_fixed_rotation);
+
+	//
+	// For storage in TSCN and SCN files only.
+	//
+
+	ClassDB::bind_method(D_METHOD("_get_fixed_position_x"), &SGFixedNode2D::_get_fixed_position_x);
+	ClassDB::bind_method(D_METHOD("_set_fixed_position_x", "x"), &SGFixedNode2D::_set_fixed_position_x);
+	ClassDB::bind_method(D_METHOD("_get_fixed_position_y"), &SGFixedNode2D::_get_fixed_position_y);
+	ClassDB::bind_method(D_METHOD("_set_fixed_position_y", "y"), &SGFixedNode2D::_set_fixed_position_y);
+	ClassDB::bind_method(D_METHOD("_get_fixed_scale_x"), &SGFixedNode2D::_get_fixed_scale_x);
+	ClassDB::bind_method(D_METHOD("_set_fixed_scale_x", "x"), &SGFixedNode2D::_set_fixed_scale_x);
+	ClassDB::bind_method(D_METHOD("_get_fixed_scale_y"), &SGFixedNode2D::_get_fixed_scale_y);
+	ClassDB::bind_method(D_METHOD("_set_fixed_scale_y", "y"), &SGFixedNode2D::_set_fixed_scale_y);
+
+	ADD_PROPERTY(PropertyInfo(Variant::INT, "fixed_position_x", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_STORAGE), "_set_fixed_position_x", "_get_fixed_position_x");
+	ADD_PROPERTY(PropertyInfo(Variant::INT, "fixed_position_y", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_STORAGE), "_set_fixed_position_y", "_get_fixed_position_y");
+	ADD_PROPERTY(PropertyInfo(Variant::INT, "fixed_scale_x", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_STORAGE), "_set_fixed_scale_x", "_get_fixed_scale_x");
+	ADD_PROPERTY(PropertyInfo(Variant::INT, "fixed_scale_y", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_STORAGE), "_set_fixed_scale_y", "_get_fixed_scale_y");
+
 }
 
 void SGFixedNode2D::_changed_callback(Object *p_changed, const char *p_prop) {
@@ -133,6 +152,38 @@ void SGFixedNode2D::_fixed_scale_changed() {
 	if (!updating_transform) {
 		set_fixed_scale(fixed_scale);
 	}
+}
+
+int64_t SGFixedNode2D::_get_fixed_position_x() const {
+	return fixed_position->get_x();
+}
+
+void SGFixedNode2D::_set_fixed_position_x(int64_t p_x) {
+	fixed_position->set_x(p_x);
+}
+
+int64_t SGFixedNode2D::_get_fixed_position_y() const {
+	return fixed_position->get_y();
+}
+
+void SGFixedNode2D::_set_fixed_position_y(int64_t p_y) {
+	fixed_position->set_y(p_y);
+}
+
+int64_t SGFixedNode2D::_get_fixed_scale_x() const {
+	return fixed_scale->get_x();
+}
+
+void SGFixedNode2D::_set_fixed_scale_x(int64_t p_x) {
+	fixed_scale->set_x(p_x);
+}
+
+int64_t SGFixedNode2D::_get_fixed_scale_y() const {
+	return fixed_scale->get_y();
+}
+
+void SGFixedNode2D::_set_fixed_scale_y(int64_t p_y) {
+	fixed_scale->set_y(p_y);
 }
 
 void SGFixedNode2D::set_fixed_transform(const Ref<SGFixedTransform2D> &p_fixed_transform) {

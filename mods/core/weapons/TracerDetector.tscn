@@ -3,107 +3,71 @@
 [ext_resource path="res://mods/core/weapons/TracerDetector.gd" type="Script" id=1]
 
 [node name="TracerDetector" type="SGFixedNode2D"]
-fixed_position = Object(SGFixedVector2,"x":0,"y":0,"script":null)
-
-fixed_scale = Object(SGFixedVector2,"x":65536,"y":65536,"script":null)
-
 script = ExtResource( 1 )
 
 [node name="RayCastTarget1" type="SGRayCast2D" parent="."]
-fixed_position = Object(SGFixedVector2,"x":0,"y":0,"script":null)
-
-fixed_scale = Object(SGFixedVector2,"x":65536,"y":65536,"script":null)
-
-cast_to = Object(SGFixedVector2,"x":22937600,"y":0,"script":null)
-
 collision_mask = 2
+cast_to_x = 22937600
+cast_to_y = 0
 
 [node name="RayCastTarget2" type="SGRayCast2D" parent="."]
 rotation = 0.17453
 scale = Vector2( 0.999985, 0.999985 )
-fixed_position = Object(SGFixedVector2,"x":0,"y":0,"script":null)
-
-fixed_scale = Object(SGFixedVector2,"x":65535,"y":65535,"script":null)
-
 fixed_rotation = 11438
-cast_to = Object(SGFixedVector2,"x":22937600,"y":0,"script":null)
-
+fixed_scale_x = 65535
+fixed_scale_y = 65535
 collision_mask = 2
+cast_to_x = 22937600
+cast_to_y = 0
 
 [node name="RayCastTarget3" type="SGRayCast2D" parent="."]
 rotation = -0.17453
 scale = Vector2( 0.999985, 0.999985 )
-fixed_position = Object(SGFixedVector2,"x":0,"y":0,"script":null)
-
-fixed_scale = Object(SGFixedVector2,"x":65535,"y":65535,"script":null)
-
 fixed_rotation = -11438
-cast_to = Object(SGFixedVector2,"x":22937600,"y":0,"script":null)
-
+fixed_scale_x = 65535
+fixed_scale_y = 65535
 collision_mask = 2
+cast_to_x = 22937600
+cast_to_y = 0
 
 [node name="RayCastTarget4" type="SGRayCast2D" parent="."]
 rotation = 0.34906
-fixed_position = Object(SGFixedVector2,"x":0,"y":0,"script":null)
-
-fixed_scale = Object(SGFixedVector2,"x":65536,"y":65536,"script":null)
-
 fixed_rotation = 22876
-cast_to = Object(SGFixedVector2,"x":22937600,"y":0,"script":null)
-
 collision_mask = 2
+cast_to_x = 22937600
+cast_to_y = 0
 
 [node name="RayCastTarget5" type="SGRayCast2D" parent="."]
 rotation = -0.34906
-fixed_position = Object(SGFixedVector2,"x":0,"y":0,"script":null)
-
-fixed_scale = Object(SGFixedVector2,"x":65536,"y":65536,"script":null)
-
 fixed_rotation = -22876
-cast_to = Object(SGFixedVector2,"x":22937600,"y":0,"script":null)
-
 collision_mask = 2
+cast_to_x = 22937600
+cast_to_y = 0
 
 [node name="RayCastTarget6" type="SGRayCast2D" parent="."]
 rotation = 0.52359
-fixed_position = Object(SGFixedVector2,"x":0,"y":0,"script":null)
-
-fixed_scale = Object(SGFixedVector2,"x":65536,"y":65536,"script":null)
-
 fixed_rotation = 34314
-cast_to = Object(SGFixedVector2,"x":22937600,"y":0,"script":null)
-
 collision_mask = 2
+cast_to_x = 22937600
+cast_to_y = 0
 
 [node name="RayCastTarget7" type="SGRayCast2D" parent="."]
 rotation = -0.52359
-fixed_position = Object(SGFixedVector2,"x":0,"y":0,"script":null)
-
-fixed_scale = Object(SGFixedVector2,"x":65536,"y":65536,"script":null)
-
 fixed_rotation = -34314
-cast_to = Object(SGFixedVector2,"x":22937600,"y":0,"script":null)
-
 collision_mask = 2
+cast_to_x = 22937600
+cast_to_y = 0
 
 [node name="RayCastTarget8" type="SGRayCast2D" parent="."]
 rotation = 0.69812
-fixed_position = Object(SGFixedVector2,"x":0,"y":0,"script":null)
-
-fixed_scale = Object(SGFixedVector2,"x":65536,"y":65536,"script":null)
-
 fixed_rotation = 45752
-cast_to = Object(SGFixedVector2,"x":22937600,"y":0,"script":null)
-
 collision_mask = 2
+cast_to_x = 22937600
+cast_to_y = 0
 
 [node name="RayCastTarget9" type="SGRayCast2D" parent="."]
 rotation = -0.69812
-fixed_position = Object(SGFixedVector2,"x":0,"y":0,"script":null)
-
-fixed_scale = Object(SGFixedVector2,"x":65536,"y":65536,"script":null)
-
 fixed_rotation = -45752
-cast_to = Object(SGFixedVector2,"x":22937600,"y":0,"script":null)
-
 collision_mask = 2
+cast_to_x = 22937600
+cast_to_y = 0

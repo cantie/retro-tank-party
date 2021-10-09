@@ -51,6 +51,6 @@ func test_division():
 func test_fixed_vector2():
 	var a := SGFixed.vector2(1024, 1024)
 	var b := SGFixed.vector2(2048, 2048)
-	var c := a.add(b);
+	var c: SGFixedVector2 = a.add(b);
 	
 	print ("(1, 1) + (2, 2) = %s" % c.to_float())
