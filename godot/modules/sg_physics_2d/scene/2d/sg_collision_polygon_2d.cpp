@@ -187,6 +187,10 @@ bool SGCollisionPolygon2D::is_convex(const Array &p_vertices) {
 		cur = next;
 		next = p_vertices.get(i);
 
+		ERR_FAIL_COND_V_MSG(!cur.is_valid(), false, "Vertex in polygon is invalid");
+		ERR_FAIL_COND_V_MSG(!prev.is_valid(), false, "Vertex in polygon is invalid");
+		ERR_FAIL_COND_V_MSG(!next.is_valid(), false, "Vertex in polygon is invalid");
+
 		SGFixedVector2Internal previous_edge = cur->get_internal() - prev->get_internal();
 		SGFixedVector2Internal next_edge = next->get_internal() - cur->get_internal();
 

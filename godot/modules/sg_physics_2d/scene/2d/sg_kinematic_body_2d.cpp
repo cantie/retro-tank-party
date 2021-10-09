@@ -100,6 +100,8 @@ bool SGKinematicBody2D::move_and_collide(const SGFixedVector2Internal &p_linear_
 }
 
 Ref<SGFixedVector2> SGKinematicBody2D::move_and_slide(const Ref<SGFixedVector2> &p_linear_velocity, int p_max_slides) {
+	ERR_FAIL_COND_V(!p_linear_velocity.is_valid(), Ref<SGFixedVector2>());
+	
 	SGFixedVector2Internal motion = p_linear_velocity->get_internal();
 
 	while (p_max_slides) {

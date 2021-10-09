@@ -43,6 +43,7 @@ Ref<SGFixedVector2> SGFixedRect2::get_position() {
 }
 
 void SGFixedRect2::set_position(const Ref<SGFixedVector2> &p_position) {
+	ERR_FAIL_COND(!p_position.is_valid());
 	position->set_internal(p_position->get_internal());
 }
 
@@ -51,22 +52,27 @@ Ref<SGFixedVector2> SGFixedRect2::get_size() {
 }
 
 void SGFixedRect2::set_size(const Ref<SGFixedVector2> &p_size) {
+	ERR_FAIL_COND(!p_size.is_valid());
 	size->set_internal(p_size->get_internal());
 }
 
 bool SGFixedRect2::has_point(const Ref<SGFixedVector2> &p_point) const {
+	ERR_FAIL_COND_V(!p_point.is_valid(), false);
 	return get_internal().has_point(p_point->get_internal());
 }
 
 bool SGFixedRect2::intersects(const Ref<SGFixedRect2> &p_other) const {
+	ERR_FAIL_COND_V(!p_other.is_valid(), false);
 	return get_internal().intersects(p_other->get_internal());
 }
 
 Ref<SGFixedRect2> SGFixedRect2::merge(const Ref<SGFixedRect2> &p_rect) const {
+	ERR_FAIL_COND_V(!p_rect.is_valid(), Ref<SGFixedRect2>());
 	return SGFixedRect2::from_internal(get_internal().merge(p_rect->get_internal()));
 }
 
 Ref<SGFixedRect2> SGFixedRect2::expanded(const Ref<SGFixedVector2> &p_vector) {
+	ERR_FAIL_COND_V(!p_vector.is_valid(), Ref<SGFixedRect2>());
 	SGFixedRect2Internal internal = get_internal();
 	internal.expand_to(p_vector->get_internal());
 	return SGFixedRect2::from_internal(internal);

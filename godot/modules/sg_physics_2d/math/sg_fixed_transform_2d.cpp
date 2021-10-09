@@ -87,6 +87,7 @@ Ref<SGFixedVector2> SGFixedTransform2D::get_x() const {
 }
 
 void SGFixedTransform2D::set_x(const Ref<SGFixedVector2> &p_x) {
+	ERR_FAIL_COND(!p_x.is_valid());
 	x = p_x;
 }
 
@@ -95,6 +96,7 @@ Ref<SGFixedVector2> SGFixedTransform2D::get_y() const {
 }
 
 void SGFixedTransform2D::set_y(const Ref<SGFixedVector2> &p_y) {
+	ERR_FAIL_COND(!p_y.is_valid());
 	y = p_y;
 }
 
@@ -103,6 +105,7 @@ Ref<SGFixedVector2> SGFixedTransform2D::get_origin() const {
 }
 
 void SGFixedTransform2D::set_origin(const Ref<SGFixedVector2> &p_origin) {
+	ERR_FAIL_COND(!p_origin.is_valid());
 	origin = p_origin;
 }
 
@@ -135,12 +138,14 @@ Ref<SGFixedVector2> SGFixedTransform2D::get_scale() const {
 }
 
 Ref<SGFixedTransform2D> SGFixedTransform2D::scaled(const Ref<SGFixedVector2> &p_scale) const {
+	ERR_FAIL_COND_V(!p_scale.is_valid(), Ref<SGFixedTransform2D>());
 	SGFixedTransform2DInternal internal = get_internal();
 	internal.scale(p_scale->get_internal());
 	return SGFixedTransform2D::from_internal(internal);
 }
 
 Ref<SGFixedTransform2D> SGFixedTransform2D::translated(const Ref<SGFixedVector2> &p_offset) const {
+	ERR_FAIL_COND_V(!p_offset.is_valid(), Ref<SGFixedTransform2D>());
 	SGFixedTransform2DInternal internal = get_internal();
 	internal.translate(p_offset->get_internal());
 	return SGFixedTransform2D::from_internal(internal);
@@ -153,39 +158,46 @@ Ref<SGFixedTransform2D> SGFixedTransform2D::orthonormalized() const {
 }
 
 bool SGFixedTransform2D::is_equal_approx(const Ref<SGFixedTransform2D> &p_transform) const {
+	ERR_FAIL_COND_V(!p_transform.is_valid(), false);
 	SGFixedTransform2DInternal internal = get_internal();
 	return internal.is_equal_approx(p_transform->get_internal());
 }
 
 Ref<SGFixedTransform2D> SGFixedTransform2D::mul(const Ref<SGFixedTransform2D> &p_transform) const {
+	ERR_FAIL_COND_V(!p_transform.is_valid(), Ref<SGFixedTransform2D>());
 	return SGFixedTransform2D::from_internal(get_internal() * p_transform->get_internal());
 }
 
 Ref<SGFixedTransform2D> SGFixedTransform2D::interpolate_with(const Ref<SGFixedTransform2D> &p_transform, int64_t p_weight) const {
+	ERR_FAIL_COND_V(!p_transform.is_valid(), Ref<SGFixedTransform2D>());
 	SGFixedTransform2DInternal internal = get_internal();
 	internal.interpolate_with(p_transform->get_internal(), fixed(p_weight));
 	return SGFixedTransform2D::from_internal(internal);
 }
 
 Ref<SGFixedVector2> SGFixedTransform2D::basis_xform(const Ref<SGFixedVector2> &p_vec) const {
+	ERR_FAIL_COND_V(!p_vec.is_valid(), Ref<SGFixedTransform2D>());
 	SGFixedVector2Internal internal = p_vec->get_internal();
 	internal = get_internal().basis_xform(internal);
 	return SGFixedVector2::from_internal(internal);
 }
 
 Ref<SGFixedVector2> SGFixedTransform2D::basis_xform_inv(const Ref<SGFixedVector2> &p_vec) const {
+	ERR_FAIL_COND_V(!p_vec.is_valid(), Ref<SGFixedTransform2D>());
 	SGFixedVector2Internal internal = p_vec->get_internal();
 	internal = get_internal().basis_xform_inv(internal);
 	return SGFixedVector2::from_internal(internal);
 }
 
 Ref<SGFixedVector2> SGFixedTransform2D::xform(const Ref<SGFixedVector2> &p_vec) const {
+	ERR_FAIL_COND_V(!p_vec.is_valid(), Ref<SGFixedTransform2D>());
 	SGFixedVector2Internal internal = p_vec->get_internal();
 	internal = get_internal().xform(internal);
 	return SGFixedVector2::from_internal(internal);
 }
 
 Ref<SGFixedVector2> SGFixedTransform2D::xform_inv(const Ref<SGFixedVector2> &p_vec) const {
+	ERR_FAIL_COND_V(!p_vec.is_valid(), Ref<SGFixedTransform2D>());
 	SGFixedVector2Internal internal = p_vec->get_internal();
 	internal = get_internal().xform_inv(internal);
 	return SGFixedVector2::from_internal(internal);

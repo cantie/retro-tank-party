@@ -87,6 +87,7 @@ Ref<SGFixedVector2> SGRayCast2D::get_cast_to() const {
 }
 
 void SGRayCast2D::set_cast_to(const Ref<SGFixedVector2> &p_cast_to) {
+	ERR_FAIL_COND(!p_cast_to.is_valid());
 	cast_to->set_internal(p_cast_to->get_internal());
 	update();
 }

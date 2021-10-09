@@ -198,22 +198,27 @@ int64_t SGFixedVector2::length_squared() const {
 }
 
 int64_t SGFixedVector2::distance_to(const Ref<SGFixedVector2> &p_other) const {
+	ERR_FAIL_COND_V(!p_other.is_valid(), 0);
 	return value.distance_to(p_other->get_internal()).value;
 }
 
 int64_t SGFixedVector2::distance_squared_to(const Ref<SGFixedVector2> &p_other) const {
+	ERR_FAIL_COND_V(!p_other.is_valid(), 0);
 	return value.distance_squared_to(p_other->get_internal()).value;
 }
 
 int64_t SGFixedVector2::angle_to(const Ref<SGFixedVector2> &p_other) const {
+	ERR_FAIL_COND_V(!p_other.is_valid(), 0);
 	return value.angle_to(p_other->get_internal()).value;
 }
 
 int64_t SGFixedVector2::angle_to_point(const Ref<SGFixedVector2> &p_other) const {
+	ERR_FAIL_COND_V(!p_other.is_valid(), 0);
 	return value.angle_to_point(p_other->get_internal()).value;
 }
 
 Ref<SGFixedVector2> SGFixedVector2::direction_to(const Ref<SGFixedVector2> &p_other) const {
+	ERR_FAIL_COND_V(!p_other.is_valid(), Ref<SGFixedVector2>());
 	return SGFixedVector2::from_internal(value.direction_to(p_other->get_internal()));
 }
 
@@ -227,10 +232,12 @@ int64_t SGFixedVector2::angle() const {
 }
 
 int64_t SGFixedVector2::dot(const Ref<SGFixedVector2> &p_other) const {
+	ERR_FAIL_COND_V(!p_other.is_valid(), 0);
 	return value.dot(p_other->get_internal()).value;
 }
 
 int64_t SGFixedVector2::cross(const Ref<SGFixedVector2> &p_other) const {
+	ERR_FAIL_COND_V(!p_other.is_valid(), 0);
 	return value.cross(p_other->get_internal()).value;
 }
 
@@ -239,28 +246,33 @@ Ref<SGFixedVector2> SGFixedVector2::rotated(int64_t p_rotation) const {
 }
 
 Ref<SGFixedVector2> SGFixedVector2::linear_interpolate(const Ref<SGFixedVector2> &p_to, int64_t weight) const {
+	ERR_FAIL_COND_V(!p_to.is_valid(), Ref<SGFixedVector2>());
 	return SGFixedVector2::from_internal(SGFixedVector2Internal::linear_interpolate(value, p_to->get_internal(), fixed(weight)));
 }
 
 Ref<SGFixedVector2> SGFixedVector2::slide(const Ref<SGFixedVector2> &p_normal) const {
+	ERR_FAIL_COND_V(!p_normal.is_valid(), Ref<SGFixedVector2>());
 	Ref<SGFixedVector2> v(memnew(SGFixedVector2));
 	v->value = value.slide(p_normal->value);
 	return v;
 }
 
 Ref<SGFixedVector2> SGFixedVector2::bounce(const Ref<SGFixedVector2> &p_normal) const {
+	ERR_FAIL_COND_V(!p_normal.is_valid(), Ref<SGFixedVector2>());
 	Ref<SGFixedVector2> v(memnew(SGFixedVector2));
 	v->value = value.bounce(p_normal->value);
 	return v;
 }
 
 Ref<SGFixedVector2> SGFixedVector2::reflect(const Ref<SGFixedVector2> &p_normal) const {
+	ERR_FAIL_COND_V(!p_normal.is_valid(), Ref<SGFixedVector2>());
 	Ref<SGFixedVector2> v(memnew(SGFixedVector2));
 	v->value = value.reflect(p_normal->value);
 	return v;
 }
 
 bool SGFixedVector2::is_equal_approx(const Ref<SGFixedVector2> &p_other) const {
+	ERR_FAIL_COND_V(!p_other.is_valid(), false);
 	return value.is_equal_approx(p_other->get_internal());
 }
 

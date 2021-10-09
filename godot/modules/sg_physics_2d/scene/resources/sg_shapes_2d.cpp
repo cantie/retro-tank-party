@@ -44,6 +44,8 @@ void SGRectangleShape2D::_bind_methods() {
 }
 
 void SGRectangleShape2D::set_extents(const Ref<SGFixedVector2>& p_extents) {
+	ERR_FAIL_COND(!p_extents.is_valid());
+
 	extents->set_internal(p_extents->get_internal());
 	_change_notify("extents");
 	emit_changed();
