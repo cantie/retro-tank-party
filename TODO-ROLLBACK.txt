@@ -12,16 +12,16 @@ MILESTONE 1 (physics):
 
 MILESTOE 2 (finish porting all the things):
 
+ - Implement a sound manager to prevent double playing sounds
+   o Revert weird stuff that was done to Sound.gd
  - Bug: Pick up non-chargable powerup while using the same power-up (ie. pickup invisible while invisible)
  - Bug: trying to move too early can send tank to origin?
  - Grep through the codebase for remote/master/puppet/etc and remove if possible
  - Grep through the codebase for _synchronized_rpc() and remove if possible
- - Implement a sound manager to prevent double playing sounds
-   o Convert all code
-   o Revert weird stuff that was done to Sound.gd
+ - Replace our MyAudioStreamPlayer2D with the built-in one and Listener2D (from Godot 3.4)
  - Re-implement the modern control scheme
    o Make sure we're good in Boost.gd
- - Replace our MyAudioStreamPlayer2D with the built-in one and Listener2D (from Godot 3.4)
+ - Convert weapons into nodes? It'd be basically making them the attachment...
 
 MILESTONE 3 (internal cleanup):
 

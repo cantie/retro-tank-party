@@ -1,23 +1,12 @@
-[gd_scene load_steps=6 format=2]
+[gd_scene load_steps=3 format=2]
 
 [ext_resource path="res://mods/core/abilities/Zap.gd" type="Script" id=1]
-[ext_resource path="res://assets/sounds/Teleport__006.wav" type="AudioStream" id=2]
-[ext_resource path="res://assets/sounds/Teleport__010.wav" type="AudioStream" id=3]
-[ext_resource path="res://src/sound/MyAudioStreamPlayer2D.tscn" type="PackedScene" id=4]
 [ext_resource path="res://addons/network-sync-rollback/NetworkRandomNumberGenerator.gd" type="Script" id=5]
 
 [node name="Zap" type="Node2D" groups=[
 "network_sync",
 ]]
 script = ExtResource( 1 )
-
-[node name="HidingSound" parent="." instance=ExtResource( 4 )]
-stream = ExtResource( 2 )
-bus = "Sound"
-
-[node name="ShowingSound" parent="." instance=ExtResource( 4 )]
-stream = ExtResource( 3 )
-bus = "Sound"
 
 [node name="RandomNumberGenerator" type="Node" parent="."]
 script = ExtResource( 5 )

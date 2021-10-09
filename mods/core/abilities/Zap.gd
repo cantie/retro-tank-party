@@ -1,9 +1,9 @@
 extends "res://src/components/abilities/BaseAbility.gd"
 
 const Tank = preload("res://src/objects/Tank.gd")
+const HidingSound = preload("res://assets/sounds/Teleport__006.wav")
+const ShowingSound = preload("res://assets/sounds/Teleport__010.wav")
 
-onready var hiding_sound := $HidingSound
-onready var showing_sound := $ShowingSound
 onready var rng := $RandomNumberGenerator
 
 const TANK_DIMENSION = 8388608 # 128
@@ -54,7 +54,9 @@ func use_ability() -> void:
 	if not tank.is_network_master():
 		tank.player_info_node.visible = false
 	
-	hiding_sound.play()
+	SyncManager.play_sound(str(get_path()), HidingSound, {
+		position = global_position,
+	})
 	
 	tank.fixed_scale = SGFixed.vector2(65536, 65536)
 	_change_stage(ZapStage.HIDING, SCALE_FRAME_COUNT)
@@ -99,7 +101,9 @@ func _network_process(delta: float, input: Dictionary) -> void:
 			tank.player_info_node.visible = true
 			tank.collision_shape.disabled = false
 			tank.sync_to_physics_engine()
-			showing_sound.play()
+			SyncManager.play_sound(str(get_path()), ShowingSound, {
+				position = global_position,
+			})
 			_change_stage(ZapStage.SHOWING, SCALE_FRAME_COUNT)
 		elif zap_stage == ZapStage.SHOWING:
 			tank.fixed_scale = SGFixed.vector2(65536, 65536)
