@@ -142,9 +142,6 @@ func _ready():
 	# If testing tank on its own, make player controlled
 	if get_tree().current_scene == self:
 		player_controlled = true
-	
-	if player_controlled:
-		Globals.my_player_position = global_position
 
 func _notification(what) -> void:
 	if what == NOTIFICATION_PREDELETE:
@@ -352,8 +349,6 @@ func _network_process(delta: float, input: Dictionary) -> void:
 		velocity.rotate(fixed_rotation)
 		velocity.imul(speed)
 		move_and_slide(velocity)
-	
-	Globals.my_player_position = global_position
 	
 	# 6554 = 0.1
 	if movement_vector.x >= 6554 or movement_vector.x <= -6554:

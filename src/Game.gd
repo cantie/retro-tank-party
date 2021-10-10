@@ -124,6 +124,7 @@ func make_player_controlled(peer_id) -> void:
 	if my_player and not my_player.player_controlled:
 		my_player.player_controlled = true
 		_setup_player_camera(my_player)
+		_setup_player_listener(my_player)
 	else:
 		print ("Unable to make player controlled: node not found")
 
@@ -211,6 +212,11 @@ func _setup_player_camera(my_player) -> void:
 		player_camera.limit_top = map_rect.position.y
 		player_camera.limit_right = map_rect.end.x
 		player_camera.limit_bottom = map_rect.end.y
+
+func _setup_player_listener(my_player) -> void:
+	var listener = Listener2D.new()
+	my_player.add_child(listener)
+	listener.make_current()
 
 func kill_player(player_id) -> void:
 	var player_node = players_node.get_node(str(player_id))

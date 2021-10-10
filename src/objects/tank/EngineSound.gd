@@ -22,10 +22,6 @@ var engine_state: int = EngineState.IDLE setget set_engine_state
 var turning := false
 
 func _ready() -> void:
-	fast_sound.volume_db = -40.0
-	fast_sound.base_volume_db = DRIVING_VOLUME_DB
-	idle_sound.volume_db = -40.0
-	idle_sound.base_volume_db = IDLE_VOLUME_DB
 	idle_sound.play()
 
 func set_engine_state(_engine_state: int) -> void:
@@ -35,7 +31,7 @@ func set_engine_state(_engine_state: int) -> void:
 		tween.remove_all()
 		
 		if engine_state == EngineState.IDLE:
-			tween.interpolate_property(fast_sound, "base_volume_db", DRIVING_VOLUME_DB, IDLE_VOLUME_DB, TRANSITION_DURATION, Tween.TRANS_LINEAR, Tween.EASE_IN_OUT)
+			tween.interpolate_property(fast_sound, "volume_db", DRIVING_VOLUME_DB, IDLE_VOLUME_DB, TRANSITION_DURATION, Tween.TRANS_LINEAR, Tween.EASE_IN_OUT)
 			tween.interpolate_property(fast_sound, "pitch_scale", DRIVING_PITCH_SCALE, IDLE_PITCH_SCALE, TRANSITION_DURATION, Tween.TRANS_LINEAR, Tween.EASE_IN_OUT)
 		else:
 			idle_sound.stop()
@@ -43,7 +39,7 @@ func set_engine_state(_engine_state: int) -> void:
 			fast_sound.volume_db = IDLE_VOLUME_DB
 			fast_sound.pitch_scale = IDLE_PITCH_SCALE
 			fast_sound.play()
-			tween.interpolate_property(fast_sound, "base_volume_db", IDLE_VOLUME_DB, DRIVING_VOLUME_DB, TRANSITION_DURATION, Tween.TRANS_LINEAR, Tween.EASE_IN_OUT)
+			tween.interpolate_property(fast_sound, "volume_db", IDLE_VOLUME_DB, DRIVING_VOLUME_DB, TRANSITION_DURATION, Tween.TRANS_LINEAR, Tween.EASE_IN_OUT)
 			tween.interpolate_property(fast_sound, "pitch_scale", IDLE_PITCH_SCALE, DRIVING_PITCH_SCALE, TRANSITION_DURATION, Tween.TRANS_LINEAR, Tween.EASE_IN_OUT)
 		
 		tween.start()
@@ -53,7 +49,7 @@ func _on_Tween_tween_all_completed() -> void:
 		fast_sound.stop()
 		idle_sound.play()
 	else:
-		fast_sound.base_volume_db = DRIVING_VOLUME_DB
+		fast_sound.volume_db = DRIVING_VOLUME_DB
 		fast_sound.pitch_scale = DRIVING_PITCH_SCALE
 
 func _process(delta: float) -> void:

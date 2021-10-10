@@ -5,9 +5,7 @@
 [ext_resource path="res://src/game/HUD.tscn" type="PackedScene" id=3]
 [ext_resource path="res://addons/network-sync-rollback/NetworkRandomNumberGenerator.gd" type="Script" id=4]
 
-[node name="Game" type="Node2D" groups=[
-"network_sync",
-]]
+[node name="Game" type="Node2D" groups=["network_sync"]]
 script = ExtResource( 2 )
 
 [node name="Map" type="Node2D" parent="."]
