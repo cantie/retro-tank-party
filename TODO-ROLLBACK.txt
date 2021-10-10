@@ -3,19 +3,22 @@ TODO
 
 MILESTONE 1 (physics):
 
- - Code clean-up
-   o Port over more (all?) of Vector2's methods? Need in both fixed_vector2 and SGFixedVector2!
  - Figure out how to expose constants to GDscript (ie. SGFixedVector2.ZERO, SGFixed.ONE)
  - Move engine to its own repo
- - Unit tests!
-   o Reintroduce the physics server to allow testing in GDScript?
+ - Add some issues:
+   * Code clean-up
+     o Port over more (all?) of Vector2's methods? Need in both fixed_vector2 and SGFixedVector2!
+   * Unit tests!
+     o Reintroduce the physics server to allow testing in GDScript?
+   * Create class reference documentation
+   * Create tutorial
 
 MILESTOE 2 (finish porting all the things):
 
+ - Replace our MyAudioStreamPlayer2D with the built-in one and Listener2D (from Godot 3.4)
+ - Make screenshake not go again after a rollback similar to sounds
  - Grep through the codebase for remote/master/puppet/etc and remove if possible
  - Grep through the codebase for _synchronized_rpc() and remove if possible
- - Make screenshake not go again after a rollback similar to sounds
- - Replace our MyAudioStreamPlayer2D with the built-in one and Listener2D (from Godot 3.4)
  - Convert weapons into nodes? It'd be basically making them the attachment...
 
 MILESTONE 3 (internal cleanup):
