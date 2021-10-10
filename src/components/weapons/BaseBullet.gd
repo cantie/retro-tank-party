@@ -28,7 +28,7 @@ func _network_spawn(data: Dictionary) -> void:
 	player_index = data['player_index']
 	fixed_position = data['fixed_position']
 	fixed_rotation = data['fixed_rotation']
-	vector = SGFixed.vector2(65536, 0)
+	vector = SGFixed.vector2(SGFixed.ONE, 0)
 	vector.rotate(fixed_rotation)
 	damage = data['damage']
 	lifetime_timer.start()

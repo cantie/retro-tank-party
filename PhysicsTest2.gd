@@ -20,12 +20,12 @@ func _physics_process(delta: float) -> void:
 	velocity.y = 0
 	velocity.x = 0
 	if Input.is_action_pressed("player1_forward"):
-		velocity.x = 65536
+		velocity.x = SGFixed.ONE
 	elif Input.is_action_pressed("player1_backward"):
-		velocity.x = -65536
+		velocity.x = SGFixed.NEG_ONE
 	
 	if velocity.x != 0:
-		velocity.imul(65536*6)
+		velocity.imul(SGFixed.ONE*6)
 		velocity.rotate(character.fixed_rotation)
 		var collision = character.move_and_collide(velocity)
 		if collision:

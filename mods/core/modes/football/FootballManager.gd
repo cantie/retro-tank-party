@@ -5,10 +5,10 @@ const FootballWeaponType = preload("res://mods/core/weapons/football.tres")
 const FootballScene = preload("res://mods/core/modes/football/Football.tscn")
 const GoalScene = preload("res://mods/core/modes/football/Goal.tscn")
 
-const TANK_DIMENSION = 8388608 # 128
+const TANK_DIMENSION = 128 * SGFixed.ONE
 
-const THIRTY_TWO = 2097152
-const SIXTY_FOUR = 4194304
+const THIRTY_TWO = 32 * SGFixed.ONE
+const SIXTY_FOUR = 64 * SGFixed.ONE
 
 onready var hud := $CanvasLayer/TimedMatchHUD
 onready var player_managers_node := $PlayerManagers

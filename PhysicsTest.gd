@@ -2,12 +2,12 @@ extends Node2D
 
 onready var character = $Character
 
-var vector := SGFixed.vector2(65536, 0)
+var vector := SGFixed.vector2(SGFixed.ONE, 0)
 var counter := 0
 
 func _physics_process(delta: float) -> void:
 	# Move 5 pixels per frame.
-	character.fixed_position.iadd(vector.mul(5*65536))
+	character.fixed_position.iadd(vector.mul(5 * SGFixed.ONE))
 	
 	#print ("%s, %s" % [fixed_position.x, fixed_position.y])
 	character.sync_to_physics_engine()

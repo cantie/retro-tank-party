@@ -64,6 +64,17 @@ void SGFixed::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("from_float_rect2", "float_rect"), &SGFixed::from_float_rect2);
 
 	ClassDB::bind_method(D_METHOD("transform2d", "rotation", "origin"), &SGFixed::transform2d);
+
+	BIND_CONSTANT(ONE);
+	BIND_CONSTANT(HALF);
+	BIND_CONSTANT(TWO);
+	BIND_CONSTANT(NEG_ONE);
+	BIND_CONSTANT(PI);
+	BIND_CONSTANT(TAU);
+	BIND_CONSTANT(PI_DIV_4);
+	BIND_CONSTANT(EPSILON);
+	BIND_CONSTANT(ARITHMETIC_OVERFLOW);
+
 }
 
 int64_t SGFixed::from_int(int64_t p_int_value) const {

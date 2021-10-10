@@ -1,8 +1,8 @@
 extends Node2D
 
-const FIXED_PI = 205887
-
 var _map_rect
+
+const ONE_NINETY_SIX = 196 * SGFixed.ONE
 
 func map_start(game) -> void:
 	get_tree().call_group_flags(SceneTree.GROUP_CALL_REALTIME, "map_object", "map_object_start", self, game)
@@ -79,8 +79,8 @@ func get_goal_transforms() -> Array:
 			goal_transforms.append(goal_position_node.get_global_fixed_transform())
 		else:
 			if i == 0:
-				goal_transforms.append(SGFixed.transform2d(0, fixed_map_rect.position.add(SGFixed.vector2(12845056, fixed_map_rect.size.y / 2))))
+				goal_transforms.append(SGFixed.transform2d(0, fixed_map_rect.position.add(SGFixed.vector2(ONE_NINETY_SIX, fixed_map_rect.size.y / 2))))
 			else:
-				goal_transforms.append(SGFixed.transform2d(FIXED_PI, fixed_map_rect.position.add(SGFixed.vector2(fixed_map_rect.size.x - 12845056, fixed_map_rect.size.y / 2))))
+				goal_transforms.append(SGFixed.transform2d(SGFixed.PI, fixed_map_rect.position.add(SGFixed.vector2(fixed_map_rect.size.x - ONE_NINETY_SIX, fixed_map_rect.size.y / 2))))
 	
 	return goal_transforms

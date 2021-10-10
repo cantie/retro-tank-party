@@ -2,7 +2,7 @@ extends "res://src/components/modes/BaseManager.gd"
 
 const PlayerManager := preload("res://mods/core/modes/deathmatch/DeathmatchPlayerManager.tscn")
 
-const TANK_DIMENSION = 8388608 # 128
+const TANK_DIMENSION = 128 * SGFixed.ONE
 
 onready var hud := $CanvasLayer/TimedMatchHUD
 onready var player_managers_node := $PlayerManagers

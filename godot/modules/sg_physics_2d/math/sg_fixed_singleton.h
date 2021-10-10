@@ -40,6 +40,18 @@ protected:
 	static void _bind_methods();
 
 public:
+	enum {
+		ONE = 65536,
+		HALF = 32768,
+		TWO = 131072,
+		NEG_ONE = -65536,
+		PI = 205887,
+		TAU = 411774,
+		PI_DIV_4 = 51471,
+		EPSILON = 1,
+		ARITHMETIC_OVERFLOW = INT64_MIN,
+	};
+
 	static SGFixed *get_singleton();
 
 	int64_t from_int(int64_t p_int_value) const;

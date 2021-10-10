@@ -7,7 +7,7 @@ func setup_free_space_detector(_area: SGFixedRect2, dimensions: SGFixedVector2, 
 	area = _area
 	rng = _rng
 	
-	var half_dimensions = dimensions.div(65536*2)
+	var half_dimensions = dimensions.div(SGFixed.TWO)
 	var shape = SGRectangleShape2D.new()
 	shape.extents = half_dimensions
 	$CollisionShape2D.shape = shape

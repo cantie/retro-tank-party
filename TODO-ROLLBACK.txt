@@ -3,7 +3,6 @@ TODO
 
 MILESTONE 1 (physics):
 
- - Figure out how to expose constants to GDscript (ie. SGFixedVector2.ZERO, SGFixed.ONE)
  - Move engine to its own repo
  - Add some issues:
    * Code clean-up

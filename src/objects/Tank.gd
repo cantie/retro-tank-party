@@ -25,9 +25,6 @@ onready var engine_sound := $EngineSound
 const DEFAULT_TURN_SPEED := 10923
 const DEFAULT_SPEED := 873726
 
-const FIXED_PI = 205887
-const FIXED_TAU = 411775
-
 var turn_speed := DEFAULT_TURN_SPEED
 var speed := DEFAULT_SPEED
 var velocity: SGFixedVector2 = SGFixed.vector2(0, 0)
@@ -298,7 +295,7 @@ func _hook_default_calculate_movement_vector(event: CalculateMovementVectorEvent
 		event.movement_vector.y = input_vector.x
 		return
 	
-	var current_vector = SGFixed.vector2(65536, 0)
+	var current_vector = SGFixed.vector2(SGFixed.ONE, 0)
 	current_vector.rotate(fixed_rotation)
 	
 	var desired_vector: SGFixedVector2 = input.get(PlayerInput.INPUT_VECTOR, SGFixed.vector2(0, 0))
@@ -307,9 +304,9 @@ func _hook_default_calculate_movement_vector(event: CalculateMovementVectorEvent
 		desired_vector = desired_vector.normalized()
 
 	# If going backwards is a shorter rotation, move backwards.
-	if abs(current_vector.angle_to(desired_vector)) > (FIXED_PI / 2):
+	if abs(current_vector.angle_to(desired_vector)) > (SGFixed.PI / 2):
 		# Flip the vector for the angle calculations.
-		current_vector = current_vector.rotated(FIXED_PI)
+		current_vector = current_vector.rotated(SGFixed.PI)
 
 		# Set us moving backwards ...
 		event.movement_vector.x = -desired_vector.length()
@@ -319,10 +316,10 @@ func _hook_default_calculate_movement_vector(event: CalculateMovementVectorEvent
 
 	# Normalize the angle to the desired vector
 	var angle_to = current_vector.angle_to(desired_vector)
-	if abs(angle_to) > (FIXED_PI / 2):
-		angle_to = (FIXED_TAU - angle_to)
+	if abs(angle_to) > (SGFixed.PI / 2):
+		angle_to = (SGFixed.TAU - angle_to)
 	
-	event.movement_vector.y = clamp(SGFixed.div(angle_to, turn_speed), -65536, 65536)
+	event.movement_vector.y = clamp(SGFixed.div(angle_to, turn_speed), -SGFixed.ONE, SGFixed.ONE)
 
 func _predict_remote_input(previous_input: Dictionary, ticks_since_real_input: int) -> Dictionary:
 	var input = previous_input.duplicate()
@@ -358,7 +355,8 @@ func _network_process(delta: float, input: Dictionary) -> void:
 	
 	Globals.my_player_position = global_position
 	
-	if movement_vector.x >= 0.1 or movement_vector.x <= -0.1:
+	# 6554 = 0.1
+	if movement_vector.x >= 6554 or movement_vector.x <= -6554:
 		engine_sound.engine_state = engine_sound.EngineState.DRIVING
 	else:
 		engine_sound.engine_state = engine_sound.EngineState.IDLE

@@ -52,7 +52,7 @@ func _hook_tank_shoot(event: Tank.TankEvent) -> void:
 
 func _hook_tank_calculate_movement_vector(event: Tank.CalculateMovementVectorEvent) -> void:
 	if last_movement_direction == 0:
-		last_movement_direction = -65536 if event.movement_vector.x < 0 else 65536
+		last_movement_direction = -SGFixed.ONE if event.movement_vector.x < 0 else SGFixed.ONE
 	
 	event.movement_vector.x = last_movement_direction
 

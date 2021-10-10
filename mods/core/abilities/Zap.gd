@@ -6,7 +6,7 @@ const ShowingSound = preload("res://assets/sounds/Teleport__010.wav")
 
 onready var rng := $RandomNumberGenerator
 
-const TANK_DIMENSION = 8388608 # 128
+const TANK_DIMENSION = SGFixed.ONE * 128
 const SCALE_INCREMENT := 8192
 const SCALE_FRAME_COUNT := 8
 const MOVE_FRAME_COUNT := 30
@@ -47,7 +47,7 @@ func detach_ability() -> void:
 
 func use_ability() -> void:
 	destination = detector.detect_free_space()
-	move_increment = destination.sub(tank.get_global_fixed_position()).div(MOVE_FRAME_COUNT*65536)
+	move_increment = destination.sub(tank.get_global_fixed_position()).div(MOVE_FRAME_COUNT * SGFixed.ONE)
 	
 	tank.collision_shape.disabled = true
 	
@@ -58,7 +58,7 @@ func use_ability() -> void:
 		position = global_position,
 	})
 	
-	tank.fixed_scale = SGFixed.vector2(65536, 65536)
+	tank.fixed_scale = SGFixed.vector2(SGFixed.ONE, SGFixed.ONE)
 	_change_stage(ZapStage.HIDING, SCALE_FRAME_COUNT)
 
 func _change_stage(new_stage, frame_count) -> void:
@@ -86,7 +86,7 @@ func _network_process(delta: float, input: Dictionary) -> void:
 		elif zap_stage == ZapStage.MOVING:
 			tank.fixed_position.iadd(move_increment)
 		elif zap_stage == ZapStage.SHOWING:
-			if tank.fixed_scale.x < 65536 and tank.fixed_scale.y < 65536:
+			if tank.fixed_scale.x < SGFixed.ONE and tank.fixed_scale.y < SGFixed.ONE:
 				tank.fixed_scale.iadd(SCALE_INCREMENT)
 			tank.sync_to_physics_engine()
 		frame_counter -= 1
@@ -106,7 +106,7 @@ func _network_process(delta: float, input: Dictionary) -> void:
 			})
 			_change_stage(ZapStage.SHOWING, SCALE_FRAME_COUNT)
 		elif zap_stage == ZapStage.SHOWING:
-			tank.fixed_scale = SGFixed.vector2(65536, 65536)
+			tank.fixed_scale = SGFixed.vector2(SGFixed.ONE, SGFixed.ONE)
 			tank.sync_to_physics_engine()
 			_change_stage(ZapStage.NONE, 0)
 			mark_finished()

@@ -24,5 +24,5 @@ func _match_manager_pass_football(position: SGFixedVector2, vector: SGFixedVecto
 			match_manager.pass_football(position, vector)
 
 func fire_weapon() -> void:
-	_match_manager_pass_football(tank.bullet_start_position.get_global_fixed_position(), SGFixed.vector2(65536, 0).rotated(tank.turret_pivot.get_global_fixed_rotation()))
+	_match_manager_pass_football(tank.bullet_start_position.get_global_fixed_position(), SGFixed.vector2(SGFixed.ONE, 0).rotated(tank.turret_pivot.get_global_fixed_rotation()))
 

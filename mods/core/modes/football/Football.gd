@@ -97,7 +97,7 @@ func _network_process(delta: float, input: Dictionary) -> void:
 	if ray_cast.is_colliding() and ray_cast.get_collider().get_collision_mask_bit(2):
 		var old_fixed_position = fixed_position.copy()
 		# Move football to stop short of the obstruction.
-		set_global_fixed_position(ray_cast.get_collision_point().sub(vector.mul(1048576)))
+		set_global_fixed_position(ray_cast.get_collision_point().sub(vector.mul(SIXTEEN)))
 		sync_to_physics_engine()
 		
 		if check_on_obstruction():
