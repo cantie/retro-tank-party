@@ -5,16 +5,11 @@ enum TreeColors {
 	BROWN,
 }
 
-const TREE_COLORS = {
-	TreeColors.GREEN: preload("res://assets/treeGreen_large.png"),
-	TreeColors.BROWN: preload("res://assets/treeBrown_large.png"),
-}
-
 export (TreeColors) var tree_color: int = TreeColors.GREEN setget set_tree_color
 
-onready var sprite = $Sprite
+onready var visual = $Visual
 
 func set_tree_color(color: int) -> void:
-	if sprite == null:
+	if visual == null:
 		yield(self, "ready")
-	sprite.texture = TREE_COLORS[color]
+	visual = Globals.art.replace_visual("TreeBig", visual, {tree_color = tree_color})

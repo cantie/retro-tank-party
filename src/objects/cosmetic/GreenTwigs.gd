@@ -1,6 +1,9 @@
-extends Sprite
+extends Node2D
 
 onready var animation_player := $AnimationPlayer
+
+func _ready() -> void:
+	Globals.art.replace_visual('GreenTwigs', $GreenTwigsVisual)
 
 func _network_spawn(data: Dictionary) -> void:
 	position = data['position']

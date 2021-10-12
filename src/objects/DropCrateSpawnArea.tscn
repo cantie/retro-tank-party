@@ -8,10 +8,7 @@
 extents_x = 16056320
 extents_y = 14811136
 
-[node name="DropCrateSpawnArea" type="SGArea2D" groups=[
-"drop_crate_spawn_area",
-"map_object",
-]]
+[node name="DropCrateSpawnArea" type="SGArea2D" groups=["drop_crate_spawn_area", "map_object"]]
 collision_layer = 0
 collision_mask = 0
 script = ExtResource( 1 )
@@ -21,7 +18,7 @@ shape = SubResource( 1 )
 
 [node name="DropTimer" type="Node" parent="."]
 script = ExtResource( 2 )
-wait_ticks = 600
+wait_ticks = 60
 
 [node name="Spawns" type="SGFixedNode2D" parent="."]
 
