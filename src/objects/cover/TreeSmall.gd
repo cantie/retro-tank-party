@@ -6,8 +6,8 @@ enum TreeColors {
 }
 
 const TREE_COLORS = {
-	TreeColors.GREEN: Rect2(520, 694, 72, 72),
-	TreeColors.BROWN: Rect2(592, 694, 72, 72),
+	TreeColors.GREEN: preload("res://assets/treeGreen_small.png"),
+	TreeColors.BROWN: preload("res://assets/treeBrown_small.png"),
 }
 
 export (TreeColors) var tree_color: int = TreeColors.GREEN setget set_tree_color

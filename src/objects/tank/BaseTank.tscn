@@ -1,7 +1,8 @@
-[gd_scene load_steps=4 format=2]
+[gd_scene load_steps=5 format=2]
 
 [ext_resource path="res://src/objects/tank/BaseTank.gd" type="Script" id=1]
-[ext_resource path="res://assets/objects.png" type="Texture" id=2]
+[ext_resource path="res://assets/turrets.png" type="Texture" id=2]
+[ext_resource path="res://assets/tanks/blue_tank_body.png" type="Texture" id=3]
 [ext_resource path="res://src/objects/whitening_shader.tres" type="Material" id=4]
 
 [node name="BaseTank" type="SGKinematicBody2D"]
@@ -15,9 +16,7 @@ fixed_polygon_pairs = [ [ -2752512, -1703936 ], [ -2097152, -2686976 ], [ 183500
 [node name="BodySprite" type="Sprite" parent="."]
 material = ExtResource( 4 )
 rotation = -1.5708
-texture = ExtResource( 2 )
-region_enabled = true
-region_rect = Rect2( 434, 0, 84, 83 )
+texture = ExtResource( 3 )
 
 [node name="TurretPivot" type="SGFixedPosition2D" parent="."]
 
@@ -25,9 +24,8 @@ region_rect = Rect2( 434, 0, 84, 83 )
 rotation = -1.5708
 texture = ExtResource( 2 )
 centered = false
-offset = Vector2( -12, -10 )
-region_enabled = true
-region_rect = Rect2( 722, 199, 24, 60 )
+offset = Vector2( -16, -10 )
+hframes = 4
 
 [node name="BulletStartPosition" type="SGFixedPosition2D" parent="TurretPivot"]
 position = Vector2( 55, 0 )
