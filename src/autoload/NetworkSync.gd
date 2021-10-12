@@ -100,7 +100,7 @@ func _ready() -> void:
 	SyncManager.message_serializer = RTPMessageSerializer.new()
 	
 	# Just for debugging
-	SyncManager.rollback_debug_ticks = 5
+	#SyncManager.rollback_debug_ticks = 5
 	SyncManager.debug_message_bytes = 600
 	SyncManager.debug_skip_nth_message = 0
 	
