@@ -4,6 +4,13 @@ TODO
 MILESTONE 1 (physics):
 
  - Move engine to its own repo
+   o Create and publish repo
+   o Add GitLab CI to build
+   o Setup releases via GitLab and GitLab CI
+   o -- SHARE WITH DISCORD! --
+   o README.md
+   o API reference
+   o Tutorial
  - Add some issues:
    * Code clean-up
      o Port over more (all?) of Vector2's methods? Need in both fixed_vector2 and SGFixedVector2!
