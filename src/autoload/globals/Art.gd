@@ -1,12 +1,19 @@
 extends Node
 
-var art_style: ArtStyle = preload("res://mods/core/art/classic.tres")
+var art_style_resource: ArtStyle
+var art_style
+
+func _ready() -> void:
+	load_art_style("res://mods/core/art/classic.tres")
 
 func load_art_style(path: String) -> void:
-	art_style = load(path)
+	art_style_resource = load(path)
+	art_style = art_style_resource.art_script.new()
+	art_style.setup_art(art_style_resource)
 
 func replace_visual(id: String, node: Node, info: Dictionary = {}) -> Node:
-	var replacement = art_style.art_script.replace_visual(id, node, info)
+	id = art_style.preprocess_visual_id(id, node, info)
+	var replacement = art_style.replace_visual(id, node, info)
 	
 	# Protection for badly behaving art scripts.
 	if replacement == null:
@@ -31,7 +38,7 @@ func replace_visual(id: String, node: Node, info: Dictionary = {}) -> Node:
 	return replacement
 
 func get_tank_color(index: int) -> Color:
-	return art_style.art_script.get_tank_color(index)
+	return art_style.get_tank_color(index)
 
 func get_team_color(index: int) -> Color:
-	return art_style.art_script.get_team_color(index)
+	return art_style.get_team_color(index)

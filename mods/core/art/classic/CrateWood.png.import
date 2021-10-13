@@ -2,15 +2,15 @@
 
 importer="texture"
 type="StreamTexture"
-path="res://.import/blue_tank_body.png-1de21f2162c9e1fd6fa10dd9b0a27c9b.stex"
+path="res://.import/CrateWood.png-6c266338588eadea7e4e637175816f0a.stex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/tanks/blue_tank_body.png"
-dest_files=[ "res://.import/blue_tank_body.png-1de21f2162c9e1fd6fa10dd9b0a27c9b.stex" ]
+source_file="res://mods/core/art/classic/CrateWood.png"
+dest_files=[ "res://.import/CrateWood.png-6c266338588eadea7e4e637175816f0a.stex" ]
 
 [params]
 
@@ -20,7 +20,7 @@ compress/hdr_mode=0
 compress/bptc_ldr=0
 compress/normal_map=0
 flags/repeat=0
-flags/filter=false
+flags/filter=true
 flags/mipmaps=false
 flags/anisotropic=false
 flags/srgb=2
@@ -31,5 +31,5 @@ process/invert_color=false
 process/normal_map_invert_y=false
 stream=false
 size_limit=0
-detect_3d=false
+detect_3d=true
 svg/scale=1.0

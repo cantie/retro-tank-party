@@ -2,15 +2,15 @@
 
 importer="texture"
 type="StreamTexture"
-path="res://.import/greenTwigs.png-be38a94d421c106f2ea9108eb328b085.stex"
+path="res://.import/TreeBig_green.png-6226851ce048a7e7442bc268af076434.stex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/greenTwigs.png"
-dest_files=[ "res://.import/greenTwigs.png-be38a94d421c106f2ea9108eb328b085.stex" ]
+source_file="res://mods/core/art/classic/TreeBig_green.png"
+dest_files=[ "res://.import/TreeBig_green.png-6226851ce048a7e7442bc268af076434.stex" ]
 
 [params]
 

@@ -2,15 +2,15 @@
 
 importer="texture"
 type="StreamTexture"
-path="res://.import/fenceRed.png-b6a82328ced5b82c9b0ba10e93f65309.stex"
+path="res://.import/TankBody2.png-5dd1174a3e51b0477a378b9d75fe80cc.stex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/fenceRed.png"
-dest_files=[ "res://.import/fenceRed.png-b6a82328ced5b82c9b0ba10e93f65309.stex" ]
+source_file="res://mods/core/art/classic/TankBody2.png"
+dest_files=[ "res://.import/TankBody2.png-5dd1174a3e51b0477a378b9d75fe80cc.stex" ]
 
 [params]
 
@@ -20,7 +20,7 @@ compress/hdr_mode=0
 compress/bptc_ldr=0
 compress/normal_map=0
 flags/repeat=0
-flags/filter=true
+flags/filter=false
 flags/mipmaps=false
 flags/anisotropic=false
 flags/srgb=2
@@ -31,5 +31,5 @@ process/invert_color=false
 process/normal_map_invert_y=false
 stream=false
 size_limit=0
-detect_3d=true
+detect_3d=false
 svg/scale=1.0

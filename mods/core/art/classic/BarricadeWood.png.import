@@ -2,15 +2,15 @@
 
 importer="texture"
 type="StreamTexture"
-path="res://.import/black_tank_body.png-746b9b8c3b90e8bfaa508a8a9d008878.stex"
+path="res://.import/BarricadeWood.png-f2ca2c0c0384f01cb4c6e2c145cd4472.stex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/tanks/black_tank_body.png"
-dest_files=[ "res://.import/black_tank_body.png-746b9b8c3b90e8bfaa508a8a9d008878.stex" ]
+source_file="res://mods/core/art/classic/BarricadeWood.png"
+dest_files=[ "res://.import/BarricadeWood.png-f2ca2c0c0384f01cb4c6e2c145cd4472.stex" ]
 
 [params]
 
@@ -20,7 +20,7 @@ compress/hdr_mode=0
 compress/bptc_ldr=0
 compress/normal_map=0
 flags/repeat=0
-flags/filter=false
+flags/filter=true
 flags/mipmaps=false
 flags/anisotropic=false
 flags/srgb=2
@@ -31,5 +31,5 @@ process/invert_color=false
 process/normal_map_invert_y=false
 stream=false
 size_limit=0
-detect_3d=false
+detect_3d=true
 svg/scale=1.0

@@ -2,15 +2,15 @@
 
 importer="texture"
 type="StreamTexture"
-path="res://.import/treeGreen_small.png-224e7e96995ab7db3fd6f03c53deb129.stex"
+path="res://.import/TankBullets.png-337a7801b6db293f7790e9d54f07ab9f.stex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/treeGreen_small.png"
-dest_files=[ "res://.import/treeGreen_small.png-224e7e96995ab7db3fd6f03c53deb129.stex" ]
+source_file="res://mods/core/art/classic/TankBullets.png"
+dest_files=[ "res://.import/TankBullets.png-337a7801b6db293f7790e9d54f07ab9f.stex" ]
 
 [params]
 

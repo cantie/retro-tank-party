@@ -2,15 +2,15 @@
 
 importer="texture"
 type="StreamTexture"
-path="res://.import/turrets.png-346041a286de595b5c24b46f0342fff4.stex"
+path="res://.import/TreeBig_brown.png-8addd7826ea3214f2bc97525e5bc97ba.stex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/turrets.png"
-dest_files=[ "res://.import/turrets.png-346041a286de595b5c24b46f0342fff4.stex" ]
+source_file="res://mods/core/art/classic/TreeBig_brown.png"
+dest_files=[ "res://.import/TreeBig_brown.png-8addd7826ea3214f2bc97525e5bc97ba.stex" ]
 
 [params]
 

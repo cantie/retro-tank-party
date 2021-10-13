@@ -2,15 +2,15 @@
 
 importer="texture"
 type="StreamTexture"
-path="res://.import/crateWood.png-065cab3d1258529a1b0eadd6a321fde7.stex"
+path="res://.import/TankTurrets.png-c7fee22c56e3f75e7daeba8157223e7b.stex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/crateWood.png"
-dest_files=[ "res://.import/crateWood.png-065cab3d1258529a1b0eadd6a321fde7.stex" ]
+source_file="res://mods/core/art/classic/TankTurrets.png"
+dest_files=[ "res://.import/TankTurrets.png-c7fee22c56e3f75e7daeba8157223e7b.stex" ]
 
 [params]
 
@@ -20,7 +20,7 @@ compress/hdr_mode=0
 compress/bptc_ldr=0
 compress/normal_map=0
 flags/repeat=0
-flags/filter=true
+flags/filter=false
 flags/mipmaps=false
 flags/anisotropic=false
 flags/srgb=2
@@ -31,5 +31,5 @@ process/invert_color=false
 process/normal_map_invert_y=false
 stream=false
 size_limit=0
-detect_3d=true
+detect_3d=false
 svg/scale=1.0

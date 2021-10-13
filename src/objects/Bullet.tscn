@@ -1,6 +1,6 @@
 [gd_scene load_steps=5 format=2]
 
-[ext_resource path="res://assets/bullets.png" type="Texture" id=1]
+[ext_resource path="res://mods/core/art/classic/TankBullets.png" type="Texture" id=1]
 [ext_resource path="res://src/components/weapons/BaseBullet.tscn" type="PackedScene" id=2]
 [ext_resource path="res://src/objects/Bullet.gd" type="Script" id=3]
 

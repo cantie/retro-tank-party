@@ -2,15 +2,15 @@
 
 importer="texture"
 type="StreamTexture"
-path="res://.import/dropCrate.png-6be61b0456d9d737c64f8ac9d2ebbf1d.stex"
+path="res://.import/CrateMetal.png-75b726544dba1c88cfee11459319146d.stex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/dropCrate.png"
-dest_files=[ "res://.import/dropCrate.png-6be61b0456d9d737c64f8ac9d2ebbf1d.stex" ]
+source_file="res://mods/core/art/classic/CrateMetal.png"
+dest_files=[ "res://.import/CrateMetal.png-75b726544dba1c88cfee11459319146d.stex" ]
 
 [params]
 

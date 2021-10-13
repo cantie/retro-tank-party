@@ -2,15 +2,15 @@
 
 importer="texture"
 type="StreamTexture"
-path="res://.import/crateMetal.png-27bb3b4601fbaa37de92dc6395c02c9a.stex"
+path="res://.import/BarricadeMetal.png-17928690b51d3ba9fc37776c630e412b.stex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/crateMetal.png"
-dest_files=[ "res://.import/crateMetal.png-27bb3b4601fbaa37de92dc6395c02c9a.stex" ]
+source_file="res://mods/core/art/classic/BarricadeMetal.png"
+dest_files=[ "res://.import/BarricadeMetal.png-17928690b51d3ba9fc37776c630e412b.stex" ]
 
 [params]
 
