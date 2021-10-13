@@ -3,13 +3,17 @@ extends Node
 var art_style_resource: ArtStyle
 var art_style
 
+var terrain_tiles: TileSet
+
 func _ready() -> void:
+	terrain_tiles = preload("res://assets/terraintiles.tres")
 	load_art_style("res://mods/core/art/classic.tres")
 
 func load_art_style(path: String) -> void:
 	art_style_resource = load(path)
 	art_style = art_style_resource.art_script.new()
 	art_style.setup_art(art_style_resource)
+	art_style.setup_terrain_tiles(terrain_tiles)
 
 func replace_visual(id: String, node: Node, info: Dictionary = {}) -> Node:
 	id = art_style.preprocess_visual_id(id, node, info)

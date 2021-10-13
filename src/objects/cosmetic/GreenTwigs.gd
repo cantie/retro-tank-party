@@ -3,7 +3,7 @@ extends Node2D
 onready var animation_player := $AnimationPlayer
 
 func _ready() -> void:
-	Globals.art.replace_visual('GreenTwigs', $GreenTwigsVisual)
+	Globals.art.replace_visual('GreenTwigs', $Visual)
 
 func _network_spawn(data: Dictionary) -> void:
 	position = data['position']

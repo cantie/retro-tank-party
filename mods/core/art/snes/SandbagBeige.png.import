@@ -2,15 +2,15 @@
 
 importer="texture"
 type="StreamTexture"
-path="res://.import/terraintiles.png-1feb6a3f7f43b40dad825969ea1b43dd.stex"
+path="res://.import/SandbagBeige.png-9fbaf44c7a9690e144ac539d27c019dc.stex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/terraintiles.png"
-dest_files=[ "res://.import/terraintiles.png-1feb6a3f7f43b40dad825969ea1b43dd.stex" ]
+source_file="res://mods/core/art/snes/SandbagBeige.png"
+dest_files=[ "res://.import/SandbagBeige.png-9fbaf44c7a9690e144ac539d27c019dc.stex" ]
 
 [params]
 
@@ -28,6 +28,7 @@ process/fix_alpha_border=true
 process/premult_alpha=false
 process/HDR_as_SRGB=false
 process/invert_color=false
+process/normal_map_invert_y=false
 stream=false
 size_limit=0
 detect_3d=false
