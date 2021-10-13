@@ -1,9 +1,10 @@
 TODO
 ====
 
- * Split all the art into saner image files
- * Split the visual aspect of any gameplay objects into a ___Visual.tscn scene
  * Make an Art mod that the various objects can call to swap out their visuals
+   o Do Explosion: make ExplosionVisual with the Sprite and Animation player
+   o Do the terraintiles
+ * Restore the drop crate spawn times and green twigs dissolve
  * Convert Ross's SNES art into a proper mod
  * Add something to the settings screen to change the current "Art style"
  * Look for any uses of TEAM_COLORS and replace
