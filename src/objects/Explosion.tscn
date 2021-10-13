@@ -9,7 +9,7 @@ resource_name = "fire"
 length = 0.3
 step = 0.06
 tracks/0/type = "value"
-tracks/0/path = NodePath("Sprite:frame")
+tracks/0/path = NodePath("Visual/Sprite:frame")
 tracks/0/interp = 1
 tracks/0/loop_wrap = true
 tracks/0/imported = false
@@ -26,7 +26,7 @@ resource_name = "smoke"
 length = 0.3
 step = 0.06
 tracks/0/type = "value"
-tracks/0/path = NodePath("Sprite:frame")
+tracks/0/path = NodePath("Visual/Sprite:frame")
 tracks/0/interp = 1
 tracks/0/loop_wrap = true
 tracks/0/imported = false
@@ -41,11 +41,12 @@ tracks/0/keys = {
 [node name="Explosion" type="Node2D" groups=["network_sync"]]
 script = ExtResource( 11 )
 
-[node name="Sprite" type="Sprite" parent="."]
+[node name="Visual" type="Node2D" parent="."]
+
+[node name="Sprite" type="Sprite" parent="Visual"]
 texture = ExtResource( 1 )
 hframes = 5
 vframes = 2
-frame = 9
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="."]
 anims/fire = SubResource( 1 )

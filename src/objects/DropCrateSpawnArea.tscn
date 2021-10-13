@@ -18,7 +18,7 @@ shape = SubResource( 1 )
 
 [node name="DropTimer" type="Node" parent="."]
 script = ExtResource( 2 )
-wait_ticks = 60
+wait_ticks = 600
 
 [node name="Spawns" type="SGFixedNode2D" parent="."]
 

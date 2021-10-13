@@ -6,6 +6,9 @@ const MissSound = preload("res://assets/sounds/Snare__001.wav")
 const HitSound = preload("res://assets/sounds/Explosion3__004.wav")
 const BigSound = preload("res://assets/sounds/Explosion2__007.wav")
 
+func _ready() -> void:
+	Globals.art.replace_visual('Explosion', $Visual)
+
 func _network_spawn(data: Dictionary) -> void:
 	position = data['position']
 	scale = Vector2(data['scale'], data['scale'])

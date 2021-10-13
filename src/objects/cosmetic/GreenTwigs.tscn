@@ -47,7 +47,7 @@ texture = ExtResource( 1 )
 script = ExtResource( 3 )
 autostart = true
 one_shot = true
-wait_ticks = 120
+wait_ticks = 1800
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="."]
 anims/Dissolve = SubResource( 1 )

@@ -7,20 +7,13 @@ var speed = 6116693
 var growing := true
 var bounced := false
 
-const LASER_COLORS := {
-	1: Color("419fdd"),
-	2: Color("2ecc71"),
-	3: Color("e74c3c"),
-	4: Color("5f5d55"),
-}
-
 func _ready():
 	line.set_as_toplevel(true)
 	line.global_position = Vector2(0, 0)
 
 func _network_spawn(data: Dictionary) -> void:
 	._network_spawn(data)
-	line.default_color = LASER_COLORS[player_index]
+	line.default_color = Globals.art.get_tank_color(player_index)
 	line.add_point(global_position)
 
 func can_hit(body: SGCollisionObject2D) -> bool:
