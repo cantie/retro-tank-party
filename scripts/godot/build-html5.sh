@@ -1,6 +1,7 @@
 #!/bin/bash
 
-OPTS="-j${NUM_CORES} platform=javascript tools=no target=release production=yes use_closure_compiler=yes"
+#OPTS="-j${NUM_CORES} platform=javascript tools=no target=release production=yes use_closure_compiler=yes"
+OPTS="-j${NUM_CORES} platform=javascript tools=no target=release production=yes"
 
 source /root/emsdk_${EMSCRIPTEN_CLASSICAL}/emsdk_env.sh
 
