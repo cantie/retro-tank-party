@@ -1,12 +1,14 @@
 extends "res://src/components/weapons/BaseBullet.gd"
 
-onready var bullet_sprite = $BulletPivot/Sprite
+onready var visual = $BulletPivot/Visual
 
 var speed = 1529173 # ~23.33
 
 func _network_spawn(data: Dictionary) -> void:
 	._network_spawn(data)
-	bullet_sprite.frame = player_index - 1
+	visual = Globals.art.replace_visual("TankBullet", visual, {
+		player_index = player_index,
+	})
 
 func explode(type: String) -> void:
 	.explode(type)
