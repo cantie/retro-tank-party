@@ -12,15 +12,8 @@ MILESTONE 1 (physics):
 MILESTOE 2 (finish porting all the things):
 
  - Figure out desync'ing state issues
-   o Make sure that we are actually still sending state to be logged!
-     * Maybe we could log it at the point that we declare it as complete?
-	 * Maybe we need to check if input is complete at some point that is sure to run always?
-	 * Maybe rename is_player_input_complete() to something like is_input_frame_complete() so it's clear it's about just the specified frame
-   o Fix Zap position off by small amounts (in rotation?) while moving
-   o Fix timer being off on Invisible powerup
-     * I think it's because the warning timer never runs if you aren't the invisible player!
-   o Figure out naming conflict with bullets thing?
-   o Add visual indicator on player tank when their state doesn't match
+   o Try Linux <-> HTML5 match
+   o Try Linux <-> Windows match
    o Integrate a non-debug comparison of state (maybe just sending the hashes of the remote state?)
  - Make screenshake not go again after a rollback similar to sounds
  - Make controller rumble not go again after a rollback similar to sounds

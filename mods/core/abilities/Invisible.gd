@@ -29,8 +29,7 @@ func detach_ability() -> void:
 
 func use_ability() -> void:
 	set_tank_visible(false)
-	if tank.is_network_master():
-		warning_timer.start()
+	warning_timer.start()
 	lifetime_timer.start()
 
 func set_tank_visible(tank_visible: bool) -> void:
@@ -66,7 +65,8 @@ func _on_WarningTimer_timeout() -> void:
 		blink_timer.start()
 
 func _on_BlinkTimer_timeout() -> void:
-	tank.visible = false if tank.visible else true
+	if tank.is_network_master():
+		tank.visible = false if tank.visible else true
 
 func _on_LifetimeTimer_timeout() -> void:
 	blink_timer.stop()
