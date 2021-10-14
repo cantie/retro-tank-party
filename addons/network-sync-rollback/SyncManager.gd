@@ -216,7 +216,7 @@ var _input_send_queue_start_tick: int
 var _interpolation_state := {}
 var _time_since_last_tick := 0.0
 var _debug_skip_nth_message_counter := 0
-var _input_complete_tick := -1
+var _input_complete_tick := 0
 var _logged_remote_state: Dictionary
 
 signal sync_started ()
@@ -236,6 +236,7 @@ signal peer_pinged_back (peer)
 signal state_loaded (rollback_ticks)
 signal tick_finished (is_rollback)
 signal tick_retired (tick)
+signal tick_input_complete (tick)
 signal scene_spawned (name, spawned_node, scene, data)
 
 func _ready() -> void:
@@ -390,7 +391,7 @@ func _reset() -> void:
 	_interpolation_state.clear()
 	_time_since_last_tick = 0.0
 	_debug_skip_nth_message_counter = 0
-	_input_complete_tick = -1
+	_input_complete_tick = 0
 	_logged_remote_state.clear()
 
 remote func _remote_start() -> void:
@@ -493,8 +494,24 @@ func _save_current_state() -> void:
 	var state_data = _call_save_state()
 	state_buffer.append(StateBufferFrame.new(current_tick, state_data))
 	
-	if debug_log_state and not get_tree().is_network_server() and current_tick >= _input_complete_tick:
-		rpc_id(1, "_log_saved_state", current_tick, state_serializer.serialize(state_data))
+	_update_input_complete_tick()
+
+func _update_input_complete_tick() -> void:
+	while current_tick > _input_complete_tick:
+		var input_frame: InputBufferFrame = get_input_frame(_input_complete_tick + 1)
+		if not input_frame:
+			break
+		if not input_frame.is_complete(peers):
+			break
+		
+		_input_complete_tick += 1
+		
+		if debug_log_state and not get_tree().is_network_server():
+			# Send the state from the previous tick (since state preceeds input).
+			var state_frame: StateBufferFrame = _get_state_frame(_input_complete_tick - 1)
+			rpc_id(1, "_log_saved_state", _input_complete_tick - 1, state_serializer.serialize(state_frame.data))
+		
+		emit_signal("tick_input_complete", _input_complete_tick)
 
 func _do_tick(delta: float, is_rollback: bool = false) -> bool:
 	var input_frame := get_input_frame(current_tick)
@@ -609,18 +626,6 @@ func _get_state_frame(tick: int) -> StateBufferFrame:
 	var state_frame = state_buffer[index]
 	assert(state_frame.tick == tick, "State frame retreived from state buffer has mismatched tick number")
 	return state_frame
-
-func is_player_input_complete(tick: int) -> bool:
-	if tick > input_buffer[-1].tick:
-		# We don't have any input for this tick.
-		return false
-	
-	var input_frame = get_input_frame(tick)
-	if input_frame == null:
-		# This means this frame has already been removed from the buffer, which
-		# we would never allow if it wasn't complete.
-		return true
-	return input_frame.is_complete(peers)
 
 func is_current_tick_input_complete() -> bool:
 	return current_tick >= _input_complete_tick
@@ -961,9 +966,6 @@ func _receive_input_tick(peer_id: int, serialized_msg: PoolByteArray) -> void:
 	
 	# Number of frames the remote is predicting for us.
 	peer.remote_lag = (peer.last_remote_tick_received + 1) - peer.next_local_tick_requested
-	
-	while (is_player_input_complete(_input_complete_tick + 1)):
-		_input_complete_tick += 1
 
 master func _log_saved_state(tick: int, remote_data: Dictionary) -> void:
 	if not started:
@@ -982,7 +984,7 @@ func _process_logged_remote_state() -> void:
 		var remote_state_buffer = _logged_remote_state[peer_id]
 		while remote_state_buffer.size() > 0:
 			var remote_tick = remote_state_buffer[0].tick
-			if remote_tick < _input_complete_tick:
+			if remote_tick > _input_complete_tick:
 				break
 			
 			var local_state = _get_state_frame(remote_tick)
