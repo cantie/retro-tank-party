@@ -12,6 +12,10 @@ MILESTONE 1 (physics):
 MILESTOE 2 (finish porting all the things):
 
  - Figure out desync'ing issues
+   o Fix up railgun state:
+     - Don't hold exception objects, but instead node paths
+     - Don't hold the line points, but the fixed point values used to set them initially
+   o Figure out naming conflict with bullets thing?
    o Add visual indicator on player tank when their state doesn't match
    o Integrate a non-debug comparison of state (maybe just sending the hashes of the remote state?)
  - Make screenshake not go again after a rollback similar to sounds
