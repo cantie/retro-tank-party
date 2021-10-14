@@ -2,6 +2,66 @@ extends Node
 
 const DebugOverlay = preload("res://addons/network-sync-rollback/debugger/DebugOverlay.tscn")
 
+class DebugStatePrinter:
+	const JSON_INDENT = "    "
+	
+	static func print_state_diff(local_state: Dictionary, remote_state: Dictionary) -> void:
+		_print_state_diff_recursive(local_state, remote_state)
+	
+	static func _print_state_diff_recursive(local_state: Dictionary, remote_state: Dictionary, path: Array = []) -> void:
+		for key in local_state:
+			if not remote_state.has(key):
+				print (" => [MISSING] %s" % _get_diff_path_string(path, key))
+				JSON.print(local_state[key], JSON_INDENT)
+				print ()
+		
+		for key in remote_state:
+			if not local_state.has(key):
+				print (" => [EXTRA] %s" % _get_diff_path_string(path, key))
+				JSON.print(remote_state[key], JSON_INDENT)
+				print ()
+		
+		for key in local_state:
+			var local_value = local_state[key]
+			var remote_value = remote_state[key]
+			
+			if local_value is Dictionary:
+				if remote_value is Dictionary:
+					if local_value.hash() != remote_value.hash():
+						_print_state_diff_recursive(local_value, remote_value, _extend_diff_path(path, key))
+				else:
+					_print_diff_value(local_value, remote_value, path, key)
+			elif local_value is Array:
+				if remote_value is Array:
+					if local_value != remote_value:
+						_print_state_diff_recursive(_convert_array_to_dictionary(local_value), _convert_array_to_dictionary(remote_value), _extend_diff_path(path, key))
+				else:
+					_print_diff_value(local_value, remote_value, path, key)
+			elif local_value != remote_value:
+				_print_diff_value(local_value, remote_value, path, key)
+
+	static func _get_diff_path_string(path: Array, key) -> String:
+		if path.size() > 0:
+			return PoolStringArray(path).join(" -> ") + " -> " + str(key)
+		return str(key)
+
+	static func _extend_diff_path(path: Array, key) -> Array:
+		var new_path = path.duplicate()
+		new_path.append(str(key))
+		return new_path
+
+	static func _print_diff_value(local_value, remote_value, path: Array, key) -> void:
+		print (" => [DIFF] %s" % _get_diff_path_string(path, key))
+		print ("LOCAL: %s" % JSON.print(local_value, JSON_INDENT))
+		print ("REMOTE: %s" % JSON.print(remote_value, JSON_INDENT))
+		print ()
+	
+	static func _convert_array_to_dictionary(a: Array) -> Dictionary:
+		var d := {}
+		for i in range(a.size()):
+			d[i] = a[i]
+		return d
+
 var _canvas_layer
 var _debug_overlay
 var _debug_pressed: bool = false
@@ -58,9 +118,8 @@ func _on_SyncManager_rollback_flagged(tick: int, peer_id: int, local_input: Dict
 
 func _on_SyncManager_remote_state_mismatch(tick: int, peer_id: int, local_state: Dictionary, remote_state: Dictionary) -> void:
 	print ("-----")
-	print ("On tick %s, remote state from %s doesn't match local state" % [tick, peer_id])
-	print ("Remote data: %s" % remote_state)
-	print ("Local data: %s" % local_state)
+	print ("On tick %s, remote state from %s doesn't match local state:\n" % [tick, peer_id])
+	DebugStatePrinter.print_state_diff(local_state, remote_state)
 	
 	if _debug_overlay:
 		_debug_overlay.add_message(peer_id, "%s: State mismatch" % tick)
@@ -72,13 +131,9 @@ func _on_SyncManager_peer_pinged_back(peer: SyncManager.Peer) -> void:
 		_debug_overlay.update_peer(peer)
 
 func _on_SyncManager_state_loaded(rollback_ticks: int) -> void:
-	#print ("-----")
-	#print ("Rolled back %s ticks in order to re-run from tick %s" % [rollback_ticks, SyncManager.current_tick])
 	pass
 
 func _on_SyncManager_tick_finished(is_rollback: bool) -> void:
-	#if is_rollback:
-	#	print ("Finished replay of tick %s" % SyncManager.current_tick)
 	pass
 
 func _unhandled_input(event: InputEvent) -> void:
