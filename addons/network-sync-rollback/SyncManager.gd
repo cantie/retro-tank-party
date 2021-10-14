@@ -150,6 +150,8 @@ class StateSerializer:
 			return serialize_dictionary(value)
 		elif value is Array:
 			return serialize_array(value)
+		elif value is Resource:
+			return serialize_resource(value)
 		elif value is Object:
 			return serialize_object(value)
 		return value
@@ -165,6 +167,9 @@ class StateSerializer:
 		for item in value:
 			serialized.append(serialize(item))
 		return serialized
+	
+	func serialize_resource(value: Resource):
+		return value.resource_path
 	
 	func serialize_object(value: Object):
 		return value.to_string()
@@ -211,6 +216,7 @@ var _input_send_queue_start_tick: int
 var _interpolation_state := {}
 var _time_since_last_tick := 0.0
 var _debug_skip_nth_message_counter := 0
+var _input_complete_tick := -1
 var _logged_remote_state: Dictionary
 
 signal sync_started ()
@@ -384,6 +390,7 @@ func _reset() -> void:
 	_interpolation_state.clear()
 	_time_since_last_tick = 0.0
 	_debug_skip_nth_message_counter = 0
+	_input_complete_tick = -1
 	_logged_remote_state.clear()
 
 remote func _remote_start() -> void:
@@ -486,7 +493,7 @@ func _save_current_state() -> void:
 	var state_data = _call_save_state()
 	state_buffer.append(StateBufferFrame.new(current_tick, state_data))
 	
-	if debug_log_state and not get_tree().is_network_server() and is_player_input_complete(current_tick):
+	if debug_log_state and not get_tree().is_network_server() and current_tick >= _input_complete_tick:
 		rpc_id(1, "_log_saved_state", current_tick, state_serializer.serialize(state_data))
 
 func _do_tick(delta: float, is_rollback: bool = false) -> bool:
@@ -615,8 +622,8 @@ func is_player_input_complete(tick: int) -> bool:
 		return true
 	return input_frame.is_complete(peers)
 
-func is_current_player_input_complete() -> bool:
-	return is_player_input_complete(current_tick)
+func is_current_tick_input_complete() -> bool:
+	return current_tick >= _input_complete_tick
 
 func _get_input_messages_from_send_queue_in_range(first_index: int, last_index: int, reverse: bool = false) -> Array:
 	var indexes = range(first_index, last_index + 1) if not reverse else range(last_index, first_index - 1, -1)
@@ -954,6 +961,9 @@ func _receive_input_tick(peer_id: int, serialized_msg: PoolByteArray) -> void:
 	
 	# Number of frames the remote is predicting for us.
 	peer.remote_lag = (peer.last_remote_tick_received + 1) - peer.next_local_tick_requested
+	
+	while (is_player_input_complete(_input_complete_tick + 1)):
+		_input_complete_tick += 1
 
 master func _log_saved_state(tick: int, remote_data: Dictionary) -> void:
 	if not started:
@@ -972,7 +982,7 @@ func _process_logged_remote_state() -> void:
 		var remote_state_buffer = _logged_remote_state[peer_id]
 		while remote_state_buffer.size() > 0:
 			var remote_tick = remote_state_buffer[0].tick
-			if not is_player_input_complete(remote_tick):
+			if remote_tick < _input_complete_tick:
 				break
 			
 			var local_state = _get_state_frame(remote_tick)

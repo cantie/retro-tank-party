@@ -7,6 +7,8 @@ var speed = 6116693
 var growing := true
 var bounced := false
 
+var fixed_points := []
+
 const LASER_COLORS := {
 	1: Color("419fdd"),
 	2: Color("2ecc71"),
@@ -21,7 +23,10 @@ func _ready():
 func _network_spawn(data: Dictionary) -> void:
 	._network_spawn(data)
 	line.default_color = LASER_COLORS[player_index]
-	line.add_point(global_position)
+	
+	var global_fixed_position = get_global_fixed_position()
+	fixed_points.append(global_fixed_position)
+	line.add_point(global_fixed_position.to_float())
 
 func can_hit(body: SGCollisionObject2D) -> bool:
 	# Only allow to hit ourselves after the first bounce.
@@ -29,33 +34,55 @@ func can_hit(body: SGCollisionObject2D) -> bool:
 
 func _save_state() -> Dictionary:
 	var state = ._save_state()
-	state['points'] = line.points
 	state['growing'] = growing
-	state['exceptions'] = ray_cast.get_exceptions()
+	state['bounced'] = bounced
+	state['points'] = fixed_points.duplicate()
+	
+	var exceptions := []
+	for node in ray_cast.get_exceptions():
+		var node_path = str(node.get_path())
+		if node_path != "":
+			exceptions.append(node_path)
+	state['exceptions'] = exceptions
+	
 	return state
 
 func _load_state(state: Dictionary) -> void:
-	line.points = state['points']
 	growing = state['growing']
-	ray_cast.set_exceptions(state['exceptions'])
+	bounced = state['bounced']
+	
+	line.clear_points()
+	for fixed_point in state['points']:
+		line.add_point(fixed_point.to_float())
+	fixed_points = state['points'].duplicate()
+	
+	ray_cast.clear_exceptions()
+	for node_path in state['exceptions']:
+		var node = get_node(node_path)
+		if node:
+			ray_cast.add_exception(node)
+	
 	._load_state(state)
 
 func _network_process(delta: float, input: Dictionary) -> void:
 	._network_process(delta, input)
 	if growing:
 		var increment = vector.mul(speed)
-		ray_cast.cast_to = SGFixed.vector2(increment.length(), 0)
 		ray_cast.update_raycast_collision()
 		if ray_cast.is_colliding():
 			set_global_fixed_position(ray_cast.get_collision_point())
+			#print ("[%s] collision point: (%s, %s)" % [SyncManager.current_tick, fixed_position.x, fixed_position.y])
 			
 			var collider = ray_cast.get_collider()
 			# bit 2 = bullets
 			if collider.get_collision_mask_bit(2):
 				var collision_normal = ray_cast.get_collision_normal()
+				#print ("[%s] collision normal: (%s, %s)" % [SyncManager.current_tick, collision_normal.x, collision_normal.y])
 				if !(collision_normal.x == 0 and collision_normal.y == 0):
 					vector = vector.bounce(collision_normal).normalized()
+					#print ("[%s] vector: (%s, %s)" % [SyncManager.current_tick, vector.x, vector.y])
 					fixed_rotation = vector.angle()
+					#print ("[%s] angle: %s" % [SyncManager.current_tick, fixed_rotation])
 					bounced = true
 			
 			ray_cast.clear_exceptions()
@@ -64,11 +91,14 @@ func _network_process(delta: float, input: Dictionary) -> void:
 			set_global_fixed_position(get_global_fixed_position().add(increment))
 		
 		sync_to_physics_engine()
-
-		line.add_point(global_position)
+		
+		var global_fixed_position = get_global_fixed_position()
+		fixed_points.append(global_fixed_position)
+		line.add_point(global_fixed_position.to_float())
 	else:
+		fixed_points.pop_front()
 		line.remove_point(0)
-		if line.points.size() == 0:
+		if fixed_points.size() == 0:
 			queue_free()
 
 func _on_LifetimeTimer_timeout() -> void:

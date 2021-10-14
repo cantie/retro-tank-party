@@ -24,12 +24,20 @@ func _rename_node(name: String) -> String:
 	counter[name] += 1
 	return name + str(counter[name])
 
+func _remove_colliding_node(name: String, parent: Node) -> void:
+	if parent.has_node(name):
+		var existing_node = parent.get_node(name)
+		push_warning("Removing node %s which is in the way of new spawn" % existing_node)
+		parent.remove_child(existing_node)
+		existing_node.queue_free()
+
 func spawn(name: String, parent: Node, scene: PackedScene, data: Dictionary, rename: bool = true, signal_name: String = '') -> Node:
 	var spawned_node = scene.instance()
 	if signal_name == '':
 		signal_name = name
 	if rename:
 		name = _rename_node(name)
+	_remove_colliding_node(name, parent)
 	spawned_node.name = name
 	parent.add_child(spawned_node)
 	
@@ -108,8 +116,11 @@ func _load_state(state: Dictionary) -> void:
 			assert(parent != null, "Can't re-spawn node when parent doesn't exist")
 			var scene = load(spawn_record['scene'])
 			
+			var name = spawn_record['name']
+			_remove_colliding_node(name, parent)
+			
 			var spawned_node = scene.instance()
-			spawned_node.name = spawn_record['name']
+			spawned_node.name = name
 			parent.add_child(spawned_node)
 			
 			if spawned_node.has_method('_network_spawn'):

@@ -34,7 +34,7 @@ shape = SubResource( 1 )
 position = Vector2( 1, 0 )
 fixed_position_x = 65536
 collision_mask = 3
-cast_to_x = 8388608
+cast_to_x = 6116693
 cast_to_y = 0
 
 [node name="Line2D" type="Line2D" parent="." index="3"]

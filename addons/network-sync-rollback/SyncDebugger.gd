@@ -55,7 +55,7 @@ class DebugStatePrinter:
 
 	static func _print_diff_value(local_value, remote_value, path: Array, key) -> void:
 		print (" => [DIFF] %s" % _get_diff_path_string(path, key))
-		print ("LOCAL: %s" % JSON.print(local_value, JSON_INDENT))
+		print ("LOCAL:  %s" % JSON.print(local_value, JSON_INDENT))
 		print ("REMOTE: %s" % JSON.print(remote_value, JSON_INDENT))
 		print ()
 	
