@@ -1,0 +1,9 @@
+TODO
+====
+
+ - Disable changing art style mid-session (only allow on the main settings screen)
+   * There's other settings that can't be changed mid-session (network relay, for example)
+ - Test out actually replacing a whole visual node
+ - Copy in Ross's vector art
+ - Copy in Ross's atari art
+
