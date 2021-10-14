@@ -4,6 +4,7 @@ TODO
 MILESTONE 1 (physics):
 
  - Move engine to its own repo
+   o Move the test scenes over
    o README.md
    o API reference
    o Tutorial
@@ -18,7 +19,8 @@ MILESTONE 1 (physics):
 MILESTOE 2 (finish porting all the things):
 
  - Figure out desync'ing issues
-   o Compare remote state again (requires some mechanism to serialize it for the network for the SGFixedVector2's)
+   o Add visual indicator on player tank when their state doesn't match
+   o Debug message should figure out exactly which bits don't match
    o Integrate a non-debug comparison of state (maybe just sending the hashes of the remote state?)
  - Make screenshake not go again after a rollback similar to sounds
  - Make controller rumble not go again after a rollback similar to sounds

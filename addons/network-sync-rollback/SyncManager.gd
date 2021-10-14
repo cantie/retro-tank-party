@@ -144,8 +144,34 @@ class MessageSerializer:
 		
 		return msg
 
+class StateSerializer:
+	func serialize(value):
+		if value is Dictionary:
+			return serialize_dictionary(value)
+		elif value is Array:
+			return serialize_array(value)
+		elif value is Object:
+			return serialize_object(value)
+		return value
+	
+	func serialize_dictionary(value: Dictionary) -> Dictionary:
+		var serialized := {}
+		for key in value:
+			serialized[key] = serialize(value[key])
+		return serialized
+	
+	func serialize_array(value: Array):
+		var serialized := []
+		for item in value:
+			serialized.append(serialize(item))
+		return serialized
+	
+	func serialize_object(value: Object):
+		return value.to_string()
+
 var network_adaptor: NetworkAdaptor setget set_network_adaptor
 var message_serializer: MessageSerializer setget set_message_serializer
+var state_serializer: StateSerializer setget set_state_serializer
 
 var peers := {}
 var input_buffer := []
@@ -159,10 +185,10 @@ var max_messages_at_once := 2
 var max_input_buffer_underruns := 300
 var skip_ticks_after_sync_regained := 0
 var interpolation := false
-var rollback_debug_ticks := 0
+var debug_rollback_ticks := 0
 var debug_message_bytes := 700
 var debug_skip_nth_message := 0
-var log_state := false
+var debug_log_state := false
 
 # In seconds, because we don't want it to be dependent on the network tick.
 var ping_frequency := 1.0 setget set_ping_frequency
@@ -234,6 +260,8 @@ func _ready() -> void:
 		set_network_adaptor(RPCNetworkAdaptor.new())
 	if message_serializer == null:
 		set_message_serializer(MessageSerializer.new())
+	if state_serializer == null:
+		set_state_serializer(StateSerializer.new())
 
 func _set_readonly_variable(_value) -> void:
 	pass
@@ -256,6 +284,10 @@ func set_network_adaptor(_network_adaptor: NetworkAdaptor) -> void:
 func set_message_serializer(_message_serializer: MessageSerializer) -> void:
 	assert(not started, "Changing the message serializer after SyncManager has started will probably break everything")
 	message_serializer = _message_serializer
+
+func set_state_serializer(_state_serializer: StateSerializer) -> void:
+	assert(not started, "Changing the state serializer after SyncManager has started will probably break everything")
+	state_serializer = _state_serializer
 
 func set_ping_frequency(_ping_frequency) -> void:
 	ping_frequency = _ping_frequency
@@ -454,8 +486,8 @@ func _save_current_state() -> void:
 	var state_data = _call_save_state()
 	state_buffer.append(StateBufferFrame.new(current_tick, state_data))
 	
-	if log_state and not get_tree().is_network_server() and is_player_input_complete(current_tick):
-		rpc_id(1, "_log_saved_state", current_tick, state_data)
+	if debug_log_state and not get_tree().is_network_server() and is_player_input_complete(current_tick):
+		rpc_id(1, "_log_saved_state", current_tick, state_serializer.serialize(state_data))
 
 func _do_tick(delta: float, is_rollback: bool = false) -> bool:
 	var input_frame := get_input_frame(current_tick)
@@ -697,8 +729,8 @@ func _physics_process(delta: float) -> void:
 	# case, we don't want to miss out on any data.
 	network_adaptor.poll()
 	
-	if rollback_debug_ticks > 0 and current_tick >= rollback_debug_ticks:
-		rollback_ticks = max(rollback_ticks, rollback_debug_ticks)
+	if debug_rollback_ticks > 0 and current_tick >= debug_rollback_ticks:
+		rollback_ticks = max(rollback_ticks, debug_rollback_ticks)
 	
 	# We need to resimulate the current tick since we did a partial rollback
 	# to the previous tick in order to interpolate.
@@ -932,7 +964,7 @@ master func _log_saved_state(tick: int, remote_data: Dictionary) -> void:
 		_logged_remote_state[peer_id] = []
 		
 	# The logged state will be processed once we have complete player input in
-	# the _process_logged_remote_state() and _check_remote_state() methods below.
+	# the _process_logged_remote_state() method below.
 	_logged_remote_state[peer_id].append(StateBufferFrame.new(tick, remote_data))
 
 func _process_logged_remote_state() -> void:
@@ -948,12 +980,11 @@ func _process_logged_remote_state() -> void:
 				break
 			
 			var remote_state = remote_state_buffer.pop_front()
-			_check_remote_state(peer_id, remote_state, local_state)
-
-func _check_remote_state(peer_id: int, remote_state: StateBufferFrame, local_state: StateBufferFrame) -> void:
-	#print ("checking remote state for tick: %s" % remote_state.tick)
-	if local_state.data.hash() != remote_state.data.hash():
-		emit_signal("remote_state_mismatch", local_state.tick, peer_id, local_state.data, remote_state.data)
+			var remote_state_data: Dictionary = remote_state.data
+			var local_state_data: Dictionary = state_serializer.serialize(local_state.data)
+			
+			if local_state_data.hash() != remote_state_data.hash():
+				emit_signal("remote_state_mismatch", local_state.tick, peer_id, local_state_data, remote_state_data)
 
 func spawn(name: String, parent: Node, scene: PackedScene, data: Dictionary = {}, rename: bool = true, signal_name: String = '') -> Node:
 	return _spawn_manager.spawn(name, parent, scene, data, rename, signal_name)

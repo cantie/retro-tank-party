@@ -90,6 +90,18 @@ class RTPMessageSerializer extends SyncManager.MessageSerializer:
 		
 		return all_input
 
+class StateSerializer extends SyncManager.StateSerializer:
+	func serialize_object(value: Object):
+		if value is SGFixedVector2:
+			return {x = value.x, y = value.y}
+		elif value is SGFixedTransform2D:
+			return {
+				x = {x = value.x.x, y = value.x.y},
+				y = {x = value.y.x, y = value.y.y},
+				origin = {x = value.origin.x, y = value.origin.y},
+			}
+		return .serialize_object(value)
+
 func _ready() -> void:
 	var network_adaptor = NakamaWebRTCNetworkAdaptor.new()
 	network_adaptor.max_buffered_amount = 200
@@ -98,9 +110,11 @@ func _ready() -> void:
 	
 	SyncManager.network_adaptor = network_adaptor
 	SyncManager.message_serializer = RTPMessageSerializer.new()
+	SyncManager.state_serializer = StateSerializer.new()
 	
 	# Just for debugging
-	#SyncManager.rollback_debug_ticks = 5
+	#SyncManager.debug_rollback_ticks = 5
+	SyncManager.debug_log_state = true
 	SyncManager.debug_message_bytes = 600
 	SyncManager.debug_skip_nth_message = 0
 	
