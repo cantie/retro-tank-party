@@ -12,17 +12,20 @@ class DebugStatePrinter:
 		for key in local_state:
 			if not remote_state.has(key):
 				print (" => [MISSING] %s" % _get_diff_path_string(path, key))
-				JSON.print(local_state[key], JSON_INDENT)
+				print (JSON.print(local_state[key], JSON_INDENT))
 				print ()
 		
 		for key in remote_state:
 			if not local_state.has(key):
 				print (" => [EXTRA] %s" % _get_diff_path_string(path, key))
-				JSON.print(remote_state[key], JSON_INDENT)
+				print (JSON.print(remote_state[key], JSON_INDENT))
 				print ()
 		
 		for key in local_state:
 			var local_value = local_state[key]
+			
+			if not remote_state.has(key):
+				continue
 			var remote_value = remote_state[key]
 			
 			if local_value is Dictionary:
