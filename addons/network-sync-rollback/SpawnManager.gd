@@ -12,11 +12,19 @@ func _ready() -> void:
 	add_to_group('network_sync')
 
 func setup_spawn_manager(SyncManager) -> void:
+	SyncManager.connect("sync_started", self, "_on_SyncManager_sync_started")
 	SyncManager.connect("sync_stopped", self, "_on_SyncManager_sync_stopped")
 
-func _on_SyncManager_sync_stopped() -> void:
+func reset() -> void:
 	spawn_records.clear()
 	spawned_nodes.clear()
+	counter.clear()
+
+func _on_SyncManager_sync_started() -> void:
+	reset()
+
+func _on_SyncManager_sync_stopped() -> void:
+	reset()
 
 func _rename_node(name: String) -> String:
 	if not counter.has(name):
