@@ -17,8 +17,7 @@ func _network_spawn_preprocess(data: Dictionary) -> Dictionary:
 		tank = _tank.get_path(),
 		player_id = _tank.get_network_master(),
 		player_index = _tank.player_index,
-		fixed_position = _tank.bullet_start_position.get_global_fixed_position(),
-		fixed_rotation = _tank.turret_pivot.get_global_fixed_rotation(),
+		fixed_transform = _tank.bullet_start_position.get_global_fixed_transform().copy(),
 		damage = data['weapon_type'].damage,
 	}
 
@@ -26,10 +25,8 @@ func _network_spawn(data: Dictionary) -> void:
 	tank = get_node(data['tank'])
 	player_id = data['player_id']
 	player_index = data['player_index']
-	fixed_position = data['fixed_position']
-	fixed_rotation = data['fixed_rotation']
-	vector = SGFixed.vector2(SGFixed.ONE, 0)
-	vector.rotate(fixed_rotation)
+	set_global_fixed_transform(data['fixed_transform'])
+	vector = fixed_transform.x.copy()
 	damage = data['damage']
 	lifetime_timer.start()
 	sync_to_physics_engine()
@@ -39,20 +36,18 @@ func _network_process(_delta: float, _input: Dictionary) -> void:
 
 func _save_state() -> Dictionary:
 	return {
-		fixed_position = fixed_position.copy(),
-		fixed_rotation = fixed_rotation,
+		fixed_transform = fixed_transform.copy(),
 		vector = vector.copy(),
 	}
 
 func _load_state(state: Dictionary) -> void:
-	fixed_position = state['fixed_position'].copy()
-	fixed_rotation = state['fixed_rotation']
+	fixed_transform = state['fixed_transform'].copy()
 	vector = state['vector'].copy()
 	sync_to_physics_engine()
 
 func _interpolate_state(old_state: Dictionary, new_state: Dictionary, weight: float) -> void:
-	position = lerp(old_state['fixed_position'].to_float(), new_state['fixed_position'].to_float(), weight)
-	rotation = lerp_angle(SGFixed.to_float(old_state['fixed_rotation']), SGFixed.to_float(new_state['fixed_rotation']), weight)
+	position = lerp(old_state['fixed_transform'].get_origin().to_float(), new_state['fixed_transform'].get_origin().to_float(), weight)
+	rotation = lerp_angle(SGFixed.to_float(old_state['fixed_transform'].get_rotation()), SGFixed.to_float(new_state['fixed_transform'].get_rotation()), weight)
 
 func explode(type: String):
 	if is_queued_for_deletion():

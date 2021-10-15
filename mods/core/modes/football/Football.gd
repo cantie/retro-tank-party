@@ -40,8 +40,7 @@ func _save_state() -> Dictionary:
 	return {
 		in_bounds = in_bounds,
 		frames_countdown = frames_countdown,
-		fixed_position = fixed_position.copy(),
-		fixed_rotation = fixed_rotation,
+		fixed_transform = fixed_transform.copy(),
 		vector = vector.copy(),
 		sliding_over_obstruction = sliding_over_obstruction,
 		held = held.get_path() if held else null,
@@ -51,8 +50,7 @@ func _save_state() -> Dictionary:
 func _load_state(state: Dictionary) -> void:
 	in_bounds = state['in_bounds']
 	frames_countdown = state['frames_countdown']
-	fixed_position = state['fixed_position'].copy()
-	fixed_rotation = state['fixed_rotation']
+	fixed_transform = state['fixed_transform'].copy()
 	vector = state['vector'].copy()
 	sliding_over_obstruction = state['sliding_over_obstruction']
 	held = get_node(state['held']) if state['held'] else null
@@ -117,7 +115,7 @@ func _network_process(delta: float, input: Dictionary) -> void:
 			emit_signal("out_of_bounds")
 
 func _interpolate_state(old_state: Dictionary, new_state: Dictionary, weight: float) -> void:
-	position = lerp(old_state['fixed_position'].to_float(), new_state['fixed_position'].to_float(), weight)
+	position = lerp(old_state['fixed_transform'].get_origin().to_float(), new_state['fixed_transform'].get_origin().to_float(), weight)
 
 func check_on_obstruction() -> bool:
 	for body in get_overlapping_bodies():
