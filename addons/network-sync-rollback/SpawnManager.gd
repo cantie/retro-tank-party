@@ -39,6 +39,16 @@ func _remove_colliding_node(name: String, parent: Node) -> void:
 		parent.remove_child(existing_node)
 		existing_node.queue_free()
 
+static func _node_name_sort_callback(a: Node, b: Node) -> bool:
+	return a.name.casecmp_to(b.name) == -1
+
+func _alphabetize_children(parent: Node) -> void:
+	var children = parent.get_children()
+	children.sort_custom(self, '_node_name_sort_callback')
+	for index in range(children.size()):
+		var child = children[index]
+		parent.move_child(child, index)
+
 func spawn(name: String, parent: Node, scene: PackedScene, data: Dictionary, rename: bool = true, signal_name: String = '') -> Node:
 	if not SyncManager.started:
 		push_error("Refusing to spawn %s before SyncManager has started" % name)
@@ -52,6 +62,7 @@ func spawn(name: String, parent: Node, scene: PackedScene, data: Dictionary, ren
 	_remove_colliding_node(name, parent)
 	spawned_node.name = name
 	parent.add_child(spawned_node)
+	_alphabetize_children(parent)
 	
 	if spawned_node.has_method('_network_spawn_preprocess'):
 		data = spawned_node._network_spawn_preprocess(data)
@@ -134,6 +145,7 @@ func _load_state(state: Dictionary) -> void:
 			var spawned_node = scene.instance()
 			spawned_node.name = name
 			parent.add_child(spawned_node)
+			_alphabetize_children(parent)
 			
 			if spawned_node.has_method('_network_spawn'):
 				spawned_node._network_spawn(spawn_record['data'])

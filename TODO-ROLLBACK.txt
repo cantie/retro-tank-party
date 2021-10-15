@@ -12,10 +12,15 @@ MILESTONE 1 (physics):
 MILESTOE 2 (finish porting all the things):
 
  - Figure out desync'ing state issues
+   o Railgun rotation slightly off and affecting all point positions
+   o Rotation off slightly after Zap
+   o Turret rotation being off, like, ever
+   o Green twigs position in floating point (should be fixed point for state comparison)
+   o Explosion position in floating point (should be fixed point for state comparison)
+   --
    o Try Linux <-> HTML5 match
    o Try Linux <-> Windows match
    o Try 3 player and 4 player match
-   o Do we need to ensure that players are always spawned in the same order?
    o Integrate a non-debug comparison of state (maybe just sending the hashes of the remote state?)
  - Bug: Fix camera jumping around at match start
  - Make screenshake not go again after a rollback similar to sounds
