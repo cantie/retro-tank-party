@@ -9,16 +9,27 @@ class DebugStatePrinter:
 		_print_state_diff_recursive(local_state, remote_state)
 	
 	static func _print_state_diff_recursive(local_state: Dictionary, remote_state: Dictionary, path: Array = []) -> void:
+		var missing_or_extra := false
+		
 		for key in local_state:
 			if not remote_state.has(key):
+				missing_or_extra = true
 				print (" => [MISSING] %s" % _get_diff_path_string(path, key))
 				print (JSON.print(local_state[key], JSON_INDENT))
 				print ()
 		
 		for key in remote_state:
 			if not local_state.has(key):
+				missing_or_extra = true
 				print (" => [EXTRA] %s" % _get_diff_path_string(path, key))
 				print (JSON.print(remote_state[key], JSON_INDENT))
+				print ()
+		
+		if not missing_or_extra:
+			if local_state.keys() != remote_state.keys():
+				print (" => [REORDER] %s" % _get_diff_path_string(path, 'KEYS'))
+				print ("LOCAL:  %s" % JSON.print(local_state.keys(), JSON_INDENT))
+				print ("REMOTE: %s" % JSON.print(remote_state.keys(), JSON_INDENT))
 				print ()
 		
 		for key in local_state:
