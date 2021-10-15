@@ -7,5 +7,5 @@
 script = ExtResource( 1 )
 name = "Invisible"
 letter = "I"
-rarity = 20
+rarity = 500
 ability_type = ExtResource( 2 )
