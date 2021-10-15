@@ -13,6 +13,8 @@ MILESTOE 2 (finish porting all the things):
 
  - Figure out desync'ing state issues
    o Turret rotation being off, like, ever
+     * Happens more on Linux <-> Windows matches with 3 players
+     * Check that we can construct some SGFixedTransform2D's the same on Windows and Linux
    o Railgun rotation slightly off and affecting all point positions
    o Rotation off slightly after Zap
  - Bug: Fix camera jumping around at match start
