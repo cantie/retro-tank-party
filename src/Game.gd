@@ -54,10 +54,13 @@ func _ready() -> void:
 
 # Initializes the game so that it is ready to really start.
 func game_setup(_players: Dictionary, map_path: String, random_seed: int, _player_start_transforms = null) -> void:
+	if SyncManager.started:
+		push_error("Refusing to setup game when SyncManager is already running")
+		return
+	
 	get_tree().paused = true
 	
-	if game_started:
-		game_stop()
+	game_stop()
 	
 	if not load_map(map_path):
 		emit_signal("game_error", "Unable to load map")
@@ -76,19 +79,10 @@ func game_setup(_players: Dictionary, map_path: String, random_seed: int, _playe
 	_game_setup()
 
 func _game_setup() -> void:
-	hud.clear_all_labels()
-	
-	for peer_id in players:
-		var player = players[peer_id]
-		var start_transform = player_start_transforms[player.index - 1] if player_start_transforms and player.index <= player_start_transforms.size() else null
-		respawn_player(peer_id, start_transform)
-	
-	var my_id: int = get_tree().get_network_unique_id()
-	make_player_controlled(my_id)
+	hud.clear_all_labels()	
 
 func game_reset() -> void:
-	if game_started:
-		game_stop()
+	game_stop()
 	#reload_map()
 	_game_setup()
 
@@ -138,28 +132,38 @@ func get_my_tank():
 			return tank
 	return null
 
-# Actually start the game on this client.
-remotesync func game_start() -> void:
-	game_started = true
-	if map.has_method('map_start'):
-		map.map_start(self)
-	emit_signal("game_started")
-	get_tree().paused = false
-	if get_tree().is_network_server():
-		SyncManager.start()
+func game_start() -> void:
+	if not game_started:
+		game_started = true
+		
+		for peer_id in players:
+			var player = players[peer_id]
+			var start_transform = player_start_transforms[player.index - 1] if player_start_transforms and player.index <= player_start_transforms.size() else null
+			respawn_player(peer_id, start_transform)
+		
+		var my_id: int = get_tree().get_network_unique_id()
+		make_player_controlled(my_id)
+		
+		if map.has_method('map_start'):
+			map.map_start(self)
+		
+		get_tree().paused = false
+		
+		emit_signal("game_started")
 
 func game_stop() -> void:
-	if map.has_method('map_stop'):
-		map.map_stop(self)
-	
-	game_started = false
-	
-	players_alive.clear()
-	watch_camera.current = true
-	
-	for child in players_node.get_children():
-		players_node.remove_child(child)
-		child.queue_free()
+	if game_started:
+		if map.has_method('map_stop'):
+			map.map_stop(self)
+		
+		game_started = false
+		
+		players_alive.clear()
+		watch_camera.current = true
+		
+		for child in players_node.get_children():
+			players_node.remove_child(child)
+			child.queue_free()
 
 func load_map(path: String) -> bool:
 	var new_map_scene = load(path)

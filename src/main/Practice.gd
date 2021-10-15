@@ -18,6 +18,8 @@ func _ready() -> void:
 	rng.randomize()
 	
 	game.game_setup(players, "res://mods/core/maps/Battlefield.tscn", rng.seed)
+	SyncManager.start()
+	yield(SyncManager, "sync_started")
 	game.game_start()
 	
 	ui_layer.show_back_button()
@@ -51,4 +53,6 @@ func _on_Game_player_dead(player_id, killer_id) -> void:
 	
 	SyncManager.stop()
 	game.game_reset()
+	SyncManager.start()
+	yield(SyncManager, "sync_started")
 	game.game_start()

@@ -40,6 +40,10 @@ func _remove_colliding_node(name: String, parent: Node) -> void:
 		existing_node.queue_free()
 
 func spawn(name: String, parent: Node, scene: PackedScene, data: Dictionary, rename: bool = true, signal_name: String = '') -> Node:
+	if not SyncManager.started:
+		push_error("Refusing to spawn %s before SyncManager has started" % name)
+		return null
+	
 	var spawned_node = scene.instance()
 	if signal_name == '':
 		signal_name = name

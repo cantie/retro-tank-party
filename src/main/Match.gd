@@ -11,6 +11,7 @@ func _ready() -> void:
 	OnlineMatch.connect("disconnected", self, "_on_OnlineMatch_disconnected")
 	OnlineMatch.connect("player_left", self, "_on_OnlineMatch_player_left")
 	
+	SyncManager.connect("sync_started", self, "_on_SyncManager_sync_started")
 	SyncManager.connect("sync_lost", self, "_on_SyncManager_sync_lost")
 	SyncManager.connect("sync_regained", self, "_on_SyncManager_sync_regained")
 	SyncManager.connect("sync_error", self, "_on_SyncManager_sync_error")
@@ -34,7 +35,7 @@ func scene_setup(operation: RemoteOperations.ClientOperation, info: Dictionary) 
 	operation.mark_done()
 
 func scene_start() -> void:
-	match_manager.match_start()
+	SyncManager.start()
 
 func finish_match() -> void:
 	SyncManager.stop()
@@ -129,6 +130,9 @@ func _on_OnlineMatch_player_left(player) -> void:
 #####
 # SyncManager callbacks
 #####
+
+func _on_SyncManager_sync_started() -> void:
+	match_manager.match_start()
 
 func _on_SyncManager_sync_lost() -> void:
 	ui_layer.show_message("Attempting to regain sync...")

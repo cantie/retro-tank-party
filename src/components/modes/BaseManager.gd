@@ -82,7 +82,7 @@ func _do_match_setup() -> void:
 
 func match_start() -> void:
 	# A sensible default.
-	game.rpc("game_start")
+	game.game_start()
 
 func match_stop() -> void:
 	pass
