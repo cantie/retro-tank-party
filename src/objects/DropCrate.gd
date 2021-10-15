@@ -20,7 +20,7 @@ func open_crate() -> void:
 		return
 	
 	SyncManager.spawn('GreenTwigs', get_parent(), GreenTwigs, {
-		position = position,
+		fixed_position = fixed_position,
 	})
 	
 	SyncManager.spawn('Powerup', get_parent(), contents.get_pickup_scene(), {

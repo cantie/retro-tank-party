@@ -1,4 +1,4 @@
-extends Node2D
+extends SGFixedNode2D
 
 onready var animation_player = $AnimationPlayer
 
@@ -7,8 +7,8 @@ const HitSound = preload("res://assets/sounds/Explosion3__004.wav")
 const BigSound = preload("res://assets/sounds/Explosion2__007.wav")
 
 func _network_spawn(data: Dictionary) -> void:
-	position = data['position']
-	scale = Vector2(data['scale'], data['scale'])
+	fixed_position = data['fixed_position'].copy()
+	fixed_scale = SGFixed.vector2(data['scale'], data['scale'])
 	
 	var anim = data['type']
 	animation_player.play(anim)

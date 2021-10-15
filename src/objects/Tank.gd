@@ -6,6 +6,8 @@ const EventDispatcher = preload("res://src/utils/EventDispatcher.gd")
 
 const ShootSound = preload("res://assets/sounds/Bass Drum__003.wav")
 
+const ONE_POINT_FIVE = 98304
+
 export (bool) var player_controlled = false
 
 signal player_dead (killer_id)
@@ -528,8 +530,8 @@ func _hook_default_die(event: DieEvent) -> void:
 		dead = true
 		
 		SyncManager.spawn("Explosion", get_parent(), Explosion, {
-			position = global_position,
-			scale = 1.5,
+			fixed_position = fixed_position.copy(),
+			scale = ONE_POINT_FIVE,
 			type = "fire",
 		})
 		

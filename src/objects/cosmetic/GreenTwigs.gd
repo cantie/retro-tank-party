@@ -1,9 +1,9 @@
-extends Sprite
+extends SGFixedNode2D
 
 onready var animation_player := $AnimationPlayer
 
 func _network_spawn(data: Dictionary) -> void:
-	position = data['position']
+	fixed_position = data['fixed_position']
 
 func _on_Timer_timeout() -> void:
 	animation_player.play('Dissolve')

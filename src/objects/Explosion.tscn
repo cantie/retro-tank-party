@@ -38,9 +38,7 @@ tracks/0/keys = {
 "values": [ 5, 6, 7, 8, 9 ]
 }
 
-[node name="Explosion" type="Node2D" groups=[
-"network_sync",
-]]
+[node name="Explosion" type="SGFixedNode2D" groups=["network_sync"]]
 script = ExtResource( 11 )
 
 [node name="Sprite" type="Sprite" parent="."]

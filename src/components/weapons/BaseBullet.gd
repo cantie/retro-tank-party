@@ -54,8 +54,8 @@ func explode(type: String):
 		return
 	
 	SyncManager.spawn("Explosion", get_parent(), Explosion, {
-		position = global_position,
-		scale = 0.5,
+		fixed_position = fixed_position.copy(),
+		scale = SGFixed.HALF,
 		type = type,
 	})
 
