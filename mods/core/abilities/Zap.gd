@@ -69,11 +69,15 @@ func _save_state() -> Dictionary:
 	return {
 		zap_stage = zap_stage,
 		frame_counter = frame_counter,
+		destination = destination.copy(),
+		move_increment = move_increment.copy(),
 	}
 
 func _load_state(state: Dictionary) -> void:
 	zap_stage = state['zap_stage']
 	frame_counter = state['frame_counter']
+	destination = state['destination'].copy()
+	move_increment = state['move_increment'].copy()
 
 func _network_process(delta: float, input: Dictionary) -> void:
 	if zap_stage == ZapStage.NONE:
