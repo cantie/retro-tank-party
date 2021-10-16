@@ -19,8 +19,6 @@ const TEAM_NAMES := [
 onready var rumble = $Rumble
 
 var title_shown := false
-var use_positional_audio := false
-
 var arguments := {}
 
 func _ready() -> void:

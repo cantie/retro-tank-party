@@ -53,9 +53,10 @@ func _on_OnlineMatch_webrtc_peer_added(webrtc_peer: WebRTCPeerConnection, player
 		maxPacketLifeTime = max_packet_lifetime,
 		ordered = false,
 	})
-	# @todo data_channel can be null if the peer has disconnected
-	data_channel.write_mode = WebRTCDataChannel.WRITE_MODE_BINARY
-	_data_channels[peer_id] = data_channel
+	# data_channel can be null if the peer has disconnected
+	if data_channel != null:
+		data_channel.write_mode = WebRTCDataChannel.WRITE_MODE_BINARY
+		_data_channels[peer_id] = data_channel
 
 func _on_OnlineMatch_webrtc_peer_removed(webrtc_peer: WebRTCPeerConnection, player: OnlineMatch.Player) -> void:
 	var peer_id := player.peer_id

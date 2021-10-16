@@ -68,8 +68,15 @@ func game_setup(_players: Dictionary, map_path: String, random_seed: int, _playe
 	
 	players = _players
 	johnny.set_seed(random_seed)
-	player_start_transforms = _player_start_transforms
-
+	player_start_transforms = _player_start_transforms if _player_start_transforms != null else map.get_player_start_transforms()
+	
+	var my_id: int = get_tree().get_network_unique_id()
+	if players.has(my_id):
+		var player = players[my_id]
+		_setup_player_camera(player_start_transforms[player.index - 1].get_origin().to_float())
+	else:
+		_setup_watch_camera()
+	
 	# Build up a list of possible contents for drawing randomly.
 	for pickup_path in Modding.find_resources("pickups"):
 		var pickup = load(pickup_path)
@@ -103,7 +110,6 @@ func respawn_player(peer_id: int, start_transform = null) -> void:
 	if start_transform:
 		spawn_data['start_transform'] = start_transform
 	else:
-		var player_start_transforms = map.get_player_start_transforms()
 		spawn_data['start_transform'] = player_start_transforms[player.index - 1]
 	
 	var tank = SyncManager.spawn(str(peer_id), players_node, TankScene, spawn_data, false, "Tank")
@@ -117,7 +123,8 @@ func make_player_controlled(peer_id) -> void:
 	var my_player := players_node.get_node(str(peer_id))
 	if my_player and not my_player.player_controlled:
 		my_player.player_controlled = true
-		_setup_player_camera(my_player)
+		_setup_player_camera(my_player.global_position)
+		my_player.camera = player_camera
 		_setup_player_listener(my_player)
 	else:
 		print ("Unable to make player controlled: node not found")
@@ -200,14 +207,10 @@ func _setup_watch_camera() -> void:
 	watch_camera.zoom.x = max(1.0, map_rect.size.x / viewport_rect.size.x)
 	watch_camera.zoom.y = max(1.0, map_rect.size.y / viewport_rect.size.y)
 
-func _setup_player_camera(my_player) -> void:
-	my_player.camera = player_camera
-	player_camera.global_position = my_player.global_position
+func _setup_player_camera(camera_position: Vector2) -> void:
+	player_camera.global_position = camera_position
 	watch_camera.current = false
 	player_camera.current = true
-	
-	# Enable positional audio when the player_camera is enabled.
-	Globals.use_positional_audio = true
 	
 	if map.has_method('get_map_rect'):
 		var map_rect = map.get_map_rect()
