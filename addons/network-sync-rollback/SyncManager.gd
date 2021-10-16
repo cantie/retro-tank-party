@@ -233,6 +233,7 @@ var _time_since_last_tick := 0.0
 var _debug_skip_nth_message_counter := 0
 var _input_complete_tick := 0
 var _logged_remote_state: Dictionary
+var _in_rollback := false
 
 signal sync_started ()
 signal sync_stopped ()
@@ -408,6 +409,7 @@ func _reset() -> void:
 	_debug_skip_nth_message_counter = 0
 	_input_complete_tick = 0
 	_logged_remote_state.clear()
+	_in_rollback = false
 
 remote func _remote_start() -> void:
 	_reset()
@@ -784,6 +786,8 @@ func _physics_process(delta: float) -> void:
 		
 		emit_signal("state_loaded", rollback_ticks)
 		
+		_in_rollback = true
+		
 		# Iterate forward until we're at the same spot we left off.
 		while rollback_ticks > 0:
 			current_tick += 1
@@ -791,6 +795,8 @@ func _physics_process(delta: float) -> void:
 				return
 			rollback_ticks -= 1
 		assert(current_tick == original_tick, "Rollback didn't return to the original tick")
+		
+		_in_rollback = false
 	
 	if get_tree().is_network_server() and _logged_remote_state.size() > 0:
 		_process_logged_remote_state()
@@ -1020,13 +1026,20 @@ func _process_logged_remote_state() -> void:
 			var local_state_data: Dictionary = local_state.data
 			
 			if local_state_data['$'] != remote_state_data['$']:
-				emit_signal("remote_state_mismatch", local_state.tick, peer_id, local_state_data, remote_state_data)
+				emit_signal("remote_state_mismatch", 
+					local_state.tick,
+					peer_id,
+					hash_serializer.serialize(local_state_data),
+					remote_state_data)
 
 func spawn(name: String, parent: Node, scene: PackedScene, data: Dictionary = {}, rename: bool = true, signal_name: String = '') -> Node:
 	return _spawn_manager.spawn(name, parent, scene, data, rename, signal_name)
 
 func _on_SpawnManager_scene_spawned(name: String, spawned_node: Node, scene: PackedScene, data: Dictionary) -> void:
 	emit_signal("scene_spawned", name, spawned_node, scene, data)
+
+func is_in_rollback() -> bool:
+	return _in_rollback
 
 func is_respawning() -> bool:
 	return _spawn_manager.is_respawning

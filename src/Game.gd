@@ -46,9 +46,6 @@ class Player:
 	static func from_dict(data: Dictionary) -> Player:
 		return Player.new(data['peer_id'], data['name'], data['index'], data['team'])
 
-func _get_synchronized_rpc_methods() -> Array:
-	return ['respawn_player']
-
 func _ready() -> void:
 	SyncManager.connect("scene_spawned", self, "_on_SyncManager_scene_spawned")
 
@@ -243,9 +240,6 @@ func remove_player(player_id) -> void:
 func enable_watch_camera(enable: bool = true) -> void:
 	player_camera.current = not enable
 	watch_camera.current = enable
-	
-	# Disable positional audio when the watch camera is enabled.
-	Globals.use_positional_audio = not enable
 
 func _on_player_dead(killer_id, tank) -> void:
 	var peer_id = tank.get_network_master()
