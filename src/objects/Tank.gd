@@ -323,6 +323,9 @@ func _predict_remote_input(previous_input: Dictionary, ticks_since_real_input: i
 	var input = previous_input.duplicate()
 	if ticks_since_real_input > 5:
 		input.erase(PlayerInput.INPUT_VECTOR)
+	else:
+		# Need to copy so that all predicted frames aren't using the same reference.
+		input[PlayerInput.INPUT_VECTOR] = input[PlayerInput.INPUT_VECTOR].copy()
 	
 	# We get turrent input from the most recent input.
 	var latest_input: Dictionary = SyncManager.get_latest_input_for_node(self)

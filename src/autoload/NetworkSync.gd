@@ -90,7 +90,7 @@ class RTPMessageSerializer extends SyncManager.MessageSerializer:
 		
 		return all_input
 
-class StateSerializer extends SyncManager.StateSerializer:
+class RTPHashSerializer extends SyncManager.HashSerializer:
 	func serialize_object(value: Object):
 		if value is SGFixedVector2:
 			return {x = value.x, y = value.y}
@@ -110,7 +110,7 @@ func _ready() -> void:
 	
 	SyncManager.network_adaptor = network_adaptor
 	SyncManager.message_serializer = RTPMessageSerializer.new()
-	SyncManager.state_serializer = StateSerializer.new()
+	SyncManager.hash_serializer = RTPHashSerializer.new()
 	
 	# Just for debugging
 	#SyncManager.debug_rollback_ticks = 5

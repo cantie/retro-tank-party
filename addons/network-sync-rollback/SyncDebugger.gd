@@ -124,8 +124,8 @@ func _on_SyncManager_skip_ticks_flagged(count: int) -> void:
 func _on_SyncManager_rollback_flagged(tick: int, peer_id: int, local_input: Dictionary, remote_input: Dictionary) -> void:
 	print ("-----")
 	print ("Correcting prediction on tick %s for peer %s (rollback %s tick(s))" % [tick, peer_id, SyncManager.rollback_ticks])
-	print ("Received input: %s" % remote_input)
-	print ("Predicted input: %s" % local_input)
+	print ("Received input: %s" % SyncManager.hash_serializer.serialize(remote_input))
+	print ("Predicted input: %s" % SyncManager.hash_serializer.serialize(local_input))
 	
 	if _debug_overlay:
 		_debug_overlay.add_message(peer_id, "%s: Rollback %s ticks" % [tick, SyncManager.rollback_ticks])

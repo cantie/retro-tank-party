@@ -100,6 +100,13 @@ enum InputMessageKey {
 
 const DEFAULT_MESSAGE_BUFFER_SIZE = 1280
 
+# The message serializer will convert input messages to bytes in order to send
+# them to the other clients.
+#
+# The default implementation is relatively wasteful (ie. uses a lot of bytes),
+# so you probably want to replace it with an your own to pack your data as 
+# small as possible. This is only possible by knowing the structure and meaning
+# of your data.
 class MessageSerializer:
 	func serialize_input(input: Dictionary) -> PoolByteArray:
 		return var2bytes(input)
@@ -144,7 +151,15 @@ class MessageSerializer:
 		
 		return msg
 
-class StateSerializer:
+# The hash serializer will convert state or input into primitive types so that
+# we can hash the Dictionary for use in comparisons. It's also used to serialize
+# the state before passing it to the host when debug_log_state is true.
+#
+# The default implementation can't handle Objects in a smart way, and if you
+# include any in your input or state, it could lead to SyncManager thinking that
+# input/state doesn't match, when it does. Replace this with your own version
+# to convert any objects into a primitive type.
+class HashSerializer:
 	func serialize(value):
 		if value is Dictionary:
 			return serialize_dictionary(value)
@@ -176,7 +191,7 @@ class StateSerializer:
 
 var network_adaptor: NetworkAdaptor setget set_network_adaptor
 var message_serializer: MessageSerializer setget set_message_serializer
-var state_serializer: StateSerializer setget set_state_serializer
+var hash_serializer: HashSerializer setget set_hash_serializer
 
 var peers := {}
 var input_buffer := []
@@ -267,8 +282,8 @@ func _ready() -> void:
 		set_network_adaptor(RPCNetworkAdaptor.new())
 	if message_serializer == null:
 		set_message_serializer(MessageSerializer.new())
-	if state_serializer == null:
-		set_state_serializer(StateSerializer.new())
+	if hash_serializer == null:
+		set_hash_serializer(HashSerializer.new())
 
 func _set_readonly_variable(_value) -> void:
 	pass
@@ -292,9 +307,9 @@ func set_message_serializer(_message_serializer: MessageSerializer) -> void:
 	assert(not started, "Changing the message serializer after SyncManager has started will probably break everything")
 	message_serializer = _message_serializer
 
-func set_state_serializer(_state_serializer: StateSerializer) -> void:
-	assert(not started, "Changing the state serializer after SyncManager has started will probably break everything")
-	state_serializer = _state_serializer
+func set_hash_serializer(_hash_serializer: HashSerializer) -> void:
+	assert(not started, "Changing the hash serializer after SyncManager has started will probably break everything")
+	hash_serializer = _hash_serializer
 
 func set_ping_frequency(_ping_frequency) -> void:
 	ping_frequency = _ping_frequency
@@ -509,7 +524,7 @@ func _update_input_complete_tick() -> void:
 		if debug_log_state and not get_tree().is_network_server():
 			# Send the state from the previous tick (since state preceeds input).
 			var state_frame: StateBufferFrame = _get_state_frame(_input_complete_tick - 1)
-			rpc_id(1, "_log_saved_state", _input_complete_tick - 1, state_serializer.serialize(state_frame.data))
+			rpc_id(1, "_log_saved_state", _input_complete_tick - 1, hash_serializer.serialize(state_frame.data))
 		
 		emit_signal("tick_input_complete", _input_complete_tick)
 
@@ -889,7 +904,7 @@ func _calculate_input_hash(input: Dictionary) -> void:
 			elif key is int:
 				if key < 0:
 					value.erase(key)
-	input['$'] = cleaned_input.hash()
+	input['$'] = hash_serializer.serialize(cleaned_input).hash()
 
 func _receive_input_tick(peer_id: int, serialized_msg: PoolByteArray) -> void:
 	if not started:
@@ -993,7 +1008,7 @@ func _process_logged_remote_state() -> void:
 			
 			var remote_state = remote_state_buffer.pop_front()
 			var remote_state_data: Dictionary = remote_state.data
-			var local_state_data: Dictionary = state_serializer.serialize(local_state.data)
+			var local_state_data: Dictionary = hash_serializer.serialize(local_state.data)
 			
 			if local_state_data.hash() != remote_state_data.hash():
 				emit_signal("remote_state_mismatch", local_state.tick, peer_id, local_state_data, remote_state_data)

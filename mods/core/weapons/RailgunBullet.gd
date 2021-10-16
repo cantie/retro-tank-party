@@ -40,9 +40,10 @@ func _save_state() -> Dictionary:
 	
 	var exceptions := []
 	for node in ray_cast.get_exceptions():
+		if not node.is_inside_tree():
+			continue
 		var node_path = str(node.get_path())
-		if node_path != "":
-			exceptions.append(node_path)
+		exceptions.append(node_path)
 	state['exceptions'] = exceptions
 	
 	return state
