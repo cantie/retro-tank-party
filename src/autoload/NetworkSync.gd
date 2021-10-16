@@ -16,8 +16,9 @@ class RTPMessageSerializer extends SyncManager.MessageSerializer:
 	enum HeaderFlags {
 		RETRO_CONTROLS = 0x01,
 		HAS_INPUT_VECTOR = 0x02,
-		SHOOTING = 0x04,
-		USING_ABILITY = 0x08,
+		HAS_TURRET_ROTATION = 0x04,
+		SHOOTING = 0x08,
+		USING_ABILITY = 0x10,
 	}
 	
 	func serialize_input(all_input: Dictionary) -> PoolByteArray:
@@ -39,13 +40,18 @@ class RTPMessageSerializer extends SyncManager.MessageSerializer:
 				header |= HeaderFlags.RETRO_CONTROLS
 			if input.has(Tank.PlayerInput.INPUT_VECTOR):
 				header |= HeaderFlags.HAS_INPUT_VECTOR
+			if input.has(Tank.PlayerInput.TURRET_ROTATION):
+				header |= HeaderFlags.HAS_TURRET_ROTATION
 			if input.get(Tank.PlayerInput.SHOOTING, false):
 				header |= HeaderFlags.SHOOTING
 			if input.get(Tank.PlayerInput.USING_ABILITY, false):
 				header |= HeaderFlags.USING_ABILITY
 			
 			buffer.put_u8(header)
-			buffer.put_64(input.get(Tank.PlayerInput.TURRET_ROTATION, 0))
+			
+			if input.has(Tank.PlayerInput.TURRET_ROTATION):
+				buffer.put_64(input.get(Tank.PlayerInput.TURRET_ROTATION, 0))
+			
 			if input.has(Tank.PlayerInput.INPUT_VECTOR):
 				var input_vector: SGFixedVector2 = input[Tank.PlayerInput.INPUT_VECTOR]
 				buffer.put_64(input_vector.x)
@@ -78,7 +84,8 @@ class RTPMessageSerializer extends SyncManager.MessageSerializer:
 			if header & HeaderFlags.USING_ABILITY:
 				input[Tank.PlayerInput.USING_ABILITY] = true
 			
-			input[Tank.PlayerInput.TURRET_ROTATION] = buffer.get_64()
+			if header & HeaderFlags.HAS_TURRET_ROTATION:
+				input[Tank.PlayerInput.TURRET_ROTATION] = buffer.get_64()
 			
 			if header & HeaderFlags.HAS_INPUT_VECTOR:
 				input[Tank.PlayerInput.INPUT_VECTOR] = SGFixed.vector2(
