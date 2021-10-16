@@ -323,7 +323,7 @@ func _predict_remote_input(previous_input: Dictionary, ticks_since_real_input: i
 	var input = previous_input.duplicate()
 	if ticks_since_real_input > 5:
 		input.erase(PlayerInput.INPUT_VECTOR)
-	else:
+	elif input.has(PlayerInput.INPUT_VECTOR):
 		# Need to copy so that all predicted frames aren't using the same reference.
 		input[PlayerInput.INPUT_VECTOR] = input[PlayerInput.INPUT_VECTOR].copy()
 	
