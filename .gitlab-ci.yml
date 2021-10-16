@@ -44,10 +44,10 @@ build-godot:
       - BUILD_TYPE: windows-64
       - BUILD_TYPE: macosx-universal
       - BUILD_TYPE: html5
-  cache:
-    key: "$CI_JOB_NAME-$CI_COMMIT_REF_SLUG"
-    paths:
-      - build/godot
+#  cache:
+#    key: "$CI_JOB_NAME-$CI_COMMIT_REF_SLUG"
+#    paths:
+#      - build/godot
 
 .export_before_script: &export_before_script
   before_script:
