@@ -202,6 +202,8 @@ SyncDebugger="*res://addons/network-sync-rollback/SyncDebugger.gd"
 
 [debug]
 
+gdscript/warnings/unused_argument=false
+gdscript/warnings/return_value_discarded=false
 multirun/number_of_windows=2
 multirun/add_custom_args=true
 multirun/first_window_args="--email=test@example.com --password=testing123 --join=matchmaker"

@@ -246,7 +246,7 @@ func _hook_default_gather_input(event: GatherInputEvent) -> void:
 	if GameSettings.control_scheme != GameSettings.ControlScheme.MODERN:
 		input[PlayerInput.CONTROL_SCHEME] = GameSettings.control_scheme
 	
-	var input_vector: Vector2
+	var input_vector := Vector2.ZERO
 	if Input.is_action_pressed("player1_turn_left"):
 		input_vector.x -= min(Input.get_action_strength("player1_turn_left") + 0.5, 1.0)
 	if Input.is_action_pressed("player1_turn_right"):
