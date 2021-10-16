@@ -487,6 +487,8 @@ func _call_save_state() -> Dictionary:
 
 func _call_load_state(state: Dictionary) -> void:
 	for node_path in state:
+		if node_path == '$':
+			continue
 		assert(has_node(node_path), "Unable to restore state to missing node: %s" % node_path)
 		if has_node(node_path):
 			var node = get_node(node_path)
@@ -495,6 +497,8 @@ func _call_load_state(state: Dictionary) -> void:
 
 func _call_interpolate_state(weight: float) -> void:
 	for node_path in _interpolation_state:
+		if node_path == '$':
+			continue
 		if has_node(node_path):
 			var node = get_node(node_path)
 			if node.has_method('_interpolate_state'):
@@ -507,6 +511,7 @@ func _save_current_state() -> void:
 		return
 	
 	var state_data = _call_save_state()
+	_calculate_data_hash(state_data)
 	state_buffer.append(StateBufferFrame.new(current_tick, state_data))
 	
 	_update_input_complete_tick()
@@ -542,7 +547,7 @@ func _do_tick(delta: float, is_rollback: bool = false) -> bool:
 				var peer: Peer = peers[peer_id]
 				var ticks_since_real_input = current_tick - peer.last_remote_tick_received
 				predicted_input = _call_predict_remote_input(previous_frame.get_player_input(peer_id), ticks_since_real_input)
-			_calculate_input_hash(predicted_input)
+			_calculate_data_hash(predicted_input)
 			input_frame.players[peer_id] = InputForPlayer.new(predicted_input, true)
 	
 	_call_network_process(delta, input_frame)
@@ -847,9 +852,9 @@ func _physics_process(delta: float) -> void:
 	# _get_or_create_input_frame() so we can just return here.
 	if input_frame == null:
 		return
-		
+	
 	var local_input = _call_get_local_input()
-	_calculate_input_hash(local_input)
+	_calculate_data_hash(local_input)
 	input_frame.players[get_tree().get_network_unique_id()] = InputForPlayer.new(local_input, false)
 	_input_send_queue.append(message_serializer.serialize_input(local_input))
 	assert(input_tick == _input_send_queue_start_tick + _input_send_queue.size() - 1, "Input send queue ticks numbers are misaligned")
@@ -888,10 +893,14 @@ func _process(delta: float) -> void:
 			weight = 1.0
 		_call_interpolate_state(weight)
 
-# Calculates the input hash without any keys that start with '_' (if string)
+# Calculates the hash without any keys that start with '_' (if string)
 # or less than 0 (if integer) to allow some properties to not count when
-# comparing predicted input with real input.
-func _calculate_input_hash(input: Dictionary) -> void:
+# comparing comparing data.
+#
+# This can be used for comparing input (to prevent a difference betwen predicted
+# input and real input from causing a rollback) and state (for when a property
+# is only used for interpolation).
+func _calculate_data_hash(input: Dictionary) -> void:
 	var cleaned_input := input.duplicate(true)
 	if cleaned_input.has('$'):
 		cleaned_input.erase('$')
@@ -1008,9 +1017,9 @@ func _process_logged_remote_state() -> void:
 			
 			var remote_state = remote_state_buffer.pop_front()
 			var remote_state_data: Dictionary = remote_state.data
-			var local_state_data: Dictionary = hash_serializer.serialize(local_state.data)
+			var local_state_data: Dictionary = local_state.data
 			
-			if local_state_data.hash() != remote_state_data.hash():
+			if local_state_data['$'] != remote_state_data['$']:
 				emit_signal("remote_state_mismatch", local_state.tick, peer_id, local_state_data, remote_state_data)
 
 func spawn(name: String, parent: Node, scene: PackedScene, data: Dictionary = {}, rename: bool = true, signal_name: String = '') -> Node:

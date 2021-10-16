@@ -392,7 +392,7 @@ func _after_update_position() -> void:
 func _save_state() -> Dictionary:
 	return {
 		fixed_transform = fixed_transform.copy(),
-		turret_transform = turret_pivot.fixed_transform.copy(),
+		_turret_transform = turret_pivot.fixed_transform.copy(),
 		can_shoot = can_shoot,
 		dead = dead,
 		health = health,
@@ -404,7 +404,7 @@ func _save_state() -> Dictionary:
 
 func _load_state(state: Dictionary) -> void:
 	fixed_transform = state['fixed_transform'].copy()
-	turret_pivot.fixed_transform = state['turret_transform'].copy()
+	turret_pivot.fixed_transform = state['_turret_transform'].copy()
 	can_shoot = state['can_shoot']
 	dead = state['dead']
 	update_health(state['health'])
@@ -421,7 +421,7 @@ func _interpolate_state(old_state: Dictionary, new_state: Dictionary, weight: fl
 	position = lerp(old_state['fixed_transform'].origin.to_float(), new_state['fixed_transform'].origin.to_float(), weight)
 	scale = lerp(old_state['fixed_transform'].get_scale().to_float(), new_state['fixed_transform'].get_scale().to_float(), weight)
 	rotation = lerp_angle(SGFixed.to_float(old_state['fixed_transform'].get_rotation()), SGFixed.to_float(new_state['fixed_transform'].get_rotation()), weight)
-	turret_pivot.rotation = lerp_angle(SGFixed.to_float(old_state['turret_transform'].get_rotation()), SGFixed.to_float(new_state['turret_transform'].get_rotation()), weight)
+	turret_pivot.rotation = lerp_angle(SGFixed.to_float(old_state['_turret_transform'].get_rotation()), SGFixed.to_float(new_state['_turret_transform'].get_rotation()), weight)
 	_after_update_position()
 
 func _unhandled_input(event: InputEvent) -> void:
