@@ -6,7 +6,28 @@ class DebugStatePrinter:
 	const JSON_INDENT = "    "
 	
 	static func print_state_diff(local_state: Dictionary, remote_state: Dictionary) -> void:
-		_print_state_diff_recursive(local_state, remote_state)
+		_print_state_diff_recursive(
+			_clean_up_state(local_state),
+			_clean_up_state(remote_state))
+	
+	static func _clean_up_state(state: Dictionary) -> Dictionary:
+		state = state.duplicate(true)
+		
+		# Remove hash.
+		state.erase('$')
+		
+		# Remove any keys that are ignored in the hash.
+		for node_path in state:
+			for key in state[node_path].keys():
+				var value = state[node_path]
+				if key is String:
+					if key.begins_with('_'):
+						value.erase(key)
+				elif key is int:
+					if key < 0:
+						value.erase(key)
+		
+		return state
 	
 	static func _print_state_diff_recursive(local_state: Dictionary, remote_state: Dictionary, path: Array = []) -> void:
 		var missing_or_extra := false
