@@ -294,8 +294,7 @@ func _hook_default_calculate_movement_vector(event: CalculateMovementVectorEvent
 		event.movement_vector.y = input_vector.x
 		return
 	
-	var current_vector = SGFixed.vector2(SGFixed.ONE, 0)
-	current_vector.rotate(fixed_rotation)
+	var current_vector = fixed_transform.x.normalized()
 	
 	var desired_vector: SGFixedVector2 = input.get(PlayerInput.INPUT_VECTOR, SGFixed.vector2(0, 0))
 	# 55706 = 0.85
@@ -358,10 +357,16 @@ func _network_process(delta: float, input: Dictionary) -> void:
 	else:
 		engine_sound.engine_state = engine_sound.EngineState.IDLE
 	
+	# We create a brand new transform to eliminate cumulative error from
+	# rotating the same transform over and over again.
+	var turret_transform: SGFixedTransform2D
 	if input.has(PlayerInput.TURRET_ROTATION):
-		turret_pivot.set_global_fixed_rotation(input[PlayerInput.TURRET_ROTATION])
+		turret_transform = SGFixed.transform2d(
+			input[PlayerInput.TURRET_ROTATION] - get_global_fixed_rotation(),
+			turret_pivot.fixed_position)
 	else:
-		turret_pivot.fixed_rotation = 0
+		turret_transform = SGFixed.transform2d(0, turret_pivot.fixed_position)
+	turret_pivot.fixed_transform = turret_transform
 	
 	if input.get(PlayerInput.SHOOTING, false) and can_shoot:
 		can_shoot = false
