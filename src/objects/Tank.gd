@@ -349,10 +349,8 @@ func _network_process(delta: float, input: Dictionary) -> void:
 		rotate_and_slide(SGFixed.mul(movement_vector.y, turn_speed))
 
 	if movement_vector.x != 0:
-		velocity.clear()
-		#velocity.y = 0
-		velocity.x = movement_vector.x
-		velocity.rotate(fixed_rotation)
+		var velocity = fixed_transform.x.copy()
+		velocity.imul(movement_vector.x)
 		velocity.imul(speed)
 		move_and_slide(velocity)
 	
