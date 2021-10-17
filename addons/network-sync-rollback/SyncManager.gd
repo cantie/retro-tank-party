@@ -206,6 +206,7 @@ var max_input_buffer_underruns := 300
 var skip_ticks_after_sync_regained := 0
 var interpolation := false
 var debug_rollback_ticks := 0
+var debug_random_rollback_ticks := 0
 var debug_message_bytes := 700
 var debug_skip_nth_message := 0
 var debug_log_state := false
@@ -531,7 +532,7 @@ func _update_input_complete_tick() -> void:
 		if debug_log_state and not get_tree().is_network_server():
 			# Send the state from the previous tick (since state preceeds input).
 			var state_frame: StateBufferFrame = _get_state_frame(_input_complete_tick - 1)
-			rpc_id(1, "_log_saved_state", _input_complete_tick - 1, hash_serializer.serialize(state_frame.data))
+			rpc_id(1, "_log_saved_state", _input_complete_tick - 1, hash_serializer.serialize(state_frame.data.duplicate(true)))
 		
 		emit_signal("tick_input_complete", _input_complete_tick)
 
@@ -763,6 +764,9 @@ func _physics_process(delta: float) -> void:
 	# case, we don't want to miss out on any data.
 	network_adaptor.poll()
 	
+	if debug_random_rollback_ticks > 0:
+		randomize()
+		debug_rollback_ticks = randi() % debug_random_rollback_ticks
 	if debug_rollback_ticks > 0 and current_tick >= debug_rollback_ticks:
 		rollback_ticks = max(rollback_ticks, debug_rollback_ticks)
 	
@@ -1017,11 +1021,12 @@ func _process_logged_remote_state() -> void:
 			if remote_tick > _input_complete_tick:
 				break
 			
+			var remote_state = remote_state_buffer.pop_front()
+			
 			var local_state = _get_state_frame(remote_tick)
 			if local_state == null:
 				break
 			
-			var remote_state = remote_state_buffer.pop_front()
 			var remote_state_data: Dictionary = remote_state.data
 			var local_state_data: Dictionary = local_state.data
 			
@@ -1029,7 +1034,7 @@ func _process_logged_remote_state() -> void:
 				emit_signal("remote_state_mismatch", 
 					local_state.tick,
 					peer_id,
-					hash_serializer.serialize(local_state_data),
+					hash_serializer.serialize(local_state_data.duplicate(true)),
 					remote_state_data)
 
 func spawn(name: String, parent: Node, scene: PackedScene, data: Dictionary = {}, rename: bool = true, signal_name: String = '') -> Node:
