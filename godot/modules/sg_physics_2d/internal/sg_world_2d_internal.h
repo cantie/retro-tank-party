@@ -75,6 +75,8 @@ public:
 		}
 	};
 
+	typedef bool (*CompareCallback)(SGCollisionObject2DInternal*, SGCollisionObject2DInternal*);
+
 	static SGWorld2DInternal *get_singleton();
 
 	_FORCE_INLINE_ const List<SGBody2DInternal *> &get_bodies() const { return bodies; }
@@ -89,7 +91,7 @@ public:
 	bool overlaps(SGCollisionObject2DInternal *p_object1, SGCollisionObject2DInternal *p_object2, BodyOverlapInfo *p_info = nullptr) const;
 	bool overlaps(SGShape2DInternal *p_shape1, SGShape2DInternal *p_shape2, ShapeOverlapInfo *p_info = nullptr) const;
 
-	bool get_best_overlapping_body(SGCollisionObject2DInternal *p_object, BodyOverlapInfo *p_info) const;
+	bool get_best_overlapping_body(SGCollisionObject2DInternal *p_object, BodyOverlapInfo *p_info, CompareCallback p_compare = nullptr) const;
 
 	List<SGArea2DInternal *> *get_overlapping_areas(SGCollisionObject2DInternal *p_object) const;
 	List<SGBody2DInternal *> *get_overlapping_bodies(SGCollisionObject2DInternal *p_object) const;

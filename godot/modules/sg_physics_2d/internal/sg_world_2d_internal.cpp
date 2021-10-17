@@ -137,7 +137,7 @@ bool SGWorld2DInternal::overlaps(SGShape2DInternal *p_shape1, SGShape2DInternal 
 	return overlapping;
 }
 
-bool SGWorld2DInternal::get_best_overlapping_body(SGCollisionObject2DInternal *p_object, SGWorld2DInternal::BodyOverlapInfo *p_info) const {
+bool SGWorld2DInternal::get_best_overlapping_body(SGCollisionObject2DInternal *p_object, SGWorld2DInternal::BodyOverlapInfo *p_info, SGWorld2DInternal::CompareCallback p_compare) const {
 	bool overlapping = false;
 
 	SGWorld2DInternal::BodyOverlapInfo test_overlap_info;
@@ -162,11 +162,10 @@ bool SGWorld2DInternal::get_best_overlapping_body(SGCollisionObject2DInternal *p
 				longest_separation_squared = separation_length_squared;
 				*p_info = test_overlap_info;
 			}
-			else if (separation_length_squared == longest_separation_squared && p_info->collider != nullptr) {
-				// If the seperation length is the same, favor the one with the lower position.
-				SGFixedVector2Internal other_position = other->get_transform().get_origin();
-				SGFixedVector2Internal collider_position = p_info->collider->get_transform().get_origin();
-				if (other_position.x < collider_position.x || (other_position.x == collider_position.x && other_position.y < collider_position.y)) {
+			// If we find another with the same separation, use the p_compare
+			// callback to decide which is first.
+			else if (separation_length_squared == longest_separation_squared && p_compare != nullptr && p_info->collider != nullptr) {
+				if (p_compare(other, p_info->collider)) {
 					*p_info = test_overlap_info;
 				}
 			}

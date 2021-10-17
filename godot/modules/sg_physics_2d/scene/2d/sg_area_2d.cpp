@@ -48,7 +48,7 @@ Array SGArea2D::get_overlapping_areas(bool sort) const {
 
 	List<SGArea2DInternal *> *overlapping_areas = SGWorld2DInternal::get_singleton()->get_overlapping_areas((SGArea2DInternal *)internal);
 
-	if (sort) {
+	if (sort && overlapping_areas->size() > 1) {
 		overlapping_areas->sort_custom<SGCollisionObjectComparator>();
 	}
 
@@ -68,7 +68,7 @@ Array SGArea2D::get_overlapping_bodies(bool sort) const {
 
 	List<SGBody2DInternal *> *overlapping_bodies = SGWorld2DInternal::get_singleton()->get_overlapping_bodies((SGArea2DInternal *)internal);
 
-	if (sort) {
+	if (sort && overlapping_bodies->size() > 1) {
 		overlapping_bodies->sort_custom<SGCollisionObjectComparator>();
 	}
 

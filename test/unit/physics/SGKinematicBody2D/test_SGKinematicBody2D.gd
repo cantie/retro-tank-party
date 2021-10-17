@@ -20,11 +20,11 @@ func test_move_and_collide_deepest_penetration() -> void:
 		assert_eq(collision.remainder.x, 0)
 		assert_eq(collision.remainder.y, -66048)
 		
-		# Add/remove one of the bodies to try and trick the physics engine into
-		# returning a different result.
-		scene.remove_child(scene.static_body2)
-		scene.add_child(scene.static_body2)
-		scene.static_body2.sync_to_physics_engine()
+		# Add/remove one of the bodies to change the order in the scene tree.
+		# It shouldn't have any effect because one shape has deeper penetration.
+		scene.remove_child(scene.static_body1)
+		scene.add_child(scene.static_body1)
+		scene.static_body1.sync_to_physics_engine()
 		
 		scene.reset_kinematic_body()
 		collision = scene.do_move_and_collide()
@@ -60,8 +60,7 @@ func test_move_and_collide_lowest_xy() -> void:
 		assert_eq(collision.remainder.x, 0)
 		assert_eq(collision.remainder.y, -66048)
 
-		# Add/remove one of the bodies to try and trick the physics engine into
-		# returning a different result.
+		# Add/remove one of the bodies to change the order in the scene tree
 		scene.remove_child(scene.static_body1)
 		scene.add_child(scene.static_body1)
 		scene.static_body1.sync_to_physics_engine()
@@ -69,7 +68,7 @@ func test_move_and_collide_lowest_xy() -> void:
 		scene.reset_kinematic_body()
 		collision = scene.do_move_and_collide()
 		assert_not_null(collision)
-		assert_eq(collision.collider, scene.static_body1)
+		assert_eq(collision.collider, scene.static_body2)
 		assert_eq(collision.normal.x, 0)
 		assert_eq(collision.normal.y, 65536)
 		assert_eq(scene.kinematic_body.fixed_transform.origin.x, 1310720)
