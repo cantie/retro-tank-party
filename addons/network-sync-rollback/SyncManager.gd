@@ -530,9 +530,8 @@ func _update_input_complete_tick() -> void:
 		_input_complete_tick += 1
 		
 		if debug_log_state and not get_tree().is_network_server():
-			# Send the state from the previous tick (since state preceeds input).
-			var state_frame: StateBufferFrame = _get_state_frame(_input_complete_tick - 1)
-			rpc_id(1, "_log_saved_state", _input_complete_tick - 1, hash_serializer.serialize(state_frame.data.duplicate(true)))
+			var state_frame: StateBufferFrame = _get_state_frame(_input_complete_tick)
+			rpc_id(1, "_log_saved_state", _input_complete_tick, hash_serializer.serialize(state_frame.data.duplicate(true)))
 		
 		emit_signal("tick_input_complete", _input_complete_tick)
 
