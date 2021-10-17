@@ -34,14 +34,14 @@ void SGKinematicBody2D::_bind_methods() {
 
 bool SGKinematicBody2D::move_and_collide(const SGFixedVector2Internal &p_linear_velocity, SGKinematicBody2D::Collision &p_collision) {
 	SGWorld2DInternal *world = SGWorld2DInternal::get_singleton();
-	SGWorld2DInternal::OverlapInfo overlap_info;
+	SGWorld2DInternal::BodyOverlapInfo overlap_info;
 
 	// First, get our body unstuck, if it's stuck.
 	bool stuck = world->get_best_overlapping_body(internal, &overlap_info);
 	if (stuck) {
 		for (int i = 0; i < 4; i++) {
 			SGFixedTransform2DInternal t = internal->get_transform();
-			t.set_origin(t.get_origin() + overlap_info.seperation);
+			t.set_origin(t.get_origin() + overlap_info.separation);
 			internal->set_transform(t);
 
 			stuck = world->get_best_overlapping_body(internal, &overlap_info);
@@ -54,7 +54,7 @@ bool SGKinematicBody2D::move_and_collide(const SGFixedVector2Internal &p_linear_
 		sync_from_physics_engine();
 
 		// We can't really continue. Bail with some sort of reasonable values.
-		p_collision.collider = Object::cast_to<SGCollisionObject2D>((Object *)overlap_info.body->get_data());
+		p_collision.collider = Object::cast_to<SGCollisionObject2D>((Object *)overlap_info.collider->get_data());
 		p_collision.normal = SGFixedVector2Internal::ZERO;
 		p_collision.remainder = p_linear_velocity;
 		return true;
@@ -90,10 +90,15 @@ bool SGKinematicBody2D::move_and_collide(const SGFixedVector2Internal &p_linear_
 		}
 	}
 
+	// Whatever was last set to our fixed position will be a safe position, so
+	// let's make sure that's what ends up in the physics engine (in case the
+	// last test_transform was a hi position).
+	sync_to_physics_engine();
+
 	// At this point, the overlap_info will contain info about the collision at 'hi'
 	// which is what we want to store in p_collision.
-	p_collision.collider = Object::cast_to<SGCollisionObject2D>((Object *)overlap_info.shape->get_owner()->get_data());
-	p_collision.normal = overlap_info.seperation.normalized();
+	p_collision.collider = Object::cast_to<SGCollisionObject2D>((Object *)overlap_info.collider->get_data());
+	p_collision.normal = overlap_info.separation.normalized();
 	p_collision.remainder = p_linear_velocity - (p_linear_velocity * low);
 
 	return true;
@@ -126,7 +131,7 @@ Ref<SGFixedVector2> SGKinematicBody2D::move_and_slide(const Ref<SGFixedVector2> 
 
 bool SGKinematicBody2D::rotate_and_slide(int64_t p_rotation, int p_max_slides) {
 	SGWorld2DInternal *world = SGWorld2DInternal::get_singleton();
-	SGWorld2DInternal::OverlapInfo overlap_info;
+	SGWorld2DInternal::BodyOverlapInfo overlap_info;
 
 	// @todo Can't we do this by manipulating the underlying transform?
 	set_fixed_rotation(get_fixed_rotation() + p_rotation);
@@ -136,7 +141,7 @@ bool SGKinematicBody2D::rotate_and_slide(int64_t p_rotation, int p_max_slides) {
 	if (stuck) {
 		for (int i = 0; i < p_max_slides; i++) {
 			SGFixedTransform2DInternal t = internal->get_transform();
-			t.set_origin(t.get_origin() + overlap_info.seperation);
+			t.set_origin(t.get_origin() + overlap_info.separation);
 			internal->set_transform(t);
 
 			stuck = world->get_best_overlapping_body(internal, &overlap_info);

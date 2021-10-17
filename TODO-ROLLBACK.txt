@@ -15,9 +15,6 @@ MILESTOE 2 (finish porting all the things):
  - Ensure order of get_overlapping_areas/bodies() by default by adding a sort = true argument
    * Implement a test for this first!!
    * This should put the result into SceneTree order (can we abuse groups for this?)
- - Could SGWorldInternal::get_best_overlapping_body() return different results depending on order?
-   * If a kinematic body will collide with two shapes at the same time, maybe which one could be different?
-   * Try move_and_collide() in this situation to see if we get the same one always
  - Try disabling the broadphase?
  - Bug: Peer with given id already exists
    * Join two players, but don't press Ready

@@ -29,7 +29,6 @@ const DEFAULT_SPEED := 873726
 
 var turn_speed := DEFAULT_TURN_SPEED
 var speed := DEFAULT_SPEED
-var velocity: SGFixedVector2 = SGFixed.vector2(0, 0)
 
 var health := 100
 var dead := false

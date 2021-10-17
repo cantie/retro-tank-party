@@ -1,19 +1,81 @@
 extends "res://addons/gut/test.gd"
 
-func test_deterministic_move_and_slide() -> void:
-	var MoveAndSlide1 = load("res://test/unit/physics/SGKinematicBody2D/MoveAndSlide1.tscn")
+func test_move_and_collide_deepest_penetration() -> void:
+	var MoveAndCollide1 = load("res://test/unit/physics/SGKinematicBody2D/MoveAndCollide1.tscn")
 	
-	# Run the same scene 10 times and make sure we get the same result.
-	for i in range(10):
-		var scene = MoveAndSlide1.instance()
+	# Run 5 times to attempt to check if this is deterministic.
+	for i in range(5):
+		var scene = MoveAndCollide1.instance()
 		add_child(scene)
 		
-		scene.do_move_and_slide(500)
+		var collision: SGKinematicCollision2D 
 		
-		assert_eq(scene.body1.fixed_position.x, 16464848)
-		assert_eq(scene.body1.fixed_position.y, 3703768)
-		assert_eq(scene.body2.fixed_position.x, 21854071)
-		assert_eq(scene.body2.fixed_position.y, 3212580)
+		collision = scene.do_move_and_collide()
+		assert_not_null(collision)
+		assert_eq(collision.collider, scene.static_body2)
+		assert_eq(collision.normal.x, 0)
+		assert_eq(collision.normal.y, 65536)
+		assert_eq(scene.kinematic_body.fixed_transform.origin.x, 1310720)
+		assert_eq(scene.kinematic_body.fixed_transform.origin.y, 1966592)
+		assert_eq(collision.remainder.x, 0)
+		assert_eq(collision.remainder.y, -66048)
 		
+		# Add/remove one of the bodies to try and trick the physics engine into
+		# returning a different result.
+		scene.remove_child(scene.static_body2)
+		scene.add_child(scene.static_body2)
+		scene.static_body2.sync_to_physics_engine()
+		
+		scene.reset_kinematic_body()
+		collision = scene.do_move_and_collide()
+		assert_not_null(collision)
+		assert_eq(collision.collider, scene.static_body2)
+		assert_eq(collision.normal.x, 0)
+		assert_eq(collision.normal.y, 65536)
+		assert_eq(scene.kinematic_body.fixed_transform.origin.x, 1310720)
+		assert_eq(scene.kinematic_body.fixed_transform.origin.y, 1966592)
+		assert_eq(collision.remainder.x, 0)
+		assert_eq(collision.remainder.y, -66048)
+		
+		remove_child(scene)
+		scene.queue_free()
+
+func test_move_and_collide_lowest_xy() -> void:
+	var MoveAndCollide2 = load("res://test/unit/physics/SGKinematicBody2D/MoveAndCollide2.tscn")
+	
+	# Run 5 times to attempt to check if this is deterministic.
+	for i in range(5):
+		var scene = MoveAndCollide2.instance()
+		add_child(scene)
+
+		var collision: SGKinematicCollision2D 
+
+		collision = scene.do_move_and_collide()
+		assert_not_null(collision)
+		assert_eq(collision.collider, scene.static_body1)
+		assert_eq(collision.normal.x, 0)
+		assert_eq(collision.normal.y, 65536)
+		assert_eq(scene.kinematic_body.fixed_transform.origin.x, 1310720)
+		assert_eq(scene.kinematic_body.fixed_transform.origin.y, 1966592)
+		assert_eq(collision.remainder.x, 0)
+		assert_eq(collision.remainder.y, -66048)
+
+		# Add/remove one of the bodies to try and trick the physics engine into
+		# returning a different result.
+		scene.remove_child(scene.static_body1)
+		scene.add_child(scene.static_body1)
+		scene.static_body1.sync_to_physics_engine()
+
+		scene.reset_kinematic_body()
+		collision = scene.do_move_and_collide()
+		assert_not_null(collision)
+		assert_eq(collision.collider, scene.static_body1)
+		assert_eq(collision.normal.x, 0)
+		assert_eq(collision.normal.y, 65536)
+		assert_eq(scene.kinematic_body.fixed_transform.origin.x, 1310720)
+		assert_eq(scene.kinematic_body.fixed_transform.origin.y, 1966592)
+		assert_eq(collision.remainder.x, 0)
+		assert_eq(collision.remainder.y, -66048)
+
 		remove_child(scene)
 		scene.queue_free()
