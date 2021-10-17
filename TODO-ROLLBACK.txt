@@ -12,11 +12,23 @@ MILESTONE 1 (physics):
 
 MILESTOE 2 (finish porting all the things):
 
+ - Ensure order of get_overlapping_areas/bodies() by default by adding a sort = true argument
+   * Implement a test for this first!!
+   * This should put the result into SceneTree order (can we abuse groups for this?)
+ - Could SGWorldInternal::get_best_overlapping_body() return different results depending on order?
+   * If a kinematic body will collide with two shapes at the same time, maybe which one could be different?
+   * Try move_and_collide() in this situation to see if we get the same one always
+ - Try disabling the broadphase?
+ - Bug: Peer with given id already exists
+   * Join two players, but don't press Ready
+   * Have non-host leave, and then quit game altogether
+   * Host should go back (ending match), then start a new one
+   * The have non-host connect again
+   * Error will happen!
  - Figure out desync'ing state issues
+   o Can we ensure that we are checking the remote state in order?
    o Driving around long enough will lead to position being off eventually
-     * Seems to be easier to cause with controller and both tanks moving at the same time
-   o Try having random number of rollbacks each frame?
-     * I suspect there is something where each client rolls back a different number of frames
+     * If all debug rollbacks and interpolation are disabled, then just crash into the top-left corner with the 1st tanks
  - Figure out issue where input just stops even though I've never stopped pressing it
    o Easiest to reproduce by pressing a direction on the D-pad
  - Implement a non-debug comparison of state (maybe just sending the hashes of the remote state?)
