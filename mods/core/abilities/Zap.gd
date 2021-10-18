@@ -27,6 +27,7 @@ var zap_stage = ZapStage.NONE
 var frame_counter := 0
 var destination: SGFixedVector2
 var move_increment: SGFixedVector2
+var current_scale := SGFixed.ONE
 
 func attach_ability() -> void:
 	game = tank.game
@@ -58,7 +59,6 @@ func use_ability() -> void:
 		position = global_position,
 	})
 	
-	tank.fixed_scale = SGFixed.vector2(SGFixed.ONE, SGFixed.ONE)
 	_change_stage(ZapStage.HIDING, SCALE_FRAME_COUNT)
 
 func _change_stage(new_stage, frame_count) -> void:
@@ -71,6 +71,7 @@ func _save_state() -> Dictionary:
 		frame_counter = frame_counter,
 		destination = destination.copy(),
 		move_increment = move_increment.copy(),
+		current_scale = current_scale,
 	}
 
 func _load_state(state: Dictionary) -> void:
@@ -78,6 +79,7 @@ func _load_state(state: Dictionary) -> void:
 	frame_counter = state['frame_counter']
 	destination = state['destination'].copy()
 	move_increment = state['move_increment'].copy()
+	current_scale = state['current_scale']
 
 func _network_process(delta: float, input: Dictionary) -> void:
 	if zap_stage == ZapStage.NONE:
@@ -85,14 +87,16 @@ func _network_process(delta: float, input: Dictionary) -> void:
 	
 	if frame_counter > 0:
 		if zap_stage == ZapStage.HIDING:
-			if tank.fixed_scale.x > SCALE_INCREMENT and tank.fixed_scale.y > SCALE_INCREMENT:
-				tank.fixed_scale.isub(SCALE_INCREMENT)
+			if current_scale > SCALE_INCREMENT:
+				current_scale -= SCALE_INCREMENT
+				tank.fixed_scale = SGFixed.vector2(current_scale, current_scale)
 		elif zap_stage == ZapStage.MOVING:
 			tank.fixed_position.iadd(move_increment)
 		elif zap_stage == ZapStage.SHOWING:
-			if tank.fixed_scale.x < SGFixed.ONE and tank.fixed_scale.y < SGFixed.ONE:
-				tank.fixed_scale.iadd(SCALE_INCREMENT)
-			tank.sync_to_physics_engine()
+			if current_scale < SGFixed.ONE:
+				current_scale += SCALE_INCREMENT
+				tank.fixed_scale = SGFixed.vector2(current_scale, current_scale)
+		tank.sync_to_physics_engine()
 		frame_counter -= 1
 	else:
 		if zap_stage == ZapStage.HIDING:
