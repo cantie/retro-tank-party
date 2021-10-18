@@ -12,6 +12,10 @@ MILESTONE 1 (physics):
 
 MILESTOE 2 (finish porting all the things):
 
+ - Investigate state mismatches:
+   * During Zap (on Linux <-> Windows match), getting slight rotation differences (like off by one)
+   * Drop timer being off by one for a frame (I think right after a spawn or a pickup?)
+ - Bug: Crash sometimes when plaer is killed
  - Bug: Peer with given id already exists
    * Join two players, but don't press Ready
    * Have non-host leave, and then quit game altogether
