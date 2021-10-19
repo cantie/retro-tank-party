@@ -1036,6 +1036,16 @@ func _process_logged_remote_state() -> void:
 					hash_serializer.serialize(local_state_data.duplicate(true)),
 					remote_state_data)
 
+func sort_dictionary_keys(input: Dictionary) -> Dictionary:
+	var output := {}
+	
+	var keys = input.keys()
+	keys.sort()
+	for key in keys:
+		output[key] = input[key]
+	
+	return output
+
 func spawn(name: String, parent: Node, scene: PackedScene, data: Dictionary = {}, rename: bool = true, signal_name: String = '') -> Node:
 	return _spawn_manager.spawn(name, parent, scene, data, rename, signal_name)
 

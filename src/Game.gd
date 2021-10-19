@@ -99,6 +99,8 @@ func respawn_player(peer_id: int, start_transform = null) -> void:
 	var player = players[peer_id]
 	players_alive[peer_id] = player
 	
+	players_alive = SyncManager.sort_dictionary_keys(players_alive)
+	
 	var spawn_data := {
 		game = self,
 		player = player,

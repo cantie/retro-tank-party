@@ -10,7 +10,6 @@ MILESTONE 1 (physics):
 MILESTOE 2 (finish porting all the things):
 
  - Investigate state mismatches:
-   * game.players_alive keys out of order
    * Drop timer being off by one for a frame
      o I think right after a spawn or a pickup?
 	 o Also sometimes happens on the first frame of the match
@@ -19,7 +18,8 @@ MILESTOE 2 (finish porting all the things):
    * Attempt to determine how two clients are connected (relay or not, which relay)
    * Change the "Auto" mode to try non-relayed first, and then relayed after a timeout
    * Experiment with increasing how long messages are "reliable"
- - Bug: Crash sometimes when plaer is killed
+   * Experiment with switching from Twilio to custom Coturn? (I wonder if we're just using the wrong regions?)
+ - Bug: Crash sometimes when player is killed
  - Bug: Peer with given id already exists
    * Join two players, but don't press Ready
    * Have non-host leave, and then quit game altogether

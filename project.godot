@@ -227,7 +227,7 @@ convert_text_resources_to_binary_on_export=true
 
 [editor_plugins]
 
-enabled=PoolStringArray( "res://addons/gut/plugin.cfg", "res://addons/multirun/plugin.cfg", "res://addons/network-sync-rollback/plugin.cfg" )
+enabled=PoolStringArray( "res://addons/multirun/plugin.cfg", "res://addons/network-sync-rollback/plugin.cfg" )
 
 [gdnative]
 
