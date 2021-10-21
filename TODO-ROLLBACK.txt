@@ -9,6 +9,10 @@ MILESTONE 1 (physics):
 
 MILESTOE 2 (finish porting all the things):
 
+ - Profile our rollbacks so we can see how close we are to the frame budget
+   * See how big of rollbacks we are actually executing (currently we log when they are flagged) and how often
+   * See how many milliseconds it takes to execute each one
+   * I'd be interested to see the order of the rollbacks too - are we redoing some frames lots and lots?
  - Investigate state mismatches:
    * Drop timer being off by one for a frame
      o I think right after a spawn or a pickup?
@@ -63,5 +67,4 @@ BACKLOG:
    o OR, pass in a function pointer and use that to build the Array
  - Physics: Implement capsule shape?
  - Setup the debug_rollback_ticks to compare the save states with the original save states so we can know the exact same things happened
- - Profile our rollbacks so we can see how close we are to the frame budget
 
