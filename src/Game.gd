@@ -99,8 +99,6 @@ func respawn_player(peer_id: int, start_transform = null) -> void:
 	var player = players[peer_id]
 	players_alive[peer_id] = player
 	
-	players_alive = SyncManager.sort_dictionary_keys(players_alive)
-	
 	var spawn_data := {
 		game = self,
 		player = player,
@@ -275,8 +273,10 @@ func create_free_space_detector(area: SGFixedRect2, dimensions: SGFixedVector2, 
 	return detector
 
 func _save_state() -> Dictionary:
+	var peer_ids_alive = players_alive.keys()
+	peer_ids_alive.sort()
 	var serialized_players_alive := {}
-	for peer_id in players_alive:
+	for peer_id in peer_ids_alive:
 		serialized_players_alive[peer_id] = players_alive[peer_id].to_dict()
 	return {
 		game_started = game_started,
@@ -286,5 +286,6 @@ func _save_state() -> Dictionary:
 func _load_state(state: Dictionary) -> void:
 	game_started = state['game_started']
 	var serialized_players_alive = state['players_alive']
+	players_alive.clear()
 	for peer_id in serialized_players_alive:
 		players_alive[peer_id] = Player.from_dict(serialized_players_alive[peer_id])
