@@ -12,7 +12,7 @@ MILESTOE 2 (finish porting all the things):
  - Investigate state mismatches:
    * Drop timer being off by one for a frame
      o I think right after a spawn or a pickup?
-	 o Also sometimes happens on the first frame of the match
+	 o Also sometimes happens on the first or second tick of the match
 	   - Could we be starting the map on the host too early?
  - Bug: Network issues with Elliot
    * Attempt to determine how two clients are connected (relay or not, which relay)
@@ -26,25 +26,17 @@ MILESTOE 2 (finish porting all the things):
    * Host should go back (ending match), then start a new one
    * The have non-host connect again
    * Error will happen!
- - Figure out desync'ing state issues
-   o Can we ensure that we are checking the remote state in order?
-   o Driving around long enough will lead to position being off eventually
-     * If all debug rollbacks and interpolation are disabled, then just crash into the top-left corner with the 1st tanks
  - Figure out issue where input just stops even though I've never stopped pressing it
    o Easiest to reproduce by pressing a direction on the D-pad
  - Implement a non-debug comparison of state (maybe just sending the hashes of the remote state?)
    o Ideally, passing these hashes would be required and included with other input
      * We'd need a system of ACK'ing hashes, and some contingency if they weren't arriving
    o Clients should count the number of state mismatches in a row - once a threshold is hit, bail
- - Convert weapons into nodes? It'd be basically making them the attachment...
 
 MILESTONE 3 (internal cleanup):
 
- - Profile our rollbacks so we can see how close we are to the frame budget
  - Move ping and other RPCs out of SyncManager and into NetworkAdaptor - will hepl with unit tests
- - Add some unit tests to verify internal behavior of SyncManager
- - Setup the debug_rollback_ticks to compare the save states with the original save states so we can know the exact same things happened
- - Switch to storing state before starting the next tick? This would ensure that deferred stuff would happen...
+ - Convert weapons into nodes? It'd be basically making them the attachment...
 
 BEFORE RELEASE:
 
@@ -70,4 +62,6 @@ BACKLOG:
  - Physics: Have SGArea2D directly build its Array to avoid allocating the intermediate vector
    o OR, pass in a function pointer and use that to build the Array
  - Physics: Implement capsule shape?
+ - Setup the debug_rollback_ticks to compare the save states with the original save states so we can know the exact same things happened
+ - Profile our rollbacks so we can see how close we are to the frame budget
 
