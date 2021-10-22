@@ -389,6 +389,9 @@ func start() -> void:
 		# Call _remote_start() on all the other peers.
 		rpc("_remote_start")
 		
+		# Set started on host right away to prevent double starting.
+		started = true
+		
 		# Wait for half the highest RTT to start locally.
 		print ("Delaying host start by %sms" % (highest_rtt / 2))
 		yield(get_tree().create_timer(highest_rtt / 2000.0), 'timeout')
