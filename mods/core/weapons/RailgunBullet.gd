@@ -1,13 +1,11 @@
 extends "res://src/components/weapons/BaseBullet.gd"
 
-onready var ray_cast := $RayCast2D
-onready var line := $Line2D
+onready var ray_cast: SGRayCast2D = $RayCast2D
+onready var line: Line2D = $Line2D
 
 var speed = 6116693
 var growing := true
 var bounced := false
-
-var fixed_points := []
 
 const LASER_COLORS := {
 	1: Color("419fdd"),
@@ -22,11 +20,15 @@ func _ready():
 
 func _network_spawn(data: Dictionary) -> void:
 	._network_spawn(data)
+	growing = true
+	bounced = false
 	line.default_color = LASER_COLORS[player_index]
-	
-	var global_fixed_position = get_global_fixed_position()
-	fixed_points.append(global_fixed_position)
-	line.add_point(global_fixed_position.to_float())
+	line.add_point(position)
+
+func _network_despawn() -> void:
+	._network_despawn()
+	line.clear_points()
+	ray_cast.clear_exceptions()
 
 func can_hit(body: SGCollisionObject2D) -> bool:
 	# Only allow to hit ourselves after the first bounce.
@@ -36,7 +38,9 @@ func _save_state() -> Dictionary:
 	var state = ._save_state()
 	state['growing'] = growing
 	state['bounced'] = bounced
-	state['points'] = fixed_points.duplicate()
+	state['_points'] = []
+	for i in range(line.get_point_count()):
+		state['_points'].append(line.get_point_position(i))
 	
 	var exceptions := []
 	for node in ray_cast.get_exceptions():
@@ -53,9 +57,8 @@ func _load_state(state: Dictionary) -> void:
 	bounced = state['bounced']
 	
 	line.clear_points()
-	for fixed_point in state['points']:
-		line.add_point(fixed_point.to_float())
-	fixed_points = state['points'].duplicate()
+	for point in state['_points']:
+		line.add_point(point)
 	
 	ray_cast.clear_exceptions()
 	for node_path in state['exceptions']:
@@ -93,14 +96,11 @@ func _network_process(delta: float, input: Dictionary) -> void:
 		
 		sync_to_physics_engine()
 		
-		var global_fixed_position = get_global_fixed_position()
-		fixed_points.append(global_fixed_position)
-		line.add_point(global_fixed_position.to_float())
+		line.add_point(position)
 	else:
-		fixed_points.pop_front()
 		line.remove_point(0)
-		if fixed_points.size() == 0:
-			queue_free()
+		if line.get_point_count() == 0:
+			SyncManager.despawn(self)
 
 func _on_LifetimeTimer_timeout() -> void:
 	growing = false

@@ -537,7 +537,7 @@ func _save_current_state() -> void:
 	#perf.print_timings()
 
 func _update_input_complete_tick() -> void:
-	while current_tick > _input_complete_tick:
+	while current_tick > _input_complete_tick + 1:
 		var input_frame: InputBufferFrame = get_input_frame(_input_complete_tick + 1)
 		if not input_frame:
 			break
@@ -596,7 +596,9 @@ func _do_tick(delta: float, is_rollback: bool = false) -> bool:
 	_save_current_state()
 	#perf.stop("tick: _save_current_state")
 	
-	# @todo This is wasteful! Find way to preserve the hash.
+	# This should only run when we are using debug_rollback_ticks, because we
+	# shouldn't be re-running ticks with complete input in any other case (we
+	# have interpolation covered by waiting an extra tick to calculate the hash)
 	if current_tick <= _input_complete_tick:
 		_calculate_data_hash(state_buffer[-1].data)
 	

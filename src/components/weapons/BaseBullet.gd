@@ -31,6 +31,9 @@ func _network_spawn(data: Dictionary) -> void:
 	lifetime_timer.start()
 	sync_to_physics_engine()
 
+func _network_despawn() -> void:
+	lifetime_timer.stop()
+
 func _network_process(_delta: float, _input: Dictionary) -> void:
 	check_collision()
 
