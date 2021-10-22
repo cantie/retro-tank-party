@@ -130,6 +130,8 @@ func despawn(node: Node, node_path = null) -> void:
 		if not retired_nodes.has(scene_path):
 			retired_nodes[scene_path] = []
 		retired_nodes[scene_path].append(node)
+	else:
+		node.queue_free()
 	
 	spawn_records.erase(node_path)
 	spawned_nodes.erase(node_path)
