@@ -551,7 +551,9 @@ func _update_input_complete_tick() -> void:
 		# reuse the serialized Dictionary to log our state with the host.
 		var cleaned = _clean_data_for_hashing(state_frame.data)
 		var serialized = hash_serializer.serialize(cleaned)
-		state_frame.data['$'] = serialized.hash()
+		var serialized_hash = serialized.hash()
+		state_frame.data['$'] = serialized_hash
+		serialized['$'] = serialized_hash
 		
 		if debug_log_state and not get_tree().is_network_server():
 			rpc_id(1, "_log_saved_state", _input_complete_tick, serialized)
@@ -593,6 +595,10 @@ func _do_tick(delta: float, is_rollback: bool = false) -> bool:
 	#perf.start("tick: _save_current_state")
 	_save_current_state()
 	#perf.stop("tick: _save_current_state")
+	
+	# @todo This is wasteful! Find way to preserve the hash.
+	if current_tick <= _input_complete_tick:
+		_calculate_data_hash(state_buffer[-1].data)
 	
 	emit_signal("tick_finished", is_rollback)
 	
@@ -798,6 +804,7 @@ func _physics_process(delta: float) -> void:
 	if current_tick == 0:
 		# Store an initial state before any ticks.
 		_save_current_state()
+		_calculate_data_hash(state_buffer[0].data)
 	
 	# We do this in _process() too, so hopefully all is good by now, but just in
 	# case, we don't want to miss out on any data.
