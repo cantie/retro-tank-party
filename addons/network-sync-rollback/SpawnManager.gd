@@ -69,11 +69,20 @@ func _alphabetize_children(parent: Node) -> void:
 
 func _instance_scene(resource_path: String) -> Node:
 	if retired_nodes.has(resource_path):
-		var node = retired_nodes[resource_path].pop_front()
+		var nodes: Array = retired_nodes[resource_path]
+		var node: Node
+		
+		while nodes.size() > 0:
+			node = retired_nodes[resource_path].pop_front()
+			if is_instance_valid(node) and not node.is_queued_for_deletion():
+				break
+		
 		if retired_nodes[resource_path].size() == 0:
 			retired_nodes.erase(resource_path)
-		print ("Reusing %s" % resource_path)
-		return node
+		
+		if node:
+			print ("Reusing %s" % resource_path)
+			return node
 	
 	print ("Instancing new %s" % resource_path)
 	var scene = load(resource_path)
@@ -128,7 +137,7 @@ func despawn(node: Node, node_path = null) -> void:
 	if node.get_parent():
 		node.get_parent().remove_child(node)
 	
-	if reuse_despawned_nodes and node_scenes.has(node_path):
+	if reuse_despawned_nodes and node_scenes.has(node_path) and is_instance_valid(node) and not node.is_queued_for_deletion():
 		var scene_path = node_scenes[node_path]
 		if not retired_nodes.has(scene_path):
 			retired_nodes[scene_path] = []
