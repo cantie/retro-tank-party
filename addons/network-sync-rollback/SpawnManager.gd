@@ -8,6 +8,8 @@ var node_scenes := {}
 var retired_nodes := {}
 var counter := {}
 
+var reuse_despawned_nodes := true
+
 var is_respawning := false
 
 signal scene_spawned (name, spawned_node, scene, data)
@@ -67,10 +69,10 @@ func _instance_scene(resource_path: String) -> Node:
 		var node = retired_nodes[resource_path].pop_front()
 		if retired_nodes[resource_path].size() == 0:
 			retired_nodes.erase(resource_path)
-		#print ("Reusing %s" % resource_path)
+		print ("Reusing %s" % resource_path)
 		return node
 	
-	#print ("Instancing new %s" % resource_path)
+	print ("Instancing new %s" % resource_path)
 	var scene = load(resource_path)
 	return scene.instance()
 
@@ -123,7 +125,7 @@ func despawn(node: Node, node_path = null) -> void:
 	if node.get_parent():
 		node.get_parent().remove_child(node)
 	
-	if node_scenes.has(node_path):
+	if reuse_despawned_nodes and node_scenes.has(node_path):
 		var scene_path = node_scenes[node_path]
 		if not retired_nodes.has(scene_path):
 			retired_nodes[scene_path] = []
