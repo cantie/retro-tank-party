@@ -24,12 +24,13 @@ func reset() -> void:
 	node_scenes.clear()
 	counter.clear()
 	
-	for node in spawned_nodes:
+	for node in spawned_nodes.values():
 		node.queue_free()
 	spawned_nodes.clear()
 	
-	for node in retired_nodes:
-		node.queue_free()
+	for nodes in retired_nodes.values():
+		for node in nodes:
+			node.queue_free()
 	retired_nodes.clear()
 
 func _on_SyncManager_sync_started() -> void:

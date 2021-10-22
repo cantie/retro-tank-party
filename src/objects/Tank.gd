@@ -164,6 +164,7 @@ func _on_SyncManager_scene_spawned(spawned_name, spawned_node, scene, data):
 		_setup_and_use_ability(spawned_node, data['ability_type'])
 
 func _network_spawn(data: Dictionary) -> void:
+	dead = false
 	game = get_node(data['game'])
 	
 	set_global_fixed_transform(data['start_transform'])
@@ -177,6 +178,14 @@ func _network_spawn(data: Dictionary) -> void:
 		player_info_node.set_team(data['team'])
 	
 	sync_to_physics_engine()
+
+func _network_despawn() -> void:
+	# Reset some stuff for when this node is reused
+	set_weapon_type(BaseWeaponType)
+	set_held_ability_type(null)
+	health = 100
+	can_shoot = true
+	camera = null
 
 func pickup_weapon(_weapon_type: WeaponType) -> void:
 	hooks.dispatch_event("pickup_weapon", PickupWeaponEvent.new(self, _weapon_type))
@@ -552,6 +561,6 @@ func _hook_default_die(event: DieEvent) -> void:
 			type = "fire",
 		})
 		
-		queue_free()
-		
 		emit_signal("player_dead", event.killer_id)
+		
+		SyncManager.despawn(self)
