@@ -50,7 +50,7 @@ func _interpolate_state(old_state: Dictionary, new_state: Dictionary, weight: fl
 	rotation = lerp_angle(SGFixed.to_float(old_state['fixed_transform'].get_rotation()), SGFixed.to_float(new_state['fixed_transform'].get_rotation()), weight)
 
 func explode(type: String):
-	if is_queued_for_deletion():
+	if is_queued_for_deletion() or not is_inside_tree():
 		return
 	
 	SyncManager.spawn("Explosion", get_parent(), Explosion, {

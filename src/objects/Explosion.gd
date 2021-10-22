@@ -8,11 +8,10 @@ const BigSound = preload("res://assets/sounds/Explosion2__007.wav")
 
 func _network_spawn(data: Dictionary) -> void:
 	visible = true
-	fixed_position = data['fixed_position'].copy()
+	fixed_position = data['fixed_position']
 	fixed_scale = SGFixed.vector2(data['scale'], data['scale'])
 	
 	var anim = data['type']
-	animation_player.stop(true)
 	animation_player.play(anim)
 	
 	# @todo Can we do something like this with rollback?
@@ -34,6 +33,9 @@ func _network_spawn(data: Dictionary) -> void:
 				volume_db = 2.0,
 				position = global_position,
 			})
+
+func _network_despawn() -> void:
+	animation_player.stop(true)
 
 func _on_AnimationPlayer_animation_finished(anim_name: String) -> void:
 	visible = false

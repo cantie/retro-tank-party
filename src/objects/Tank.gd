@@ -3,6 +3,7 @@ extends "res://src/objects/tank/BaseTank.gd"
 const BaseWeaponType = preload("res://mods/core/weapons/base.tres")
 const Explosion = preload("res://src/objects/Explosion.tscn")
 const EventDispatcher = preload("res://src/utils/EventDispatcher.gd")
+const PerfTimer = preload("res://addons/network-sync-rollback/debugger/PerfTimer.gd")
 
 const ShootSound = preload("res://assets/sounds/Bass Drum__003.wav")
 
@@ -402,8 +403,12 @@ func _save_state() -> Dictionary:
 	}
 
 func _load_state(state: Dictionary) -> void:
-	fixed_transform = state['fixed_transform'].copy()
-	turret_pivot.fixed_transform = state['_turret_transform'].copy()
+	#var perf = PerfTimer.new()
+	#perf.start("tank update fixed transforms")
+	fixed_transform = state['fixed_transform']
+	turret_pivot.fixed_transform = state['_turret_transform']
+	#perf.stop("tank update fixed transforms")
+	#perf.start("tank the rest")
 	can_shoot = state['can_shoot']
 	dead = state['dead']
 	update_health(state['health'])
@@ -412,9 +417,14 @@ func _load_state(state: Dictionary) -> void:
 	set_held_ability_type(load(state['held_ability_type']) if state['held_ability_type'] else null)
 	ability_charges = state['ability_charges']
 	
-	sync_to_physics_engine()
 	_after_update_position()
 	_update_ability_label()
+	#perf.stop("tank the rest")
+	#perf.start("tank sync to physics")
+	sync_to_physics_engine()
+	#perf.stop("tank sync to physics")
+	
+	#perf.print_timings()
 
 func _interpolate_state(old_state: Dictionary, new_state: Dictionary, weight: float) -> void:
 	position = lerp(old_state['fixed_transform'].origin.to_float(), new_state['fixed_transform'].origin.to_float(), weight)

@@ -494,13 +494,12 @@ func _call_load_state(state: Dictionary) -> void:
 	for node_path in state:
 		if node_path == '$':
 			continue
-		assert(has_node(node_path), "Unable to restore state to missing node: %s" % node_path)
-		if has_node(node_path):
-			var node = get_node(node_path)
-			if node.has_method('_load_state'):
-				#perf.start("load %s" % node_path)
-				node._load_state(state[node_path])
-				#perf.stop("load %s" % node_path)
+		var node = get_node_or_null(node_path)
+		assert(node != null, "Unable to restore state to missing node: %s" % node_path)
+		if node and node.has_method('_load_state'):
+			#perf.start("load %s" % node_path)
+			node._load_state(state[node_path])
+			#perf.stop("load %s" % node_path)
 	#perf.print_timings()
 
 func _call_interpolate_state(weight: float) -> void:
@@ -518,11 +517,21 @@ func _save_current_state() -> void:
 	if current_tick < 0:
 		return
 	
-	var state_data = _call_save_state()
-	_calculate_data_hash(state_data)
-	state_buffer.append(StateBufferFrame.new(current_tick, state_data))
+	#var perf = PerfTimer.new()
 	
+	#perf.start("_call_save_state")
+	var state_data = _call_save_state()
+	#perf.stop("_call_save_state")
+	#perf.start("append to state buffer")
+	state_buffer.append(StateBufferFrame.new(current_tick, state_data))
+	#perf.stop("append to state buffer")
+	
+	#perf.start("_update_input_complete_tick")
 	_update_input_complete_tick()
+	#perf.stop("_update_input_complete_tick")
+	
+	#print (" ---")
+	#perf.print_timings()
 
 func _update_input_complete_tick() -> void:
 	while current_tick > _input_complete_tick:
@@ -534,18 +543,28 @@ func _update_input_complete_tick() -> void:
 		
 		_input_complete_tick += 1
 		
+		var state_frame: StateBufferFrame = _get_state_frame(_input_complete_tick)
+		# We're duplicating code from _calculate_data_hash() so that we can
+		# reuse the serialized Dictionary to log our state with the host.
+		var cleaned = _clean_data_for_hashing(state_frame.data)
+		var serialized = hash_serializer.serialize(cleaned)
+		state_frame.data['$'] = serialized.hash()
+		
 		if debug_log_state and not get_tree().is_network_server():
-			var state_frame: StateBufferFrame = _get_state_frame(_input_complete_tick)
-			rpc_id(1, "_log_saved_state", _input_complete_tick, hash_serializer.serialize(state_frame.data.duplicate(true)))
+			rpc_id(1, "_log_saved_state", _input_complete_tick, serialized)
 		
 		emit_signal("tick_input_complete", _input_complete_tick)
 
 func _do_tick(delta: float, is_rollback: bool = false) -> bool:
+	#var perf = PerfTimer.new()
+	#perf.start("tick: grab input frames")
 	var input_frame := get_input_frame(current_tick)
 	var previous_frame := get_input_frame(current_tick - 1)
+	#perf.stop("tick: grab input frames")
 	
 	assert(input_frame != null, "Input frame for current_tick is null")
 	
+	#perf.start("tick: predict missing input")
 	# Predict any missing input.
 	for peer_id in peers:
 		if not input_frame.players.has(peer_id) or input_frame.players[peer_id].predicted:
@@ -556,8 +575,11 @@ func _do_tick(delta: float, is_rollback: bool = false) -> bool:
 				predicted_input = _call_predict_remote_input(previous_frame.get_player_input(peer_id), ticks_since_real_input)
 			_calculate_data_hash(predicted_input)
 			input_frame.players[peer_id] = InputForPlayer.new(predicted_input, true)
+	#perf.stop("tick: predict missing input")
 	
+	#perf.start("tick: _call_network_process")
 	_call_network_process(delta, input_frame)
+	#perf.stop("tick: _call_network_process")
 	
 	# If the game was stopped during the last network process, then we return
 	# false here, to indicate that a full tick didn't complete and we need to
@@ -565,9 +587,14 @@ func _do_tick(delta: float, is_rollback: bool = false) -> bool:
 	if not started:
 		return false
 	
+	#perf.start("tick: _save_current_state")
 	_save_current_state()
+	#perf.stop("tick: _save_current_state")
 	
 	emit_signal("tick_finished", is_rollback)
+	
+	#print ("---")
+	#perf.print_timings()
 	
 	return true
 
@@ -797,12 +824,15 @@ func _physics_process(delta: float) -> void:
 		perf.start("load_state")
 		
 		_call_load_state(state_buffer[-rollback_ticks - 1].data)
+		
+		perf.stop("load_state")
+		
 		state_buffer.resize(state_buffer.size() - rollback_ticks)
 		current_tick -= rollback_ticks
 		
 		emit_signal("state_loaded", rollback_ticks)
 		
-		perf.stop("load_state")
+		
 		
 		_in_rollback = true
 		
@@ -928,6 +958,20 @@ func _process(delta: float) -> void:
 			weight = 1.0
 		_call_interpolate_state(weight)
 
+func _clean_data_for_hashing(input: Dictionary) -> Dictionary:
+	var cleaned := {}
+	for path in input:
+		if path == '$':
+			continue
+		var input_at_path = input[path]
+		var data := {}
+		for key in input_at_path:
+			if (key is String and key.begins_with('_')) or (key is int and key < 0):
+				continue
+			data[key] = input_at_path[key]
+		cleaned[path] = data
+	return cleaned
+
 # Calculates the hash without any keys that start with '_' (if string)
 # or less than 0 (if integer) to allow some properties to not count when
 # comparing comparing data.
@@ -936,19 +980,31 @@ func _process(delta: float) -> void:
 # input and real input from causing a rollback) and state (for when a property
 # is only used for interpolation).
 func _calculate_data_hash(input: Dictionary) -> void:
-	var cleaned_input := input.duplicate(true)
-	if cleaned_input.has('$'):
-		cleaned_input.erase('$')
-	for path in cleaned_input:
-		for key in cleaned_input[path].keys():
-			var value = cleaned_input[path]
-			if key is String:
-				if key.begins_with('_'):
-					value.erase(key)
-			elif key is int:
-				if key < 0:
-					value.erase(key)
-	input['$'] = hash_serializer.serialize(cleaned_input).hash()
+	#var perf = PerfTimer.new()
+	#perf.start('data hash: clean input')
+	
+#	var cleaned_input := {}
+#	for path in input:
+#		if path == '$':
+#			continue
+#		var input_at_path = input[path]
+#		var data := {}
+#		for key in input_at_path:
+#			if (key is String and key.begins_with('_')) or (key is int and key < 0):
+#				continue
+#			data[key] = input_at_path[key]
+#		cleaned_input[path] = data
+	var cleaned = _clean_data_for_hashing(input)
+	
+	#perf.stop('data hash: clean input')
+	#perf.start('data hash: serialize')
+	var serialized = hash_serializer.serialize(cleaned)
+	#perf.stop('data hash: serialize')
+	#perf.start('data hash: hash')
+	input['$'] = serialized.hash()
+	#perf.stop('data hash: hash')
+	#perf.print_timings()
+	#input['$'] = hash_serializer.serialize(cleaned).hash()
 
 func _receive_input_tick(peer_id: int, serialized_msg: PoolByteArray) -> void:
 	if not started:

@@ -120,7 +120,7 @@ func _ready() -> void:
 	SyncManager.hash_serializer = RTPHashSerializer.new()
 	
 	# Just for debugging
-	#SyncManager.debug_rollback_ticks = 5
+	SyncManager.debug_rollback_ticks = 20
 	#SyncManager.debug_random_rollback_ticks = 10
 	SyncManager.debug_log_state = true
 	SyncManager.debug_message_bytes = 600

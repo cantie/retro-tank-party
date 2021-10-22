@@ -24,7 +24,9 @@ func _save_state() -> Dictionary:
 		}
 
 func _load_state(state: Dictionary) -> void:
-	stop()
 	if state['is_playing']:
-		play(state['current_animation'])
+		if not is_playing() or current_animation != state['current_animation']:
+			play(state['current_animation'])
 		seek(state['current_position'], true)
+	else:
+		stop()

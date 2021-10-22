@@ -17,5 +17,8 @@ func stop(name: String) -> void:
 
 func print_timings() -> void:
 	assert(start_timings.size() == 0, "there are unstopped timers: %s" % str(start_timings.keys()))
+	var total := 0
 	for key in timings:
 		print ("%s: %s ms" % [key, float(timings[key]) / 1000.0])
+		total += timings[key]
+	print(" * total: %s" % (float(total) / 1000.0))

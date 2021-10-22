@@ -21,9 +21,16 @@ func setup_spawn_manager(SyncManager) -> void:
 
 func reset() -> void:
 	spawn_records.clear()
-	spawned_nodes.clear()
 	node_scenes.clear()
 	counter.clear()
+	
+	for node in spawned_nodes:
+		node.queue_free()
+	spawned_nodes.clear()
+	
+	for node in retired_nodes:
+		node.queue_free()
+	retired_nodes.clear()
 
 func _on_SyncManager_sync_started() -> void:
 	reset()
@@ -48,22 +55,21 @@ static func _node_name_sort_callback(a: Node, b: Node) -> bool:
 	return a.name.casecmp_to(b.name) == -1
 
 func _alphabetize_children(parent: Node) -> void:
-	pass
-	#var children = parent.get_children()
-	#children.sort_custom(self, '_node_name_sort_callback')
-	#for index in range(children.size()):
-	#	var child = children[index]
-	#	parent.move_child(child, index)
+	var children = parent.get_children()
+	children.sort_custom(self, '_node_name_sort_callback')
+	for index in range(children.size()):
+		var child = children[index]
+		parent.move_child(child, index)
 
 func _instance_scene(resource_path: String) -> Node:
 	if retired_nodes.has(resource_path):
 		var node = retired_nodes[resource_path].pop_front()
 		if retired_nodes[resource_path].size() == 0:
 			retired_nodes.erase(resource_path)
-		print ("Reusing %s" % resource_path)
+		#print ("Reusing %s" % resource_path)
 		return node
 	
-	print ("Instancing new %s" % resource_path)
+	#print ("Instancing new %s" % resource_path)
 	var scene = load(resource_path)
 	return scene.instance()
 
@@ -148,21 +154,21 @@ func _save_state() -> Dictionary:
 	}
 
 func _load_state(state: Dictionary) -> void:
-	var perf = PerfTimer.new()
+	#var perf = PerfTimer.new()
 	
-	perf.start("duplicate")
+	#perf.start("duplicate")
 	spawn_records = state['spawn_records'].duplicate()
 	counter = state['counter'].duplicate()
-	perf.stop("duplicate")
+	#perf.stop("duplicate")
 	
 	# Remove nodes that aren't in the state we are loading.
 	for node_path in spawned_nodes.keys().duplicate():
 		if not spawn_records.has(node_path):
-			perf.start("despawn %s" % node_path)
+			#perf.start("despawn %s" % node_path)
 			despawn(spawned_nodes[node_path], node_path)
 			
 			#print ("[LOAD %s] de-spawned: %s" % [SyncManager.current_tick, node_path])
-			perf.stop("despawn %s" % node_path)
+			#perf.stop("despawn %s" % node_path)
 	
 	# Spawn nodes that don't already exist.
 	for node_path in spawn_records.keys():
@@ -175,7 +181,7 @@ func _load_state(state: Dictionary) -> void:
 		is_respawning = true
 		
 		if not spawned_nodes.has(node_path):
-			perf.start("respawn %s" % node_path)
+			#perf.start("respawn %s" % node_path)
 			
 			#var perf2 = PerfTimer.new()
 			#perf2.start('get parent')
@@ -215,10 +221,10 @@ func _load_state(state: Dictionary) -> void:
 			
 			
 			#print ("[LOAD %s] re-spawned: %s" % [SyncManager.current_tick, node_path])
-			perf.stop("respawn %s" % node_path)
+			#perf.stop("respawn %s" % node_path)
 			#perf2.print_timings()
 		
 		is_respawning = false
 	
-	perf.print_timings()
+	#perf.print_timings()
 
