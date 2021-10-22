@@ -94,6 +94,33 @@ class StateBufferFrame:
 		tick = _tick
 		data = _data
 
+class StateHashFrame:
+	var tick: int
+	var state_hash: int
+	# This is only used on the host when using debug_log_state.
+	var state_data
+	
+	var peer_hashes := {}
+	var mismatch := false
+	
+	func _init(_tick: int, _state_hash: int, _state_data = null) -> void:
+		tick = _tick
+		state_hash = _state_hash
+		state_data = _state_data
+	
+	func record_peer_hash(peer_id: int, peer_hash: int) -> bool:
+		peer_hashes[peer_id] = peer_hash
+		if peer_hash != state_hash:
+			mismatch = true
+			return false
+		return true
+	
+	func is_complete(peers: Dictionary) -> bool:
+		for peer_id in peers:
+			if not peer_hashes.has(peer_id):
+				return false
+		return true
+
 enum InputMessageKey {
 	NEXT_TICK_REQUESTED,
 	INPUT,
@@ -197,6 +224,7 @@ var hash_serializer: HashSerializer setget set_hash_serializer
 var peers := {}
 var input_buffer := []
 var state_buffer := []
+var state_hashes := []
 
 var max_buffer_size := 20
 var ticks_to_calculate_advantage := 60
@@ -228,6 +256,7 @@ var _sound_manager
 var _tick_time: float
 var _input_buffer_start_tick: int
 var _state_buffer_start_tick: int
+var _state_hashes_start_tick: int
 var _input_send_queue := []
 var _input_send_queue_start_tick: int
 var _interpolation_state := {}
@@ -407,6 +436,7 @@ func _reset() -> void:
 	state_buffer.clear()
 	_input_buffer_start_tick = 1
 	_state_buffer_start_tick = 0
+	_state_hashes_start_tick = 1
 	_input_send_queue.clear()
 	_input_send_queue_start_tick = 1
 	_interpolation_state.clear()
@@ -552,10 +582,14 @@ func _update_input_complete_tick() -> void:
 		var cleaned = _clean_data_for_hashing(state_frame.data)
 		var serialized = hash_serializer.serialize(cleaned)
 		var serialized_hash = serialized.hash()
-		state_frame.data['$'] = serialized_hash
-		serialized['$'] = serialized_hash
+		
+		if debug_log_state and get_tree().is_network_server():
+			state_hashes.append(StateHashFrame.new(_input_complete_tick, serialized_hash, serialized))
+		else:
+			state_hashes.append(StateHashFrame.new(_input_complete_tick, serialized_hash))
 		
 		if debug_log_state and not get_tree().is_network_server():
+			serialized['$'] = serialized_hash
 			rpc_id(1, "_log_saved_state", _input_complete_tick, serialized)
 		
 		emit_signal("tick_input_complete", _input_complete_tick)
@@ -595,12 +629,6 @@ func _do_tick(delta: float, is_rollback: bool = false) -> bool:
 	#perf.start("tick: _save_current_state")
 	_save_current_state()
 	#perf.stop("tick: _save_current_state")
-	
-	# This should only run when we are using debug_rollback_ticks, because we
-	# shouldn't be re-running ticks with complete input in any other case (we
-	# have interpolation covered by waiting an extra tick to calculate the hash)
-	if current_tick <= _input_complete_tick:
-		_calculate_data_hash(state_buffer[-1].data)
 	
 	emit_signal("tick_finished", is_rollback)
 	
@@ -656,6 +684,11 @@ func _cleanup_buffers() -> bool:
 		_input_buffer_start_tick += 1
 		input_buffer.pop_front()
 	
+	while state_hashes.size() > max_buffer_size:
+		# @todo Ensure there aren't any hashes that haven't been confirmed.
+		_state_hashes_start_tick += 1
+		state_hashes.pop_front()
+	
 	return true
 
 func get_input_frame(tick: int) -> InputBufferFrame:
@@ -691,6 +724,16 @@ func _get_state_frame(tick: int) -> StateBufferFrame:
 	var state_frame = state_buffer[index]
 	assert(state_frame.tick == tick, "State frame retreived from state buffer has mismatched tick number")
 	return state_frame
+
+func _get_state_hash_frame(tick: int) -> StateHashFrame:
+	if tick < _state_hashes_start_tick:
+		return null
+	var index = tick - _state_hashes_start_tick
+	if index >= state_hashes.size():
+		return null
+	var state_hash_frame = state_hashes[index]
+	assert(state_hash_frame.tick == tick, "State hash frame retreived from state hashes has mismatched tick number")
+	return state_hash_frame
 
 func is_current_tick_input_complete() -> bool:
 	return current_tick >= _input_complete_tick
@@ -806,7 +849,6 @@ func _physics_process(delta: float) -> void:
 	if current_tick == 0:
 		# Store an initial state before any ticks.
 		_save_current_state()
-		_calculate_data_hash(state_buffer[0].data)
 	
 	# We do this in _process() too, so hopefully all is good by now, but just in
 	# case, we don't want to miss out on any data.
@@ -1104,7 +1146,7 @@ master func _log_saved_state(tick: int, remote_data: Dictionary) -> void:
 		
 	# The logged state will be processed once we have complete player input in
 	# the _process_logged_remote_state() method below.
-	_logged_remote_state[peer_id].append(StateBufferFrame.new(tick, remote_data))
+	_logged_remote_state[peer_id].append(StateHashFrame.new(tick, remote_data['$'], remote_data))
 
 func _process_logged_remote_state() -> void:
 	for peer_id in _logged_remote_state:
@@ -1114,21 +1156,17 @@ func _process_logged_remote_state() -> void:
 			if remote_tick > _input_complete_tick:
 				break
 			
-			var remote_state = remote_state_buffer.pop_front()
-			
-			var local_state = _get_state_frame(remote_tick)
+			var remote_state: StateHashFrame = remote_state_buffer.pop_front()
+			var local_state: StateHashFrame = _get_state_hash_frame(remote_tick)
 			if local_state == null:
 				break
 			
-			var remote_state_data: Dictionary = remote_state.data
-			var local_state_data: Dictionary = local_state.data
-			
-			if local_state_data['$'] != remote_state_data['$']:
+			if local_state.state_hash != remote_state.state_hash:
 				emit_signal("remote_state_mismatch", 
 					local_state.tick,
 					peer_id,
-					hash_serializer.serialize(local_state_data.duplicate(true)),
-					remote_state_data)
+					hash_serializer.serialize(local_state.state_data.duplicate(true)),
+					remote_state.state_data)
 
 func sort_dictionary_keys(input: Dictionary) -> Dictionary:
 	var output := {}
