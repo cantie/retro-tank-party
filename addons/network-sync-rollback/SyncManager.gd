@@ -4,6 +4,7 @@ const SpawnManager = preload("res://addons/network-sync-rollback/SpawnManager.gd
 const SoundManager = preload("res://addons/network-sync-rollback/SoundManager.gd")
 const NetworkAdaptor = preload("res://addons/network-sync-rollback/NetworkAdaptor.gd")
 const RPCNetworkAdaptor = preload("res://addons/network-sync-rollback/RPCNetworkAdaptor.gd")
+const PerfTimer = preload("res://addons/network-sync-rollback/debugger/PerfTimer.gd")
 
 class Peer extends Reference:
 	var peer_id: int
@@ -489,6 +490,7 @@ func _call_save_state() -> Dictionary:
 	return state
 
 func _call_load_state(state: Dictionary) -> void:
+	#var perf = PerfTimer.new()
 	for node_path in state:
 		if node_path == '$':
 			continue
@@ -496,7 +498,10 @@ func _call_load_state(state: Dictionary) -> void:
 		if has_node(node_path):
 			var node = get_node(node_path)
 			if node.has_method('_load_state'):
+				#perf.start("load %s" % node_path)
 				node._load_state(state[node_path])
+				#perf.stop("load %s" % node_path)
+	#perf.print_timings()
 
 func _call_interpolate_state(weight: float) -> void:
 	for node_path in _interpolation_state:
@@ -755,6 +760,11 @@ func _physics_process(delta: float) -> void:
 	if not started:
 		return
 	
+	print (" === TICK: %s === " % current_tick)
+	
+	var perf = PerfTimer.new()
+	perf.start('frame')
+	
 	if current_tick == 0:
 		# Store an initial state before any ticks.
 		_save_current_state()
@@ -775,6 +785,7 @@ func _physics_process(delta: float) -> void:
 		rollback_ticks = max(rollback_ticks, 1)
 	
 	if rollback_ticks > 0:
+		print ("rollback_ticks: %s" % rollback_ticks)
 		var original_tick = current_tick
 		
 		# Rollback our internal state.
@@ -783,13 +794,19 @@ func _physics_process(delta: float) -> void:
 			_handle_fatal_error("Not enough state in buffer to rollback %s frames" % rollback_ticks)
 			return
 		
+		perf.start("load_state")
+		
 		_call_load_state(state_buffer[-rollback_ticks - 1].data)
 		state_buffer.resize(state_buffer.size() - rollback_ticks)
 		current_tick -= rollback_ticks
 		
 		emit_signal("state_loaded", rollback_ticks)
 		
+		perf.stop("load_state")
+		
 		_in_rollback = true
+		
+		perf.start("rollback")
 		
 		# Iterate forward until we're at the same spot we left off.
 		while rollback_ticks > 0:
@@ -798,6 +815,8 @@ func _physics_process(delta: float) -> void:
 				return
 			rollback_ticks -= 1
 		assert(current_tick == original_tick, "Rollback didn't return to the original tick")
+		
+		perf.stop("rollback")
 		
 		_in_rollback = false
 	
@@ -872,10 +891,13 @@ func _physics_process(delta: float) -> void:
 	_time_since_last_tick = 0.0
 	
 	if current_tick > 0:
+		perf.start("current_tick")
 		if not _do_tick(delta):
 			return
+		perf.stop("current_tick")
 		
 		if interpolation:
+			perf.start("interpolation")
 			# Capture the state data to interpolate between.
 			var to_state: Dictionary = state_buffer[-1].data
 			var from_state: Dictionary = state_buffer[-2].data
@@ -887,6 +909,10 @@ func _physics_process(delta: float) -> void:
 			# Return to state from the previous frame, so we can interpolate
 			# towards the state of the current frame.
 			_call_load_state(state_buffer[-2].data)
+			perf.stop("interpolation")
+	
+	perf.stop('frame')
+	perf.print_timings()
 
 func _process(delta: float) -> void:
 	if not started:
@@ -1048,6 +1074,9 @@ func sort_dictionary_keys(input: Dictionary) -> Dictionary:
 
 func spawn(name: String, parent: Node, scene: PackedScene, data: Dictionary = {}, rename: bool = true, signal_name: String = '') -> Node:
 	return _spawn_manager.spawn(name, parent, scene, data, rename, signal_name)
+
+func despawn(node: Node) -> void:
+	_spawn_manager.despawn(node)
 
 func _on_SpawnManager_scene_spawned(name: String, spawned_node: Node, scene: PackedScene, data: Dictionary) -> void:
 	emit_signal("scene_spawned", name, spawned_node, scene, data)

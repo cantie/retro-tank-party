@@ -1,7 +1,11 @@
 extends Node
 
+const PerfTimer = preload("res://addons/network-sync-rollback/debugger/PerfTimer.gd")
+
 var spawn_records := {}
 var spawned_nodes := {}
+var node_scenes := {}
+var retired_nodes := {}
 var counter := {}
 
 var is_respawning := false
@@ -18,6 +22,7 @@ func setup_spawn_manager(SyncManager) -> void:
 func reset() -> void:
 	spawn_records.clear()
 	spawned_nodes.clear()
+	node_scenes.clear()
 	counter.clear()
 
 func _on_SyncManager_sync_started() -> void:
@@ -43,18 +48,31 @@ static func _node_name_sort_callback(a: Node, b: Node) -> bool:
 	return a.name.casecmp_to(b.name) == -1
 
 func _alphabetize_children(parent: Node) -> void:
-	var children = parent.get_children()
-	children.sort_custom(self, '_node_name_sort_callback')
-	for index in range(children.size()):
-		var child = children[index]
-		parent.move_child(child, index)
+	pass
+	#var children = parent.get_children()
+	#children.sort_custom(self, '_node_name_sort_callback')
+	#for index in range(children.size()):
+	#	var child = children[index]
+	#	parent.move_child(child, index)
+
+func _instance_scene(resource_path: String) -> Node:
+	if retired_nodes.has(resource_path):
+		var node = retired_nodes[resource_path].pop_front()
+		if retired_nodes[resource_path].size() == 0:
+			retired_nodes.erase(resource_path)
+		print ("Reusing %s" % resource_path)
+		return node
+	
+	print ("Instancing new %s" % resource_path)
+	var scene = load(resource_path)
+	return scene.instance()
 
 func spawn(name: String, parent: Node, scene: PackedScene, data: Dictionary, rename: bool = true, signal_name: String = '') -> Node:
 	if not SyncManager.started:
 		push_error("Refusing to spawn %s before SyncManager has started" % name)
 		return null
 	
-	var spawned_node = scene.instance()
+	var spawned_node = _instance_scene(scene.resource_path)
 	if signal_name == '':
 		signal_name = name
 	if rename:
@@ -81,6 +99,7 @@ func spawn(name: String, parent: Node, scene: PackedScene, data: Dictionary, ren
 	var node_path = str(spawned_node.get_path())
 	spawn_records[node_path] = spawn_record
 	spawned_nodes[node_path] = spawned_node
+	node_scenes[node_path] = scene.resource_path
 	
 	#print ("[%s] spawned: %s" % [SyncManager.current_tick, spawned_node.name])
 	
@@ -88,18 +107,39 @@ func spawn(name: String, parent: Node, scene: PackedScene, data: Dictionary, ren
 	
 	return spawned_node
 
+func despawn(node: Node, node_path = null) -> void:
+	if node_path == null:
+		node_path = str(node.get_path())
+	
+	if node.has_method('_network_despawn'):
+		node._network_despawn()
+	if node.get_parent():
+		node.get_parent().remove_child(node)
+	
+	if node_scenes.has(node_path):
+		var scene_path = node_scenes[node_path]
+		if not retired_nodes.has(scene_path):
+			retired_nodes[scene_path] = []
+		retired_nodes[scene_path].append(node)
+	
+	spawn_records.erase(node_path)
+	spawned_nodes.erase(node_path)
+	node_scenes.erase(node_path)
+
 func _save_state() -> Dictionary:
 	for node_path in spawned_nodes.keys().duplicate():
 		var node = spawned_nodes[node_path]
 		if not is_instance_valid(node):
 			spawned_nodes.erase(node_path)
 			spawn_records.erase(node_path)
+			node_scenes.erase(node_path)
 			#print ("[SAVE %s] removing invalid: %s" % [SyncManager.current_tick, node_path])
 		elif node.is_queued_for_deletion():
 			if node.get_parent():
 				node.get_parent().remove_child(node)
 			spawned_nodes.erase(node_path)
 			spawn_records.erase(node_path)
+			node_scenes.erase(node_path)
 			#print ("[SAVE %s] removing deleted: %s" % [SyncManager.current_tick, node_path])
 	
 	return {
@@ -108,20 +148,21 @@ func _save_state() -> Dictionary:
 	}
 
 func _load_state(state: Dictionary) -> void:
+	var perf = PerfTimer.new()
+	
+	perf.start("duplicate")
 	spawn_records = state['spawn_records'].duplicate()
 	counter = state['counter'].duplicate()
+	perf.stop("duplicate")
 	
 	# Remove nodes that aren't in the state we are loading.
 	for node_path in spawned_nodes.keys().duplicate():
 		if not spawn_records.has(node_path):
-			var node = spawned_nodes[node_path]
-			if node.has_method('_network_despawn'):
-				node._network_despawn()
-			if node.get_parent():
-				node.get_parent().remove_child(node)
-			node.queue_free()
-			spawned_nodes.erase(node_path)
+			perf.start("despawn %s" % node_path)
+			despawn(spawned_nodes[node_path], node_path)
+			
 			#print ("[LOAD %s] de-spawned: %s" % [SyncManager.current_tick, node_path])
+			perf.stop("despawn %s" % node_path)
 	
 	# Spawn nodes that don't already exist.
 	for node_path in spawn_records.keys():
@@ -129,31 +170,55 @@ func _load_state(state: Dictionary) -> void:
 			var old_node = spawned_nodes[node_path]
 			if not is_instance_valid(old_node) or old_node.is_queued_for_deletion():
 				spawned_nodes.erase(node_path)
+				node_scenes.erase(node_path)
 		
 		is_respawning = true
 		
 		if not spawned_nodes.has(node_path):
-			var spawn_record = spawn_records[node_path]
+			perf.start("respawn %s" % node_path)
 			
+			#var perf2 = PerfTimer.new()
+			#perf2.start('get parent')
+			var spawn_record = spawn_records[node_path]
 			var parent = get_tree().current_scene.get_node(spawn_record['parent'])
 			assert(parent != null, "Can't re-spawn node when parent doesn't exist")
-			var scene = load(spawn_record['scene'])
+			#perf2.stop('get parent')
 			
+			#perf2.start('remove colliding')
 			var name = spawn_record['name']
 			_remove_colliding_node(name, parent)
+			#perf2.stop('remove colliding')
 			
-			var spawned_node = scene.instance()
+			#perf2.start('instance scene')
+			var spawned_node = _instance_scene(spawn_record['scene'])
+			#perf2.stop('instance scene')
+			#perf2.start('add and alphabetize')
 			spawned_node.name = name
 			parent.add_child(spawned_node)
 			_alphabetize_children(parent)
+			#perf2.stop('add and alphabetize')
 			
+			#perf2.start('network spawn')
 			if spawned_node.has_method('_network_spawn'):
 				spawned_node._network_spawn(spawn_record['data'])
+			#perf2.stop('network spawn')
 			
+			#perf2.start('update records')
 			spawned_nodes[node_path] = spawned_node
-			emit_signal("scene_spawned", spawn_record['signal_name'], spawned_node, scene, spawn_record['data'])
+			node_scenes[node_path] = spawn_record['scene']
+			#perf2.stop('update records')
+			# @todo Can we get rid of the load() and just use the path?
+			
+			#perf2.start('emit scene spawned')
+			emit_signal("scene_spawned", spawn_record['signal_name'], spawned_node, load(spawn_record['scene']), spawn_record['data'])
+			#perf2.stop('emit scene spawned')
+			
 			
 			#print ("[LOAD %s] re-spawned: %s" % [SyncManager.current_tick, node_path])
+			perf.stop("respawn %s" % node_path)
+			#perf2.print_timings()
 		
 		is_respawning = false
+	
+	perf.print_timings()
 
