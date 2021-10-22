@@ -8,7 +8,7 @@ var node_scenes := {}
 var retired_nodes := {}
 var counter := {}
 
-var reuse_despawned_nodes := true
+var reuse_despawned_nodes := false
 
 var is_respawning := false
 
