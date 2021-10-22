@@ -166,8 +166,7 @@ func game_stop() -> void:
 		watch_camera.current = true
 		
 		for child in players_node.get_children():
-			players_node.remove_child(child)
-			child.queue_free()
+			SyncManager.despawn(child)
 
 func load_map(path: String) -> bool:
 	var new_map_scene = load(path)
@@ -230,7 +229,7 @@ func kill_player(player_id) -> void:
 		else:
 			# If there is no die method, we do the most important things it
 			# would have done.
-			player_node.queue_free()
+			SyncManager.despawn(player_node)
 			_on_player_dead(-1, player_node)
 
 func remove_player(player_id) -> void:

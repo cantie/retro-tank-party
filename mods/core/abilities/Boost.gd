@@ -20,11 +20,11 @@ func detach_ability() -> void:
 	tank.hooks.unsubscribe("calculate_movement_vector", self, "_hook_tank_calculate_movement_vector")
 
 func spawn() -> void:
-	var tank_parent: Node2D = tank.get_parent()
-	var shadow_tank = ShadowTank.instance()
-	tank_parent.add_child(shadow_tank)
-	tank_parent.move_child(shadow_tank, 0)
-	shadow_tank.setup_shadow_tank(tank)
+	# We start the name with 0 so that it gets put in the tree earlier than
+	# any of the tank nodes.
+	SyncManager.spawn("0ShadowTank", tank.get_parent(), ShadowTank, {
+		tank = tank,
+	})
 
 func _save_state() -> Dictionary:
 	return {

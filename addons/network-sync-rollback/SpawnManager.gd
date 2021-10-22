@@ -51,8 +51,8 @@ func _rename_node(name: String) -> String:
 	return name + str(counter[name])
 
 func _remove_colliding_node(name: String, parent: Node) -> void:
-	if parent.has_node(name):
-		var existing_node = parent.get_node(name)
+	var existing_node = parent.get_node_or_null(name)
+	if existing_node:
 		push_warning("Removing node %s which is in the way of new spawn" % existing_node)
 		parent.remove_child(existing_node)
 		existing_node.queue_free()

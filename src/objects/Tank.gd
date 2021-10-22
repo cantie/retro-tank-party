@@ -502,8 +502,7 @@ func _on_ability_finished(old_ability) -> void:
 	old_ability.disconnect("finished", self, "_on_ability_finished")
 	
 	old_ability.detach_ability()
-	remove_child(old_ability)
-	old_ability.queue_free()
+	SyncManager.despawn(old_ability)
 	
 	if old_ability == ability:
 		ability = null

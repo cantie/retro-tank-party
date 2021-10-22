@@ -39,8 +39,4 @@ func _network_despawn() -> void:
 
 func _on_AnimationPlayer_animation_finished(anim_name: String) -> void:
 	visible = false
-#	var parent = get_parent()
-#	if parent:
-#		parent.remove_child(self)
-#	queue_free()
 	SyncManager.despawn(self)
