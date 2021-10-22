@@ -76,8 +76,10 @@ func _instance_scene(resource_path: String) -> Node:
 			node = retired_nodes[resource_path].pop_front()
 			if is_instance_valid(node) and not node.is_queued_for_deletion():
 				break
+			else:
+				node = null
 		
-		if retired_nodes[resource_path].size() == 0:
+		if nodes.size() == 0:
 			retired_nodes.erase(resource_path)
 		
 		if node:
