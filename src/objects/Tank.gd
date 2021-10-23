@@ -406,8 +406,8 @@ func _save_state() -> Dictionary:
 		dead = dead,
 		health = health,
 		speed = speed,
-		weapon_type = weapon_type.resource_path,
-		held_ability_type = held_ability_type.resource_path if held_ability_type else null,
+		weapon_type = weapon_type,
+		held_ability_type = held_ability_type,
 		ability_charges = ability_charges,
 	}
 
@@ -422,8 +422,8 @@ func _load_state(state: Dictionary) -> void:
 	dead = state['dead']
 	update_health(state['health'])
 	speed = state['speed']
-	set_weapon_type(load(state['weapon_type']))
-	set_held_ability_type(load(state['held_ability_type']) if state['held_ability_type'] else null)
+	set_weapon_type(state['weapon_type'])
+	set_held_ability_type(state['held_ability_type'])
 	ability_charges = state['ability_charges']
 	
 	_after_update_position()

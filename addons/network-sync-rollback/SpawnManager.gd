@@ -10,8 +10,8 @@ var counter := {}
 
 var reuse_despawned_nodes := true
 
-var _spawn_average_usecs := 0.0
-var _spawn_average_count  := 0
+#var _spawn_average_usecs := 0.0
+#var _spawn_average_count  := 0
 
 var is_respawning := false
 
@@ -83,10 +83,10 @@ func _instance_scene(resource_path: String) -> Node:
 			retired_nodes.erase(resource_path)
 		
 		if node:
-			print ("Reusing %s" % resource_path)
+			#print ("Reusing %s" % resource_path)
 			return node
 	
-	print ("Instancing new %s" % resource_path)
+	#print ("Instancing new %s" % resource_path)
 	var scene = load(resource_path)
 	return scene.instance()
 
@@ -200,7 +200,8 @@ func _load_state(state: Dictionary) -> void:
 		is_respawning = true
 		
 		if not spawned_nodes.has(node_path):
-			var spawn_start = OS.get_ticks_usec()
+			#var spawn_start = OS.get_ticks_usec()
+			
 			#perf.start("respawn %s" % node_path)
 			
 			#var perf2 = PerfTimer.new()
@@ -243,13 +244,14 @@ func _load_state(state: Dictionary) -> void:
 			#print ("[LOAD %s] re-spawned: %s" % [SyncManager.current_tick, node_path])
 			#perf.stop("respawn %s" % node_path)
 			#perf2.print_timings()
-			var spawn_time = OS.get_ticks_usec() - spawn_start
-			var old_total: float = _spawn_average_count * _spawn_average_usecs
-			_spawn_average_count += 1
-			_spawn_average_usecs = (old_total + spawn_time) / _spawn_average_count
+			
+			#var spawn_time = OS.get_ticks_usec() - spawn_start
+			#var old_total: float = _spawn_average_count * _spawn_average_usecs
+			#_spawn_average_count += 1
+			#_spawn_average_usecs = (old_total + spawn_time) / _spawn_average_count
 		
 		is_respawning = false
 	
-	print (" ** AVERAGE SPAWN TIME: %.3f ms" % (_spawn_average_usecs / 1000.0))
+	#print (" ** AVERAGE SPAWN TIME: %.3f ms" % (_spawn_average_usecs / 1000.0))
 	#perf.print_timings()
 

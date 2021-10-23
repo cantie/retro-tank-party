@@ -513,13 +513,23 @@ func _call_network_process(delta: float, input_frame: InputBufferFrame) -> void:
 			node._network_process(delta, player_input.get(str(node.get_path()), {}))
 
 func _call_save_state() -> Dictionary:
+	#var perf = PerfTimer.new()
+	
 	var state := {}
+	#perf.start("_save_state: get_nodes_in_group")
 	var nodes: Array = get_tree().get_nodes_in_group('network_sync')
+	#perf.stop("_save_state: get_nodes_in_group")
 	for node in nodes:
 		if node.has_method('_save_state') and node.is_inside_tree() and not node.is_queued_for_deletion():
 			var node_path = str(node.get_path())
 			if node_path != "":
+				#perf.start("_save_state: %s" % node_path)
 				state[node_path] = node._save_state()
+				#perf.stop("_save_state: %s" % node_path)
+	
+	#print (" ---")
+	#perf.print_timings()
+	
 	return state
 
 func _call_load_state(state: Dictionary) -> void:
