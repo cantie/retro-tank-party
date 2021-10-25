@@ -365,9 +365,9 @@ func _network_process(delta: float, input: Dictionary) -> void:
 	
 	# 6554 = 0.1
 	if movement_vector.x >= 6554 or movement_vector.x <= -6554:
-		engine_sound.engine_state = engine_sound.EngineState.DRIVING
+		engine_sound.next_engine_state = engine_sound.EngineState.DRIVING
 	else:
-		engine_sound.engine_state = engine_sound.EngineState.IDLE
+		engine_sound.next_engine_state = engine_sound.EngineState.IDLE
 	
 	# We create a brand new transform to eliminate cumulative error from
 	# rotating the same transform over and over again.
