@@ -6,6 +6,7 @@ MILESTONE 1 (physics):
  - Make sg-physics-2d into its own project
    o API reference
    o Tutorial
+ - Profile the broadphase with lots of moving objects
 
 MILESTOE 2 (finish porting all the things):
 
