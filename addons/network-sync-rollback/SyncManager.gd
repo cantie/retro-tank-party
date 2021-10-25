@@ -672,8 +672,10 @@ func _cleanup_buffers() -> bool:
 		_input_send_queue.pop_front()
 		_input_send_queue_start_tick += 1
 	
-	# Clean-up old state buffer frames.
-	while state_buffer.size() > max_buffer_size:
+	# Clean-up old state buffer frames. We need to keep one extra frame of state
+	# because when we rollback, we need to load the state for the frame before
+	# the first one we need to run again.
+	while state_buffer.size() > max_buffer_size + 1:
 		var state_frame_to_retire: StateBufferFrame = state_buffer[0]
 		var input_frame = get_input_frame(state_frame_to_retire.tick + 1)
 		if input_frame == null or not input_frame.is_complete(peers):
