@@ -2,15 +2,15 @@
 
 importer="texture"
 type="StreamTexture"
-path="res://.import/Explosion.png-1e6906d60d513311c6c43a78c5ccad11.stex"
+path="res://.import/TankBullet3.png-0b49f57c90ed29f1224a8da8f99798c3.stex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://mods/core/art/snes/Explosion.png"
-dest_files=[ "res://.import/Explosion.png-1e6906d60d513311c6c43a78c5ccad11.stex" ]
+source_file="res://mods/core/art/snes/TankBullet3.png"
+dest_files=[ "res://.import/TankBullet3.png-0b49f57c90ed29f1224a8da8f99798c3.stex" ]
 
 [params]
 
