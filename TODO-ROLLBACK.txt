@@ -10,10 +10,11 @@ MILESTONE 1 (physics):
 
 MILESTOE 2 (finish porting all the things):
 
- - Profile our rollbacks so we can see how close we are to the frame budget
-   * See how big of rollbacks we are actually executing (currently we log when they are flagged) and how often
-   * See how many milliseconds it takes to execute each one
-   * I'd be interested to see the order of the rollbacks too - are we redoing some frames lots and lots?
+ - Profile physics engine
+   * Get the speed of updating fixed_position, fixed_transform, fixed_rotation and fixed_scale
+   * Maybe switch to generating the fixed_scale when it's requested? We don't need it very much and it is getting the length of vectors
+   * Maybe switch to using the fixed_transform->get_origin() rather than having a separate fixed_position member variable?
+   * Profile the broadphase
  - Bugs with 15 frame rollback
    * Crazy camera flashing when tank respawning in Practice mode
    * Sometimes player camera not getting added to player tank after round end in Battle Royale
