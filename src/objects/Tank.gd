@@ -355,13 +355,15 @@ func _network_process(delta: float, input: Dictionary) -> void:
 		engine_sound.turning = true
 	
 	if movement_vector.y != 0:
-		rotate_and_slide(SGFixed.mul(movement_vector.y, turn_speed))
+		fixed_rotation += SGFixed.mul(movement_vector.y, turn_speed)
+		#rotate_and_slide(SGFixed.mul(movement_vector.y, turn_speed))
 
 	if movement_vector.x != 0:
 		var velocity = fixed_transform.x.copy()
 		velocity.imul(movement_vector.x)
 		velocity.imul(speed)
-		move_and_slide(velocity)
+		#move_and_slide(velocity)
+		fixed_position.iadd(velocity)
 	
 	# 6554 = 0.1
 	if movement_vector.x >= 6554 or movement_vector.x <= -6554:

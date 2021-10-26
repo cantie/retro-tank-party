@@ -29,7 +29,7 @@ func _network_spawn(data: Dictionary) -> void:
 	vector = fixed_transform.x.copy()
 	damage = data['damage']
 	lifetime_timer.start()
-	sync_to_physics_engine()
+	#sync_to_physics_engine()
 
 func _network_despawn() -> void:
 	lifetime_timer.stop()
@@ -46,7 +46,7 @@ func _save_state() -> Dictionary:
 func _load_state(state: Dictionary) -> void:
 	fixed_transform = state['fixed_transform'].copy()
 	vector = state['vector'].copy()
-	sync_to_physics_engine()
+	#sync_to_physics_engine()
 
 func _interpolate_state(old_state: Dictionary, new_state: Dictionary, weight: float) -> void:
 	position = lerp(old_state['fixed_transform'].get_origin().to_float(), new_state['fixed_transform'].get_origin().to_float(), weight)
@@ -66,8 +66,9 @@ func can_hit(body: SGCollisionObject2D) -> bool:
 	return body != tank
 
 func check_collision() -> void:
-	for body in get_overlapping_bodies():
-		_on_bullet_collision(body)
+	pass
+	#for body in get_overlapping_bodies():
+	#	_on_bullet_collision(body)
 
 func _on_bullet_collision(body: SGCollisionObject2D) -> void:
 	if not can_hit(body):
