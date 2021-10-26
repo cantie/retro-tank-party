@@ -2,15 +2,15 @@
 
 importer="texture"
 type="StreamTexture"
-path="res://.import/TankTurret.png-64e41ae7fdbafd0ca9cd084e14f5cf81.stex"
+path="res://.import/TankTurret4.png-a01de820ce8c417caea6f62b7720ea44.stex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://mods/core/art/classic/TankTurret.png"
-dest_files=[ "res://.import/TankTurret.png-64e41ae7fdbafd0ca9cd084e14f5cf81.stex" ]
+source_file="res://mods/core/art/classic/TankTurret4.png"
+dest_files=[ "res://.import/TankTurret4.png-a01de820ce8c417caea6f62b7720ea44.stex" ]
 
 [params]
 

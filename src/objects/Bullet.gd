@@ -21,4 +21,4 @@ func _network_process(delta: float, _input: Dictionary) -> void:
 	sync_to_physics_engine()
 
 func _on_LifetimeTimer_timeout() -> void:
-	explode("smoke")
+	explode("Smoke")

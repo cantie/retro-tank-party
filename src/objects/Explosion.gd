@@ -6,21 +6,20 @@ const MissSound = preload("res://assets/sounds/Snare__001.wav")
 const HitSound = preload("res://assets/sounds/Explosion3__004.wav")
 const BigSound = preload("res://assets/sounds/Explosion2__007.wav")
 
-func _ready() -> void:
-	Globals.art.replace_visual('Explosion', $Visual)
-
 func _network_spawn(data: Dictionary) -> void:
 	position = data['position']
 	scale = Vector2(data['scale'], data['scale'])
 	
-	var anim = data['type']
-	animation_player.play(anim)
+	var type = data['type']
+	Globals.art.replace_visual('Explosion', $Visual, { type = type })
+	
+	animation_player.play("fire")
 	
 	# @todo Can we do something like this with rollback?
 	#yield(get_tree().create_timer(randf() * 0.150), "timeout")
 	
 	var sound_id = str(get_path())
-	if anim == 'smoke':
+	if type == 'Smoke':
 		SyncManager.play_sound(sound_id, MissSound, {
 			position = global_position,
 		})

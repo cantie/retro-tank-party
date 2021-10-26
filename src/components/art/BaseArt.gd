@@ -34,8 +34,10 @@ func _replace_sprite_texture(id: String, node: Node) -> void:
 
 func preprocess_visual_id(id: String, node: Node, info: Dictionary = {}) -> String:
 	match id:
-		'TankBody':
+		'TankBody', 'TankTurret', 'TankBullet':
 			return id + str(info['player_index'])
+		'Explosion':
+			return id + str(info['type'])
 		'TreeBig', 'TreeSmall':
 			return id + '_' + info['color']
 	return id
