@@ -127,25 +127,23 @@ void SGFixedNode2D::update_global_fixed_transform_internal(const SGFixedTransfor
 	}
 }
 
-void SGFixedNode2D::_set_fixed_position(const SGFixedVector2Internal &p_fixed_position) {
-	fixed_position->set_internal(p_fixed_position);
-	updating_transform = true;
-	set_position(fixed_position->to_float());
-	fixed_transform->set_origin(fixed_position);
-	updating_transform = false;
-	_change_notify("fixed_position");
-}
-
 void SGFixedNode2D::_fixed_transform_changed() {
 	if (!updating_transform) {
-		set_fixed_transform(fixed_transform);
+		update_fixed_transform_internal(fixed_transform->get_internal());
 	}
+}
+
+void SGFixedNode2D::_set_fixed_position(const SGFixedVector2Internal &p_fixed_position) {
+	fixed_position->set_internal(p_fixed_position);
+	_fixed_position_changed();
 }
 
 void SGFixedNode2D::_fixed_position_changed() {
-	if (!updating_transform) {
-		set_fixed_position(fixed_position);
-	}
+	updating_transform = true;
+	fixed_transform->set_origin(fixed_position);
+	set_position(fixed_position->to_float());
+	_change_notify("fixed_position");
+	updating_transform = false;
 }
 
 void SGFixedNode2D::_fixed_scale_changed() {
@@ -197,7 +195,8 @@ Ref<SGFixedTransform2D> SGFixedNode2D::get_fixed_transform() const {
 
 void SGFixedNode2D::set_fixed_position(const Ref<SGFixedVector2> &p_fixed_position) {
 	ERR_FAIL_COND(!p_fixed_position.is_valid());
-	_set_fixed_position(p_fixed_position->get_internal());
+	fixed_position->set_internal(p_fixed_position->get_internal());
+	_fixed_position_changed();
 }
 
 Ref<SGFixedVector2> SGFixedNode2D::get_fixed_position() {
@@ -215,8 +214,8 @@ void SGFixedNode2D::set_fixed_scale(const Ref<SGFixedVector2> &p_fixed_scale) {
 	internal_transform.set_scale(fixed_scale->get_internal());
 	fixed_transform->set_internal(internal_transform);
 
-	updating_transform = false;
 	_change_notify("fixed_scale");
+	updating_transform = false;
 }
 
 Ref<SGFixedVector2> SGFixedNode2D::get_fixed_scale() {
@@ -232,8 +231,8 @@ void SGFixedNode2D::set_fixed_rotation(int64_t p_fixed_rotation) {
 	internal_transform.set_rotation(fixed(p_fixed_rotation));
 	fixed_transform->set_internal(internal_transform);
 
-	updating_transform = false;
 	_change_notify("fixed_rotation");
+	updating_transform = false;
 }
 
 int64_t SGFixedNode2D::get_fixed_rotation() const {
@@ -289,10 +288,12 @@ SGFixedNode2D::SGFixedNode2D() {
 	fixed_rotation = 0;
 
 	updating_transform = false;
-
+	
+#ifdef TOOLS_ENABLED
 	if (Engine::get_singleton()->is_editor_hint()) {
 		add_change_receptor(this);
 	}
+#endif
 }
 
 SGFixedNode2D::~SGFixedNode2D() {
