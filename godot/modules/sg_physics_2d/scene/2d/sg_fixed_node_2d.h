@@ -35,18 +35,21 @@ class SGFixedNode2D : public Node2D {
 	GDCLASS(SGFixedNode2D, Node2D);
 
 	friend SGCollisionObject2D;
+	friend SGFixedVector2;
 
 	Ref<SGFixedTransform2D> fixed_transform;
-	Ref<SGFixedVector2> fixed_position;
 	Ref<SGFixedVector2> fixed_scale;
-	int64_t fixed_rotation;
 
+#ifdef TOOLS_ENABLED
 	bool updating_transform;
+#endif
 
 protected:
 	static void _bind_methods();
 
+#ifdef TOOLS_ENABLED
 	virtual void _changed_callback(Object *p_changed, const char *p_prop) override;
+#endif
 
 	_FORCE_INLINE_ SGFixedTransform2DInternal get_fixed_transform_internal() const { return fixed_transform->get_internal(); }
 	SGFixedTransform2DInternal get_global_fixed_transform_internal() const;
@@ -91,7 +94,6 @@ public:
 
 	void set_global_fixed_rotation(int64_t p_fixed_rotation);
 	int64_t get_global_fixed_rotation() const;
-
 
 	SGFixedNode2D();
 	~SGFixedNode2D();
