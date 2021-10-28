@@ -168,10 +168,6 @@ func _network_spawn(data: Dictionary) -> void:
 	set_tank_color(data['player_index'])
 	
 	var visual_material = preload("res://src/objects/whitening_shader.tres").duplicate()
-#	if body_visual.has_method("set_sprite_material"):
-#		body_visual.set_sprite_material(visual_material)
-#	if turret_visual.has_method("set_sprite_material"):
-#		turret_visual.set_sprite_material(visual_material)
 	body_visual.material = visual_material
 	turret_visual.material = visual_material
 	

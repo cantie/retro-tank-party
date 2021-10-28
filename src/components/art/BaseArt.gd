@@ -14,25 +14,30 @@ func setup_terrain_tiles(terrain_tiles: TileSet) -> void:
 			for tile_id in terrain_tiles.get_tiles_ids():
 				terrain_tiles.tile_set_texture(tile_id, texture)
 
-func _replace_sprite_texture(id: String, node: Node) -> void:
-	if node.has_node(@"Sprite"):
-		var sprite: Sprite = node.get_node(@"Sprite")
-		if texture_replace_cache.has(id):
-			var texture = texture_replace_cache[id]
-			if texture != null and sprite.texture != texture:
-				sprite.texture = texture
-		else:
-			var texture_path: String = art_style_resource.texture_base_path + '/' + id + ".png"
-			if sprite.texture.resource_path == texture_path:
-				texture_replace_cache[id] = sprite.texture
-			elif not ResourceLoader.exists(texture_path):
-				texture_replace_cache[id] = null
-			else:
-				var texture = load(texture_path)
-				texture_replace_cache[id] = texture
-				sprite.texture = texture
+func get_texture(texture_name: String):
+	if texture_replace_cache.has(texture_name):
+		return texture_replace_cache[texture_name]
+	
+	if art_style_resource.texture_base_path == "":
+		return null
+	
+	var texture_path: String = art_style_resource.texture_base_path + '/' + texture_name + ".png"
+	
+	if not ResourceLoader.exists(texture_path):
+		texture_replace_cache[texture_name] = null
+	else:
+		var texture = load(texture_path)
+		texture_replace_cache[texture_name] = texture
+		return texture
 
-func preprocess_visual_id(id: String, node: Node, info: Dictionary = {}) -> String:
+func replace_sprite_texture(texture_name: String, node: Node) -> void:
+	var sprite = node.get_node_or_null(@"Sprite")
+	if sprite:
+		var texture = get_texture(texture_name)
+		if texture != null and sprite.texture != texture:
+			sprite.texture = texture
+
+func get_texture_name_for_visual(id: String, info: Dictionary = {}) -> String:
 	match id:
 		'TankBody', 'TankTurret', 'TankBullet':
 			return id + str(info['player_index'])
@@ -47,7 +52,8 @@ func replace_visual(id: String, node: Node, info: Dictionary = {}) -> Node:
 		return null
 	
 	if art_style_resource.texture_base_path != "":
-		_replace_sprite_texture(id, node)
+		var texture_name = get_texture_name_for_visual(id, info)
+		replace_sprite_texture(texture_name, node)
 	
 	return node
 

@@ -1,7 +1,7 @@
 [gd_resource type="Resource" load_steps=4 format=2]
 
 [ext_resource path="res://src/components/art/ArtStyle.gd" type="Script" id=1]
-[ext_resource path="res://mods/core/art/SNESArt.gd" type="Script" id=2]
+[ext_resource path="res://mods/core/art/SNES.gd" type="Script" id=2]
 [ext_resource path="res://mods/core/art/snes/cursor.png" type="Texture" id=3]
 
 [resource]

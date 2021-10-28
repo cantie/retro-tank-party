@@ -20,14 +20,23 @@ func load_art_style(path: String) -> void:
 	Input.set_custom_mouse_cursor(cursor_texture, 0, hotspot)
 
 func replace_visual(id: String, node: Node, info: Dictionary = {}) -> Node:
-	id = art_style.preprocess_visual_id(id, node, info)
-	var replacement = art_style.replace_visual(id, node, info)
+	var replacement: Node
 	
-	# Protection for badly behaving art scripts.
-	if replacement == null:
-		return node
+	if node.has_meta('art_replaced') and node.get_meta('art_replace').hash() == info.hash():
+		replacement = node
+	else:
+		replacement = art_style.replace_visual(id, node, info)
+		
+		# Protection for badly behaving art scripts.
+		if replacement == null:
+			replacement = node
+		
+		replacement.set_meta('art_replaced', info)
 	
 	if node != replacement:
+		if node.has_method('detach_visual'):
+			node.detach_visual()
+		
 		var parent = node.get_parent()
 		if parent:
 			var orig_name = node.name
@@ -39,9 +48,12 @@ func replace_visual(id: String, node: Node, info: Dictionary = {}) -> Node:
 			replacement.name = orig_name
 			parent.add_child(replacement)
 			parent.move_child(replacement, orig_index)
+		
+		if replacement.has_method('attach_visual'):
+			replacement.attach_visual(info)
 	
-	if replacement.has_method('setup_visual'):
-		replacement.setup_visual(info)
+	if replacement.has_method('start_visual'):
+		replacement.start_visual(info)
 	
 	return replacement
 
