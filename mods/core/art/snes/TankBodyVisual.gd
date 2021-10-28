@@ -6,11 +6,15 @@ onready var animation_player = $AnimationPlayer
 
 func attach_visual(info: Dictionary) -> void:
 	var tank = get_parent()
-	tank.hooks.subscribe("calculate_movement_vector", self, "_hook_tank_calculate_movement_vector", 10)
+	var hooks = tank.get('hooks')
+	if hooks:
+		hooks.subscribe("calculate_movement_vector", self, "_hook_tank_calculate_movement_vector", 10)
 
 func detach_visual() -> void:
 	var tank = get_parent()
-	tank.hooks.unsubscribe("calculate_movement_vector", self, "_hook_tank_calculate_movement_vector")
+	var hooks = tank.get('hooks')
+	if hooks:
+		hooks.unsubscribe("calculate_movement_vector", self, "_hook_tank_calculate_movement_vector")
 
 func _hook_tank_calculate_movement_vector(event: Tank.CalculateMovementVectorEvent) -> void:
 	if event.movement_vector.x != 0 or event.movement_vector.y != 0:
