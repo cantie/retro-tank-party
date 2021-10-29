@@ -31,7 +31,7 @@
 
 class SGCollisionObject2D;
 
-class SGFixedNode2D : public Node2D {
+class SGFixedNode2D : public Node2D, public SGFixedVector2Watcher {
 	GDCLASS(SGFixedNode2D, Node2D);
 
 	friend SGCollisionObject2D;
@@ -39,6 +39,7 @@ class SGFixedNode2D : public Node2D {
 
 	Ref<SGFixedTransform2D> fixed_transform;
 	Ref<SGFixedVector2> fixed_scale;
+	bool fixed_xform_dirty;
 
 #ifdef TOOLS_ENABLED
 	bool updating_transform;
@@ -46,6 +47,7 @@ class SGFixedNode2D : public Node2D {
 
 protected:
 	static void _bind_methods();
+	void _notification(int p_what);
 
 #ifdef TOOLS_ENABLED
 	virtual void _changed_callback(Object *p_changed, const char *p_prop) override;
@@ -94,6 +96,10 @@ public:
 
 	void set_global_fixed_rotation(int64_t p_fixed_rotation);
 	int64_t get_global_fixed_rotation() const;
+
+	void update_float_transform();
+
+	void fixed_vector2_changed(SGFixedVector2 *p_vector);
 
 	SGFixedNode2D();
 	~SGFixedNode2D();
