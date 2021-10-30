@@ -26,19 +26,11 @@
 #include "sg_bodies_2d_internal.h"
 
 void SGBroadphase2DInternal::_add_element_to_cells(SGBroadphase2DInternalElement *p_element) {
-	SGFixedVector2Internal min = p_element->bounds.get_min();
-	SGFixedVector2Internal max = p_element->bounds.get_max();
-
-	int32_t from_x = min.x.to_int() / cell_size;
-	int32_t from_y = min.y.to_int() / cell_size;
-	int32_t to_x = max.x.to_int() / cell_size;
-	int32_t to_y = max.y.to_int() / cell_size;
-
-	p_element->indices.resize(((to_x + 1) - from_x) * ((to_y + 1) - from_y));
+	p_element->indices.resize(((p_element->to_x + 1) - p_element->from_x) * ((p_element->to_y + 1) - p_element->from_y));
 	int index = 0;
 
-	for (int32_t x = from_x; x <= to_x; x++) {
-		for (int32_t y = from_y; y <= to_y; y++) {
+	for (int32_t x = p_element->from_x; x <= p_element->to_x; x++) {
+		for (int32_t y = p_element->from_y; y <= p_element->to_y; y++) {
 			HashKey key(x, y);
 			Map<HashKey, Cell *>::Element *cell_element = cells.find(key);
 			Cell *cell;
@@ -90,14 +82,42 @@ SGBroadphase2DInternalElement *SGBroadphase2DInternal::create_element(SGCollisio
 
 	element->object = p_object;
 	element->bounds = p_object->get_bounds();
+
+	SGFixedVector2Internal min = element->bounds.get_min();
+	SGFixedVector2Internal max = element->bounds.get_max();
+
+	element->from_x = min.x.to_int() / cell_size;
+	element->from_y = min.y.to_int() / cell_size;
+	element->to_x = max.x.to_int() / cell_size;
+	element->to_y = max.y.to_int() / cell_size;
+
 	_add_element_to_cells(element);
 
 	return element;
 }
 
 void SGBroadphase2DInternal::update_element(SGBroadphase2DInternalElement *p_element) {
-	_remove_element_from_cells(p_element);
 	p_element->bounds = p_element->object->get_bounds();
+
+	SGFixedVector2Internal min = p_element->bounds.get_min();
+	SGFixedVector2Internal max = p_element->bounds.get_max();
+
+	int32_t from_x = min.x.to_int() / cell_size;
+	int32_t from_y = min.y.to_int() / cell_size;
+	int32_t to_x = max.x.to_int() / cell_size;
+	int32_t to_y = max.y.to_int() / cell_size;
+
+	if (p_element->from_x == from_x && p_element->to_x == to_x && p_element->from_y == from_y && p_element->to_y == to_y) {
+		return;
+	}
+
+	_remove_element_from_cells(p_element);
+
+	p_element->from_x = from_x;
+	p_element->to_x = to_x;
+	p_element->from_y = from_y;
+	p_element->to_y = to_y;
+
 	_add_element_to_cells(p_element);
 }
 
@@ -107,9 +127,7 @@ void SGBroadphase2DInternal::delete_element(SGBroadphase2DInternalElement *p_ele
 	memdelete(p_element);
 }
 
-Set<SGCollisionObject2DInternal *> *SGBroadphase2DInternal::find_nearby(const SGFixedRect2Internal &p_bounds, SGCollisionObject2DInternal::ObjectType p_type) const {
-	Set<SGCollisionObject2DInternal *> *results = memnew(Set<SGCollisionObject2DInternal *>);
-
+void SGBroadphase2DInternal::find_nearby(const SGFixedRect2Internal &p_bounds, SGResultHandlerInternal *p_result_handler, SGCollisionObject2DInternal::ObjectType p_type) const {
 	SGFixedVector2Internal min = p_bounds.get_min();
 	SGFixedVector2Internal max = p_bounds.get_max();
 
@@ -117,6 +135,8 @@ Set<SGCollisionObject2DInternal *> *SGBroadphase2DInternal::find_nearby(const SG
 	int32_t from_y = min.y.to_int() / cell_size;
 	int32_t to_x = max.x.to_int() / cell_size;
 	int32_t to_y = max.y.to_int() / cell_size;
+
+	uint64_t query_id = (++current_query_id);
 
 	for (int32_t x = from_x; x <= to_x; x++) {
 		for (int32_t y = from_y; y <= to_y; y++) {
@@ -131,14 +151,16 @@ Set<SGCollisionObject2DInternal *> *SGBroadphase2DInternal::find_nearby(const SG
 			cell = cell_element->get();
 			for (List<SGBroadphase2DInternalElement *>::Element *E = cell->elements.front(); E; E = E->next()) {
 				SGBroadphase2DInternalElement *element = E->get();
+				if (element->query_id == query_id) {
+					continue;
+				}
 				if ((element->object->get_object_type() & p_type) && p_bounds.intersects(element->bounds)) {
-					results->insert(E->get()->object);
+					element->query_id = query_id;
+					p_result_handler->handle_result(element->object);
 				}
 			}
 		}
 	}
-
-	return results;
 }
 
 void SGBroadphase2DInternal::set_cell_size(int p_cell_size) {
@@ -156,6 +178,7 @@ void SGBroadphase2DInternal::set_cell_size(int p_cell_size) {
 
 SGBroadphase2DInternal::SGBroadphase2DInternal(int p_cell_size) {
 	cell_size = p_cell_size;
+	current_query_id = 0;
 }
 
 SGBroadphase2DInternal::~SGBroadphase2DInternal() {
