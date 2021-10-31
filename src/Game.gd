@@ -118,7 +118,7 @@ func _on_SyncManager_scene_spawned(name: String, spawned_node: Node, scene: Pack
 
 func make_player_controlled(peer_id) -> void:
 	var my_player := players_node.get_node(str(peer_id))
-	if my_player and not my_player.player_controlled:
+	if my_player:
 		my_player.player_controlled = true
 		_setup_player_camera(my_player.global_position)
 		my_player.camera = player_camera

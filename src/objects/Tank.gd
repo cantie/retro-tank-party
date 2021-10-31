@@ -183,6 +183,7 @@ func _network_despawn() -> void:
 	# Reset some stuff for when this node is reused
 	set_weapon_type(BaseWeaponType)
 	set_held_ability_type(null)
+	player_controlled = false
 	health = 100
 	can_shoot = true
 	camera = null

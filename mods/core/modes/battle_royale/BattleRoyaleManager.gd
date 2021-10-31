@@ -33,7 +33,7 @@ func _on_game_player_dead(player_id: int, killer_id: int) -> void:
 		ui_layer.show_message("You lose!")
 		game.enable_watch_camera()
 	
-	if not round_over and  (game.players_alive.size() == 1 or not _check_team_alive(player_id)):
+	if not round_over and (game.players_alive.size() == 1 or not _check_team_alive(player_id)):
 		round_over = true
 		var winner_id := -1
 		if use_teams:
