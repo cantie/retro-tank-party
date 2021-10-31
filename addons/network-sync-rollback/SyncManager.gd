@@ -536,8 +536,8 @@ func _call_interpolate_state(weight: float) -> void:
 	for node_path in _interpolation_state:
 		if node_path == '$':
 			continue
-		if has_node(node_path):
-			var node = get_node(node_path)
+		var node = get_node_or_null(node_path)
+		if node:
 			if node.has_method('_interpolate_state'):
 				var states = _interpolation_state[node_path]
 				node._interpolate_state(states[0], states[1], weight)

@@ -74,8 +74,8 @@ func _on_MapScreen_map_changed(map_scene_path) -> void:
 	if not map_parent:
 		return
 	
-	if map_parent.has_node('Map'):
-		var old_map_scene = map_parent.get_node('Map')
+	var old_map_scene = map_parent.get_node_or_null(@"Map")
+	if old_map_scene:
 		map_parent.remove_child(old_map_scene)
 		old_map_scene.queue_free()
 	
