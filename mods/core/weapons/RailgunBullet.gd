@@ -25,7 +25,7 @@ func _network_spawn(data: Dictionary) -> void:
 	growing = true
 	bounces = 0
 	line.default_color = LASER_COLORS[player_index]
-	line.add_point(position)
+	line.add_point(fixed_position.to_float())
 
 func _network_despawn() -> void:
 	._network_despawn()
@@ -95,7 +95,7 @@ func _network_process(delta: float, input: Dictionary) -> void:
 		
 		sync_to_physics_engine()
 		
-		line.add_point(position)
+		line.add_point(fixed_position.to_float())
 		
 		if bounces >= 5:
 			growing = false
