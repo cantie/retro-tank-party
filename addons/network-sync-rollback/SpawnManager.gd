@@ -1,7 +1,5 @@
 extends Node
 
-const PerfTimer = preload("res://addons/network-sync-rollback/debugger/PerfTimer.gd")
-
 var spawn_records := {}
 var spawned_nodes := {}
 var node_scenes := {}
@@ -9,9 +7,6 @@ var retired_nodes := {}
 var counter := {}
 
 var reuse_despawned_nodes := true
-
-#var _spawn_average_usecs := 0.0
-#var _spawn_average_count  := 0
 
 var is_respawning := false
 
@@ -173,21 +168,14 @@ func _save_state() -> Dictionary:
 	}
 
 func _load_state(state: Dictionary) -> void:
-	#var perf = PerfTimer.new()
-	
-	#perf.start("duplicate")
 	spawn_records = state['spawn_records'].duplicate()
 	counter = state['counter'].duplicate()
-	#perf.stop("duplicate")
 	
 	# Remove nodes that aren't in the state we are loading.
 	for node_path in spawned_nodes.keys().duplicate():
 		if not spawn_records.has(node_path):
-			#perf.start("despawn %s" % node_path)
 			despawn(spawned_nodes[node_path], node_path)
-			
 			#print ("[LOAD %s] de-spawned: %s" % [SyncManager.current_tick, node_path])
-			#perf.stop("despawn %s" % node_path)
 	
 	# Spawn nodes that don't already exist.
 	for node_path in spawn_records.keys():
@@ -200,58 +188,25 @@ func _load_state(state: Dictionary) -> void:
 		is_respawning = true
 		
 		if not spawned_nodes.has(node_path):
-			#var spawn_start = OS.get_ticks_usec()
-			
-			#perf.start("respawn %s" % node_path)
-			
-			#var perf2 = PerfTimer.new()
-			#perf2.start('get parent')
 			var spawn_record = spawn_records[node_path]
 			var parent = get_tree().current_scene.get_node(spawn_record['parent'])
 			assert(parent != null, "Can't re-spawn node when parent doesn't exist")
-			#perf2.stop('get parent')
-			
-			#perf2.start('remove colliding')
 			var name = spawn_record['name']
 			_remove_colliding_node(name, parent)
-			#perf2.stop('remove colliding')
-			
-			#perf2.start('instance scene')
 			var spawned_node = _instance_scene(spawn_record['scene'])
-			#perf2.stop('instance scene')
-			#perf2.start('add and alphabetize')
 			spawned_node.name = name
 			parent.add_child(spawned_node)
 			_alphabetize_children(parent)
-			#perf2.stop('add and alphabetize')
 			
-			#perf2.start('network spawn')
 			if spawned_node.has_method('_network_spawn'):
 				spawned_node._network_spawn(spawn_record['data'])
-			#perf2.stop('network spawn')
 			
-			#perf2.start('update records')
 			spawned_nodes[node_path] = spawned_node
 			node_scenes[node_path] = spawn_record['scene']
-			#perf2.stop('update records')
+			
 			# @todo Can we get rid of the load() and just use the path?
-			
-			#perf2.start('emit scene spawned')
 			emit_signal("scene_spawned", spawn_record['signal_name'], spawned_node, load(spawn_record['scene']), spawn_record['data'])
-			#perf2.stop('emit scene spawned')
-			
-			
 			#print ("[LOAD %s] re-spawned: %s" % [SyncManager.current_tick, node_path])
-			#perf.stop("respawn %s" % node_path)
-			#perf2.print_timings()
-			
-			#var spawn_time = OS.get_ticks_usec() - spawn_start
-			#var old_total: float = _spawn_average_count * _spawn_average_usecs
-			#_spawn_average_count += 1
-			#_spawn_average_usecs = (old_total + spawn_time) / _spawn_average_count
 		
 		is_respawning = false
-	
-	#print (" ** AVERAGE SPAWN TIME: %.3f ms" % (_spawn_average_usecs / 1000.0))
-	#perf.print_timings()
 

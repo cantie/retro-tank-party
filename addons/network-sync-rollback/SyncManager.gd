@@ -4,7 +4,7 @@ const SpawnManager = preload("res://addons/network-sync-rollback/SpawnManager.gd
 const SoundManager = preload("res://addons/network-sync-rollback/SoundManager.gd")
 const NetworkAdaptor = preload("res://addons/network-sync-rollback/NetworkAdaptor.gd")
 const RPCNetworkAdaptor = preload("res://addons/network-sync-rollback/RPCNetworkAdaptor.gd")
-const PerfTimer = preload("res://addons/network-sync-rollback/debugger/PerfTimer.gd")
+#const PerfTimer = preload("res://addons/network-sync-rollback/debugger/PerfTimer.gd")
 
 class Peer extends Reference:
 	var peer_id: int
@@ -503,57 +503,34 @@ func _call_predict_remote_input(previous_input: Dictionary, ticks_since_real_inp
 	return input
 
 func _call_network_process(delta: float, input_frame: InputBufferFrame) -> void:
-	#var perf = PerfTimer.new()
-	
 	var nodes: Array = get_tree().get_nodes_in_group('network_sync')
 	var i = nodes.size()
 	while i > 0:
 		i -= 1
 		var node = nodes[i]
 		if node.has_method('_network_process') and node.is_inside_tree() and not node.is_queued_for_deletion():
-			#var node_path = str(node.get_path())
-			#perf.start("_network_process: %s" % node_path)
 			var player_input = input_frame.get_player_input(node.get_network_master())
 			node._network_process(delta, player_input.get(str(node.get_path()), {}))
-			#perf.stop("_network_process: %s" % node_path)
-	
-	#if perf.get_total() >= 1000:
-	#	print (" ---")
-	#	perf.print_timings()
 
 func _call_save_state() -> Dictionary:
-	#var perf = PerfTimer.new()
-	
 	var state := {}
-	#perf.start("_save_state: get_nodes_in_group")
 	var nodes: Array = get_tree().get_nodes_in_group('network_sync')
-	#perf.stop("_save_state: get_nodes_in_group")
 	for node in nodes:
 		if node.has_method('_save_state') and node.is_inside_tree() and not node.is_queued_for_deletion():
 			var node_path = str(node.get_path())
 			if node_path != "":
-				#perf.start("_save_state: %s" % node_path)
 				state[node_path] = node._save_state()
-				#perf.stop("_save_state: %s" % node_path)
-	
-	#if perf.get_total() >= 1000:
-	#	print (" ---")
-	#	perf.print_timings()
 	
 	return state
 
 func _call_load_state(state: Dictionary) -> void:
-	#var perf = PerfTimer.new()
 	for node_path in state:
 		if node_path == '$':
 			continue
 		var node = get_node_or_null(node_path)
 		assert(node != null, "Unable to restore state to missing node: %s" % node_path)
 		if node and node.has_method('_load_state'):
-			#perf.start("load %s" % node_path)
 			node._load_state(state[node_path])
-			#perf.stop("load %s" % node_path)
-	#perf.print_timings()
 
 func _call_interpolate_state(weight: float) -> void:
 	for node_path in _interpolation_state:
@@ -570,21 +547,8 @@ func _save_current_state() -> void:
 	if current_tick < 0:
 		return
 	
-	#var perf = PerfTimer.new()
-	
-	#perf.start("_call_save_state")
-	var state_data = _call_save_state()
-	#perf.stop("_call_save_state")
-	#perf.start("append to state buffer")
-	state_buffer.append(StateBufferFrame.new(current_tick, state_data))
-	#perf.stop("append to state buffer")
-	
-	#perf.start("_update_input_complete_tick")
+	state_buffer.append(StateBufferFrame.new(current_tick, _call_save_state()))
 	_update_input_complete_tick()
-	#perf.stop("_update_input_complete_tick")
-	
-	#print (" ---")
-	#perf.print_timings()
 
 func _update_input_complete_tick() -> void:
 	while current_tick > _input_complete_tick + 1:
@@ -615,15 +579,11 @@ func _update_input_complete_tick() -> void:
 		emit_signal("tick_input_complete", _input_complete_tick)
 
 func _do_tick(delta: float, is_rollback: bool = false) -> bool:
-	#var perf = PerfTimer.new()
-	#perf.start("tick: grab input frames")
 	var input_frame := get_input_frame(current_tick)
 	var previous_frame := get_input_frame(current_tick - 1)
-	#perf.stop("tick: grab input frames")
 	
 	assert(input_frame != null, "Input frame for current_tick is null")
 	
-	#perf.start("tick: predict missing input")
 	# Predict any missing input.
 	for peer_id in peers:
 		if not input_frame.players.has(peer_id) or input_frame.players[peer_id].predicted:
@@ -634,11 +594,8 @@ func _do_tick(delta: float, is_rollback: bool = false) -> bool:
 				predicted_input = _call_predict_remote_input(previous_frame.get_player_input(peer_id), ticks_since_real_input)
 			_calculate_data_hash(predicted_input)
 			input_frame.players[peer_id] = InputForPlayer.new(predicted_input, true)
-	#perf.stop("tick: predict missing input")
 	
-	#perf.start("tick: _call_network_process")
 	_call_network_process(delta, input_frame)
-	#perf.stop("tick: _call_network_process")
 	
 	# If the game was stopped during the last network process, then we return
 	# false here, to indicate that a full tick didn't complete and we need to
@@ -646,15 +603,9 @@ func _do_tick(delta: float, is_rollback: bool = false) -> bool:
 	if not started:
 		return false
 	
-	#perf.start("tick: _save_current_state")
 	_save_current_state()
-	#perf.stop("tick: _save_current_state")
 	
 	emit_signal("tick_finished", is_rollback)
-	
-	#print ("---")
-	#perf.print_timings()
-	
 	return true
 
 func _get_or_create_input_frame(tick: int) -> InputBufferFrame:
@@ -863,10 +814,9 @@ func _physics_process(delta: float) -> void:
 	if not started:
 		return
 	
-	print (" === TICK: %s === " % current_tick)
-	
-	var perf = PerfTimer.new()
-	perf.start('frame')
+	#print (" === TICK: %s === " % current_tick)
+	#var perf = PerfTimer.new()
+	#perf.start('frame')
 	
 	if current_tick == 0:
 		# Store an initial state before any ticks.
@@ -888,7 +838,7 @@ func _physics_process(delta: float) -> void:
 		rollback_ticks = max(rollback_ticks, 1)
 	
 	if rollback_ticks > 0:
-		print ("rollback_ticks: %s" % rollback_ticks)
+		#print ("rollback_ticks: %s" % rollback_ticks)
 		var original_tick = current_tick
 		
 		# Rollback our internal state.
@@ -897,22 +847,18 @@ func _physics_process(delta: float) -> void:
 			_handle_fatal_error("Not enough state in buffer to rollback %s frames" % rollback_ticks)
 			return
 		
-		perf.start("load_state")
-		
+		#perf.start("load_state")
 		_call_load_state(state_buffer[-rollback_ticks - 1].data)
-		
-		perf.stop("load_state")
+		#perf.stop("load_state")
 		
 		state_buffer.resize(state_buffer.size() - rollback_ticks)
 		current_tick -= rollback_ticks
 		
 		emit_signal("state_loaded", rollback_ticks)
 		
-		
-		
 		_in_rollback = true
 		
-		perf.start("rollback")
+		#perf.start("rollback")
 		
 		# Iterate forward until we're at the same spot we left off.
 		while rollback_ticks > 0:
@@ -922,7 +868,7 @@ func _physics_process(delta: float) -> void:
 			rollback_ticks -= 1
 		assert(current_tick == original_tick, "Rollback didn't return to the original tick")
 		
-		perf.stop("rollback")
+		#perf.stop("rollback")
 		
 		_in_rollback = false
 	
@@ -997,13 +943,13 @@ func _physics_process(delta: float) -> void:
 	_time_since_last_tick = 0.0
 	
 	if current_tick > 0:
-		perf.start("current_tick")
+		#perf.start("current_tick")
 		if not _do_tick(delta):
 			return
-		perf.stop("current_tick")
+		#perf.stop("current_tick")
 		
 		if interpolation:
-			perf.start("interpolation")
+			#perf.start("interpolation")
 			# Capture the state data to interpolate between.
 			var to_state: Dictionary = state_buffer[-1].data
 			var from_state: Dictionary = state_buffer[-2].data
@@ -1015,10 +961,10 @@ func _physics_process(delta: float) -> void:
 			# Return to state from the previous frame, so we can interpolate
 			# towards the state of the current frame.
 			_call_load_state(state_buffer[-2].data)
-			perf.stop("interpolation")
+			#perf.stop("interpolation")
 	
-	perf.stop('frame')
-	perf.print_timings()
+	#perf.stop('frame')
+	#perf.print_timings()
 
 func _process(delta: float) -> void:
 	if not started:
@@ -1056,31 +1002,9 @@ func _clean_data_for_hashing(input: Dictionary) -> Dictionary:
 # input and real input from causing a rollback) and state (for when a property
 # is only used for interpolation).
 func _calculate_data_hash(input: Dictionary) -> void:
-	#var perf = PerfTimer.new()
-	#perf.start('data hash: clean input')
-	
-#	var cleaned_input := {}
-#	for path in input:
-#		if path == '$':
-#			continue
-#		var input_at_path = input[path]
-#		var data := {}
-#		for key in input_at_path:
-#			if (key is String and key.begins_with('_')) or (key is int and key < 0):
-#				continue
-#			data[key] = input_at_path[key]
-#		cleaned_input[path] = data
 	var cleaned = _clean_data_for_hashing(input)
-	
-	#perf.stop('data hash: clean input')
-	#perf.start('data hash: serialize')
 	var serialized = hash_serializer.serialize(cleaned)
-	#perf.stop('data hash: serialize')
-	#perf.start('data hash: hash')
 	input['$'] = serialized.hash()
-	#perf.stop('data hash: hash')
-	#perf.print_timings()
-	#input['$'] = hash_serializer.serialize(cleaned).hash()
 
 func _receive_input_tick(peer_id: int, serialized_msg: PoolByteArray) -> void:
 	if not started:

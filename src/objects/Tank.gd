@@ -3,7 +3,7 @@ extends "res://src/objects/tank/BaseTank.gd"
 const BaseWeaponType = preload("res://mods/core/weapons/base.tres")
 const Explosion = preload("res://src/objects/Explosion.tscn")
 const EventDispatcher = preload("res://src/utils/EventDispatcher.gd")
-const PerfTimer = preload("res://addons/network-sync-rollback/debugger/PerfTimer.gd")
+#const PerfTimer = preload("res://addons/network-sync-rollback/debugger/PerfTimer.gd")
 
 const ShootSound = preload("res://assets/sounds/Bass Drum__003.wav")
 
