@@ -1,14 +1,9 @@
 TODO
 ====
 
-MILESTONE 1 (physics):
-
- - Make sg-physics-2d into its own project
-   o API reference
-   o Tutorial
-
 MILESTOE 2 (finish porting all the things):
 
+ - Bug: Not returning to player camera when new round starts in Battle Royale
  - See if we can make Tank._network_process() any faster
  - Bugs with 15 frame rollback
    * Crazy camera flashing when tank respawning in Practice mode
@@ -19,14 +14,9 @@ MILESTOE 2 (finish porting all the things):
      o I think right after a spawn or a pickup?
 	 o Also sometimes happens on the first or second tick of the match
 	   - Could we be starting the map on the host too early?
- - Bug: Network issues with Elliot
-   * Attempt to determine how two clients are connected (relay or not, which relay)
-   * Change the "Auto" mode to try non-relayed first, and then relayed after a timeout
-   * Experiment with increasing how long messages are "reliable"
-   * Experiment with switching from Twilio to custom Coturn? (I wonder if we're just using the wrong regions?)
  - Bug: TheKlin boosted and immediately zapped and then was zooming all over
  - Bug: Crash sometimes when player is killed
- - Bug: Peer with given id already exists
+ - Bug (confirmed): Peer with given id already exists
    * Join two players, but don't press Ready
    * Have non-host leave, and then quit game altogether
    * Host should go back (ending match), then start a new one
@@ -51,6 +41,14 @@ BEFORE RELEASE:
  - Document and release stuff that was created:
    o Rollback addon
    o Physics engine
+
+UNCONFIRMED BUGS:
+
+ - Bug: Network issues with Elliot
+   * Attempt to determine how two clients are connected (relay or not, which relay)
+   * Change the "Auto" mode to try non-relayed first, and then relayed after a timeout
+   * Experiment with increasing how long messages are "reliable"
+   * Experiment with switching from Twilio to custom Coturn? (I wonder if we're just using the wrong regions?)
 
 BACKLOG:
 
