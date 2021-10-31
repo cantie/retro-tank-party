@@ -4,11 +4,6 @@ TODO
 MILESTOE 2 (finish porting all the things):
 
  - See if we can make Tank._network_process() any faster
- - Investigate state mismatches:
-   * Drop timer being off by one for a frame
-     o I think right after a spawn or a pickup?
-	 o Also sometimes happens on the first or second tick of the match
-	   - Could we be starting the map on the host too early?
  - Bug: TheKlin boosted and immediately zapped and then was zooming all over
  - Bug: Can't get team start positions on Football map
  - Bug: Crash sometimes when player is killed
@@ -18,7 +13,7 @@ MILESTOE 2 (finish porting all the things):
    * Host should go back (ending match), then start a new one
    * The have non-host connect again
    * Error will happen!
- - Figure out issue where input just stops even though I've never stopped pressing it
+ - Bug: input just stops even though I've never stopped pressing it
    o Easiest to reproduce by pressing a direction on the D-pad
  - Implement a non-debug comparison of state (maybe just sending the hashes of the remote state?)
    o Ideally, passing these hashes would be required and included with other input
