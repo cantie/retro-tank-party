@@ -850,14 +850,12 @@ func _physics_process(delta: float) -> void:
 		#perf.start("load_state")
 		_call_load_state(state_buffer[-rollback_ticks - 1].data)
 		#perf.stop("load_state")
-		
 		state_buffer.resize(state_buffer.size() - rollback_ticks)
 		current_tick -= rollback_ticks
 		
 		emit_signal("state_loaded", rollback_ticks)
 		
 		_in_rollback = true
-		
 		#perf.start("rollback")
 		
 		# Iterate forward until we're at the same spot we left off.
@@ -869,7 +867,6 @@ func _physics_process(delta: float) -> void:
 		assert(current_tick == original_tick, "Rollback didn't return to the original tick")
 		
 		#perf.stop("rollback")
-		
 		_in_rollback = false
 	
 	if get_tree().is_network_server() and _logged_remote_state.size() > 0:
