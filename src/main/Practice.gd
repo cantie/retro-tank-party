@@ -3,6 +3,7 @@ extends Node2D
 const Game = preload("res://src/Game.gd")
 
 onready var game := $Game
+onready var respawn_timer := $RespawnTimer
 onready var ui_layer := $UILayer
 
 func _ready() -> void:
@@ -49,8 +50,9 @@ func _on_Game_game_error(message) -> void:
 	_on_UILayer_back_button()
 
 func _on_Game_player_dead(player_id, killer_id) -> void:
-	yield(get_tree().create_timer(2.0), "timeout")
-	
+	respawn_timer.start()
+
+func _on_RespawnTimer_timeout() -> void:
 	SyncManager.stop()
 	game.game_reset()
 	SyncManager.start()

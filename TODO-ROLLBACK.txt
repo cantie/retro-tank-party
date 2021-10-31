@@ -4,9 +4,6 @@ TODO
 MILESTOE 2 (finish porting all the things):
 
  - See if we can make Tank._network_process() any faster
- - Bugs with 15 frame rollback
-   * Crazy camera flashing when tank respawning in Practice mode
-   * Sometimes player camera not getting added to player tank after round end in Battle Royale
  - Replace all instances of has_node()/get_node() with get_node_or_null()
  - Investigate state mismatches:
    * Drop timer being off by one for a frame
