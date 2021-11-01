@@ -5,4 +5,5 @@ extends Node
 #####
 
 var encryption_password := 'dev'
+var fallback_ice_servers := []
 

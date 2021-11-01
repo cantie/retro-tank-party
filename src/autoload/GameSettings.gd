@@ -5,6 +5,14 @@ enum ControlScheme {
 	RETRO,
 }
 
+enum NetworkRelay {
+	AUTO = OnlineMatch.NetworkRelay.AUTO,
+	FORCED = OnlineMatch.NetworkRelay.FORCED,
+	DISABLED = OnlineMatch.NetworkRelay.DISABLED,
+	FALLBACK,
+	FORCED_FALLBACK,
+}
+
 var sound_volume := 1.0 setget set_sound_volume
 var music_volume := 1.0 setget set_music_volume
 var tank_engine_sounds := true setget set_tank_engine_sounds
@@ -64,7 +72,13 @@ func set_use_full_screen(_use_full_screen: bool) -> void:
 
 func set_use_network_relay(_use_network_relay: int) -> void:
 	use_network_relay = _use_network_relay
-	OnlineMatch.use_network_relay = _use_network_relay
+	match use_network_relay:
+		NetworkRelay.AUTO, NetworkRelay.FORCED, NetworkRelay.DISABLED:
+			OnlineMatch.use_network_relay = use_network_relay
+		NetworkRelay.FALLBACK:
+			OnlineMatch.use_network_relay = OnlineMatch.NetworkRelay.AUTO
+		NetworkRelay.FORCED_FALLBACK:
+			OnlineMatch.use_network_relay = OnlineMatch.NetworkRelay.FORCED
 
 func set_joy_id(_joy_id: int) -> void:
 	if joy_id != _joy_id:
