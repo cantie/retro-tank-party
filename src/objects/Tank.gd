@@ -182,9 +182,12 @@ func _network_spawn(data: Dictionary) -> void:
 func _network_despawn() -> void:
 	# Reset some stuff for when this node is reused
 	set_weapon_type(BaseWeaponType)
+	if ability:
+		_on_ability_finished(ability)
 	set_held_ability_type(null)
 	shoot_cooldown_timer.stop()
-	animation_player.stop()
+	animation_player.stop(true)
+	animation_player.play("RESET")
 	player_controlled = false
 	health = 100
 	can_shoot = true
