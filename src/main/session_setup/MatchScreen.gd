@@ -79,7 +79,7 @@ func _on_match_button_pressed(mode) -> void:
 							server['urls'] = [ server['urls'] ]
 
 					print ("Using ICE server list from server")
-					OnlineMatch.ice_servers = ice_servers
+					OnlineMatch.ice_servers = ice_servers + Build.fallback_ice_servers
 				else:
 					print ("Server error in RPC call get_ice_servers(): %s" % json_result.result)
 			else:

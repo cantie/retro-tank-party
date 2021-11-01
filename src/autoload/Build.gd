@@ -5,5 +5,5 @@ extends Node
 #####
 
 var encryption_password := 'dev'
-var fallback_ice_servers := []
+var fallback_ice_servers := [{ "urls": ["stun:stun.l.google.com:19302"] }]
 
