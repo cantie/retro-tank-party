@@ -156,17 +156,23 @@ func _on_SyncManager_remote_state_mismatch(tick: int, peer_id: int, local_state:
 	print ("On tick %s, remote state from %s doesn't match local state:\n" % [tick, peer_id])
 	DebugStatePrinter.print_state_diff(local_state, remote_state)
 	
-	print (" === PREVIOUS STATE === ")
 	var state_frame = SyncManager._get_state_frame(tick - 1)
-	print (JSON.print(SyncManager.hash_serializer.serialize(state_frame.data.duplicate(true)), JSON_INDENT))
+	if state_frame:
+		print (" === PREVIOUS STATE === ")
+		print (JSON.print(SyncManager.hash_serializer.serialize(state_frame.data.duplicate(true)), JSON_INDENT))
+	else:
+		print (" === MISSING PREVIOUS STATE FRAME?! === ")
 	
-	print (" === INPUT === ")
 	var input_frame = SyncManager.get_input_frame(tick)
-	var player_info := {}
-	for player_id in input_frame.players:
-		assert(not input_frame.players[player_id].predicted)
-		player_info[player_id] = input_frame.players[player_id].input.duplicate(true)
-	print (JSON.print(SyncManager.hash_serializer.serialize(player_info), JSON_INDENT))
+	if input_frame:
+		print (" === INPUT === ")
+		var player_info := {}
+		for player_id in input_frame.players:
+			assert(not input_frame.players[player_id].predicted)
+			player_info[player_id] = input_frame.players[player_id].input.duplicate(true)
+		print (JSON.print(SyncManager.hash_serializer.serialize(player_info), JSON_INDENT))
+	else:
+		print (" === MISSING INPUT FRAME ?! === ")
 	
 	if _debug_overlay:
 		_debug_overlay.add_message(peer_id, "%s: State mismatch" % tick)
