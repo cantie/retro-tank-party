@@ -6,6 +6,7 @@
 /steam_appid.txt
 /steam_build_output/
 /rtp.code-workspace
+/local.gd
 
 /godot/modules/godotsteam/sdk/public/
 /godot/modules/godotsteam/sdk/redistributable_bin/
