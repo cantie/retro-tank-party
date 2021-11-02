@@ -968,8 +968,6 @@ func _physics_process(delta: float) -> void:
 	_time_since_last_tick = 0.0
 	_ran_physics_process = true
 	
-	print ("_physics_process()")
-	
 	#perf.stop('frame')
 	#perf.print_timings()
 
@@ -977,18 +975,13 @@ func _process(delta: float) -> void:
 	if not started:
 		return
 	
-	print ("_process(): _ran_physics_process = %s" % _ran_physics_process)
-	
 	network_adaptor.poll()
-	
-	_time_since_last_tick += delta
 	
 	# These are things that we want to run during "interpolation frames", in
 	# order to slim down the normal frames. Or, if interpolation is disabled,
 	# we need to run these always.
 	if not interpolation or not _ran_physics_process:
-		# Will calculate the state hash, which can be slow.
-		_update_input_complete_tick()
+		_time_since_last_tick += delta
 		
 		# Don't interpolate if we are skipping ticks.
 		if interpolation and skip_ticks == 0:
@@ -996,6 +989,8 @@ func _process(delta: float) -> void:
 			if weight > 1.0:
 				weight = 1.0
 			_call_interpolate_state(weight)
+		
+		_update_input_complete_tick()
 		
 		if get_tree().is_network_server() and _logged_remote_state.size() > 0:
 			_process_logged_remote_state()
