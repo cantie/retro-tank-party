@@ -1015,7 +1015,7 @@ func _receive_input_tick(peer_id: int, serialized_msg: PoolByteArray) -> void:
 	
 	var first_remote_tick = all_remote_ticks[0]
 	var last_remote_tick = all_remote_ticks[-1]
-
+	
 	if first_remote_tick >= input_tick + max_buffer_size:
 		# This either happens because we are really far behind (but maybe, just
 		# maybe could catch up) or we are receiving old ticks from a previous
@@ -1023,55 +1023,63 @@ func _receive_input_tick(peer_id: int, serialized_msg: PoolByteArray) -> void:
 		# the best, but if we can't keep up, another one of the fail safes will
 		# detect that we are out of sync.
 		print ("Discarding message from the future")
+		# We return because we don't even want to do the accounting that happens
+		# after integrating input, since the data in this message could be
+		# totally bunk (ie. if it's from a previous match).
 		return
 	
 	var peer: Peer = peers[peer_id]
 	
-	# Integrate the input we received into the input buffer.
-	for remote_tick in all_remote_ticks:
-		# Skip ticks we already have.
-		if remote_tick <= peer.last_remote_tick_received:
-			continue
-		# This means the input frame has already been retired, which can only
-		# happen if we already had all the input.
-		if remote_tick < _input_buffer_start_tick:
-			continue
-		
-		var remote_input = message_serializer.unserialize_input(all_remote_input[remote_tick])
-		var input_frame := _get_or_create_input_frame(remote_tick)
-		if input_frame == null:
-			# _get_or_create_input_frame() will have already flagged the error,
-			# so we can just return here.
-			return
-		
-		# If we already have non-predicted input for this peer, then skip it.
-		if not input_frame.is_player_input_predicted(peer_id):
-			continue
-		
-		#print ("Received remote tick %s from %s" % [remote_tick, peer_id])
-		
-		# If we received a tick in the past and we aren't already setup to
-		# rollback earlier than that...
-		var tick_delta = current_tick - remote_tick
-		if tick_delta >= 0 and rollback_ticks <= tick_delta:
-			# Grab our predicted input, and store the remote input.
-			var local_input = input_frame.get_player_input(peer_id)
-			input_frame.players[peer_id] = InputForPlayer.new(remote_input, false)
+	# If the last tick in the message is lower than the last remote tick we
+	# received, then we can just discard the whole message.
+	if last_remote_tick <= peer.last_remote_tick_received:
+		print ("Discarding message with all redundant input")
+	else:
+		# Integrate the input we received into the input buffer.
+		for remote_tick in all_remote_ticks:
+			# Skip ticks we already have.
+			if remote_tick <= peer.last_remote_tick_received:
+				continue
+			# This means the input frame has already been retired, which can only
+			# happen if we already had all the input.
+			if remote_tick < _input_buffer_start_tick:
+				continue
 			
-			# Check if the remote input matches what we had predicted, if not,
-			# flag that we need to rollback.
-			if local_input['$'] != remote_input['$']:
-				rollback_ticks = tick_delta + 1
-				emit_signal("rollback_flagged", remote_tick, peer_id, local_input, remote_input)
-		else:
-			# Otherwise, just store it.
-			input_frame.players[peer_id] = InputForPlayer.new(remote_input, false)
-	
-	# Find what the last remote tick we received was after filling these in.
-	var index = (peer.last_remote_tick_received - _input_buffer_start_tick) + 1
-	while index < input_buffer.size() and not input_buffer[index].is_player_input_predicted(peer.peer_id):
-		peer.last_remote_tick_received += 1
-		index += 1
+			var remote_input = message_serializer.unserialize_input(all_remote_input[remote_tick])
+			var input_frame := _get_or_create_input_frame(remote_tick)
+			if input_frame == null:
+				# _get_or_create_input_frame() will have already flagged the error,
+				# so we can just return here.
+				return
+			
+			# If we already have non-predicted input for this peer, then skip it.
+			if not input_frame.is_player_input_predicted(peer_id):
+				continue
+			
+			#print ("Received remote tick %s from %s" % [remote_tick, peer_id])
+			
+			# If we received a tick in the past and we aren't already setup to
+			# rollback earlier than that...
+			var tick_delta = current_tick - remote_tick
+			if tick_delta >= 0 and rollback_ticks <= tick_delta:
+				# Grab our predicted input, and store the remote input.
+				var local_input = input_frame.get_player_input(peer_id)
+				input_frame.players[peer_id] = InputForPlayer.new(remote_input, false)
+				
+				# Check if the remote input matches what we had predicted, if not,
+				# flag that we need to rollback.
+				if local_input['$'] != remote_input['$']:
+					rollback_ticks = tick_delta + 1
+					emit_signal("rollback_flagged", remote_tick, peer_id, local_input, remote_input)
+			else:
+				# Otherwise, just store it.
+				input_frame.players[peer_id] = InputForPlayer.new(remote_input, false)
+		
+		# Find what the last remote tick we received was after filling these in.
+		var index = (peer.last_remote_tick_received - _input_buffer_start_tick) + 1
+		while index < input_buffer.size() and not input_buffer[index].is_player_input_predicted(peer.peer_id):
+			peer.last_remote_tick_received += 1
+			index += 1
 	
 	# Record the next frame the other peer needs.
 	peer.next_local_tick_requested = max(msg[InputMessageKey.NEXT_TICK_REQUESTED], peer.next_local_tick_requested)

@@ -113,7 +113,8 @@ func _ready() -> void:
 	var network_adaptor = NakamaWebRTCNetworkAdaptor.new()
 	network_adaptor.max_buffered_amount = 200
 	network_adaptor.max_skipped_input_in_a_row = 3
-	network_adaptor.max_packet_lifetime = 66
+	# This is the max latency (~33ms * 15 = ~500ms)
+	network_adaptor.max_packet_lifetime = 500
 	
 	SyncManager.network_adaptor = network_adaptor
 	SyncManager.message_serializer = RTPMessageSerializer.new()
