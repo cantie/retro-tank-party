@@ -4,7 +4,12 @@ TODO
 MILESTOE 2 (finish porting all the things):
 
  - Add flags to CI build to generate debugsymbols file
+ - Try: Disable interpolation on the _process() right after _physics_process()
+ - Try: Don't do network_adaptor.poll() in _physics_process()?
  - See if we can make Tank._network_process() any faster
+ - Bug: Pickup sometimes appears in one spot, gets picked up (with no effect) and then reappears in a different spot
+ - Bug: Tank sometimes remains white after hit (not after despawn/respawn)
+ - Bug: Elliot having input issues during "Regaining sync..."
  - Bug: TheKlin boosted and immediately zapped and then was zooming all over
  - Bug: Can't get team start positions on Football map
  - Bug: Crash sometimes when player is killed
