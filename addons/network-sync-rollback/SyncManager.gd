@@ -811,54 +811,6 @@ func _send_input_messages_to_all_peers() -> void:
 	for peer_id in peers:
 		_send_input_messages_to_peer(peer_id)
 
-func _do_skip_ticks() -> bool:
-	_record_advantage()
-	
-	# Negative numbers are used to skip some additional ticks after we've
-	# technically regained sync, but we don't want to start back up again right
-	# away.
-	if input_buffer_underruns < 0:
-		input_buffer_underruns += 1
-		if input_buffer_underruns == 0:
-			# Let the world know we've regained sync, and fall back to normal
-			# operation. (This is the only branch that shouldn't 'return').
-			emit_signal("sync_regained")
-			# We don't want to skip ticks through the normal mechanism, because
-			# any skips that were previously calculated don't apply anymore.
-			skip_ticks = 0
-		else:
-			# Even when we're skipping ticks, still send input.
-			_send_input_messages_to_all_peers()
-			return true
-	# Attempt to clean up buffers, but if we can't, that means we've lost sync.
-	elif not _cleanup_buffers():
-		if input_buffer_underruns == 0:
-			emit_signal("sync_lost")
-		input_buffer_underruns += 1
-		if input_buffer_underruns >= max_input_buffer_underruns:
-			_handle_fatal_error("Unable to regain synchronization")
-			return true
-		# Even when we're skipping ticks, still send input.
-		_send_input_messages_to_all_peers()
-		return true
-	elif input_buffer_underruns > 0:
-		# We've technically regained sync, but we don't want to just fall out of
-		# sync again next frame, so skip a few more frames for good luck.
-		input_buffer_underruns = -skip_ticks_after_sync_regained
-		return true
-	
-	if skip_ticks > 0:
-		skip_ticks -= 1
-		if skip_ticks == 0:
-			for peer in peers.values():
-				peer.clear_advantage()
-		else:
-			# Even when we're skipping ticks, still send input.
-			_send_input_messages_to_all_peers()
-			return true
-	
-	return _calculate_skip_ticks()
-
 func _physics_process(delta: float) -> void:
 	if not started:
 		return
@@ -923,7 +875,53 @@ func _physics_process(delta: float) -> void:
 	# STEP 2: SKIP TICKS, IF NECESSARY.
 	#####
 	
-	if _do_skip_ticks():
+	_record_advantage()
+	
+	# Negative numbers are used to skip some additional ticks after we've
+	# technically regained sync, but we don't want to start back up again right
+	# away.
+	if input_buffer_underruns < 0:
+		input_buffer_underruns += 1
+		if input_buffer_underruns == 0:
+			# Let the world know we've regained sync, and fall back to normal
+			# operation. (This is the only branch that shouldn't 'return').
+			emit_signal("sync_regained")
+			# We don't want to skip ticks through the normal mechanism, because
+			# any skips that were previously calculated don't apply anymore.
+			skip_ticks = 0
+		else:
+			# Even when we're skipping ticks, still send input.
+			_send_input_messages_to_all_peers()
+			return
+	# Attempt to clean up buffers, but if we can't, that means we've lost sync.
+	elif not _cleanup_buffers():
+		if input_buffer_underruns == 0:
+			emit_signal("sync_lost")
+		input_buffer_underruns += 1
+		if input_buffer_underruns >= max_input_buffer_underruns:
+			_handle_fatal_error("Unable to regain synchronization")
+		else:
+			# Even when we're skipping ticks, still send input.
+			_send_input_messages_to_all_peers()
+		return
+	elif input_buffer_underruns > 0:
+		# We've technically regained sync, but we don't want to just fall out of
+		# sync again next frame, so skip a few more frames for good luck.
+		input_buffer_underruns = -skip_ticks_after_sync_regained
+		return
+	
+	if skip_ticks > 0:
+		skip_ticks -= 1
+		if skip_ticks == 0:
+			for peer in peers.values():
+				peer.clear_advantage()
+		else:
+			# Even when we're skipping ticks, still send input.
+			_send_input_messages_to_all_peers()
+			return
+	
+	if _calculate_skip_ticks():
+		# This means we need to skip some ticks, so may as well start now!
 		return
 	
 	#####
