@@ -368,6 +368,7 @@ func _network_process(delta: float, input: Dictionary) -> void:
 		velocity.imul(movement_vector.x)
 		velocity.imul(speed)
 		move_and_slide(velocity)
+		_after_update_position(get_global_fixed_position().to_float())
 	
 	# 6554 = 0.1
 	if movement_vector.x >= 6554 or movement_vector.x <= -6554:
@@ -394,15 +395,13 @@ func _network_process(delta: float, input: Dictionary) -> void:
 
 	if input.get(PlayerInput.USING_ABILITY, false):
 		use_ability()
-	
-	_after_update_position()
 
-func _after_update_position() -> void:
+func _after_update_position(new_global_position: Vector2) -> void:
 	# Make info follow the tank
-	player_info_node.position = global_position + player_info_offset
+	player_info_node.position = new_global_position + player_info_offset
 	
 	if camera:
-		camera.global_position = global_position
+		camera.global_position = new_global_position
 
 func _save_state() -> Dictionary:
 	return {
@@ -432,7 +431,7 @@ func _load_state(state: Dictionary) -> void:
 	set_held_ability_type(state['held_ability_type'])
 	ability_charges = state['ability_charges']
 	
-	_after_update_position()
+	_after_update_position(get_global_fixed_position().to_float())
 	_update_ability_label()
 	#perf.stop("tank the rest")
 	#perf.start("tank sync to physics")
@@ -446,7 +445,7 @@ func _interpolate_state(old_state: Dictionary, new_state: Dictionary, weight: fl
 	scale = lerp(old_state['fixed_transform'].get_scale().to_float(), new_state['fixed_transform'].get_scale().to_float(), weight)
 	rotation = lerp_angle(SGFixed.to_float(old_state['fixed_transform'].get_rotation()), SGFixed.to_float(new_state['fixed_transform'].get_rotation()), weight)
 	turret_pivot.rotation = lerp_angle(SGFixed.to_float(old_state['_turret_transform'].get_rotation()), SGFixed.to_float(new_state['_turret_transform'].get_rotation()), weight)
-	_after_update_position()
+	_after_update_position(global_position)
 
 func _unhandled_input(event: InputEvent) -> void:
 	if event is InputEventMouseMotion:

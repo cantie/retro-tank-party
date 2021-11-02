@@ -265,6 +265,7 @@ var _debug_skip_nth_message_counter := 0
 var _input_complete_tick := 0
 var _logged_remote_state: Dictionary
 var _in_rollback := false
+var _ran_physics_process := false
 
 signal sync_started ()
 signal sync_stopped ()
@@ -445,11 +446,15 @@ func _reset() -> void:
 	_input_complete_tick = 0
 	_logged_remote_state.clear()
 	_in_rollback = false
+	_ran_physics_process = false
 
 remote func _remote_start() -> void:
 	_reset()
 	_tick_time = (1.0 / Engine.iterations_per_second)
 	started = true
+	# Store an initial state before any ticks.
+	state_buffer.append(StateBufferFrame.new(0, _call_save_state()))
+	
 	network_adaptor.start_network_adaptor(self)
 	emit_signal("sync_started")
 
@@ -548,7 +553,6 @@ func _save_current_state() -> void:
 		return
 	
 	state_buffer.append(StateBufferFrame.new(current_tick, _call_save_state()))
-	_update_input_complete_tick()
 
 func _update_input_complete_tick() -> void:
 	while current_tick > _input_complete_tick + 1:
@@ -818,13 +822,62 @@ func _physics_process(delta: float) -> void:
 	#var perf = PerfTimer.new()
 	#perf.start('frame')
 	
-	if current_tick == 0:
-		# Store an initial state before any ticks.
-		_save_current_state()
+	#####
+	# STEP 1: SKIP TICKS, IF NECESSARY.
+	#####
 	
-	# We do this in _process() too, so hopefully all is good by now, but just in
-	# case, we don't want to miss out on any data.
-	network_adaptor.poll()
+#	_record_advantage()
+#
+#	# Negative numbers are used to skip some additional ticks after we've
+#	# technically regained sync, but we don't want to start back up again right
+#	# away.
+#	if input_buffer_underruns < 0:
+#		input_buffer_underruns += 1
+#		if input_buffer_underruns == 0:
+#			# Let the world know we've regained sync, and fall back to normal
+#			# operation. (This is the only branch that shouldn't 'return').
+#			emit_signal("sync_regained")
+#			# We don't want to skip ticks through the normal mechanism, because
+#			# any skips that were previously calculated don't apply anymore.
+#			skip_ticks = 0
+#		else:
+#			# Even when we're skipping ticks, still send input.
+#			_send_input_messages_to_all_peers()
+#			return
+#	# Attempt to clean up buffers, but if we can't, that means we've lost sync.
+#	elif not _cleanup_buffers():
+#		if input_buffer_underruns == 0:
+#			emit_signal("sync_lost")
+#		input_buffer_underruns += 1
+#		if input_buffer_underruns >= max_input_buffer_underruns:
+#			_handle_fatal_error("Unable to regain synchronization")
+#			return
+#		# Even when we're skipping ticks, still send input.
+#		_send_input_messages_to_all_peers()
+#		return
+#	elif input_buffer_underruns > 0:
+#		# We've technically regained sync, but we don't want to just fall out of
+#		# sync again next frame, so skip a few more frames for good luck.
+#		input_buffer_underruns = -skip_ticks_after_sync_regained
+#		return
+#
+#	if skip_ticks > 0:
+#		skip_ticks -= 1
+#		if skip_ticks == 0:
+#			for peer in peers.values():
+#				peer.clear_advantage()
+#		else:
+#			# Even when we're skipping ticks, still send input.
+#			_send_input_messages_to_all_peers()
+#			return
+#
+#	if _calculate_skip_ticks():
+#		# This means we need to skip some ticks, so may as well start now!
+#		return
+	
+	#####
+	# STEP 2: PERFORM ANY ROLLBACKS, IF NECESSARY.
+	#####
 	
 	if debug_random_rollback_ticks > 0:
 		randomize()
@@ -869,57 +922,9 @@ func _physics_process(delta: float) -> void:
 		#perf.stop("rollback")
 		_in_rollback = false
 	
-	if get_tree().is_network_server() and _logged_remote_state.size() > 0:
-		_process_logged_remote_state()
-	
-	_record_advantage()
-	
-	# Negative numbers are used to skip some additional ticks after we've
-	# technically regained sync, but we don't want to start back up again right
-	# away.
-	if input_buffer_underruns < 0:
-		input_buffer_underruns += 1
-		if input_buffer_underruns == 0:
-			# Let the world know we've regained sync, and fall back to normal
-			# operation. (This is the only branch that shouldn't 'return').
-			emit_signal("sync_regained")
-			# We don't want to skip ticks through the normal mechanism, because
-			# any skips that were previously calculated don't apply anymore.
-			skip_ticks = 0
-		else:
-			# Even when we're skipping ticks, still send input.
-			_send_input_messages_to_all_peers()
-			return
-	# Attempt to clean up buffers, but if we can't, that means we've lost sync.
-	elif not _cleanup_buffers():
-		if input_buffer_underruns == 0:
-			emit_signal("sync_lost")
-		input_buffer_underruns += 1
-		if input_buffer_underruns >= max_input_buffer_underruns:
-			_handle_fatal_error("Unable to regain synchronization")
-			return
-		# Even when we're skipping ticks, still send input.
-		_send_input_messages_to_all_peers()
-		return
-	elif input_buffer_underruns > 0:
-		# We've technically regained sync, but we don't want to just fall out of
-		# sync again next frame, so skip a few more frames for good luck.
-		input_buffer_underruns = -skip_ticks_after_sync_regained
-		return
-	
-	if skip_ticks > 0:
-		skip_ticks -= 1
-		if skip_ticks == 0:
-			for peer in peers.values():
-				peer.clear_advantage()
-		else:
-			# Even when we're skipping ticks, still send input.
-			_send_input_messages_to_all_peers()
-			return
-	
-	if _calculate_skip_ticks():
-		# This means we need to skip some ticks, so may as well start now!
-		return
+	#####
+	# STEP 3: GATHER INPUT AND RUN CURRENT TICK
+	#####
 	
 	input_tick += 1
 	current_tick += 1
@@ -936,8 +941,6 @@ func _physics_process(delta: float) -> void:
 	_input_send_queue.append(message_serializer.serialize_input(local_input))
 	assert(input_tick == _input_send_queue_start_tick + _input_send_queue.size() - 1, "Input send queue ticks numbers are misaligned")
 	_send_input_messages_to_all_peers()
-	
-	_time_since_last_tick = 0.0
 	
 	if current_tick > 0:
 		#perf.start("current_tick")
@@ -960,6 +963,9 @@ func _physics_process(delta: float) -> void:
 			_call_load_state(state_buffer[-2].data)
 			#perf.stop("interpolation")
 	
+	_time_since_last_tick = 0.0
+	_ran_physics_process = true
+	
 	#perf.stop('frame')
 	#perf.print_timings()
 
@@ -971,11 +977,26 @@ func _process(delta: float) -> void:
 	
 	network_adaptor.poll()
 	
-	if interpolation:
-		var weight: float = _time_since_last_tick / _tick_time
-		if weight > 1.0:
-			weight = 1.0
-		_call_interpolate_state(weight)
+	# These are things that we want to run during "interpolation frames", in
+	# order to slim down the normal frames. Or, if interpolation is disabled,
+	# we need to run these always.
+	if not interpolation or not _ran_physics_process:
+		# Will calculate the state hash, which can be slow.
+		_update_input_complete_tick()
+		
+		# Don't interpolate if we are skipping ticks.
+		if interpolation and skip_ticks == 0:
+			var weight: float = _time_since_last_tick / _tick_time
+			if weight > 1.0:
+				weight = 1.0
+			_call_interpolate_state(weight)
+		
+		if get_tree().is_network_server() and _logged_remote_state.size() > 0:
+			_process_logged_remote_state()
+	
+	# Clear flag so subsequent _process() calls will know that they weren't
+	# preceeded by _physics_process().
+	_ran_physics_process = false
 
 func _clean_data_for_hashing(input: Dictionary) -> Dictionary:
 	var cleaned := {}
