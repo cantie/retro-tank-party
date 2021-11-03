@@ -113,7 +113,8 @@ func respawn_player(peer_id: int, start_transform = null) -> void:
 
 func _on_SyncManager_scene_spawned(name: String, spawned_node: Node, scene: PackedScene, data: Dictionary) -> void:
 	if name == 'Tank':
-		spawned_node.connect("player_dead", self, "_on_player_dead", [spawned_node])
+		if not spawned_node.is_connected("player_dead", self, "_on_player_dead"):
+			spawned_node.connect("player_dead", self, "_on_player_dead", [spawned_node])
 		emit_signal("player_spawned", spawned_node)
 
 func make_player_controlled(peer_id) -> void:
