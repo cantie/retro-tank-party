@@ -231,8 +231,8 @@ var ticks_to_calculate_advantage := 60
 var input_delay := 2 setget set_input_delay
 var max_input_frames_per_message := 5
 var max_messages_at_once := 2
-var max_input_buffer_underruns := 300
-var skip_ticks_after_sync_regained := 0
+var max_ticks_to_regain_sync := 300
+var min_lag_to_regain_sync := 5
 var interpolation := false
 var debug_rollback_ticks := 0
 var debug_random_rollback_ticks := 0
@@ -247,7 +247,6 @@ var input_tick: int = 0 setget _set_readonly_variable
 var current_tick: int = 0 setget _set_readonly_variable
 var skip_ticks: int = 0 setget _set_readonly_variable
 var rollback_ticks: int = 0 setget _set_readonly_variable
-var input_buffer_underruns := 0 setget _set_readonly_variable
 var started := false setget _set_readonly_variable
 
 var _ping_timer: Timer
@@ -259,6 +258,7 @@ var _state_buffer_start_tick: int
 var _state_hashes_start_tick: int
 var _input_send_queue := []
 var _input_send_queue_start_tick: int
+var _ticks_spent_regaining_sync := 0
 var _interpolation_state := {}
 var _time_since_last_tick := 0.0
 var _debug_skip_nth_message_counter := 0
@@ -432,7 +432,6 @@ func _reset() -> void:
 	current_tick = input_tick - input_delay
 	skip_ticks = 0
 	rollback_ticks = 0
-	input_buffer_underruns = 0
 	input_buffer.clear()
 	state_buffer.clear()
 	_input_buffer_start_tick = 1
@@ -440,6 +439,7 @@ func _reset() -> void:
 	_state_hashes_start_tick = 1
 	_input_send_queue.clear()
 	_input_send_queue_start_tick = 1
+	_ticks_spent_regaining_sync = 0
 	_interpolation_state.clear()
 	_time_since_last_tick = 0.0
 	_debug_skip_nth_message_counter = 0
@@ -763,6 +763,12 @@ func _calculate_skip_ticks() -> bool:
 	
 	return false
 
+func _calculate_max_lag() -> int:
+	var max_lag := 0
+	for peer in peers.values():
+		max_lag = max(max_lag, max(peer.remote_lag, peer.local_lag))
+	return max_lag
+
 func _calculate_minimum_next_tick_requested() -> int:
 	if peers.size() == 0:
 		return 1
@@ -871,37 +877,34 @@ func _physics_process(delta: float) -> void:
 	
 	_record_advantage()
 	
-	# Negative numbers are used to skip some additional ticks after we've
-	# technically regained sync, but we don't want to start back up again right
-	# away.
-	if input_buffer_underruns < 0:
-		input_buffer_underruns += 1
-		if input_buffer_underruns == 0:
-			# Let the world know we've regained sync, and fall back to normal
-			# operation. (This is the only branch that shouldn't 'return').
-			emit_signal("sync_regained")
-			# We don't want to skip ticks through the normal mechanism, because
-			# any skips that were previously calculated don't apply anymore.
-			skip_ticks = 0
-		else:
+	if _ticks_spent_regaining_sync > 0:
+		_ticks_spent_regaining_sync += 1
+		if _ticks_spent_regaining_sync > max_ticks_to_regain_sync:
+			_handle_fatal_error("Unable to regain synchronization")
+			return
+		
+		# If our max lag is still greater than the min lag to regain sync, then
+		# we still haven't regained sync.
+		if _calculate_max_lag() > min_lag_to_regain_sync:
 			# Even when we're skipping ticks, still send input.
 			_send_input_messages_to_all_peers()
 			return
+		
+		# If we've reach this point, that means we've regained sync!
+		_cleanup_buffers()
+		_ticks_spent_regaining_sync = 0
+		emit_signal("sync_regained")
+		
+		# We don't want to skip ticks through the normal mechanism, because
+		# any skips that were previously calculated don't apply anymore.
+		skip_ticks = 0
+	
 	# Attempt to clean up buffers, but if we can't, that means we've lost sync.
 	elif not _cleanup_buffers():
-		if input_buffer_underruns == 0:
-			emit_signal("sync_lost")
-		input_buffer_underruns += 1
-		if input_buffer_underruns >= max_input_buffer_underruns:
-			_handle_fatal_error("Unable to regain synchronization")
-		else:
-			# Even when we're skipping ticks, still send input.
-			_send_input_messages_to_all_peers()
-		return
-	elif input_buffer_underruns > 0:
-		# We've technically regained sync, but we don't want to just fall out of
-		# sync again next frame, so skip a few more frames for good luck.
-		input_buffer_underruns = -skip_ticks_after_sync_regained
+		emit_signal("sync_lost")
+		_ticks_spent_regaining_sync = 1
+		# Even when we're skipping ticks, still send input.
+		_send_input_messages_to_all_peers()
 		return
 	
 	if skip_ticks > 0:
