@@ -7,6 +7,7 @@ MILESTOE 2 (finish porting all the things):
  - Try: Output a warning when _physics_process() takes longer than a configured time
  - Try: Can we make interpolation faster by reusing the previous _interpolation_state[1]
  - Try: Setting the time you are exposed while Invisible to the same as the shot cooldown timer
+ - Try: Building custom versions of the WebRTC native plugin for Linux, Windows and MacOS
  - Physics: Store from/to on element as HashKey's and avoid keeping vector
  - See if we can make Tank._network_process() any faster
  - Bug: Figure out the new sleugh of state mismatches
