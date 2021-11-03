@@ -884,15 +884,19 @@ func _physics_process(delta: float) -> void:
 			_handle_fatal_error("Unable to regain synchronization")
 			return
 		
-		# If our max lag is still greater than the min lag to regain sync, then
-		# we still haven't regained sync.
+		# Check again if we're still getting input buffer underruns.
+		if not _cleanup_buffers():
+			# Even when we're skipping ticks, still send input.
+			_send_input_messages_to_all_peers()
+			return
+		
+		# Check if our max lag is still greater than the min lag to regain sync.
 		if _calculate_max_lag() > min_lag_to_regain_sync:
 			# Even when we're skipping ticks, still send input.
 			_send_input_messages_to_all_peers()
 			return
 		
 		# If we've reach this point, that means we've regained sync!
-		_cleanup_buffers()
 		_ticks_spent_regaining_sync = 0
 		emit_signal("sync_regained")
 		
