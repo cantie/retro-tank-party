@@ -391,18 +391,9 @@ func _network_process(delta: float, input: Dictionary) -> void:
 		shoot_cooldown_timer.start()
 		shoot()
 		Globals.rumble.add_weak_rumble(shoot_rumble)
-
+	
 	if input.get(PlayerInput.USING_ABILITY, false):
 		use_ability()
-	
-	_after_update_position()
-
-func _after_update_position() -> void:
-	# Make info follow the tank
-	player_info_node.position = global_position + player_info_offset
-	
-	if camera:
-		camera.global_position = global_position
 
 func _save_state() -> Dictionary:
 	return {
@@ -432,7 +423,6 @@ func _load_state(state: Dictionary) -> void:
 	set_held_ability_type(state['held_ability_type'])
 	ability_charges = state['ability_charges']
 	
-	_after_update_position()
 	_update_ability_label()
 	#perf.stop("tank the rest")
 	#perf.start("tank sync to physics")
@@ -446,7 +436,14 @@ func _interpolate_state(old_state: Dictionary, new_state: Dictionary, weight: fl
 	scale = lerp(old_state['fixed_transform'].get_scale().to_float(), new_state['fixed_transform'].get_scale().to_float(), weight)
 	rotation = lerp_angle(SGFixed.to_float(old_state['fixed_transform'].get_rotation()), SGFixed.to_float(new_state['fixed_transform'].get_rotation()), weight)
 	turret_pivot.rotation = lerp_angle(SGFixed.to_float(old_state['_turret_transform'].get_rotation()), SGFixed.to_float(new_state['_turret_transform'].get_rotation()), weight)
-	_after_update_position()
+
+func _process(delta: float) -> void:
+	# Make info follow the tank
+	player_info_node.position = global_position + player_info_offset
+	
+	# Make camera follow the tank
+	if camera:
+		camera.global_position = global_position
 
 func _unhandled_input(event: InputEvent) -> void:
 	if event is InputEventMouseMotion:

@@ -265,6 +265,7 @@ var _debug_skip_nth_message_counter := 0
 var _input_complete_tick := 0
 var _logged_remote_state: Dictionary
 var _in_rollback := false
+var _ran_physics_process := false
 
 signal sync_started ()
 signal sync_stopped ()
@@ -445,6 +446,7 @@ func _reset() -> void:
 	_input_complete_tick = 0
 	_logged_remote_state.clear()
 	_in_rollback = false
+	_ran_physics_process = false
 
 remote func _remote_start() -> void:
 	_reset()
@@ -548,7 +550,6 @@ func _save_current_state() -> void:
 		return
 	
 	state_buffer.append(StateBufferFrame.new(current_tick, _call_save_state()))
-	_update_input_complete_tick()
 
 func _update_input_complete_tick() -> void:
 	while current_tick > _input_complete_tick + 1:
@@ -743,14 +744,11 @@ func _get_input_messages_from_send_queue_for_peer(peer: Peer) -> Array:
 		   _get_input_messages_from_send_queue_in_range(first_index, first_index + (old_messages * max_input_frames_per_message) - 1)
 
 func _record_advantage(force_calculate_advantage: bool = false) -> void:
-	var max_advantage: float
 	for peer in peers.values():
 		# Number of frames we are predicting for this peer.
 		peer.local_lag = (input_tick + 1) - peer.last_remote_tick_received
 		# Calculate the advantage the peer has over us.
 		peer.record_advantage(ticks_to_calculate_advantage if not force_calculate_advantage else 0)
-		# Attempt to find the greatest advantage.
-		max_advantage = max(max_advantage, peer.calculated_advantage)
 
 func _calculate_skip_ticks() -> bool:
 	# Attempt to find the greatest advantage.
@@ -764,9 +762,6 @@ func _calculate_skip_ticks() -> bool:
 		return true
 	
 	return false
-
-func _calculate_message_bytes(msg) -> int:
-	return var2bytes(msg).size()
 
 func _calculate_minimum_next_tick_requested() -> int:
 	if peers.size() == 0:
@@ -818,13 +813,14 @@ func _physics_process(delta: float) -> void:
 	#var perf = PerfTimer.new()
 	#perf.start('frame')
 	
+	# @todo Is there a way we can move this to _remote_start()?
+	# Store an initial state before any ticks.
 	if current_tick == 0:
-		# Store an initial state before any ticks.
 		_save_current_state()
 	
-	# We do this in _process() too, so hopefully all is good by now, but just in
-	# case, we don't want to miss out on any data.
-	network_adaptor.poll()
+	#####
+	# STEP 1: PERFORM ANY ROLLBACKS, IF NECESSARY.
+	#####
 	
 	if debug_random_rollback_ticks > 0:
 		randomize()
@@ -869,8 +865,9 @@ func _physics_process(delta: float) -> void:
 		#perf.stop("rollback")
 		_in_rollback = false
 	
-	if get_tree().is_network_server() and _logged_remote_state.size() > 0:
-		_process_logged_remote_state()
+	#####
+	# STEP 2: SKIP TICKS, IF NECESSARY.
+	#####
 	
 	_record_advantage()
 	
@@ -897,9 +894,9 @@ func _physics_process(delta: float) -> void:
 		input_buffer_underruns += 1
 		if input_buffer_underruns >= max_input_buffer_underruns:
 			_handle_fatal_error("Unable to regain synchronization")
-			return
-		# Even when we're skipping ticks, still send input.
-		_send_input_messages_to_all_peers()
+		else:
+			# Even when we're skipping ticks, still send input.
+			_send_input_messages_to_all_peers()
 		return
 	elif input_buffer_underruns > 0:
 		# We've technically regained sync, but we don't want to just fall out of
@@ -921,6 +918,10 @@ func _physics_process(delta: float) -> void:
 		# This means we need to skip some ticks, so may as well start now!
 		return
 	
+	#####
+	# STEP 3: GATHER INPUT AND RUN CURRENT TICK
+	#####
+	
 	input_tick += 1
 	current_tick += 1
 	
@@ -936,8 +937,6 @@ func _physics_process(delta: float) -> void:
 	_input_send_queue.append(message_serializer.serialize_input(local_input))
 	assert(input_tick == _input_send_queue_start_tick + _input_send_queue.size() - 1, "Input send queue ticks numbers are misaligned")
 	_send_input_messages_to_all_peers()
-	
-	_time_since_last_tick = 0.0
 	
 	if current_tick > 0:
 		#perf.start("current_tick")
@@ -960,6 +959,9 @@ func _physics_process(delta: float) -> void:
 			_call_load_state(state_buffer[-2].data)
 			#perf.stop("interpolation")
 	
+	_time_since_last_tick = 0.0
+	_ran_physics_process = true
+	
 	#perf.stop('frame')
 	#perf.print_timings()
 
@@ -967,15 +969,29 @@ func _process(delta: float) -> void:
 	if not started:
 		return
 	
-	_time_since_last_tick += delta
+	# These are things that we want to run during "interpolation frames", in
+	# order to slim down the normal frames. Or, if interpolation is disabled,
+	# we need to run these always.
+	if not interpolation or not _ran_physics_process:
+		_time_since_last_tick += delta
+		
+		# Don't interpolate if we are skipping ticks.
+		if interpolation and skip_ticks == 0:
+			var weight: float = _time_since_last_tick / _tick_time
+			if weight > 1.0:
+				weight = 1.0
+			_call_interpolate_state(weight)
+		
+		network_adaptor.poll()
+		
+		_update_input_complete_tick()
+		
+		if get_tree().is_network_server() and _logged_remote_state.size() > 0:
+			_process_logged_remote_state()
 	
-	network_adaptor.poll()
-	
-	if interpolation:
-		var weight: float = _time_since_last_tick / _tick_time
-		if weight > 1.0:
-			weight = 1.0
-		_call_interpolate_state(weight)
+	# Clear flag so subsequent _process() calls will know that they weren't
+	# preceeded by _physics_process().
+	_ran_physics_process = false
 
 func _clean_data_for_hashing(input: Dictionary) -> Dictionary:
 	var cleaned := {}
@@ -1030,11 +1046,8 @@ func _receive_input_tick(peer_id: int, serialized_msg: PoolByteArray) -> void:
 	
 	var peer: Peer = peers[peer_id]
 	
-	# If the last tick in the message is lower than the last remote tick we
-	# received, then we can just discard the whole message.
-	if last_remote_tick <= peer.last_remote_tick_received:
-		print ("Discarding message with all redundant input")
-	else:
+	# Only process if it contains ticks we haven't received yet.
+	if last_remote_tick > peer.last_remote_tick_received:
 		# Integrate the input we received into the input buffer.
 		for remote_tick in all_remote_ticks:
 			# Skip ticks we already have.
