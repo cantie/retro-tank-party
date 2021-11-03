@@ -286,6 +286,7 @@ signal tick_finished (is_rollback)
 signal tick_retired (tick)
 signal tick_input_complete (tick)
 signal scene_spawned (name, spawned_node, scene, data)
+signal interpolation_frame ()
 
 func _ready() -> void:
 	#get_tree().connect("network_peer_disconnected", self, "remove_peer")
@@ -991,6 +992,9 @@ func _process(delta: float) -> void:
 		
 		if get_tree().is_network_server() and _logged_remote_state.size() > 0:
 			_process_logged_remote_state()
+		
+		if interpolation:
+			emit_signal("interpolation_frame")
 	
 	# Clear flag so subsequent _process() calls will know that they weren't
 	# preceeded by _physics_process().
