@@ -101,6 +101,8 @@ var _canvas_layer
 var _debug_overlay
 var _debug_pressed: bool = false
 
+var print_previous_state := false
+
 func _ready() -> void:
 	SyncManager.connect("rollback_flagged", self, "_on_SyncManager_rollback_flagged")
 	SyncManager.connect("skip_ticks_flagged", self, "_on_SyncManager_skip_ticks_flagged")
@@ -155,6 +157,9 @@ func _on_SyncManager_remote_state_mismatch(tick: int, peer_id: int, local_state:
 	print ("-----")
 	print ("On tick %s, remote state from %s doesn't match local state:\n" % [tick, peer_id])
 	DebugStatePrinter.print_state_diff(local_state, remote_state)
+	
+	if not print_previous_state:
+		return
 	
 	var state_frame = SyncManager._get_state_frame(tick - 1)
 	if state_frame:

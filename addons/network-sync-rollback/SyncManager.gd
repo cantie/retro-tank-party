@@ -975,8 +975,6 @@ func _process(delta: float) -> void:
 	if not started:
 		return
 	
-	network_adaptor.poll()
-	
 	# These are things that we want to run during "interpolation frames", in
 	# order to slim down the normal frames. Or, if interpolation is disabled,
 	# we need to run these always.
@@ -989,6 +987,8 @@ func _process(delta: float) -> void:
 			if weight > 1.0:
 				weight = 1.0
 			_call_interpolate_state(weight)
+		
+		network_adaptor.poll()
 		
 		_update_input_complete_tick()
 		
@@ -1052,11 +1052,8 @@ func _receive_input_tick(peer_id: int, serialized_msg: PoolByteArray) -> void:
 	
 	var peer: Peer = peers[peer_id]
 	
-	# If the last tick in the message is lower than the last remote tick we
-	# received, then we can just discard the whole message.
-	if last_remote_tick <= peer.last_remote_tick_received:
-		print ("Discarding message with all redundant input")
-	else:
+	# Only process if it contains ticks we haven't received yet.
+	if last_remote_tick > peer.last_remote_tick_received:
 		# Integrate the input we received into the input buffer.
 		for remote_tick in all_remote_ticks:
 			# Skip ticks we already have.

@@ -102,7 +102,7 @@ func send_input_tick(peer_id: int, msg: PoolByteArray) -> void:
 		# afoul of SCTP's flow control algorithm.
 		var msg_hash = hash(msg)
 		if msg_hash in last_messages_for_peer:
-			print ("[%s] Skipping duplicate message" % [SyncManager.current_tick])
+			#print ("[%s] Skipping duplicate message" % [SyncManager.current_tick])
 			return
 		
 		data_channel.put_packet(msg)
