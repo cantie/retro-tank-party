@@ -10,8 +10,18 @@ var max_buffered_amount := 0
 var max_skipped_input_in_a_row := 1
 # The number of messages of history to check for duplicates.
 var max_duplicate_history := 10
+# The number of milliseconds to keep a message in the duplicate history.
+var max_duplicate_msecs := 15
 # The maximum packet lifetime for WebRTC to try to redeliver messages.
 var max_packet_lifetime := 66
+
+class MessageHash:
+	var value: int
+	var time: int
+	
+	func _init(_value: int, _time: int) -> void:
+		value = _value
+		time = _time
 
 var _data_channels := {}
 var _last_messages := {}
@@ -34,7 +44,7 @@ func detach_network_adaptor(sync_manager) -> void:
 		OnlineMatch.disconnect("disconnected", self, '_on_OnlineMatch_disconnected')
 
 func start_network_adaptor(sync_manager) -> void:
-	pass
+	_last_messages.clear()
 
 func stop_network_adaptor(sync_manager) -> void:
 	pass
@@ -97,17 +107,27 @@ func send_input_tick(peer_id: int, msg: PoolByteArray) -> void:
 			_last_messages[peer_id] = []
 		var last_messages_for_peer = _last_messages[peer_id]
 		
+		# Clear out expired duplicate message records.
+		var current_time = OS.get_ticks_msec()
+		while last_messages_for_peer.size() > 0:
+			if current_time - last_messages_for_peer[0].time >= max_duplicate_msecs:
+				last_messages_for_peer.pop_front()
+			else:
+				break
+		
 		# Avoid sending duplicate messages. We'll let WebRTC's reliability
 		# layer deal with making sure the message arrives, otherwise we can run
 		# afoul of SCTP's flow control algorithm.
-		var msg_hash = hash(msg)
-		if msg_hash in last_messages_for_peer:
-			#print ("[%s] Skipping duplicate message" % [SyncManager.current_tick])
-			return
+		var msg_hash_value = hash(msg)
+		for msg_hash in last_messages_for_peer:
+			if msg_hash.value == msg_hash_value:
+				print ("[%s] Skipping duplicate message" % [SyncManager.current_tick])
+				return
 		
 		data_channel.put_packet(msg)
 		
-		last_messages_for_peer.append(msg_hash)
+		# Add message hash to duplicate history and push out old messages.
+		last_messages_for_peer.append(MessageHash.new(msg_hash_value, current_time))
 		while last_messages_for_peer.size() > max_duplicate_history:
 			last_messages_for_peer.pop_front()
 

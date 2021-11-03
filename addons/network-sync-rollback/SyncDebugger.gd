@@ -158,6 +158,9 @@ func _on_SyncManager_remote_state_mismatch(tick: int, peer_id: int, local_state:
 	print ("On tick %s, remote state from %s doesn't match local state:\n" % [tick, peer_id])
 	DebugStatePrinter.print_state_diff(local_state, remote_state)
 	
+	if _debug_overlay:
+		_debug_overlay.add_message(peer_id, "%s: State mismatch" % tick)
+	
 	if not print_previous_state:
 		return
 	
@@ -178,9 +181,6 @@ func _on_SyncManager_remote_state_mismatch(tick: int, peer_id: int, local_state:
 		print (JSON.print(SyncManager.hash_serializer.serialize(player_info), JSON_INDENT))
 	else:
 		print (" === MISSING INPUT FRAME ?! === ")
-	
-	if _debug_overlay:
-		_debug_overlay.add_message(peer_id, "%s: State mismatch" % tick)
 
 func _on_SyncManager_peer_pinged_back(peer: SyncManager.Peer) -> void:
 	print ("-----")
