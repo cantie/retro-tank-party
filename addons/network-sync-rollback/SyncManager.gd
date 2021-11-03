@@ -763,9 +763,6 @@ func _calculate_skip_ticks() -> bool:
 	
 	return false
 
-func _calculate_message_bytes(msg) -> int:
-	return var2bytes(msg).size()
-
 func _calculate_minimum_next_tick_requested() -> int:
 	if peers.size() == 0:
 		return 1
