@@ -16,6 +16,8 @@ MILESTOE 2 (finish porting all the things):
    * Host should go back (ending match), then start a new one
    * The have non-host connect again
    * Error will happen!
+ - Bug: State hash frame retreived from state hashes has mismatched tick number
+
  - See if we can make Tank._network_process() any faster
  - Implement a non-debug comparison of state (maybe just sending the hashes of the remote state?)
    o Ideally, passing these hashes would be required and included with other input
