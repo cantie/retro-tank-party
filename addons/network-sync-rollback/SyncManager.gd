@@ -239,6 +239,8 @@ var debug_random_rollback_ticks := 0
 var debug_message_bytes := 700
 var debug_skip_nth_message := 0
 var debug_log_state := false
+var debug_physics_process_msecs := 10.0
+var debug_process_msecs := 10.0
 
 # In seconds, because we don't want it to be dependent on the network tick.
 var ping_frequency := 1.0 setget set_ping_frequency
@@ -816,6 +818,8 @@ func _physics_process(delta: float) -> void:
 	if not started:
 		return
 	
+	var start_time := OS.get_ticks_usec()
+	
 	#print (" === TICK: %s === " % current_tick)
 	#var perf = PerfTimer.new()
 	#perf.start('frame')
@@ -970,12 +974,18 @@ func _physics_process(delta: float) -> void:
 	_time_since_last_tick = 0.0
 	_ran_physics_process = true
 	
+	var total_time_msecs = float(OS.get_ticks_usec() - start_time) / 1000.0
+	if total_time_msecs > debug_physics_process_msecs:
+		push_error("SyncManager._physics_process() took %.02fms" % total_time_msecs)
+	
 	#perf.stop('frame')
 	#perf.print_timings()
 
 func _process(delta: float) -> void:
 	if not started:
 		return
+	
+	var start_time = OS.get_ticks_usec()
 	
 	# These are things that we want to run during "interpolation frames", in
 	# order to slim down the normal frames. Or, if interpolation is disabled,
@@ -1003,6 +1013,10 @@ func _process(delta: float) -> void:
 	# Clear flag so subsequent _process() calls will know that they weren't
 	# preceeded by _physics_process().
 	_ran_physics_process = false
+	
+	var total_time_msecs = float(OS.get_ticks_usec() - start_time) / 1000.0
+	if total_time_msecs > debug_process_msecs:
+		push_error("SyncManager._process() took %.02fms" % total_time_msecs)
 
 func _clean_data_for_hashing(input: Dictionary) -> Dictionary:
 	var cleaned := {}
