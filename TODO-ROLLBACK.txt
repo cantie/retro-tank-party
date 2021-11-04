@@ -3,7 +3,6 @@ TODO
 
 MILESTOE 2 (finish porting all the things):
 
- - Try: Setting the time you are exposed while Invisible to the same as the shot cooldown timer
  - Bug: Figure out the new sleugh of state mismatches
    |-> Is it a particular change that caused them? Or, because we are testing over "Fallback (Forced)"
  - Bug: Pickup sometimes appears in one spot, gets picked up (with no effect) and then reappears in a different spot
