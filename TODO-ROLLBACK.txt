@@ -3,17 +3,11 @@ TODO
 
 MILESTOE 2 (finish porting all the things):
 
- - Try: Output a warning when _physics_process() (or interpolation frame) takes longer than a configured time
- - Try: Can we make interpolation faster by reusing the previous _interpolation_state[1]
  - Try: Setting the time you are exposed while Invisible to the same as the shot cooldown timer
- - Try: Building custom versions of the WebRTC native plugin for Linux, Windows and MacOS
- - Physics: Store from/to on element as HashKey's and avoid keeping vector
- - See if we can make Tank._network_process() any faster
  - Bug: Figure out the new sleugh of state mismatches
    |-> Is it a particular change that caused them? Or, because we are testing over "Fallback (Forced)"
  - Bug: Pickup sometimes appears in one spot, gets picked up (with no effect) and then reappears in a different spot
  - Bug: Tank sometimes remains white after hit (not after despawn/respawn)
- - Bug: Elliot having input issues during "Regaining sync..."
  - Bug: TheKlin boosted and immediately zapped and then was zooming all over
  - Bug: Can't get team start positions on Football map
  - Bug: Crash sometimes when player is killed
@@ -23,12 +17,13 @@ MILESTOE 2 (finish porting all the things):
    * Host should go back (ending match), then start a new one
    * The have non-host connect again
    * Error will happen!
- - Bug: input just stops even though I've never stopped pressing it
-   o Easiest to reproduce by pressing a direction on the D-pad
+ - See if we can make Tank._network_process() any faster
  - Implement a non-debug comparison of state (maybe just sending the hashes of the remote state?)
    o Ideally, passing these hashes would be required and included with other input
      * We'd need a system of ACK'ing hashes, and some contingency if they weren't arriving
    o Clients should count the number of state mismatches in a row - once a threshold is hit, bail
+ - Try: Can we make interpolation faster by reusing the previous _interpolation_state[1]
+ - Try: Building custom versions of the WebRTC native plugin for Linux, Windows and MacOS
 
 MILESTONE 3 (internal cleanup):
 
@@ -50,9 +45,12 @@ UNCONFIRMED BUGS:
    * Change the "Auto" mode to try non-relayed first, and then relayed after a timeout
    * Experiment with increasing how long messages are "reliable"
    * Experiment with switching from Twilio to custom Coturn? (I wonder if we're just using the wrong regions?)
+ - Bug: Elliot having input issues during "Regaining sync..."
 
 BACKLOG:
 
+ - Bug: input just stops even though I've never stopped pressing it
+   o Easiest to reproduce by pressing a direction on the D-pad
  - Implement spectators
  - Solve problems packet loss
    o Dig deeper into WebRTC and try to see where things are going awry!
