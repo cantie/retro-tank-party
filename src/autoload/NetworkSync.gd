@@ -137,4 +137,3 @@ func _ready() -> void:
 	SyncManager.min_lag_to_regain_sync = 5
 	SyncManager.max_ticks_to_regain_sync = 300
 	#SyncManager.message_resend_frequency = (1.0 / Engine.iterations_per_second) / 2.0
-	

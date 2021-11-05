@@ -396,9 +396,8 @@ func _network_process(delta: float, input: Dictionary) -> void:
 		use_ability()
 
 func _save_state() -> Dictionary:
-	return {
-		fixed_transform = fixed_transform.copy(),
-		_turret_transform = turret_pivot.fixed_transform.copy(),
+	var state := {
+		_turret_rotation = turret_pivot.fixed_rotation,
 		can_shoot = can_shoot,
 		dead = dead,
 		health = health,
@@ -407,12 +406,14 @@ func _save_state() -> Dictionary:
 		held_ability_type = held_ability_type,
 		ability_charges = ability_charges,
 	}
+	Utils.save_node_transform_state(self, state)
+	return state
 
 func _load_state(state: Dictionary) -> void:
 	#var perf = PerfTimer.new()
 	#perf.start("tank update fixed transforms")
-	fixed_transform = state['fixed_transform']
-	turret_pivot.fixed_transform = state['_turret_transform']
+	Utils.load_node_transform_state(self, state)
+	turret_pivot.fixed_rotation = state['_turret_rotation']
 	#perf.stop("tank update fixed transforms")
 	#perf.start("tank the rest")
 	can_shoot = state['can_shoot']
@@ -432,10 +433,8 @@ func _load_state(state: Dictionary) -> void:
 	#perf.print_timings()
 
 func _interpolate_state(old_state: Dictionary, new_state: Dictionary, weight: float) -> void:
-	position = lerp(old_state['fixed_transform'].origin.to_float(), new_state['fixed_transform'].origin.to_float(), weight)
-	scale = lerp(old_state['fixed_transform'].get_scale().to_float(), new_state['fixed_transform'].get_scale().to_float(), weight)
-	rotation = lerp_angle(SGFixed.to_float(old_state['fixed_transform'].get_rotation()), SGFixed.to_float(new_state['fixed_transform'].get_rotation()), weight)
-	turret_pivot.rotation = lerp_angle(SGFixed.to_float(old_state['_turret_transform'].get_rotation()), SGFixed.to_float(new_state['_turret_transform'].get_rotation()), weight)
+	Utils.interpolate_node_transform_state(self, old_state, new_state, weight)
+	turret_pivot.rotation = lerp_angle(SGFixed.to_float(old_state['_turret_rotation']), SGFixed.to_float(new_state['_turret_rotation']), weight)
 
 func _process(delta: float) -> void:
 	# Make info follow the tank
