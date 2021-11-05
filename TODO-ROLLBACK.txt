@@ -3,12 +3,13 @@ TODO
 
 MILESTOE 2 (finish porting all the things):
 
- - Bug: Figure out the new sleugh of state mismatches
+ - Bug: Re-saving maps changes properties in ways that look fishy
+   |-> Make sure changes to 'scale' will change 'fixed_scale' which will change 'scale'
+ - Bug: Figure out the new slew of state mismatches
    |-> Is it a particular change that caused them? Or, because we are testing over "Fallback (Forced)"
  - Bug: Pickup sometimes appears in one spot, gets picked up (with no effect) and then reappears in a different spot
  - Bug: Tank sometimes remains white after hit (not after despawn/respawn)
  - Bug: TheKlin boosted and immediately zapped and then was zooming all over
- - Bug: Can't get team start positions on Football map
  - Bug: Crash sometimes when player is killed
  - Bug (confirmed): Peer with given id already exists
    * Join two players, but don't press Ready

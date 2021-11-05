@@ -48,7 +48,7 @@ func get_screens():
 	return screens.get_children()
 
 func get_screen(name: String):
-	return get_node_or_null(name)
+	return screens.get_node_or_null(name)
 
 func get_current_screen_name() -> String:
 	if current_screen:
