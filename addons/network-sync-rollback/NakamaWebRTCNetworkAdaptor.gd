@@ -111,6 +111,7 @@ func send_input_tick(peer_id: int, msg: PoolByteArray) -> void:
 		var current_time = OS.get_ticks_msec()
 		while last_messages_for_peer.size() > 0:
 			if current_time - last_messages_for_peer[0].time >= max_duplicate_msecs:
+				print ("[%s] Retiring duplicate from duplicate message history" % [SyncManager.current_tick])
 				last_messages_for_peer.pop_front()
 			else:
 				break

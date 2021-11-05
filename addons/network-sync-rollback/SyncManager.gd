@@ -769,7 +769,9 @@ func _calculate_skip_ticks() -> bool:
 func _calculate_max_lag() -> int:
 	var max_lag := 0
 	for peer in peers.values():
-		max_lag = max(max_lag, max(peer.remote_lag, peer.local_lag))
+		var abs_remote_lag = peer.remote_lag if peer.remote_lag >= 0 else -peer.remote_lag
+		var abs_local_lag = peer.local_lag if peer.local_lag >= 0 else -peer.local_lag
+		max_lag = max(max_lag, max(abs_remote_lag, abs_local_lag))
 	return max_lag
 
 func _calculate_minimum_next_tick_requested() -> int:
