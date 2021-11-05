@@ -14,8 +14,6 @@ const BULLET_COLORS = {
 func _network_spawn(data: Dictionary) -> void:
 	._network_spawn(data)
 	bullet_sprite.region_rect = BULLET_COLORS[player_index]
-	# Pre-multiply the vector.
-	vector.imul(speed)
 
 func explode(type: String) -> void:
 	.explode(type)
@@ -24,7 +22,9 @@ func explode(type: String) -> void:
 
 func _network_process(delta: float, _input: Dictionary) -> void:
 	._network_process(delta, _input)
-	fixed_position.iadd(vector)
+	# @todo Is there a way to pre-calculate the vector * speed without losing
+	#       flexibility in child classes?
+	fixed_position.iadd(vector.mul(speed))
 	sync_to_physics_engine()
 
 func _on_LifetimeTimer_timeout() -> void:

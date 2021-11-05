@@ -3,7 +3,6 @@ TODO
 
 MILESTOE 2 (finish porting all the things):
 
- - Bug: Tracer stuck in place when it locks on to an enemy
  - Bug: Rolled back player death but left "player has won" message up (need state for overlay text?)
  - Bug: Figure out the new sleugh of state mismatches
    |-> Is it a particular change that caused them? Or, because we are testing over "Fallback (Forced)"
