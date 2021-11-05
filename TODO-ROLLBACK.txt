@@ -3,8 +3,6 @@ TODO
 
 MILESTOE 2 (finish porting all the things):
 
- - Bug: Re-saving maps changes properties in ways that look fishy
-   |-> Make sure changes to 'scale' will change 'fixed_scale' which will change 'scale'
  - Bug: Figure out the new slew of state mismatches
    |-> Is it a particular change that caused them? Or, because we are testing over "Fallback (Forced)"
  - Bug: Pickup sometimes appears in one spot, gets picked up (with no effect) and then reappears in a different spot
