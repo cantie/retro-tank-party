@@ -766,12 +766,10 @@ func _calculate_skip_ticks() -> bool:
 	
 	return false
 
-func _calculate_max_lag() -> int:
+func _calculate_max_local_lag() -> int:
 	var max_lag := 0
 	for peer in peers.values():
-		var abs_remote_lag = peer.remote_lag if peer.remote_lag >= 0 else -peer.remote_lag
-		var abs_local_lag = peer.local_lag if peer.local_lag >= 0 else -peer.local_lag
-		max_lag = max(max_lag, max(abs_remote_lag, abs_local_lag))
+		max_lag = max(max_lag, peer.local_lag)
 	return max_lag
 
 func _calculate_minimum_next_tick_requested() -> int:
@@ -892,12 +890,14 @@ func _physics_process(delta: float) -> void:
 		
 		# Check again if we're still getting input buffer underruns.
 		if not _cleanup_buffers():
+			#print ("REGAINING SYNC: buffer underrun")
 			# Even when we're skipping ticks, still send input.
 			_send_input_messages_to_all_peers()
 			return
 		
 		# Check if our max lag is still greater than the min lag to regain sync.
-		if _calculate_max_lag() > min_lag_to_regain_sync:
+		if _calculate_max_local_lag() > min_lag_to_regain_sync:
+			#print ("REGAINING SYNC: wait for local lag to reduce")
 			# Even when we're skipping ticks, still send input.
 			_send_input_messages_to_all_peers()
 			return
