@@ -3,10 +3,6 @@ TODO
 
 MILESTOE 2 (finish porting all the things):
 
- - Consider storing components of SGFixedNode2D rather than fixed_transform?
-   * Unfortunately, getting the fixed_transform and then restoring it actually changes the values, so a rollback could lead
-     to the tick playing out a little bit differently
-   * We could make a utility function like NetworkSync.save_node_transform() and NetworkSync.load_node_transform()?
  - Bug: Figure out the new slew of state mismatches
    |-> Is it a particular change that caused them? Or, because we are testing over "Fallback (Forced)"
  - Bug: Pickup sometimes appears in one spot, gets picked up (with no effect) and then reappears in a different spot
@@ -20,6 +16,9 @@ MILESTOE 2 (finish porting all the things):
    * The have non-host connect again
    * Error will happen!
  - Bug: State hash frame retreived from state hashes has mismatched tick number
+ - Bug: Rolled back player death but left "player has won" message up
+   |-> Saving and restoring state won't help, because it breaks our "Regaining sync" messages - this needs the full solution!
+   |-> Wait to actually show the message until we have complete input for the frame where the point was scored
 
  - See if we can make Tank._network_process() any faster
  - Implement a non-debug comparison of state (maybe just sending the hashes of the remote state?)
