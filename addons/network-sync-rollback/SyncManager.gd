@@ -232,7 +232,7 @@ var input_delay := 2 setget set_input_delay
 var max_input_frames_per_message := 5
 var max_messages_at_once := 2
 var max_ticks_to_regain_sync := 300
-var min_lag_to_regain_sync := 5
+var min_advantage_to_regain_sync := 2
 var interpolation := false
 var debug_rollback_ticks := 0
 var debug_random_rollback_ticks := 0
@@ -766,11 +766,11 @@ func _calculate_skip_ticks() -> bool:
 	
 	return false
 
-func _calculate_max_local_lag() -> int:
-	var max_lag := 0
+func _calculate_current_max_advantage() -> int:
+	var max_advantage := 0
 	for peer in peers.values():
-		max_lag = max(max_lag, peer.local_lag)
-	return max_lag
+		max_advantage = max(max_advantage, peer.local_lag - peer.remote_lag)
+	return max_advantage
 
 func _calculate_minimum_next_tick_requested() -> int:
 	if peers.size() == 0:
@@ -895,8 +895,9 @@ func _physics_process(delta: float) -> void:
 			_send_input_messages_to_all_peers()
 			return
 		
-		# Check if our max lag is still greater than the min lag to regain sync.
-		if _calculate_max_local_lag() > min_lag_to_regain_sync:
+		# We only consider sync regained if the max advantage has fallen below
+		# a certain level.
+		if _calculate_current_max_advantage() <= min_advantage_to_regain_sync:
 			#print ("REGAINING SYNC: wait for local lag to reduce")
 			# Even when we're skipping ticks, still send input.
 			_send_input_messages_to_all_peers()
