@@ -1,6 +1,12 @@
 extends Reference
 
-enum LogEntryType {
+enum LogType {
+	TICK,
+	STATE,
+	INPUT,
+}
+
+enum TickType {
 	UNKNOWN,
 	TICK,
 	INTERPOLATION_FRAME,
@@ -12,6 +18,14 @@ enum SkipReason {
 	WAITING_TO_REGAIN_SYNC,
 }
 
+class Log:
+	var type: int
+	var data: Dictionary
+	
+	func _init(_type: int, _data: Dictionary) -> void:
+		type = _type
+		data = _data
+
 var data := {}
 
 var _start_times := {}
@@ -20,25 +34,47 @@ var _writer_thread: Thread
 var _writer_thread_semaphore: Semaphore
 var _writer_thread_mutex: Mutex
 var _write_queue := []
-var _log_file: File
+var _log_ticks_file: File
+var _log_state_file: File
+var _log_input_file: File
 var _started := false
 
 func _init() -> void:
 	_writer_thread_mutex = Mutex.new()
 	_writer_thread_semaphore = Semaphore.new()
 	_writer_thread = Thread.new()
-	_log_file = File.new()
+	_log_ticks_file = File.new()
+	_log_state_file = File.new()
+	_log_input_file = File.new()
 
-func start(log_file_name: String) -> int:
+func start(log_file_prefix: String) -> int:
 	if not _started:
-		var err = _log_file.open(log_file_name, File.WRITE)
+		var err: int
+		
+		err = _log_ticks_file.open(log_file_prefix + "-ticks.log", File.WRITE)
 		if err != OK:
+			_close_all()
+			return err
+		
+		err = _log_state_file.open(log_file_prefix + "-state.log", File.WRITE)
+		if err != OK:
+			_close_all()
+			return err
+		
+		err = _log_input_file.open(log_file_prefix + "-input.log", File.WRITE)
+		if err != OK:
+			_close_all()
 			return err
 		
 		_started = true
 		_writer_thread.start(self, "_writer_thread_function")
 	
 	return OK
+
+func _close_all() -> void:
+	_log_ticks_file.close()
+	_log_input_file.close()
+	_log_state_file.close()
 
 func stop() -> void:
 	_writer_thread_mutex.lock()
@@ -56,7 +92,7 @@ func stop() -> void:
 		_writer_thread_semaphore.post()
 		_writer_thread.wait_to_finish()
 		
-		_log_file.close()
+		_close_all()
 		_write_queue.clear()
 		data.clear()
 		_start_times.clear()
@@ -65,37 +101,71 @@ func _writer_thread_function() -> void:
 	while true:
 		_writer_thread_semaphore.wait()
 		
+		var data_to_write: Log
+		var should_exit: bool
+		
 		_writer_thread_mutex.lock()
-		var data_to_write = _write_queue.pop_front()
+		data_to_write = _write_queue.pop_front()
+		should_exit = not _started
 		_writer_thread_mutex.unlock()
 		
 		if data_to_write:
-			_log_file.store_string(JSON.print(data_to_write) + "\n")
-		else:
-			_writer_thread_mutex.lock()
-			var should_exit = not _started
-			_writer_thread_mutex.unlock()
-			
-			if should_exit:
-				break
+			match data_to_write.type:
+				LogType.TICK:
+					_log_ticks_file.store_string(JSON.print(data_to_write.data) + "\n")
+				LogType.STATE:
+					_log_state_file.store_string(JSON.print(data_to_write.data) + "\n")
+				LogType.INPUT:
+					_log_input_file.store_string(JSON.print(data_to_write.data) + "\n")
+			continue
+		
+		if should_exit:
+			break
 
 func write_current_data() -> void:
 	if data.size() == 0:
 		return
 	
+	var copy := data.duplicate(true)
+	
 	_writer_thread_mutex.lock()
-	_write_queue.push_back(data.duplicate(true))
+	_write_queue.push_back(Log.new(LogType.TICK, copy))
 	_writer_thread_mutex.unlock()
 	
 	_writer_thread_semaphore.post()
 	
 	data.clear()
 
+func write_state(tick: int, state: Dictionary, state_hash: int) -> void:
+	var copy := state.duplicate(true)
+	copy['tick'] = tick
+	copy['$'] = state_hash
+	
+	_writer_thread_mutex.lock()
+	_write_queue.push_back(Log.new(LogType.STATE, copy))
+	_writer_thread_mutex.unlock()
+	
+	_writer_thread_semaphore.post()
+
+func write_input(tick: int, input: Dictionary) -> void:
+	var copy := {
+		tick = tick,
+	}
+	
+	for key in input:
+		copy[key] = input[key].input.duplicate(true)
+	
+	_writer_thread_mutex.lock()
+	_write_queue.push_back(Log.new(LogType.INPUT, copy))
+	_writer_thread_mutex.unlock()
+	
+	_writer_thread_semaphore.post()
+
 func begin_tick(tick: int) -> void:
 	if data.size() > 0:
 		write_current_data()
 	
-	data['type'] = LogEntryType.TICK
+	data['type'] = TickType.TICK
 	data['tick'] = tick
 	data['start_time'] = OS.get_system_time_msecs()
 
@@ -114,7 +184,7 @@ func begin_interpolation_frame(tick: int) -> void:
 	if data.size() > 0:
 		write_current_data()
 	
-	data['type'] = LogEntryType.INTERPOLATION_FRAME
+	data['type'] = TickType.INTERPOLATION_FRAME
 	data['tick'] = tick
 	data['start_time'] = OS.get_system_time_msecs()
 

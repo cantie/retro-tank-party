@@ -35,8 +35,7 @@ func scene_setup(operation: RemoteOperations.ClientOperation, info: Dictionary) 
 	ui_layer.show_back_button()
 	
 	operation.mark_done()
-
-func scene_start() -> void:
+	
 	if GameSettings.use_detailed_logging:
 		var dir = Directory.new()
 		if not dir.dir_exists(LOG_FILE_DIRECTORY):
@@ -46,7 +45,7 @@ func scene_start() -> void:
 		var match_id = OnlineMatch.match_id
 		match_id.erase(match_id.length() - 1, 1)
 		
-		var log_file_name = "%04d%02d%02d-%02d%02d%02d-%s-%d.log" % [
+		var log_file_name = "%04d%02d%02d-%02d%02d%02d-%s-%d" % [
 			datetime['year'],
 			datetime['month'],
 			datetime['day'],
@@ -58,7 +57,8 @@ func scene_start() -> void:
 		]
 		
 		SyncManager.start_logging(LOG_FILE_DIRECTORY + '/' + log_file_name)
-	
+
+func scene_start() -> void:
 	SyncManager.start()
 
 func finish_match() -> void:

@@ -594,6 +594,10 @@ func _update_input_complete_tick() -> void:
 		else:
 			state_hashes.append(StateHashFrame.new(_input_complete_tick, serialized_hash))
 		
+		if _logger:
+			_logger.write_input(input_frame.tick, input_frame.players)
+			_logger.write_state(_input_complete_tick, serialized, serialized_hash)
+		
 		if debug_log_state and not get_tree().is_network_server():
 			serialized['$'] = serialized_hash
 			rpc_id(1, "_log_saved_state", _input_complete_tick, serialized)
