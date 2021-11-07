@@ -8,6 +8,7 @@ onready var tank_engine_sounds_field = $Panel/VBoxContainer/ScrollContainer/Grid
 onready var full_screen_field = $Panel/VBoxContainer/ScrollContainer/GridContainer/FullScreenOptions
 onready var screenshake_field := $Panel/VBoxContainer/ScrollContainer/GridContainer/ScreenshakeOptions
 onready var network_relay_field := $Panel/VBoxContainer/ScrollContainer/GridContainer/NetworkRelayOptions
+onready var detailed_logging_field := $Panel/VBoxContainer/ScrollContainer/GridContainer/DetailedLoggingOptions
 onready var control_scheme_field := $Panel/VBoxContainer/ScrollContainer/GridContainer/ControlScheme
 onready var gamepad_device_field = $Panel/VBoxContainer/ScrollContainer/GridContainer/GamepadDeviceOptions
 
@@ -39,6 +40,10 @@ func _ready() -> void:
 	network_relay_field.add_item("Fallback (Auto)", GameSettings.NetworkRelay.FALLBACK)
 	network_relay_field.add_item("Fallback (Forced)", GameSettings.NetworkRelay.FORCED_FALLBACK)
 	network_relay_field.set_value(GameSettings.use_network_relay, false)
+	
+	detailed_logging_field.add_item("Disabled", false)
+	detailed_logging_field.add_item("Enabled", true)
+	detailed_logging_field.set_value(GameSettings.use_detailed_logging, false)
 	
 	_update_gamepad_options()
 	Input.connect("joy_connection_changed", self, "_on_joy_connection_changed")
@@ -87,6 +92,9 @@ func _on_ScreenshakeOptions_item_selected(value, _index) -> void:
 func _on_NetworkRelayOptions_item_selected(value, _index) -> void:
 	GameSettings.use_network_relay = value
 
+func _on_DetailedLoggingOptions_item_selected(value, index) -> void:
+	GameSettings.use_detailed_logging = value
+
 func _on_ControlScheme_item_selected(value, _index) -> void:
 	GameSettings.control_scheme = value
 
@@ -112,4 +120,3 @@ func _unhandled_input(event: InputEvent) -> void:
 	if visible and event.is_action_pressed('ui_accept'):
 		get_tree().set_input_as_handled()
 		_on_DoneButton_pressed()
-

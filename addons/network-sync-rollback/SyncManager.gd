@@ -5,6 +5,7 @@ const SoundManager = preload("res://addons/network-sync-rollback/SoundManager.gd
 const NetworkAdaptor = preload("res://addons/network-sync-rollback/NetworkAdaptor.gd")
 const RPCNetworkAdaptor = preload("res://addons/network-sync-rollback/RPCNetworkAdaptor.gd")
 #const PerfTimer = preload("res://addons/network-sync-rollback/debugger/PerfTimer.gd")
+const Logger = preload("res://addons/network-sync-rollback/Logger.gd")
 
 class Peer extends Reference:
 	var peer_id: int
@@ -254,6 +255,7 @@ var started := false setget _set_readonly_variable
 var _ping_timer: Timer
 var _spawn_manager
 var _sound_manager
+var _logger
 var _tick_time: float
 var _input_buffer_start_tick: int
 var _state_buffer_start_tick: int
@@ -410,6 +412,20 @@ remote func _remote_ping_back(msg: Dictionary) -> void:
 	peer.time_delta = msg['remote_time'] - msg['local_time'] - (peer.rtt / 2.0)
 	emit_signal("peer_pinged_back", peer)
 
+func start_logging(log_file_name: String) -> void:
+	if not _logger:
+		_logger = Logger.new()
+	else:
+		_logger.stop()
+	
+	if _logger.start(log_file_name) != OK:
+		stop_logging()
+
+func stop_logging() -> void:
+	if _logger:
+		_logger.stop()
+		_logger = null
+
 func start() -> void:
 	assert(get_tree().is_network_server(), "start() should only be called on the host")
 	if started:
@@ -478,6 +494,8 @@ func _handle_fatal_error(msg: String):
 	emit_signal("sync_error", msg)
 	push_error("NETWORK SYNC LOST: " + msg)
 	stop()
+	if _logger:
+		_logger.log_fatal_error(msg)
 	return null
 
 func _call_get_local_input() -> Dictionary:
@@ -752,6 +770,14 @@ func _record_advantage(force_calculate_advantage: bool = false) -> void:
 		peer.local_lag = (input_tick + 1) - peer.last_remote_tick_received
 		# Calculate the advantage the peer has over us.
 		peer.record_advantage(ticks_to_calculate_advantage if not force_calculate_advantage else 0)
+		
+		if _logger:
+			_logger.add_value("peer_%s" % peer.peer_id, {
+				local_lag = peer.local_lag,
+				remote_log = peer.remote_lag,
+				advantage = peer.local_lag - peer.remote_lag,
+				calculated_advantage = peer.calculated_advantage,
+			})
 
 func _calculate_skip_ticks() -> bool:
 	# Attempt to find the greatest advantage.
@@ -818,6 +844,9 @@ func _physics_process(delta: float) -> void:
 	if not started:
 		return
 	
+	if _logger:
+		_logger.write_current_data()
+	
 	var start_time := OS.get_ticks_usec()
 	
 	#print (" === TICK: %s === " % current_tick)
@@ -845,7 +874,10 @@ func _physics_process(delta: float) -> void:
 		rollback_ticks = max(rollback_ticks, 1)
 	
 	if rollback_ticks > 0:
-		#print ("rollback_ticks: %s" % rollback_ticks)
+		if _logger:
+			_logger.data['rollback_ticks'] = rollback_ticks
+			_logger.start_timing('rollback')
+		
 		var original_tick = current_tick
 		
 		# Rollback our internal state.
@@ -854,16 +886,13 @@ func _physics_process(delta: float) -> void:
 			_handle_fatal_error("Not enough state in buffer to rollback %s frames" % rollback_ticks)
 			return
 		
-		#perf.start("load_state")
 		_call_load_state(state_buffer[-rollback_ticks - 1].data)
-		#perf.stop("load_state")
 		state_buffer.resize(state_buffer.size() - rollback_ticks)
 		current_tick -= rollback_ticks
 		
 		emit_signal("state_loaded", rollback_ticks)
 		
 		_in_rollback = true
-		#perf.start("rollback")
 		
 		# Iterate forward until we're at the same spot we left off.
 		while rollback_ticks > 0:
@@ -873,8 +902,10 @@ func _physics_process(delta: float) -> void:
 			rollback_ticks -= 1
 		assert(current_tick == original_tick, "Rollback didn't return to the original tick")
 		
-		#perf.stop("rollback")
 		_in_rollback = false
+		
+		if _logger:
+			_logger.stop_timing('rollback')
 	
 	#####
 	# STEP 2: SKIP TICKS, IF NECESSARY.
@@ -890,9 +921,10 @@ func _physics_process(delta: float) -> void:
 		
 		# Check again if we're still getting input buffer underruns.
 		if not _cleanup_buffers():
-			#print ("REGAINING SYNC: buffer underrun")
 			# Even when we're skipping ticks, still send input.
 			_send_input_messages_to_all_peers()
+			if _logger:
+				_logger.skip_tick(Logger.SkipReason.INPUT_BUFFER_UNDERRUN, start_time)
 			return
 		
 		# We only consider sync regained if the max advantage has fallen below
@@ -901,6 +933,8 @@ func _physics_process(delta: float) -> void:
 			#print ("REGAINING SYNC: wait for local lag to reduce")
 			# Even when we're skipping ticks, still send input.
 			_send_input_messages_to_all_peers()
+			if _logger:
+				_logger.skip_tick(Logger.SkipReason.WAITING_TO_REGAIN_SYNC, start_time)
 			return
 		
 		# If we've reach this point, that means we've regained sync!
@@ -917,6 +951,8 @@ func _physics_process(delta: float) -> void:
 		_ticks_spent_regaining_sync = 1
 		# Even when we're skipping ticks, still send input.
 		_send_input_messages_to_all_peers()
+		if _logger:
+			_logger.skip_tick(Logger.SkipReason.INPUT_BUFFER_UNDERRUN, start_time)
 		return
 	
 	if skip_ticks > 0:
@@ -927,10 +963,14 @@ func _physics_process(delta: float) -> void:
 		else:
 			# Even when we're skipping ticks, still send input.
 			_send_input_messages_to_all_peers()
+			if _logger:
+				_logger.skip_tick(Logger.SkipReason.ADVANTAGE_ADJUSTMENT, start_time)
 			return
 	
 	if _calculate_skip_ticks():
 		# This means we need to skip some ticks, so may as well start now!
+		if _logger:
+			_logger.skip_tick(Logger.SkipReason.ADVANTAGE_ADJUSTMENT, start_time)
 		return
 	
 	#####
@@ -939,6 +979,9 @@ func _physics_process(delta: float) -> void:
 	
 	input_tick += 1
 	current_tick += 1
+	
+	if _logger:
+		_logger.begin_tick(current_tick)
 	
 	var input_frame := _get_or_create_input_frame(input_tick)
 	# The underlying error would have already been reported in
@@ -954,13 +997,16 @@ func _physics_process(delta: float) -> void:
 	_send_input_messages_to_all_peers()
 	
 	if current_tick > 0:
-		#perf.start("current_tick")
+		if _logger:
+			_logger.start_timing("current_tick")
+		
 		if not _do_tick(delta):
 			return
-		#perf.stop("current_tick")
+		
+		if _logger:
+			_logger.stop_timing("current_tick")
 		
 		if interpolation:
-			#perf.start("interpolation")
 			# Capture the state data to interpolate between.
 			var to_state: Dictionary = state_buffer[-1].data
 			var from_state: Dictionary = state_buffer[-2].data
@@ -972,7 +1018,6 @@ func _physics_process(delta: float) -> void:
 			# Return to state from the previous frame, so we can interpolate
 			# towards the state of the current frame.
 			_call_load_state(state_buffer[-2].data)
-			#perf.stop("interpolation")
 	
 	_time_since_last_tick = 0.0
 	_ran_physics_process = true
@@ -981,12 +1026,15 @@ func _physics_process(delta: float) -> void:
 	if total_time_msecs > debug_physics_process_msecs:
 		push_error("SyncManager._physics_process() took %.02fms" % total_time_msecs)
 	
-	#perf.stop('frame')
-	#perf.print_timings()
+	if _logger:
+		_logger.end_tick(start_time)
 
 func _process(delta: float) -> void:
 	if not started:
 		return
+	
+	if _logger:
+		_logger.begin_interpolation_frame(current_tick)
 	
 	var start_time = OS.get_ticks_usec()
 	
@@ -1020,6 +1068,9 @@ func _process(delta: float) -> void:
 	var total_time_msecs = float(OS.get_ticks_usec() - start_time) / 1000.0
 	if total_time_msecs > debug_process_msecs:
 		push_error("SyncManager._process() took %.02fms" % total_time_msecs)
+	
+	if _logger:
+		_logger.end_interpolation_frame(start_time)
 
 func _clean_data_for_hashing(input: Dictionary) -> Dictionary:
 	var cleaned := {}
@@ -1098,6 +1149,8 @@ func _receive_input_tick(peer_id: int, serialized_msg: PoolByteArray) -> void:
 				continue
 			
 			#print ("Received remote tick %s from %s" % [remote_tick, peer_id])
+			if _logger:
+				_logger.add_value('remote_ticks_received_from_%s' % peer_id, remote_tick)
 			
 			# If we received a tick in the past and we aren't already setup to
 			# rollback earlier than that...

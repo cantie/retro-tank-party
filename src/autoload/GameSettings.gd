@@ -19,6 +19,7 @@ var tank_engine_sounds := true setget set_tank_engine_sounds
 var use_full_screen := false setget set_use_full_screen
 var use_screenshake := true
 var use_network_relay := 0 setget set_use_network_relay
+var use_detailed_logging := false
 var control_scheme: int = ControlScheme.MODERN
 var joy_id := 0 setget set_joy_id
 var joy_name := "" setget set_joy_name
@@ -30,6 +31,7 @@ const SETTINGS_KEYS = [
 	'use_full_screen',
 	'use_screenshake',
 	'use_network_relay',
+	'use_detailed_logging',
 	'control_scheme',
 	'joy_name',
 ]
