@@ -151,9 +151,8 @@ func write_input(tick: int, input: Dictionary) -> void:
 	var copy := {
 		tick = tick,
 	}
-	
-	for key in input:
-		copy[key] = input[key].input.duplicate(true)
+	for key in input.keys():
+		copy[key] = SyncManager.hash_serializer.serialize(input[key].input.duplicate(true))
 	
 	_writer_thread_mutex.lock()
 	_write_queue.push_back(Log.new(LogType.INPUT, copy))
