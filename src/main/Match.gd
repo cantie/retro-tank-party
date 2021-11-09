@@ -45,7 +45,7 @@ func scene_setup(operation: RemoteOperations.ClientOperation, info: Dictionary) 
 		var match_id = OnlineMatch.match_id
 		match_id.erase(match_id.length() - 1, 1)
 		
-		var log_file_name = "%04d%02d%02d-%02d%02d%02d-%s-%d" % [
+		var log_file_name = "%04d%02d%02d-%02d%02d%02d-%s-%d.log" % [
 			datetime['year'],
 			datetime['month'],
 			datetime['day'],
