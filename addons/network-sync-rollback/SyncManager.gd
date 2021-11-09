@@ -1037,15 +1037,15 @@ func _process(delta: float) -> void:
 	if not started:
 		return
 	
-	if _logger:
-		_logger.begin_interpolation_frame(current_tick)
-	
 	var start_time = OS.get_ticks_usec()
 	
 	# These are things that we want to run during "interpolation frames", in
 	# order to slim down the normal frames. Or, if interpolation is disabled,
 	# we need to run these always.
 	if not interpolation or not _ran_physics_process:
+		if _logger:
+			_logger.begin_interpolation_frame(current_tick)
+		
 		_time_since_last_tick += delta
 		
 		# Don't interpolate if we are skipping ticks.
@@ -1064,6 +1064,9 @@ func _process(delta: float) -> void:
 		
 		if interpolation:
 			emit_signal("interpolation_frame")
+		
+		if _logger:
+			_logger.end_interpolation_frame(start_time)
 	
 	# Clear flag so subsequent _process() calls will know that they weren't
 	# preceeded by _physics_process().
@@ -1072,9 +1075,6 @@ func _process(delta: float) -> void:
 	var total_time_msecs = float(OS.get_ticks_usec() - start_time) / 1000.0
 	if total_time_msecs > debug_process_msecs:
 		push_error("SyncManager._process() took %.02fms" % total_time_msecs)
-	
-	if _logger:
-		_logger.end_interpolation_frame(start_time)
 
 func _clean_data_for_hashing(input: Dictionary) -> Dictionary:
 	var cleaned := {}
