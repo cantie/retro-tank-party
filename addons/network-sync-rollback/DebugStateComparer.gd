@@ -125,27 +125,31 @@ static func _convert_array_to_dictionary(a: Array) -> Dictionary:
 		d[i] = a[i]
 	return d
 
-func print_mismatches() -> void:
+func print_mismatches() -> String:
+	var data := PoolStringArray()
+	
 	for mismatch in mismatches:
 		match mismatch.type:
 			MismatchType.MISSING:
-				print (" => [MISSING] %s" % mismatch.path)
-				print (JSON.print(mismatch.local_state, JSON_INDENT))
-				print ()
+				data.append(" => [MISSING] %s" % mismatch.path)
+				data.append(JSON.print(mismatch.local_state, JSON_INDENT))
+				data.append('')
 			
 			MismatchType.EXTRA:
-				print (" => [EXTRA] %s" % mismatch.path)
-				print (JSON.print(mismatch.remote_state, JSON_INDENT))
-				print ()
+				data.append(" => [EXTRA] %s" % mismatch.path)
+				data.append(JSON.print(mismatch.remote_state, JSON_INDENT))
+				data.append('')
 			
 			MismatchType.REORDER:
-				print (" => [REORDER] %s" % mismatch.path)
-				print ("LOCAL:  %s" % JSON.print(mismatch.local_state, JSON_INDENT))
-				print ("REMOTE: %s" % JSON.print(mismatch.remote_state, JSON_INDENT))
-				print ()
+				data.append(" => [REORDER] %s" % mismatch.path)
+				data.append("LOCAL:  %s" % JSON.print(mismatch.local_state, JSON_INDENT))
+				data.append("REMOTE: %s" % JSON.print(mismatch.remote_state, JSON_INDENT))
+				data.append('')
 			
 			MismatchType.DIFFERENCE:
-				print (" => [DIFF] %s" % mismatch.path)
-				print ("LOCAL:  %s" % JSON.print(mismatch.local_state, JSON_INDENT))
-				print ("REMOTE: %s" % JSON.print(mismatch.remote_state, JSON_INDENT))
-				print ()
+				data.append(" => [DIFF] %s" % mismatch.path)
+				data.append("LOCAL:  %s" % JSON.print(mismatch.local_state, JSON_INDENT))
+				data.append("REMOTE: %s" % JSON.print(mismatch.remote_state, JSON_INDENT))
+				data.append('')
+	
+	return data.join("\n")

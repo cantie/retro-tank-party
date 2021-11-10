@@ -1,6 +1,7 @@
 extends Control
 
 const Logger = preload("res://addons/network-sync-rollback/Logger.gd")
+const DebugStateComparer = preload("res://addons/network-sync-rollback/DebugStateComparer.gd")
 
 const JSON_INDENT = "    "
 
@@ -171,15 +172,43 @@ func add_log_entry(log_entry: Dictionary, peer_id: int) -> void:
 func _on_TickNumber_value_changed(value: float) -> void:
 	var tick: int = int(value)
 	
-	var input_frame = input.get(tick, null)
-	var state_frame = state.get(tick, null)
+	var input_frame: InputFrame = input.get(tick, null)
+	var state_frame: StateFrame = state.get(tick, null)
 	
 	if input_frame:
 		input_data_label.text = JSON.print(input_frame.input, JSON_INDENT)
+		
+		if input_frame.mismatches.size() > 0:
+			var mismatch_text := ''
+			for peer_id in input_frame.mismatches:
+				var peer_input = input_frame.mismatches[peer_id]
+				mismatch_text += ("\n ==========  %s  ==========\n\n" % peer_id)
+				
+				var comparer = DebugStateComparer.new()
+				comparer.find_mismatches(input_frame.input, peer_input)
+				mismatch_text += comparer.print_mismatches()
+			input_mismatches_data_label.text = mismatch_text
+		else:
+			input_mismatches_data_label.text = ''
 	else:
 		input_data_label.text = ''
+		input_mismatches_data_label.text = ''
 	
 	if state_frame:
 		state_data_label.text = JSON.print(state_frame.state, JSON_INDENT)
+		
+		if state_frame.mismatches.size() > 0:
+			var mismatch_text := ''
+			for peer_id in state_frame.mismatches:
+				var peer_state = state_frame.mismatches[peer_id]
+				mismatch_text += ("\n ==========  %s  ==========\n\n" % peer_id)
+				
+				var comparer = DebugStateComparer.new()
+				comparer.find_mismatches(state_frame.state, peer_state)
+				mismatch_text += comparer.print_mismatches()
+			state_mismatches_data_label.text = mismatch_text
+		else:
+			state_mismatches_data_label.text = ''
 	else:
 		state_data_label.text = ''
+		state_mismatches_data_label.text = ''

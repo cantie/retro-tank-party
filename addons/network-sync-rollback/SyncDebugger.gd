@@ -67,7 +67,7 @@ func _on_SyncManager_remote_state_mismatch(tick: int, peer_id: int, local_state:
 	
 	var state_comparer = DebugStateComparer.new()
 	state_comparer.find_mismatches(local_state, remote_state)
-	state_comparer.print_mismatches()
+	print(state_comparer.print_mismatches())
 	
 	if _debug_overlay:
 		_debug_overlay.add_message(peer_id, "%s: State mismatch" % tick)
