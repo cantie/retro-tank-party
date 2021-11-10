@@ -2,9 +2,16 @@ extends Control
 
 const Logger = preload("res://addons/network-sync-rollback/Logger.gd")
 
+const JSON_INDENT = "    "
+
 onready var file_dialog = $FileDialog
 onready var progress_dialog = $ProgressDialog
 onready var data_description_label = $VBoxContainer/HBoxContainer/DataDescriptionLabel
+onready var tick_number_field = $VBoxContainer/HBoxContainer2/TickNumber
+onready var input_data_label = $VBoxContainer/GridContainer/InputPanel/InputDataLabel
+onready var input_mismatches_data_label = $VBoxContainer/GridContainer/InputMismatchesPanel/InputMismatchesDataLabel
+onready var state_data_label = $VBoxContainer/GridContainer/StatePanel/StateDataLabel
+onready var state_mismatches_data_label = $VBoxContainer/GridContainer/StateMismatchesPanel/StateMismatchesDataLabel
 
 class StateFrame:
 	var tick: int
@@ -58,6 +65,7 @@ class InputFrame:
 
 var peer_ids := []
 var mismatches := []
+var max_tick := 0
 
 var input := {}
 var state := {}
@@ -74,12 +82,13 @@ func _on_AddLogButton_pressed() -> void:
 func _on_FileDialog_files_selected(paths: PoolStringArray) -> void:
 	for path in paths:
 		load_log_file(path)
-	update_data_description()
-
-func update_data_description() -> void:
-	data_description_label.text = "%s logs (peer ids: %s)" % [peer_ids.size(), peer_ids]
+	
+	data_description_label.text = "%s logs (peer ids: %s) and %s ticks" % [peer_ids.size(), peer_ids, max_tick]
 	if mismatches.size() > 0:
 		data_description_label.text += " with %s mismatches" % mismatches.size()
+	
+	tick_number_field.max_value = max_tick
+	_on_TickNumber_value_changed(tick_number_field.value)
 
 func load_log_file(path: String) -> void:
 	var file = File.new()
@@ -129,9 +138,12 @@ func load_log_file(path: String) -> void:
 	progress_dialog.hide()
 
 func add_log_entry(log_entry: Dictionary, peer_id: int) -> void:
+	var tick: int = log_entry.get('tick', 0)
+	
+	max_tick = int(max(max_tick, tick))
+	
 	match log_entry['log_type'] as int:
 		Logger.LogType.INPUT:
-			var tick: int = log_entry['tick']
 			var input_frame: InputFrame
 			if not input.has(tick):
 				input_frame = InputFrame.new(tick, log_entry['input'])
@@ -143,7 +155,6 @@ func add_log_entry(log_entry: Dictionary, peer_id: int) -> void:
 					print ("Input mismatch on tick: %s" % tick)
 		
 		Logger.LogType.STATE:
-			var tick: int = log_entry['tick']
 			var state_frame: StateFrame
 			if not state.has(tick):
 				state_frame = StateFrame.new(tick, log_entry['state'])
@@ -156,4 +167,19 @@ func add_log_entry(log_entry: Dictionary, peer_id: int) -> void:
 		
 		Logger.LogType.TICK:
 			pass
+
+func _on_TickNumber_value_changed(value: float) -> void:
+	var tick: int = int(value)
 	
+	var input_frame = input.get(tick, null)
+	var state_frame = state.get(tick, null)
+	
+	if input_frame:
+		input_data_label.text = JSON.print(input_frame.input, JSON_INDENT)
+	else:
+		input_data_label.text = ''
+	
+	if state_frame:
+		state_data_label.text = JSON.print(state_frame.state, JSON_INDENT)
+	else:
+		state_data_label.text = ''
