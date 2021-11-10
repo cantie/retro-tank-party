@@ -4,6 +4,7 @@ const Logger = preload("res://addons/network-sync-rollback/Logger.gd")
 
 onready var file_dialog = $FileDialog
 onready var progress_dialog = $ProgressDialog
+onready var data_description_label = $VBoxContainer/HBoxContainer/DataDescriptionLabel
 
 class StateFrame:
 	var tick: int
@@ -55,6 +56,9 @@ class InputFrame:
 		mismatches[peer_id] = sorted_peer_input
 		return false
 
+var peer_ids := []
+var mismatches := []
+
 var input := {}
 var state := {}
 var peer_ticks := {}
@@ -70,6 +74,12 @@ func _on_AddLogButton_pressed() -> void:
 func _on_FileDialog_files_selected(paths: PoolStringArray) -> void:
 	for path in paths:
 		load_log_file(path)
+	update_data_description()
+
+func update_data_description() -> void:
+	data_description_label.text = "%s logs (peer ids: %s)" % [peer_ids.size(), peer_ids]
+	if mismatches.size() > 0:
+		data_description_label.text += " with %s mismatches" % mismatches.size()
 
 func load_log_file(path: String) -> void:
 	var file = File.new()
@@ -100,13 +110,20 @@ func load_log_file(path: String) -> void:
 		if header == null:
 			if json_result.result['log_type'] == Logger.LogType.HEADER:
 				header = json_result.result
+				header['peer_id'] = int(header['peer_id'])
+				if header['peer_id'] in peer_ids:
+					OS.alert("Log file has data for peer_id %s, which is already loaded" % header['peer_id'])
+					file.close()
+					return
+				
+				peer_ids.append(header['peer_id'])
 				continue
 			else:
 				OS.alert("No header at the top of log: %s" % path)
 				file.close()
 				return
 		
-		add_log_entry(json_result.result, int(header['peer_id']))
+		add_log_entry(json_result.result, header['peer_id'])
 	
 	file.close()
 	progress_dialog.hide()
@@ -122,6 +139,7 @@ func add_log_entry(log_entry: Dictionary, peer_id: int) -> void:
 			else:
 				input_frame = input[tick]
 				if not input_frame.compare_input(peer_id, log_entry['input']):
+					mismatches.append(tick)
 					print ("Input mismatch on tick: %s" % tick)
 		
 		Logger.LogType.STATE:
@@ -133,6 +151,7 @@ func add_log_entry(log_entry: Dictionary, peer_id: int) -> void:
 			else:
 				state_frame = state[tick]
 				if not state_frame.compare_state(peer_id, log_entry['state']):
+					mismatches.append(tick)
 					print ("State mismatch on tick: %s" % tick)
 		
 		Logger.LogType.TICK:

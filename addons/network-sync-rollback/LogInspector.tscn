@@ -58,7 +58,7 @@ margin_right = 40.0
 margin_bottom = 40.0
 
 [node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainer"]
-margin_right = 63.0
+margin_right = 152.0
 margin_bottom = 20.0
 __meta__ = {
 "_edit_use_anchors_": false
@@ -68,6 +68,13 @@ __meta__ = {
 margin_right = 63.0
 margin_bottom = 20.0
 text = "Add Log"
+
+[node name="DataDescriptionLabel" type="Label" parent="VBoxContainer/HBoxContainer"]
+margin_left = 67.0
+margin_top = 3.0
+margin_right = 152.0
+margin_bottom = 17.0
+text = "0 logs loaded"
 
 [connection signal="files_selected" from="FileDialog" to="." method="_on_FileDialog_files_selected"]
 [connection signal="pressed" from="VBoxContainer/HBoxContainer/AddLogButton" to="." method="_on_AddLogButton_pressed"]
