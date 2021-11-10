@@ -418,7 +418,7 @@ func start_logging(log_file_name: String) -> void:
 	else:
 		_logger.stop()
 	
-	if _logger.start(log_file_name) != OK:
+	if _logger.start(log_file_name, get_tree().get_network_unique_id()) != OK:
 		stop_logging()
 
 func stop_logging() -> void:

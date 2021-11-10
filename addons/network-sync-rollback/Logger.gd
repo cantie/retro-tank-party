@@ -1,6 +1,7 @@
 extends Reference
 
 enum LogType {
+	HEADER,
 	TICK,
 	STATE,
 	INPUT,
@@ -35,13 +36,19 @@ func _init() -> void:
 	_writer_thread = Thread.new()
 	_log_file = File.new()
 
-func start(log_file_name: String) -> int:
+func start(log_file_name: String, peer_id: int) -> int:
 	if not _started:
 		var err: int
 		
 		err = _log_file.open(log_file_name, File.WRITE)
 		if err != OK:
 			return err
+		
+		var header := {
+			log_type = LogType.HEADER,
+			peer_id = peer_id,
+		}
+		_log_file.store_string(JSON.print(header) + "\n")
 		
 		_started = true
 		_writer_thread.start(self, "_writer_thread_function")

@@ -1,0 +1,73 @@
+[gd_scene load_steps=3 format=2]
+
+[ext_resource path="res://addons/network-sync-rollback/LogInspector.gd" type="Script" id=1]
+[ext_resource path="res://addons/network-sync-rollback/log_inspector/ProgressDialog.gd" type="Script" id=2]
+
+[node name="LogInspector" type="Control"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+script = ExtResource( 1 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="FileDialog" type="FileDialog" parent="."]
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+margin_left = -400.0
+margin_top = -300.0
+margin_right = 400.0
+margin_bottom = 300.0
+window_title = "Open File(s)"
+mode = 1
+access = 2
+filters = PoolStringArray( "*.log ; Log files" )
+current_dir = "/home/dsnopek/games/Retro Tank Party"
+current_path = "/home/dsnopek/games/Retro Tank Party/"
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="ProgressDialog" type="PopupDialog" parent="."]
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+margin_left = -250.0
+margin_top = -75.0
+margin_right = 250.0
+margin_bottom = -25.0
+script = ExtResource( 2 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="ProgressBar" type="ProgressBar" parent="ProgressDialog"]
+anchor_top = 0.5
+anchor_right = 1.0
+anchor_bottom = 0.5
+margin_left = 10.0
+margin_top = -16.0
+margin_right = -10.0
+margin_bottom = 12.0
+
+[node name="VBoxContainer" type="VBoxContainer" parent="."]
+margin_right = 40.0
+margin_bottom = 40.0
+
+[node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainer"]
+margin_right = 63.0
+margin_bottom = 20.0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="AddLogButton" type="Button" parent="VBoxContainer/HBoxContainer"]
+margin_right = 63.0
+margin_bottom = 20.0
+text = "Add Log"
+
+[connection signal="files_selected" from="FileDialog" to="." method="_on_FileDialog_files_selected"]
+[connection signal="pressed" from="VBoxContainer/HBoxContainer/AddLogButton" to="." method="_on_AddLogButton_pressed"]
