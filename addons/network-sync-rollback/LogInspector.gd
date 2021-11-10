@@ -100,8 +100,10 @@ func add_log_entry(log_entry: Dictionary, peer_id: int) -> void:
 				input_frame = input[tick]
 				if not input_frame.compare_input(peer_id, log_entry['input']):
 					print ("Input mismatch on tick: %s" % tick)
+		
 		Logger.LogType.STATE:
 			pass
+		
 		Logger.LogType.TICK:
 			pass
 	

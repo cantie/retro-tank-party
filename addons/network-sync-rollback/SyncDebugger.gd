@@ -1,101 +1,9 @@
 extends Node
 
 const DebugOverlay = preload("res://addons/network-sync-rollback/debugger/DebugOverlay.tscn")
+const DebugStateComparer = preload("res://addons/network-sync-rollback/DebugStateComparer.gd")
 
 const JSON_INDENT = "    "
-
-class DebugStatePrinter:
-	static func print_state_diff(local_state: Dictionary, remote_state: Dictionary) -> void:
-		_print_state_diff_recursive(
-			_clean_up_state(local_state),
-			_clean_up_state(remote_state))
-	
-	static func _clean_up_state(state: Dictionary) -> Dictionary:
-		state = state.duplicate(true)
-		
-		# Remove hash.
-		state.erase('$')
-		
-		# Remove any keys that are ignored in the hash.
-		for node_path in state:
-			for key in state[node_path].keys():
-				var value = state[node_path]
-				if key is String:
-					if key.begins_with('_'):
-						value.erase(key)
-				elif key is int:
-					if key < 0:
-						value.erase(key)
-		
-		return state
-	
-	static func _print_state_diff_recursive(local_state: Dictionary, remote_state: Dictionary, path: Array = []) -> void:
-		var missing_or_extra := false
-		
-		for key in local_state:
-			if not remote_state.has(key):
-				missing_or_extra = true
-				print (" => [MISSING] %s" % _get_diff_path_string(path, key))
-				print (JSON.print(local_state[key], JSON_INDENT))
-				print ()
-		
-		for key in remote_state:
-			if not local_state.has(key):
-				missing_or_extra = true
-				print (" => [EXTRA] %s" % _get_diff_path_string(path, key))
-				print (JSON.print(remote_state[key], JSON_INDENT))
-				print ()
-		
-		if not missing_or_extra:
-			if local_state.keys() != remote_state.keys():
-				print (" => [REORDER] %s" % _get_diff_path_string(path, 'KEYS'))
-				print ("LOCAL:  %s" % JSON.print(local_state.keys(), JSON_INDENT))
-				print ("REMOTE: %s" % JSON.print(remote_state.keys(), JSON_INDENT))
-				print ()
-		
-		for key in local_state:
-			var local_value = local_state[key]
-			
-			if not remote_state.has(key):
-				continue
-			var remote_value = remote_state[key]
-			
-			if local_value is Dictionary:
-				if remote_value is Dictionary:
-					if local_value.hash() != remote_value.hash():
-						_print_state_diff_recursive(local_value, remote_value, _extend_diff_path(path, key))
-				else:
-					_print_diff_value(local_value, remote_value, path, key)
-			elif local_value is Array:
-				if remote_value is Array:
-					if local_value != remote_value:
-						_print_state_diff_recursive(_convert_array_to_dictionary(local_value), _convert_array_to_dictionary(remote_value), _extend_diff_path(path, key))
-				else:
-					_print_diff_value(local_value, remote_value, path, key)
-			elif local_value != remote_value:
-				_print_diff_value(local_value, remote_value, path, key)
-
-	static func _get_diff_path_string(path: Array, key) -> String:
-		if path.size() > 0:
-			return PoolStringArray(path).join(" -> ") + " -> " + str(key)
-		return str(key)
-
-	static func _extend_diff_path(path: Array, key) -> Array:
-		var new_path = path.duplicate()
-		new_path.append(str(key))
-		return new_path
-
-	static func _print_diff_value(local_value, remote_value, path: Array, key) -> void:
-		print (" => [DIFF] %s" % _get_diff_path_string(path, key))
-		print ("LOCAL:  %s" % JSON.print(local_value, JSON_INDENT))
-		print ("REMOTE: %s" % JSON.print(remote_value, JSON_INDENT))
-		print ()
-	
-	static func _convert_array_to_dictionary(a: Array) -> Dictionary:
-		var d := {}
-		for i in range(a.size()):
-			d[i] = a[i]
-		return d
 
 var _canvas_layer
 var _debug_overlay
@@ -156,7 +64,10 @@ func _on_SyncManager_rollback_flagged(tick: int, peer_id: int, local_input: Dict
 func _on_SyncManager_remote_state_mismatch(tick: int, peer_id: int, local_state: Dictionary, remote_state: Dictionary) -> void:
 	print ("-----")
 	print ("On tick %s, remote state from %s doesn't match local state:\n" % [tick, peer_id])
-	DebugStatePrinter.print_state_diff(local_state, remote_state)
+	
+	var state_comparer = DebugStateComparer.new()
+	state_comparer.find_mismatches(local_state, remote_state)
+	state_comparer.print_mismatches()
 	
 	if _debug_overlay:
 		_debug_overlay.add_message(peer_id, "%s: State mismatch" % tick)
