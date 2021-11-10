@@ -5,6 +5,24 @@ const Logger = preload("res://addons/network-sync-rollback/Logger.gd")
 onready var file_dialog = $FileDialog
 onready var progress_dialog = $ProgressDialog
 
+class StateFrame:
+	var tick: int
+	var state: Dictionary
+	var state_hash: int
+	var mismatches := {}
+	
+	func _init(_tick: int, _state: Dictionary) -> void:
+		tick = _tick
+		state = _state
+		state_hash = state.hash()
+	
+	func compare_state(peer_id: int, peer_state: Dictionary) -> bool:
+		if state_hash == peer_state.hash():
+			return true
+		
+		mismatches[peer_id] = peer_state
+		return false
+
 class InputFrame:
 	var tick: int
 	var input: Dictionary
@@ -37,9 +55,8 @@ class InputFrame:
 		mismatches[peer_id] = sorted_peer_input
 		return false
 
-var state := {}
 var input := {}
-
+var state := {}
 var peer_ticks := {}
 
 func _ready() -> void:
@@ -64,34 +81,40 @@ func load_log_file(path: String) -> void:
 	progress_dialog.setup_progress(file.get_len())
 	
 	var header
+	var line_number := 0
 	
 	while not file.eof_reached():
+		line_number += 1
 		var line = file.get_line()
 		progress_dialog.update_progress(file.get_position())
 		#yield(get_tree(), "idle_frame")
 		
+		if line == "\n":
+			continue
+		
 		var json_result: JSONParseResult = JSON.parse(line)
 		if json_result.error != OK:
-			print ("Error parsing JSON: %s" % line)
+			print ("Error parsing JSON in %s on line %s: %s" % [path, line_number, line])
 			continue
 		
 		if header == null:
 			if json_result.result['log_type'] == Logger.LogType.HEADER:
 				header = json_result.result
+				continue
 			else:
 				OS.alert("No header at the top of log: %s" % path)
 				file.close()
 				return
 		
-		add_log_entry(json_result.result, header['peer_id'])
+		add_log_entry(json_result.result, int(header['peer_id']))
 	
 	file.close()
 	progress_dialog.hide()
 
 func add_log_entry(log_entry: Dictionary, peer_id: int) -> void:
-	match log_entry['log_type']:
+	match log_entry['log_type'] as int:
 		Logger.LogType.INPUT:
-			var tick = log_entry['tick']
+			var tick: int = log_entry['tick']
 			var input_frame: InputFrame
 			if not input.has(tick):
 				input_frame = InputFrame.new(tick, log_entry['input'])
@@ -102,7 +125,15 @@ func add_log_entry(log_entry: Dictionary, peer_id: int) -> void:
 					print ("Input mismatch on tick: %s" % tick)
 		
 		Logger.LogType.STATE:
-			pass
+			var tick: int = log_entry['tick']
+			var state_frame: StateFrame
+			if not state.has(tick):
+				state_frame = StateFrame.new(tick, log_entry['state'])
+				state[tick] = state_frame
+			else:
+				state_frame = state[tick]
+				if not state_frame.compare_state(peer_id, log_entry['state']):
+					print ("State mismatch on tick: %s" % tick)
 		
 		Logger.LogType.TICK:
 			pass
