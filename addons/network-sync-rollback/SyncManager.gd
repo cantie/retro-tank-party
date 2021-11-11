@@ -1034,7 +1034,7 @@ func _physics_process(delta: float) -> void:
 	
 	var total_time_msecs = float(OS.get_ticks_usec() - start_time) / 1000.0
 	if total_time_msecs > debug_physics_process_msecs:
-		push_error("SyncManager._physics_process() took %.02fms" % total_time_msecs)
+		push_error("[%s] SyncManager._physics_process() took %.02fms" % [current_tick, total_time_msecs])
 	
 	if _logger:
 		_logger.end_tick(start_time)
@@ -1081,7 +1081,7 @@ func _process(delta: float) -> void:
 	
 	var total_time_msecs = float(OS.get_ticks_usec() - start_time) / 1000.0
 	if total_time_msecs > debug_process_msecs:
-		push_error("SyncManager._process() took %.02fms" % total_time_msecs)
+		push_error("[%s] SyncManager._process() took %.02fms" % [current_tick, total_time_msecs])
 
 func _clean_data_for_hashing(input: Dictionary) -> Dictionary:
 	var cleaned := {}
