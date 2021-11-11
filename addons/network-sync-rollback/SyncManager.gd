@@ -267,6 +267,7 @@ var _interpolation_state := {}
 var _time_since_last_tick := 0.0
 var _debug_skip_nth_message_counter := 0
 var _input_complete_tick := 0
+var _last_state_hashed_tick := 0
 var _logged_remote_state: Dictionary
 var _in_rollback := false
 var _ran_physics_process := false
@@ -463,6 +464,7 @@ func _reset() -> void:
 	_time_since_last_tick = 0.0
 	_debug_skip_nth_message_counter = 0
 	_input_complete_tick = 0
+	_last_state_hashed_tick = 0
 	_logged_remote_state.clear()
 	_in_rollback = false
 	_ran_physics_process = false
@@ -571,9 +573,13 @@ func _save_current_state() -> void:
 		return
 	
 	state_buffer.append(StateBufferFrame.new(current_tick, _call_save_state()))
-	_update_input_complete_tick()
-
-func _update_input_complete_tick() -> void:
+	
+	# Update our high-water mark of _input_complete_tick to indicate that the
+	# state that was just saved is input complete. We could technically mark
+	# this earlier (ie. right when we received the last piece of input) but
+	# since we are depending on this to indicate that the state is complete too
+	# (as used by _update_state_hashes()) we do it right after the state is saved.
+	# @todo maybe we need separate this into _input_complete_tick and _state_complet_tick?
 	while current_tick > _input_complete_tick + 1:
 		var input_frame: InputBufferFrame = get_input_frame(_input_complete_tick + 1)
 		if not input_frame:
@@ -583,7 +589,18 @@ func _update_input_complete_tick() -> void:
 		
 		_input_complete_tick += 1
 		
-		var state_frame: StateBufferFrame = _get_state_frame(_input_complete_tick)
+		emit_signal("tick_input_complete", _input_complete_tick)
+
+func _update_state_hashes() -> void:
+	while _input_complete_tick > _last_state_hashed_tick:
+		var input_frame: InputBufferFrame = get_input_frame(_last_state_hashed_tick + 1)
+		if not input_frame:
+			_handle_fatal_error("Unable to hash state")
+			return
+		
+		_last_state_hashed_tick += 1
+		
+		var state_frame: StateBufferFrame = _get_state_frame(_last_state_hashed_tick)
 		# We're duplicating code from _calculate_data_hash() so that we can
 		# reuse the serialized Dictionary to log our state with the host.
 		var cleaned = _clean_data_for_hashing(state_frame.data)
@@ -591,19 +608,17 @@ func _update_input_complete_tick() -> void:
 		var serialized_hash = serialized.hash()
 		
 		if debug_log_state and get_tree().is_network_server():
-			state_hashes.append(StateHashFrame.new(_input_complete_tick, serialized_hash, serialized))
+			state_hashes.append(StateHashFrame.new(_last_state_hashed_tick, serialized_hash, serialized))
 		else:
-			state_hashes.append(StateHashFrame.new(_input_complete_tick, serialized_hash))
+			state_hashes.append(StateHashFrame.new(_last_state_hashed_tick, serialized_hash))
 		
 		if _logger:
 			_logger.write_input(input_frame.tick, input_frame.players)
-			_logger.write_state(_input_complete_tick, serialized, serialized_hash)
+			_logger.write_state(_last_state_hashed_tick, serialized, serialized_hash)
 		
 		if debug_log_state and not get_tree().is_network_server():
 			serialized['$'] = serialized_hash
-			rpc_id(1, "_log_saved_state", _input_complete_tick, serialized)
-		
-		emit_signal("tick_input_complete", _input_complete_tick)
+			rpc_id(1, "_log_saved_state", _last_state_hashed_tick, serialized)
 
 func _do_tick(delta: float, is_rollback: bool = false) -> bool:
 	var input_frame := get_input_frame(current_tick)
@@ -1056,6 +1071,8 @@ func _process(delta: float) -> void:
 			_call_interpolate_state(weight)
 		
 		network_adaptor.poll()
+		
+		_update_state_hashes()
 		
 		if get_tree().is_network_server() and _logged_remote_state.size() > 0:
 			_process_logged_remote_state()
