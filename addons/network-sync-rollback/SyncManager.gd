@@ -1045,6 +1045,8 @@ func _process(delta: float) -> void:
 		if _logger:
 			_logger.begin_interpolation_frame(current_tick)
 		
+		_update_input_complete_tick()
+		
 		_time_since_last_tick += delta
 		
 		# Don't interpolate if we are skipping ticks.
@@ -1055,8 +1057,6 @@ func _process(delta: float) -> void:
 			_call_interpolate_state(weight)
 		
 		network_adaptor.poll()
-		
-		_update_input_complete_tick()
 		
 		if get_tree().is_network_server() and _logged_remote_state.size() > 0:
 			_process_logged_remote_state()
@@ -1085,7 +1085,10 @@ func _clean_data_for_hashing(input: Dictionary) -> Dictionary:
 		for key in input_at_path:
 			if (key is String and key.begins_with('_')) or (key is int and key < 0):
 				continue
-			data[key] = input_at_path[key]
+			if input_at_path[key] is Dictionary:
+				data[key] = input_at_path[key].duplicate(true)
+			else:
+				data[key] = input_at_path[key]
 		cleaned[path] = data
 	return cleaned
 
