@@ -571,6 +571,7 @@ func _save_current_state() -> void:
 		return
 	
 	state_buffer.append(StateBufferFrame.new(current_tick, _call_save_state()))
+	_update_input_complete_tick()
 
 func _update_input_complete_tick() -> void:
 	while current_tick > _input_complete_tick + 1:
@@ -1044,8 +1045,6 @@ func _process(delta: float) -> void:
 	if not interpolation or not _ran_physics_process:
 		if _logger:
 			_logger.begin_interpolation_frame(current_tick)
-		
-		_update_input_complete_tick()
 		
 		_time_since_last_tick += delta
 		
