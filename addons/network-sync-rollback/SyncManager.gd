@@ -267,6 +267,7 @@ var _interpolation_state := {}
 var _time_since_last_tick := 0.0
 var _debug_skip_nth_message_counter := 0
 var _input_complete_tick := 0
+var _state_complete_tick := 0
 var _last_state_hashed_tick := 0
 var _logged_remote_state: Dictionary
 var _in_rollback := false
@@ -464,6 +465,7 @@ func _reset() -> void:
 	_time_since_last_tick = 0.0
 	_debug_skip_nth_message_counter = 0
 	_input_complete_tick = 0
+	_state_complete_tick = 0
 	_last_state_hashed_tick = 0
 	_logged_remote_state.clear()
 	_in_rollback = false
@@ -574,25 +576,12 @@ func _save_current_state() -> void:
 	
 	state_buffer.append(StateBufferFrame.new(current_tick, _call_save_state()))
 	
-	# Update our high-water mark of _input_complete_tick to indicate that the
-	# state that was just saved is input complete. We could technically mark
-	# this earlier (ie. right when we received the last piece of input) but
-	# since we are depending on this to indicate that the state is complete too
-	# (as used by _update_state_hashes()) we do it right after the state is saved.
-	# @todo maybe we need separate this into _input_complete_tick and _state_complet_tick?
-	while current_tick > _input_complete_tick + 1:
-		var input_frame: InputBufferFrame = get_input_frame(_input_complete_tick + 1)
-		if not input_frame:
-			break
-		if not input_frame.is_complete(peers):
-			break
-		
-		_input_complete_tick += 1
-		
-		emit_signal("tick_input_complete", _input_complete_tick)
+	# If the input for this state is complete, then update _state_complete_tick.
+	if _input_complete_tick > _state_complete_tick and current_tick >= _input_complete_tick:
+		_state_complete_tick = _input_complete_tick
 
 func _update_state_hashes() -> void:
-	while _input_complete_tick > _last_state_hashed_tick:
+	while _state_complete_tick > _last_state_hashed_tick:
 		var input_frame: InputBufferFrame = get_input_frame(_last_state_hashed_tick + 1)
 		if not input_frame:
 			_handle_fatal_error("Unable to hash state")
@@ -1194,6 +1183,18 @@ func _receive_input_tick(peer_id: int, serialized_msg: PoolByteArray) -> void:
 		while index < input_buffer.size() and not input_buffer[index].is_player_input_predicted(peer.peer_id):
 			peer.last_remote_tick_received += 1
 			index += 1
+		
+		# Update _input_complete_tick for new input.
+		while current_tick > _input_complete_tick + 1:
+			var input_frame: InputBufferFrame = get_input_frame(_input_complete_tick + 1)
+			if not input_frame:
+				break
+			if not input_frame.is_complete(peers):
+				break
+			
+			_input_complete_tick += 1
+			
+			emit_signal("tick_input_complete", _input_complete_tick)
 	
 	# Record the next frame the other peer needs.
 	peer.next_local_tick_requested = max(msg[InputMessageKey.NEXT_TICK_REQUESTED], peer.next_local_tick_requested)
