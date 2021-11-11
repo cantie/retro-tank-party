@@ -577,8 +577,10 @@ func _save_current_state() -> void:
 	state_buffer.append(StateBufferFrame.new(current_tick, _call_save_state()))
 	
 	# If the input for this state is complete, then update _state_complete_tick.
-	if _input_complete_tick > _state_complete_tick and current_tick >= _input_complete_tick:
-		_state_complete_tick = _input_complete_tick
+	if _input_complete_tick > _state_complete_tick:
+		# Set to the current_tick so long as its less than or equal to the
+		# _input_complete_tick, otherwise, cap it to the _input_complete_tick.
+		_state_complete_tick = current_tick if current_tick <= _input_complete_tick else _input_complete_tick
 
 func _update_state_hashes() -> void:
 	while _state_complete_tick > _last_state_hashed_tick:
