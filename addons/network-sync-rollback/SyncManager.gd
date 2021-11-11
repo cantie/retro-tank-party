@@ -1084,10 +1084,7 @@ func _clean_data_for_hashing(input: Dictionary) -> Dictionary:
 		for key in input_at_path:
 			if (key is String and key.begins_with('_')) or (key is int and key < 0):
 				continue
-			if input_at_path[key] is Dictionary:
-				data[key] = input_at_path[key].duplicate(true)
-			else:
-				data[key] = input_at_path[key]
+			data[key] = input_at_path[key]
 		cleaned[path] = data
 	return cleaned
 
