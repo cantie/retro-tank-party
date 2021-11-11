@@ -1070,8 +1070,6 @@ func _process(delta: float) -> void:
 				weight = 1.0
 			_call_interpolate_state(weight)
 		
-		network_adaptor.poll()
-		
 		_update_state_hashes()
 		
 		if get_tree().is_network_server() and _logged_remote_state.size() > 0:
@@ -1079,6 +1077,9 @@ func _process(delta: float) -> void:
 		
 		if interpolation:
 			emit_signal("interpolation_frame")
+		
+		# Do this last to catch any data that came in late.
+		network_adaptor.poll()
 		
 		if _logger:
 			_logger.end_interpolation_frame(start_time)
