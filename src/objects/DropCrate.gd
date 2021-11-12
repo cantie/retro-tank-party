@@ -28,4 +28,4 @@ func open_crate() -> void:
 		pickup_path = contents.resource_path,
 	}, false)
 	
-	queue_free()
+	SyncManager.despawn(self)

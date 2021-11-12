@@ -50,7 +50,4 @@ func _on_Powerup_body_entered(body) -> void:
 		position = global_position,
 	})
 	
-	var parent = get_parent()
-	if parent:
-		parent.remove_child(self)
-	queue_free()
+	SyncManager.despawn(self)

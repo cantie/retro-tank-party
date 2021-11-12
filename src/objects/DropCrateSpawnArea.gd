@@ -52,5 +52,4 @@ func _on_DropTimer_timeout() -> void:
 
 func clear():
 	for child in spawns.get_children():
-		spawns.remove_child(child)
-		child.queue_free()
+		SyncManager.despawn(child)

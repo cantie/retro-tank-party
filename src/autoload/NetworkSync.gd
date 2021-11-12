@@ -113,14 +113,16 @@ func _ready() -> void:
 	var network_adaptor = NakamaWebRTCNetworkAdaptor.new()
 	network_adaptor.max_buffered_amount = 200
 	network_adaptor.max_skipped_input_in_a_row = 3
-	network_adaptor.max_packet_lifetime = 66
+	# This is the max latency (~33ms * 15 = ~500ms)
+	network_adaptor.max_packet_lifetime = 500
 	
 	SyncManager.network_adaptor = network_adaptor
 	SyncManager.message_serializer = RTPMessageSerializer.new()
 	SyncManager.hash_serializer = RTPHashSerializer.new()
 	
 	# Just for debugging
-	#SyncManager.debug_rollback_ticks = 5
+	#SyncDebugger.print_previous_state = true
+	#SyncManager.debug_rollback_ticks = 15
 	#SyncManager.debug_random_rollback_ticks = 10
 	SyncManager.debug_log_state = true
 	SyncManager.debug_message_bytes = 600
@@ -128,10 +130,10 @@ func _ready() -> void:
 	
 	# Tweak some settings
 	SyncManager.set_default_sound_bus("Sound")
-	#SyncManager.max_buffer_size = 20
-	SyncManager.max_input_frames_per_message = 20
+	SyncManager.max_buffer_size = 15 # ~500ms
+	SyncManager.max_input_frames_per_message = 15
 	SyncManager.max_messages_at_once = 2
 	SyncManager.interpolation = true
-	SyncManager.skip_ticks_after_sync_regained = 5
+	SyncManager.min_lag_to_regain_sync = 5
+	SyncManager.max_ticks_to_regain_sync = 300
 	#SyncManager.message_resend_frequency = (1.0 / Engine.iterations_per_second) / 2.0
-	

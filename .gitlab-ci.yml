@@ -20,7 +20,7 @@ build-godot:
   tags:
     - multicore
   variables:
-    SCONS_OPTS: "module_godotsteam_enabled=no"
+    SCONS_OPTS: "debug_symbols=yes separate_debug_symbols=yes module_godotsteam_enabled=no"
   script:
     - podman login "$GODOT_BUILD_REGISTRY" $PODMAN_OPTS --username="$GODOT_BUILD_REGISTRY_USERNAME" --password="$GODOT_BUILD_REGISTRY_PASSWORD"
     - rm -rf build/godot/bin
@@ -269,7 +269,7 @@ build-godot-steam:
     - multicore
   variables:
     GODOT_ARCHIVE_SUFFIX: "steam"
-    SCONS_OPTS: "module_godotsteam_enabled=yes"
+    SCONS_OPTS: "debug_symbols=yes separate_debug_symbols=yes module_godotsteam_enabled=yes"
   script:
     - export GODOT_SOURCE_HASH=$(python3 scripts/godot/calculate-hash.py godot)
     - podman login "$GODOT_BUILD_REGISTRY" $PODMAN_OPTS --username="$GODOT_BUILD_REGISTRY_USERNAME" --password="$GODOT_BUILD_REGISTRY_PASSWORD"

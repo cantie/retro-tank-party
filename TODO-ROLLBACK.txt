@@ -1,41 +1,35 @@
 TODO
 ====
 
-MILESTONE 1 (physics):
-
- - Make sg-physics-2d into its own project
-   o API reference
-   o Tutorial
-
 MILESTOE 2 (finish porting all the things):
 
- - Profile our rollbacks so we can see how close we are to the frame budget
-   * See how big of rollbacks we are actually executing (currently we log when they are flagged) and how often
-   * See how many milliseconds it takes to execute each one
-   * I'd be interested to see the order of the rollbacks too - are we redoing some frames lots and lots?
- - Investigate state mismatches:
-   * Drop timer being off by one for a frame
-     o I think right after a spawn or a pickup?
-	 o Also sometimes happens on the first or second tick of the match
-	   - Could we be starting the map on the host too early?
- - Bug: Network issues with Elliot
-   * Attempt to determine how two clients are connected (relay or not, which relay)
-   * Change the "Auto" mode to try non-relayed first, and then relayed after a timeout
-   * Experiment with increasing how long messages are "reliable"
-   * Experiment with switching from Twilio to custom Coturn? (I wonder if we're just using the wrong regions?)
+ - Add some detailed logging and a way to visualize it
+   * Maybe pack all the log data into a single file?
+   * Build a log viewer which can load a log file for each peer and analyze
+   * Look for mismatched input
+   * Look for mismatched state
+ - Bug: Pickup sometimes appears in one spot, gets picked up (with no effect) and then reappears in a different spot
+ - Bug: Tank sometimes remains white after hit (not after despawn/respawn)
+ - Bug: TheKlin boosted and immediately zapped and then was zooming all over
  - Bug: Crash sometimes when player is killed
- - Bug: Peer with given id already exists
+ - Bug (confirmed): Peer with given id already exists
    * Join two players, but don't press Ready
    * Have non-host leave, and then quit game altogether
    * Host should go back (ending match), then start a new one
    * The have non-host connect again
    * Error will happen!
- - Figure out issue where input just stops even though I've never stopped pressing it
-   o Easiest to reproduce by pressing a direction on the D-pad
+ - Bug: State hash frame retreived from state hashes has mismatched tick number
+ - Bug: Rolled back player death but left "player has won" message up
+   |-> Saving and restoring state won't help, because it breaks our "Regaining sync" messages - this needs the full solution!
+   |-> Wait to actually show the message until we have complete input for the frame where the point was scored
+
+ - See if we can make Tank._network_process() any faster
  - Implement a non-debug comparison of state (maybe just sending the hashes of the remote state?)
    o Ideally, passing these hashes would be required and included with other input
      * We'd need a system of ACK'ing hashes, and some contingency if they weren't arriving
    o Clients should count the number of state mismatches in a row - once a threshold is hit, bail
+ - Try: Can we make interpolation faster by reusing the previous _interpolation_state[1]
+ - Try: Building custom versions of the WebRTC native plugin for Linux, Windows and MacOS
 
 MILESTONE 3 (internal cleanup):
 
@@ -50,8 +44,19 @@ BEFORE RELEASE:
    o Rollback addon
    o Physics engine
 
+UNCONFIRMED BUGS:
+
+ - Bug: Network issues with Elliot
+   * Attempt to determine how two clients are connected (relay or not, which relay)
+   * Change the "Auto" mode to try non-relayed first, and then relayed after a timeout
+   * Experiment with increasing how long messages are "reliable"
+   * Experiment with switching from Twilio to custom Coturn? (I wonder if we're just using the wrong regions?)
+ - Bug: Elliot having input issues during "Regaining sync..."
+
 BACKLOG:
 
+ - Bug: input just stops even though I've never stopped pressing it
+   o Easiest to reproduce by pressing a direction on the D-pad
  - Implement spectators
  - Solve problems packet loss
    o Dig deeper into WebRTC and try to see where things are going awry!

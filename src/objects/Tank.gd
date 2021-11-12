@@ -163,6 +163,7 @@ func _on_SyncManager_scene_spawned(spawned_name, spawned_node, scene, data):
 		_setup_and_use_ability(spawned_node, data['ability_type'])
 
 func _network_spawn(data: Dictionary) -> void:
+	dead = false
 	game = get_node(data['game'])
 	
 	set_global_fixed_transform(data['start_transform'])
@@ -176,6 +177,20 @@ func _network_spawn(data: Dictionary) -> void:
 		player_info_node.set_team(data['team'])
 	
 	sync_to_physics_engine()
+
+func _network_despawn() -> void:
+	# Reset some stuff for when this node is reused
+	set_weapon_type(BaseWeaponType)
+	if ability:
+		_on_ability_finished(ability)
+	set_held_ability_type(null)
+	shoot_cooldown_timer.stop()
+	animation_player.stop(true)
+	animation_player.play("RESET")
+	player_controlled = false
+	health = 100
+	can_shoot = true
+	camera = null
 
 func pickup_weapon(_weapon_type: WeaponType) -> void:
 	hooks.dispatch_event("pickup_weapon", PickupWeaponEvent.new(self, _weapon_type))
@@ -355,9 +370,9 @@ func _network_process(delta: float, input: Dictionary) -> void:
 	
 	# 6554 = 0.1
 	if movement_vector.x >= 6554 or movement_vector.x <= -6554:
-		engine_sound.engine_state = engine_sound.EngineState.DRIVING
+		engine_sound.next_engine_state = engine_sound.EngineState.DRIVING
 	else:
-		engine_sound.engine_state = engine_sound.EngineState.IDLE
+		engine_sound.next_engine_state = engine_sound.EngineState.IDLE
 	
 	# We create a brand new transform to eliminate cumulative error from
 	# rotating the same transform over and over again.
@@ -375,53 +390,49 @@ func _network_process(delta: float, input: Dictionary) -> void:
 		shoot_cooldown_timer.start()
 		shoot()
 		Globals.rumble.add_weak_rumble(shoot_rumble)
-
+	
 	if input.get(PlayerInput.USING_ABILITY, false):
 		use_ability()
-	
-	_after_update_position()
-
-func _after_update_position() -> void:
-	# Make info follow the tank
-	player_info_node.position = global_position + player_info_offset
-	
-	if camera:
-		camera.global_position = global_position
 
 func _save_state() -> Dictionary:
-	return {
-		fixed_transform = fixed_transform.copy(),
-		_turret_transform = turret_pivot.fixed_transform.copy(),
+	var state := {
+		_turret_rotation = turret_pivot.fixed_rotation,
 		can_shoot = can_shoot,
 		dead = dead,
 		health = health,
 		speed = speed,
-		weapon_type = weapon_type.resource_path,
-		held_ability_type = held_ability_type.resource_path if held_ability_type else null,
+		weapon_type = weapon_type,
+		held_ability_type = held_ability_type,
 		ability_charges = ability_charges,
 	}
+	Utils.save_node_transform_state(self, state)
+	return state
 
 func _load_state(state: Dictionary) -> void:
-	fixed_transform = state['fixed_transform'].copy()
-	turret_pivot.fixed_transform = state['_turret_transform'].copy()
+	Utils.load_node_transform_state(self, state)
+	turret_pivot.fixed_rotation = state['_turret_rotation']
 	can_shoot = state['can_shoot']
 	dead = state['dead']
 	update_health(state['health'])
 	speed = state['speed']
-	set_weapon_type(load(state['weapon_type']))
-	set_held_ability_type(load(state['held_ability_type']) if state['held_ability_type'] else null)
+	set_weapon_type(state['weapon_type'])
+	set_held_ability_type(state['held_ability_type'])
 	ability_charges = state['ability_charges']
 	
-	sync_to_physics_engine()
-	_after_update_position()
 	_update_ability_label()
+	sync_to_physics_engine()
 
 func _interpolate_state(old_state: Dictionary, new_state: Dictionary, weight: float) -> void:
-	position = lerp(old_state['fixed_transform'].origin.to_float(), new_state['fixed_transform'].origin.to_float(), weight)
-	scale = lerp(old_state['fixed_transform'].get_scale().to_float(), new_state['fixed_transform'].get_scale().to_float(), weight)
-	rotation = lerp_angle(SGFixed.to_float(old_state['fixed_transform'].get_rotation()), SGFixed.to_float(new_state['fixed_transform'].get_rotation()), weight)
-	turret_pivot.rotation = lerp_angle(SGFixed.to_float(old_state['_turret_transform'].get_rotation()), SGFixed.to_float(new_state['_turret_transform'].get_rotation()), weight)
-	_after_update_position()
+	Utils.interpolate_node_transform_state(self, old_state, new_state, weight)
+	turret_pivot.rotation = lerp_angle(SGFixed.to_float(old_state['_turret_rotation']), SGFixed.to_float(new_state['_turret_rotation']), weight)
+
+func _process(delta: float) -> void:
+	# Make info follow the tank
+	player_info_node.position = global_position + player_info_offset
+	
+	# Make camera follow the tank
+	if camera:
+		camera.global_position = global_position
 
 func _unhandled_input(event: InputEvent) -> void:
 	if event is InputEventMouseMotion:
@@ -483,8 +494,7 @@ func _on_ability_finished(old_ability) -> void:
 	old_ability.disconnect("finished", self, "_on_ability_finished")
 	
 	old_ability.detach_ability()
-	remove_child(old_ability)
-	old_ability.queue_free()
+	SyncManager.despawn(old_ability)
 	
 	if old_ability == ability:
 		ability = null
@@ -542,6 +552,6 @@ func _hook_default_die(event: DieEvent) -> void:
 			type = "fire",
 		})
 		
-		queue_free()
-		
 		emit_signal("player_dead", event.killer_id)
+		
+		SyncManager.despawn(self)

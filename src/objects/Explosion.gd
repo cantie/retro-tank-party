@@ -7,7 +7,8 @@ const HitSound = preload("res://assets/sounds/Explosion3__004.wav")
 const BigSound = preload("res://assets/sounds/Explosion2__007.wav")
 
 func _network_spawn(data: Dictionary) -> void:
-	fixed_position = data['fixed_position'].copy()
+	visible = true
+	fixed_position = data['fixed_position']
 	fixed_scale = SGFixed.vector2(data['scale'], data['scale'])
 	
 	var anim = data['type']
@@ -33,9 +34,9 @@ func _network_spawn(data: Dictionary) -> void:
 				position = global_position,
 			})
 
+func _network_despawn() -> void:
+	animation_player.stop(true)
+
 func _on_AnimationPlayer_animation_finished(anim_name: String) -> void:
 	visible = false
-	var parent = get_parent()
-	if parent:
-		parent.remove_child(self)
-	queue_free()
+	SyncManager.despawn(self)

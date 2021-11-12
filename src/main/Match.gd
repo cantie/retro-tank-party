@@ -1,5 +1,7 @@
 extends Node2D
 
+const LOG_FILE_DIRECTORY = 'user://detailed_logs'
+
 onready var game := $Game
 onready var ui_layer := $UILayer
 
@@ -33,6 +35,28 @@ func scene_setup(operation: RemoteOperations.ClientOperation, info: Dictionary) 
 	ui_layer.show_back_button()
 	
 	operation.mark_done()
+	
+	if GameSettings.use_detailed_logging:
+		var dir = Directory.new()
+		if not dir.dir_exists(LOG_FILE_DIRECTORY):
+			dir.make_dir(LOG_FILE_DIRECTORY)
+		
+		var datetime = OS.get_datetime(true)
+		var match_id = OnlineMatch.match_id
+		match_id.erase(match_id.length() - 1, 1)
+		
+		var log_file_name = "%04d%02d%02d-%02d%02d%02d-%s-%d.log" % [
+			datetime['year'],
+			datetime['month'],
+			datetime['day'],
+			datetime['hour'],
+			datetime['minute'],
+			datetime['second'],
+			match_id,
+			get_tree().get_network_unique_id(),
+		]
+		
+		SyncManager.start_logging(LOG_FILE_DIRECTORY + '/' + log_file_name)
 
 func scene_start() -> void:
 	SyncManager.start()
@@ -47,6 +71,10 @@ func finish_match() -> void:
 func quit_match() -> void:
 	SyncManager.stop()
 	OnlineMatch.leave()
+	
+	if GameSettings.use_detailed_logging:
+		SyncManager.stop_logging()
+	
 	get_tree().change_scene("res://src/main/SessionSetup.tscn")
 
 func _on_Game_game_error(message) -> void:

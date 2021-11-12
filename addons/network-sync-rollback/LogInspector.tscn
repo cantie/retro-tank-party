@@ -1,0 +1,196 @@
+[gd_scene load_steps=3 format=2]
+
+[ext_resource path="res://addons/network-sync-rollback/LogInspector.gd" type="Script" id=1]
+[ext_resource path="res://addons/network-sync-rollback/log_inspector/ProgressDialog.gd" type="Script" id=2]
+
+[node name="LogInspector" type="Control"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+script = ExtResource( 1 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="FileDialog" type="FileDialog" parent="."]
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+margin_left = -400.0
+margin_top = -300.0
+margin_right = 400.0
+margin_bottom = 300.0
+window_title = "Open File(s)"
+mode = 1
+access = 2
+filters = PoolStringArray( "*.log ; Log files" )
+current_dir = "/home/dsnopek/games/Retro Tank Party"
+current_path = "/home/dsnopek/games/Retro Tank Party/"
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="ProgressDialog" type="PopupDialog" parent="."]
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+margin_left = -250.0
+margin_top = -75.0
+margin_right = 250.0
+margin_bottom = -25.0
+script = ExtResource( 2 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="ProgressBar" type="ProgressBar" parent="ProgressDialog"]
+anchor_top = 0.5
+anchor_right = 1.0
+anchor_bottom = 0.5
+margin_left = 10.0
+margin_top = -16.0
+margin_right = -10.0
+margin_bottom = 12.0
+
+[node name="VBoxContainer" type="VBoxContainer" parent="."]
+anchor_right = 1.0
+anchor_bottom = 1.0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainer"]
+margin_right = 1280.0
+margin_bottom = 20.0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="AddLogButton" type="Button" parent="VBoxContainer/HBoxContainer"]
+margin_right = 63.0
+margin_bottom = 20.0
+text = "Add Log"
+
+[node name="DataDescriptionLabel" type="Label" parent="VBoxContainer/HBoxContainer"]
+margin_left = 67.0
+margin_top = 3.0
+margin_right = 152.0
+margin_bottom = 17.0
+text = "0 logs loaded"
+
+[node name="HBoxContainer2" type="HBoxContainer" parent="VBoxContainer"]
+margin_top = 24.0
+margin_right = 1280.0
+margin_bottom = 48.0
+
+[node name="TickNumberLabel" type="Label" parent="VBoxContainer/HBoxContainer2"]
+margin_top = 5.0
+margin_right = 29.0
+margin_bottom = 19.0
+text = "Tick:"
+
+[node name="TickNumber" type="SpinBox" parent="VBoxContainer/HBoxContainer2"]
+margin_left = 33.0
+margin_right = 107.0
+margin_bottom = 24.0
+min_value = 1.0
+max_value = 0.0
+value = 1.0
+rounded = true
+
+[node name="GridContainer" type="GridContainer" parent="VBoxContainer"]
+margin_top = 52.0
+margin_right = 1280.0
+margin_bottom = 720.0
+size_flags_vertical = 3
+columns = 2
+
+[node name="InputLabel" type="Label" parent="VBoxContainer/GridContainer"]
+margin_right = 638.0
+margin_bottom = 14.0
+size_flags_horizontal = 3
+text = "Input:"
+
+[node name="InputMismatchesLabel" type="Label" parent="VBoxContainer/GridContainer"]
+margin_left = 642.0
+margin_right = 1280.0
+margin_bottom = 14.0
+size_flags_horizontal = 3
+text = "Input Mismatches:"
+
+[node name="InputPanel" type="Panel" parent="VBoxContainer/GridContainer"]
+margin_top = 18.0
+margin_right = 638.0
+margin_bottom = 332.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="InputDataLabel" type="RichTextLabel" parent="VBoxContainer/GridContainer/InputPanel"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+focus_mode = 2
+selection_enabled = true
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="InputMismatchesPanel" type="Panel" parent="VBoxContainer/GridContainer"]
+margin_left = 642.0
+margin_top = 18.0
+margin_right = 1280.0
+margin_bottom = 332.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="InputMismatchesDataLabel" type="RichTextLabel" parent="VBoxContainer/GridContainer/InputMismatchesPanel"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+focus_mode = 2
+selection_enabled = true
+
+[node name="StateLabel" type="Label" parent="VBoxContainer/GridContainer"]
+margin_top = 336.0
+margin_right = 638.0
+margin_bottom = 350.0
+size_flags_horizontal = 3
+text = "State:"
+
+[node name="StateMismatchesLabel" type="Label" parent="VBoxContainer/GridContainer"]
+margin_left = 642.0
+margin_top = 336.0
+margin_right = 1280.0
+margin_bottom = 350.0
+size_flags_horizontal = 3
+text = "State Mismatches:"
+
+[node name="StatePanel" type="Panel" parent="VBoxContainer/GridContainer"]
+margin_top = 354.0
+margin_right = 638.0
+margin_bottom = 668.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="StateDataLabel" type="RichTextLabel" parent="VBoxContainer/GridContainer/StatePanel"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+focus_mode = 2
+selection_enabled = true
+
+[node name="StateMismatchesPanel" type="Panel" parent="VBoxContainer/GridContainer"]
+margin_left = 642.0
+margin_top = 354.0
+margin_right = 1280.0
+margin_bottom = 668.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="StateMismatchesDataLabel" type="RichTextLabel" parent="VBoxContainer/GridContainer/StateMismatchesPanel"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+focus_mode = 2
+selection_enabled = true
+
+[connection signal="files_selected" from="FileDialog" to="." method="_on_FileDialog_files_selected"]
+[connection signal="pressed" from="VBoxContainer/HBoxContainer/AddLogButton" to="." method="_on_AddLogButton_pressed"]
+[connection signal="value_changed" from="VBoxContainer/HBoxContainer2/TickNumber" to="." method="_on_TickNumber_value_changed"]

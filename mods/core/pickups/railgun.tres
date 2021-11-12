@@ -7,5 +7,5 @@
 script = ExtResource( 2 )
 name = "Railgun"
 letter = "R"
-rarity = 500
+rarity = 20
 weapon_type = ExtResource( 3 )

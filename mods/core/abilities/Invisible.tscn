@@ -19,7 +19,7 @@ wait_ticks = 240
 [node name="VisibleTimer" type="Node" parent="."]
 script = ExtResource( 2 )
 one_shot = true
-wait_ticks = 6
+wait_ticks = 7
 
 [node name="BlinkTimer" type="Node" parent="."]
 script = ExtResource( 2 )

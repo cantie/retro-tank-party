@@ -17,11 +17,13 @@ func _network_spawn(data: Dictionary) -> void:
 
 func explode(type: String) -> void:
 	.explode(type)
-	queue_free()
+	SyncManager.despawn(self)
 	lifetime_timer.stop()
 
 func _network_process(delta: float, _input: Dictionary) -> void:
 	._network_process(delta, _input)
+	# @todo Is there a way to pre-calculate the vector * speed without losing
+	#       flexibility in child classes?
 	fixed_position.iadd(vector.mul(speed))
 	sync_to_physics_engine()
 
