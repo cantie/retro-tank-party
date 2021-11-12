@@ -3,7 +3,6 @@ extends "res://src/objects/tank/BaseTank.gd"
 const BaseWeaponType = preload("res://mods/core/weapons/base.tres")
 const Explosion = preload("res://src/objects/Explosion.tscn")
 const EventDispatcher = preload("res://src/utils/EventDispatcher.gd")
-#const PerfTimer = preload("res://addons/network-sync-rollback/debugger/PerfTimer.gd")
 
 const ShootSound = preload("res://assets/sounds/Bass Drum__003.wav")
 
@@ -410,12 +409,8 @@ func _save_state() -> Dictionary:
 	return state
 
 func _load_state(state: Dictionary) -> void:
-	#var perf = PerfTimer.new()
-	#perf.start("tank update fixed transforms")
 	Utils.load_node_transform_state(self, state)
 	turret_pivot.fixed_rotation = state['_turret_rotation']
-	#perf.stop("tank update fixed transforms")
-	#perf.start("tank the rest")
 	can_shoot = state['can_shoot']
 	dead = state['dead']
 	update_health(state['health'])
@@ -425,12 +420,7 @@ func _load_state(state: Dictionary) -> void:
 	ability_charges = state['ability_charges']
 	
 	_update_ability_label()
-	#perf.stop("tank the rest")
-	#perf.start("tank sync to physics")
 	sync_to_physics_engine()
-	#perf.stop("tank sync to physics")
-	
-	#perf.print_timings()
 
 func _interpolate_state(old_state: Dictionary, new_state: Dictionary, weight: float) -> void:
 	Utils.interpolate_node_transform_state(self, old_state, new_state, weight)

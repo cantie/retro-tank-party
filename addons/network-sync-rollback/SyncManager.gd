@@ -4,7 +4,6 @@ const SpawnManager = preload("res://addons/network-sync-rollback/SpawnManager.gd
 const SoundManager = preload("res://addons/network-sync-rollback/SoundManager.gd")
 const NetworkAdaptor = preload("res://addons/network-sync-rollback/NetworkAdaptor.gd")
 const RPCNetworkAdaptor = preload("res://addons/network-sync-rollback/RPCNetworkAdaptor.gd")
-#const PerfTimer = preload("res://addons/network-sync-rollback/debugger/PerfTimer.gd")
 const Logger = preload("res://addons/network-sync-rollback/Logger.gd")
 
 class Peer extends Reference:
@@ -859,10 +858,6 @@ func _physics_process(delta: float) -> void:
 		_logger.write_current_data()
 	
 	var start_time := OS.get_ticks_usec()
-	
-	#print (" === TICK: %s === " % current_tick)
-	#var perf = PerfTimer.new()
-	#perf.start('frame')
 	
 	# @todo Is there a way we can move this to _remote_start()?
 	# Store an initial state before any ticks.
