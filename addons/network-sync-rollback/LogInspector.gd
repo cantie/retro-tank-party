@@ -8,6 +8,7 @@ const JSON_INDENT = "    "
 onready var file_dialog = $FileDialog
 onready var progress_dialog = $ProgressDialog
 onready var data_description_label = $VBoxContainer/HBoxContainer/DataDescriptionLabel
+onready var data_description_label_default_text = data_description_label.text
 onready var tick_number_field = $VBoxContainer/HBoxContainer2/TickNumber
 onready var input_data_label = $VBoxContainer/GridContainer/InputPanel/InputDataLabel
 onready var input_mismatches_data_label = $VBoxContainer/GridContainer/InputMismatchesPanel/InputMismatchesDataLabel
@@ -73,10 +74,33 @@ var state := {}
 var peer_ticks := {}
 
 func _ready() -> void:
-	var dir = Directory.new()
-	file_dialog.current_dir = dir.get_current_dir()
+	pass
 
-func _on_AddLogButton_pressed() -> void:
+func _on_ClearButton_pressed() -> void:
+	peer_ids.clear()
+	mismatches.clear()
+	max_tick = 0
+	input.clear()
+	state.clear()
+	peer_ticks.clear()
+	tick_number_field.value = 0
+	data_description_label.text = data_description_label_default_text
+
+func _on_AddUserLogButton_pressed() -> void:
+	file_dialog.access = FileDialog.ACCESS_USERDATA
+	file_dialog.current_dir = "user://detailed_logs/"
+	file_dialog.current_file = ''
+	file_dialog.current_path = ''
+	file_dialog.show_modal(true)
+	file_dialog.invalidate()
+
+func _on_AddAnyLogButton_pressed() -> void:
+	var dir := Directory.new()
+	
+	file_dialog.access = FileDialog.ACCESS_FILESYSTEM
+	file_dialog.current_dir = dir.get_current_dir()
+	file_dialog.current_file = ''
+	file_dialog.current_path = ''
 	file_dialog.show_modal(true)
 	file_dialog.invalidate()
 
@@ -233,3 +257,4 @@ func _on_NextMismatchButton_pressed() -> void:
 			break
 	if next_mismatch != -1:
 		tick_number_field.value = next_mismatch
+

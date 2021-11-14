@@ -67,17 +67,31 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="AddLogButton" type="Button" parent="VBoxContainer/HBoxContainer"]
-margin_right = 63.0
+[node name="ClearButton" type="Button" parent="VBoxContainer/HBoxContainer"]
+margin_right = 44.0
 margin_bottom = 20.0
-text = "Add Log"
+text = "Clear"
+
+[node name="AddUserLogButton" type="Button" parent="VBoxContainer/HBoxContainer"]
+margin_left = 48.0
+margin_right = 145.0
+margin_bottom = 20.0
+text = "Add User Log"
+
+[node name="AddAnyLogButton" type="Button" parent="VBoxContainer/HBoxContainer"]
+margin_left = 149.0
+margin_right = 240.0
+margin_bottom = 20.0
+text = "Add Any Log"
 
 [node name="DataDescriptionLabel" type="Label" parent="VBoxContainer/HBoxContainer"]
-margin_left = 67.0
+margin_left = 244.0
 margin_top = 3.0
-margin_right = 152.0
+margin_right = 1280.0
 margin_bottom = 17.0
+size_flags_horizontal = 3
 text = "0 logs loaded"
+align = 2
 
 [node name="HBoxContainer2" type="HBoxContainer" parent="VBoxContainer"]
 margin_top = 24.0
@@ -204,7 +218,9 @@ focus_mode = 2
 selection_enabled = true
 
 [connection signal="files_selected" from="FileDialog" to="." method="_on_FileDialog_files_selected"]
-[connection signal="pressed" from="VBoxContainer/HBoxContainer/AddLogButton" to="." method="_on_AddLogButton_pressed"]
+[connection signal="pressed" from="VBoxContainer/HBoxContainer/ClearButton" to="." method="_on_ClearButton_pressed"]
+[connection signal="pressed" from="VBoxContainer/HBoxContainer/AddUserLogButton" to="." method="_on_AddUserLogButton_pressed"]
+[connection signal="pressed" from="VBoxContainer/HBoxContainer/AddAnyLogButton" to="." method="_on_AddAnyLogButton_pressed"]
 [connection signal="value_changed" from="VBoxContainer/HBoxContainer2/TickNumber" to="." method="_on_TickNumber_value_changed"]
 [connection signal="pressed" from="VBoxContainer/HBoxContainer2/PreviousMismatchButton" to="." method="_on_PreviousMismatchButton_pressed"]
 [connection signal="pressed" from="VBoxContainer/HBoxContainer2/NextMismatchButton" to="." method="_on_NextMismatchButton_pressed"]

@@ -4,8 +4,6 @@ TODO
 MILESTOE 2 (finish porting all the things):
 
  - Add some detailed logging and a way to visualize it
-   * Have a way to quickly load related logs from user://
-     o Two buttons "Find local logs" and "Add log"?
    * Turn into an editor addon? Would make it easier for other projects to use
    * Raname the TICK log entry type to FRAME
    * Have a "Frame" and "State/Input" mode
