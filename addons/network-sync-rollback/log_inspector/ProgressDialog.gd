@@ -1,3 +1,4 @@
+tool
 extends PopupDialog
 
 onready var progress_bar = $ProgressBar

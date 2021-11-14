@@ -1,3 +1,4 @@
+tool
 extends Control
 
 const Logger = preload("res://addons/network-sync-rollback/Logger.gd")
@@ -7,13 +8,13 @@ const JSON_INDENT = "    "
 
 onready var file_dialog = $FileDialog
 onready var progress_dialog = $ProgressDialog
-onready var data_description_label = $VBoxContainer/HBoxContainer/DataDescriptionLabel
+onready var data_description_label = $MarginContainer/VBoxContainer/HBoxContainer/DataDescriptionLabel
 onready var data_description_label_default_text = data_description_label.text
-onready var tick_number_field = $VBoxContainer/HBoxContainer2/TickNumber
-onready var input_data_label = $VBoxContainer/GridContainer/InputPanel/InputDataLabel
-onready var input_mismatches_data_label = $VBoxContainer/GridContainer/InputMismatchesPanel/InputMismatchesDataLabel
-onready var state_data_label = $VBoxContainer/GridContainer/StatePanel/StateDataLabel
-onready var state_mismatches_data_label = $VBoxContainer/GridContainer/StateMismatchesPanel/StateMismatchesDataLabel
+onready var tick_number_field = $MarginContainer/VBoxContainer/HBoxContainer2/TickNumber
+onready var input_data_label = $MarginContainer/VBoxContainer/GridContainer/InputPanel/InputDataLabel
+onready var input_mismatches_data_label = $MarginContainer/VBoxContainer/GridContainer/InputMismatchesPanel/InputMismatchesDataLabel
+onready var state_data_label = $MarginContainer/VBoxContainer/GridContainer/StatePanel/StateDataLabel
+onready var state_mismatches_data_label = $MarginContainer/VBoxContainer/GridContainer/StateMismatchesPanel/StateMismatchesDataLabel
 
 class StateFrame:
 	var tick: int
@@ -74,7 +75,13 @@ var state := {}
 var peer_ticks := {}
 
 func _ready() -> void:
-	pass
+	# Show and make full screen if the scene is being run on its own.
+	if get_parent() == get_tree().root:
+		visible = true
+		anchor_right = 1
+		anchor_bottom = 1
+		margin_right = 0
+		margin_bottom = 0
 
 func _on_ClearButton_pressed() -> void:
 	peer_ids.clear()
@@ -91,7 +98,7 @@ func _on_AddUserLogButton_pressed() -> void:
 	file_dialog.current_dir = "user://detailed_logs/"
 	file_dialog.current_file = ''
 	file_dialog.current_path = ''
-	file_dialog.show_modal(true)
+	file_dialog.show_modal()
 	file_dialog.invalidate()
 
 func _on_AddAnyLogButton_pressed() -> void:
@@ -101,7 +108,7 @@ func _on_AddAnyLogButton_pressed() -> void:
 	file_dialog.current_dir = dir.get_current_dir()
 	file_dialog.current_file = ''
 	file_dialog.current_path = ''
-	file_dialog.show_modal(true)
+	file_dialog.show_modal()
 	file_dialog.invalidate()
 
 func _on_FileDialog_files_selected(paths: PoolStringArray) -> void:
