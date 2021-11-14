@@ -4,10 +4,12 @@ TODO
 MILESTOE 2 (finish porting all the things):
 
  - Add some detailed logging and a way to visualize it
-   * Maybe pack all the log data into a single file?
-   * Build a log viewer which can load a log file for each peer and analyze
-   * Look for mismatched input
-   * Look for mismatched state
+   * Have a way to quickly load related logs from user://
+     o Two buttons "Find local logs" and "Add log"?
+   * Turn into an editor addon? Would make it easier for other projects to use
+   * Raname the TICK log entry type to FRAME
+   * Have a "Frame" and "State/Input" mode
+   * Visualize the the FRAME data to see how things play out in real time
  - Bug: Pickup sometimes appears in one spot, gets picked up (with no effect) and then reappears in a different spot
  - Bug: Tank sometimes remains white after hit (not after despawn/respawn)
  - Bug: TheKlin boosted and immediately zapped and then was zooming all over

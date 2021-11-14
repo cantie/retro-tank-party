@@ -99,6 +99,18 @@ max_value = 0.0
 value = 1.0
 rounded = true
 
+[node name="PreviousMismatchButton" type="Button" parent="VBoxContainer/HBoxContainer2"]
+margin_left = 111.0
+margin_right = 265.0
+margin_bottom = 24.0
+text = "<< Previous Mismatch"
+
+[node name="NextMismatchButton" type="Button" parent="VBoxContainer/HBoxContainer2"]
+margin_left = 269.0
+margin_right = 398.0
+margin_bottom = 24.0
+text = "Next Mismatch >>"
+
 [node name="GridContainer" type="GridContainer" parent="VBoxContainer"]
 margin_top = 52.0
 margin_right = 1280.0
@@ -194,3 +206,5 @@ selection_enabled = true
 [connection signal="files_selected" from="FileDialog" to="." method="_on_FileDialog_files_selected"]
 [connection signal="pressed" from="VBoxContainer/HBoxContainer/AddLogButton" to="." method="_on_AddLogButton_pressed"]
 [connection signal="value_changed" from="VBoxContainer/HBoxContainer2/TickNumber" to="." method="_on_TickNumber_value_changed"]
+[connection signal="pressed" from="VBoxContainer/HBoxContainer2/PreviousMismatchButton" to="." method="_on_PreviousMismatchButton_pressed"]
+[connection signal="pressed" from="VBoxContainer/HBoxContainer2/NextMismatchButton" to="." method="_on_NextMismatchButton_pressed"]

@@ -212,3 +212,24 @@ func _on_TickNumber_value_changed(value: float) -> void:
 	else:
 		state_data_label.text = ''
 		state_mismatches_data_label.text = ''
+
+func _on_PreviousMismatchButton_pressed() -> void:
+	var current_tick := int(tick_number_field.value)
+	var previous_mismatch := -1
+	for mismatch_tick in mismatches:
+		if mismatch_tick < current_tick:
+			previous_mismatch = mismatch_tick
+		else:
+			break
+	if previous_mismatch != -1:
+		tick_number_field.value = previous_mismatch
+
+func _on_NextMismatchButton_pressed() -> void:
+	var current_tick := int(tick_number_field.value)
+	var next_mismatch := -1
+	for mismatch_tick in mismatches:
+		if mismatch_tick > current_tick:
+			next_mismatch = mismatch_tick
+			break
+	if next_mismatch != -1:
+		tick_number_field.value = next_mismatch
