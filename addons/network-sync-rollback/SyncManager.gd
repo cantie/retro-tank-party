@@ -583,14 +583,13 @@ func _save_current_state() -> void:
 
 func _update_state_hashes() -> void:
 	while _state_complete_tick > _last_state_hashed_tick:
-		var input_frame: InputBufferFrame = get_input_frame(_last_state_hashed_tick + 1)
-		if not input_frame:
+		var state_frame: StateBufferFrame = _get_state_frame(_last_state_hashed_tick + 1)
+		if not state_frame:
 			_handle_fatal_error("Unable to hash state")
 			return
 		
 		_last_state_hashed_tick += 1
 		
-		var state_frame: StateBufferFrame = _get_state_frame(_last_state_hashed_tick)
 		# We're duplicating code from _calculate_data_hash() so that we can
 		# reuse the serialized Dictionary to log our state with the host.
 		var cleaned = _clean_data_for_hashing(state_frame.data)
@@ -603,7 +602,6 @@ func _update_state_hashes() -> void:
 			state_hashes.append(StateHashFrame.new(_last_state_hashed_tick, serialized_hash))
 		
 		if _logger:
-			_logger.write_input(input_frame.tick, input_frame.players)
 			_logger.write_state(_last_state_hashed_tick, serialized, serialized_hash)
 		
 		if debug_log_state and not get_tree().is_network_server():
@@ -671,10 +669,17 @@ func _cleanup_buffers() -> bool:
 	while state_buffer.size() > max_buffer_size + 1:
 		var state_frame_to_retire: StateBufferFrame = state_buffer[0]
 		var input_frame = get_input_frame(state_frame_to_retire.tick + 1)
-		if input_frame == null or not input_frame.is_complete(peers):
+		if input_frame == null:
+			push_warning("Attempting to retire state frame %s, but input frame %s is missing" % [state_frame_to_retire.tick, input_frame.tick])
+			return false
+		if not input_frame.is_complete(peers):
 			var missing: Array = input_frame.get_missing_peers(peers)
 			push_warning("Attempting to retire state frame %s, but input frame %s is still missing input (missing peer(s): %s)" % [state_frame_to_retire.tick, input_frame.tick, missing])
 			return false
+		
+		if state_frame_to_retire.tick > _last_state_hashed_tick:
+			push_warning("Unable to retire state frame %s, because we haven't hashed it yet" % state_frame_to_retire.tick)
+			break
 		
 		state_buffer.pop_front()
 		_state_buffer_start_tick += 1
@@ -1056,7 +1061,7 @@ func _process(delta: float) -> void:
 				weight = 1.0
 			_call_interpolate_state(weight)
 		
-		#_update_state_hashes()
+		_update_state_hashes()
 		
 		if get_tree().is_network_server() and _logged_remote_state.size() > 0:
 			_process_logged_remote_state()
@@ -1188,6 +1193,9 @@ func _receive_input_tick(peer_id: int, serialized_msg: PoolByteArray) -> void:
 				break
 			if not input_frame.is_complete(peers):
 				break
+			
+			if _logger:
+				_logger.write_input(input_frame.tick, input_frame.players)
 			
 			_input_complete_tick += 1
 			
