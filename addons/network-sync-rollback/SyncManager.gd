@@ -670,7 +670,7 @@ func _cleanup_buffers() -> bool:
 		var state_frame_to_retire: StateBufferFrame = state_buffer[0]
 		var input_frame = get_input_frame(state_frame_to_retire.tick + 1)
 		if input_frame == null:
-			push_warning("Attempting to retire state frame %s, but input frame %s is missing" % [state_frame_to_retire.tick, input_frame.tick])
+			push_warning("Attempting to retire state frame %s, but input frame %s is missing" % [state_frame_to_retire.tick, state_frame_to_retire.tick + 1])
 			return false
 		if not input_frame.is_complete(peers):
 			var missing: Array = input_frame.get_missing_peers(peers)
