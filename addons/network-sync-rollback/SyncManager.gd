@@ -1056,7 +1056,7 @@ func _process(delta: float) -> void:
 				weight = 1.0
 			_call_interpolate_state(weight)
 		
-		_update_state_hashes()
+		#_update_state_hashes()
 		
 		if get_tree().is_network_server() and _logged_remote_state.size() > 0:
 			_process_logged_remote_state()
