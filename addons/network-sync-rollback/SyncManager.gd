@@ -125,6 +125,13 @@ class StateHashFrame:
 			if not peer_hashes.has(peer_id):
 				return false
 		return true
+	
+	func get_missing_peers(peers: Dictionary) -> Array:
+		var missing := []
+		for peer_id in peers:
+			if not peer_hashes.has(peer_id):
+				missing.append(peer_id)
+		return missing
 
 enum InputMessageKey {
 	NEXT_INPUT_TICK_REQUESTED,
@@ -726,8 +733,15 @@ func _cleanup_buffers() -> bool:
 		_input_buffer_start_tick += 1
 		input_buffer.pop_front()
 	
-	while state_hashes.size() > max_buffer_size:
-		# @todo Ensure there aren't any hashes that haven't been confirmed.
+	while state_hashes.size() > (max_buffer_size * 2):
+		var state_hash_to_retire: StateHashFrame = state_hashes[0]
+		if not state_hash_to_retire.is_complete(peers):
+			var missing: Array = state_hash_to_retire.get_missing_peers(peers)
+			push_warning("Attempting to retire state hash frame %s, but we're still missing hashes (missing peer(s): %s)" % [state_hash_to_retire.tick, missing])
+			return false
+		
+		# @todo Check for mismatches!!
+		
 		_state_hashes_start_tick += 1
 		state_hashes.pop_front()
 	
