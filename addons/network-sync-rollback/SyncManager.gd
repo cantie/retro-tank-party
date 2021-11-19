@@ -117,6 +117,9 @@ class StateHashFrame:
 			return false
 		return true
 	
+	func has_peer_hash(peer_id: int) -> bool:
+		return peer_hashes.has(peer_id)
+	
 	func is_complete(peers: Dictionary) -> bool:
 		for peer_id in peers:
 			if not peer_hashes.has(peer_id):
@@ -809,7 +812,14 @@ func _get_input_messages_from_send_queue_for_peer(peer: Peer) -> Array:
 		   _get_input_messages_from_send_queue_in_range(first_index, first_index + (old_messages * max_input_frames_per_message) - 1)
 
 func _get_state_hashes_for_peer(peer: Peer) -> Dictionary:
-	return {}
+	var ret := {}
+	if peer.next_hash_tick_requested >= _state_hashes_start_tick:
+		var index = peer.next_hash_tick_requested - _state_hashes_start_tick
+		while index < state_hashes.size():
+			var state_hash_frame: StateHashFrame = state_hashes[index]
+			ret[state_hash_frame.tick] = state_hash_frame.state_hash
+			index += 1
+	return ret
 
 func _record_advantage(force_calculate_advantage: bool = false) -> void:
 	for peer in peers.values():
@@ -1242,6 +1252,22 @@ func _receive_input_tick(peer_id: int, serialized_msg: PoolByteArray) -> void:
 	
 	# Number of frames the remote is predicting for us.
 	peer.remote_lag = (peer.last_remote_tick_received + 1) - peer.next_local_tick_requested
+	
+	# Process state hashes.
+	var remote_state_hashes = msg[InputMessageKey.STATE_HASHES]
+	for remote_tick in remote_state_hashes:
+		var state_hash_frame := _get_state_hash_frame(remote_tick)
+		if state_hash_frame:
+			state_hash_frame.record_peer_hash(peer_id, remote_state_hashes[remote_tick])
+	
+	# Find what the last remote state hash we received was after filling these in.
+	var index = (peer.last_hash_tick_received - _state_hashes_start_tick) + 1
+	while index < state_hashes.size() and not state_hashes[index].has_peer_hash(peer.peer_id):
+		peer.last_hash_tick_received += 1
+		index += 1
+	
+	# Record the next state hash that the other peer needs.
+	peer.next_hash_tick_requested = max(msg[InputMessageKey.NEXT_HASH_TICK_REQUESTED], peer.next_hash_tick_requested)
 
 master func _log_saved_state(tick: int, remote_data: Dictionary) -> void:
 	if not started:
