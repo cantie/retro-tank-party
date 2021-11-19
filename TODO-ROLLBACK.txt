@@ -33,6 +33,7 @@ MILESTOE 2 (finish porting all the things):
 
 MILESTONE 3 (internal cleanup):
 
+ - Fix white hover state on menu buttons (started in 3.4, I think?)
  - Move ping and other RPCs out of SyncManager and into NetworkAdaptor - will hepl with unit tests
  - Convert weapons into nodes? It'd be basically making them the attachment...
 
