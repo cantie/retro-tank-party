@@ -13,8 +13,10 @@ class Peer extends Reference:
 	var last_ping_received: int
 	var time_delta: float
 	
-	var last_remote_tick_received: int = 0
-	var next_local_tick_requested: int = 1
+	var last_remote_input_tick_received: int = 0
+	var next_local_input_tick_requested: int = 1
+	var last_remote_hash_tick_received: int = 0
+	var next_local_hash_tick_requested: int = 1
 	
 	var remote_lag: int
 	var local_lag: int
@@ -42,8 +44,8 @@ class Peer extends Reference:
 		rtt = 0
 		last_ping_received = 0
 		time_delta = 0
-		last_remote_tick_received = 0
-		next_local_tick_requested = 0
+		last_remote_input_tick_received = 0
+		next_local_input_tick_requested = 0
 		remote_lag = 0
 		local_lag = 0
 		clear_advantage()
@@ -115,15 +117,27 @@ class StateHashFrame:
 			return false
 		return true
 	
+	func has_peer_hash(peer_id: int) -> bool:
+		return peer_hashes.has(peer_id)
+	
 	func is_complete(peers: Dictionary) -> bool:
 		for peer_id in peers:
 			if not peer_hashes.has(peer_id):
 				return false
 		return true
+	
+	func get_missing_peers(peers: Dictionary) -> Array:
+		var missing := []
+		for peer_id in peers:
+			if not peer_hashes.has(peer_id):
+				missing.append(peer_id)
+		return missing
 
 enum InputMessageKey {
-	NEXT_TICK_REQUESTED,
+	NEXT_INPUT_TICK_REQUESTED,
 	INPUT,
+	NEXT_HASH_TICK_REQUESTED,
+	STATE_HASHES,
 }
 
 const DEFAULT_MESSAGE_BUFFER_SIZE = 1280
@@ -146,16 +160,29 @@ class MessageSerializer:
 		var buffer := StreamPeerBuffer.new()
 		buffer.resize(DEFAULT_MESSAGE_BUFFER_SIZE)
 	
-		buffer.put_u32(msg[InputMessageKey.NEXT_TICK_REQUESTED])
+		buffer.put_u32(msg[InputMessageKey.NEXT_INPUT_TICK_REQUESTED])
 		
 		var input_ticks = msg[InputMessageKey.INPUT]
 		buffer.put_u8(input_ticks.size())
-		for tick in input_ticks:
-			buffer.put_u32(tick)
-			
-			var input = input_ticks[tick]
-			buffer.put_u16(input.size())
-			buffer.put_data(input)
+		if input_ticks.size() > 0:
+			var input_keys = input_ticks.keys()
+			input_keys.sort()
+			buffer.put_u32(input_keys[0])
+			for input_key in input_keys:
+				var input = input_ticks[input_key]
+				buffer.put_u16(input.size())
+				buffer.put_data(input)
+		
+		buffer.put_u32(msg[InputMessageKey.NEXT_HASH_TICK_REQUESTED])
+		
+		var state_hashes = msg[InputMessageKey.STATE_HASHES]
+		buffer.put_u8(state_hashes.size())
+		if state_hashes.size() > 0:
+			var state_hash_keys = state_hashes.keys()
+			state_hash_keys.sort()
+			buffer.put_u32(state_hash_keys[0])
+			for state_hash_key in state_hash_keys:
+				buffer.put_u32(state_hashes[state_hash_key])
 		
 		buffer.resize(buffer.get_position())
 		return buffer.data_array
@@ -166,16 +193,28 @@ class MessageSerializer:
 		buffer.seek(0)
 		
 		var msg := {
-			InputMessageKey.NEXT_TICK_REQUESTED: buffer.get_u32(),
-			InputMessageKey.INPUT: {}
+			InputMessageKey.INPUT: {},
+			InputMessageKey.STATE_HASHES: {},
 		}
 		
-		var tick_count = buffer.get_u8()
-		for tick_index in range(tick_count):
-			var tick = buffer.get_u32()
-			
-			var input_size = buffer.get_u16()
-			msg[InputMessageKey.INPUT][tick] = buffer.get_data(input_size)[1]
+		msg[InputMessageKey.NEXT_INPUT_TICK_REQUESTED] = buffer.get_u32()
+		
+		var input_tick_count = buffer.get_u8()
+		if input_tick_count > 0:
+			var input_tick = buffer.get_u32()
+			for input_tick_index in range(input_tick_count):
+				var input_size = buffer.get_u16()
+				msg[InputMessageKey.INPUT][input_tick] = buffer.get_data(input_size)[1]
+				input_tick += 1
+		
+		msg[InputMessageKey.NEXT_HASH_TICK_REQUESTED] = buffer.get_u32()
+		
+		var hash_tick_count = buffer.get_u8()
+		if hash_tick_count > 0:
+			var hash_tick = buffer.get_u32()
+			for hash_tick_index in range(hash_tick_count):
+				msg[InputMessageKey.STATE_HASHES][hash_tick] = buffer.get_u32()
+				hash_tick += 1
 		
 		return msg
 
@@ -234,6 +273,8 @@ var max_messages_at_once := 2
 var max_ticks_to_regain_sync := 300
 var min_lag_to_regain_sync := 5
 var interpolation := false
+var max_state_mismatch_count := 10
+
 var debug_rollback_ticks := 0
 var debug_random_rollback_ticks := 0
 var debug_message_bytes := 700
@@ -268,6 +309,7 @@ var _debug_skip_nth_message_counter := 0
 var _input_complete_tick := 0
 var _state_complete_tick := 0
 var _last_state_hashed_tick := 0
+var _state_mismatch_count := 0
 var _logged_remote_state: Dictionary
 var _in_rollback := false
 var _ran_physics_process := false
@@ -466,6 +508,7 @@ func _reset() -> void:
 	_input_complete_tick = 0
 	_state_complete_tick = 0
 	_last_state_hashed_tick = 0
+	_state_mismatch_count = 0
 	_logged_remote_state.clear()
 	_in_rollback = false
 	_ran_physics_process = false
@@ -620,7 +663,7 @@ func _do_tick(delta: float, is_rollback: bool = false) -> bool:
 			var predicted_input := {}
 			if previous_frame:
 				var peer: Peer = peers[peer_id]
-				var ticks_since_real_input = current_tick - peer.last_remote_tick_received
+				var ticks_since_real_input = current_tick - peer.last_remote_input_tick_received
 				predicted_input = _call_predict_remote_input(previous_frame.get_player_input(peer_id), ticks_since_real_input)
 			_calculate_data_hash(predicted_input)
 			input_frame.players[peer_id] = InputForPlayer.new(predicted_input, true)
@@ -658,8 +701,8 @@ func _get_or_create_input_frame(tick: int) -> InputBufferFrame:
 
 func _cleanup_buffers() -> bool:
 	# Clean-up the input send queue.
-	var min_next_tick_requested = _calculate_minimum_next_tick_requested()
-	while _input_send_queue_start_tick < min_next_tick_requested:
+	var min_next_input_tick_requested = _calculate_minimum_next_input_tick_requested()
+	while _input_send_queue_start_tick < min_next_input_tick_requested:
 		_input_send_queue.pop_front()
 		_input_send_queue_start_tick += 1
 	
@@ -694,8 +737,21 @@ func _cleanup_buffers() -> bool:
 		_input_buffer_start_tick += 1
 		input_buffer.pop_front()
 	
-	while state_hashes.size() > max_buffer_size:
-		# @todo Ensure there aren't any hashes that haven't been confirmed.
+	while state_hashes.size() > (max_buffer_size * 2):
+		var state_hash_to_retire: StateHashFrame = state_hashes[0]
+		if not state_hash_to_retire.is_complete(peers):
+			var missing: Array = state_hash_to_retire.get_missing_peers(peers)
+			push_warning("Attempting to retire state hash frame %s, but we're still missing hashes (missing peer(s): %s)" % [state_hash_to_retire.tick, missing])
+			return false
+		
+		if state_hash_to_retire.mismatch:
+			_state_mismatch_count += 1
+		else:
+			_state_mismatch_count = 0
+		if _state_mismatch_count > max_state_mismatch_count:
+			_handle_fatal_error("Fatal state mismatch")
+			return false
+		
 		_state_hashes_start_tick += 1
 		state_hashes.pop_front()
 	
@@ -714,7 +770,7 @@ func get_input_frame(tick: int) -> InputBufferFrame:
 func get_latest_input_from_peer(peer_id: int) -> Dictionary:
 	if peers.has(peer_id):
 		var peer: Peer = peers[peer_id]
-		var input_frame = get_input_frame(peer.last_remote_tick_received)
+		var input_frame = get_input_frame(peer.last_remote_input_tick_received)
 		if input_frame:
 			return input_frame.get_player_input(peer_id)
 	return {}
@@ -766,7 +822,7 @@ func _get_input_messages_from_send_queue_in_range(first_index: int, last_index: 
 	return all_messages
 
 func _get_input_messages_from_send_queue_for_peer(peer: Peer) -> Array:
-	var first_index := peer.next_local_tick_requested - _input_send_queue_start_tick
+	var first_index := peer.next_local_input_tick_requested - _input_send_queue_start_tick
 	var last_index := _input_send_queue.size() - 1
 	var max_messages := (max_input_frames_per_message * max_messages_at_once)
 	
@@ -779,10 +835,20 @@ func _get_input_messages_from_send_queue_for_peer(peer: Peer) -> Array:
 	return _get_input_messages_from_send_queue_in_range(last_index - (new_messages * max_input_frames_per_message) + 1, last_index, true) + \
 		   _get_input_messages_from_send_queue_in_range(first_index, first_index + (old_messages * max_input_frames_per_message) - 1)
 
+func _get_state_hashes_for_peer(peer: Peer) -> Dictionary:
+	var ret := {}
+	if peer.next_local_hash_tick_requested >= _state_hashes_start_tick:
+		var index = peer.next_local_hash_tick_requested - _state_hashes_start_tick
+		while index < state_hashes.size():
+			var state_hash_frame: StateHashFrame = state_hashes[index]
+			ret[state_hash_frame.tick] = state_hash_frame.state_hash
+			index += 1
+	return ret
+
 func _record_advantage(force_calculate_advantage: bool = false) -> void:
 	for peer in peers.values():
 		# Number of frames we are predicting for this peer.
-		peer.local_lag = (input_tick + 1) - peer.last_remote_tick_received
+		peer.local_lag = (input_tick + 1) - peer.last_remote_input_tick_received
 		# Calculate the advantage the peer has over us.
 		peer.record_advantage(ticks_to_calculate_advantage if not force_calculate_advantage else 0)
 		
@@ -813,23 +879,27 @@ func _calculate_max_local_lag() -> int:
 		max_lag = max(max_lag, peer.local_lag)
 	return max_lag
 
-func _calculate_minimum_next_tick_requested() -> int:
+func _calculate_minimum_next_input_tick_requested() -> int:
 	if peers.size() == 0:
 		return 1
 	var peer_list := peers.values().duplicate()
-	var result: int = peer_list.pop_front().next_local_tick_requested
+	var result: int = peer_list.pop_front().next_local_input_tick_requested
 	for peer in peer_list:
-		result = min(result, peer.next_local_tick_requested)
+		result = min(result, peer.next_local_input_tick_requested)
 	return result
 
 func _send_input_messages_to_peer(peer_id: int) -> void:
 	assert(peer_id != get_tree().get_network_unique_id(), "Cannot send input to ourselves")
 	var peer = peers[peer_id]
 	
+	var state_hashes = _get_state_hashes_for_peer(peer)
+	
 	for input in _get_input_messages_from_send_queue_for_peer(peer):
 		var msg = {
-			InputMessageKey.NEXT_TICK_REQUESTED: peer.last_remote_tick_received + 1,
+			InputMessageKey.NEXT_INPUT_TICK_REQUESTED: peer.last_remote_input_tick_received + 1,
 			InputMessageKey.INPUT: input,
+			InputMessageKey.NEXT_HASH_TICK_REQUESTED: peer.last_remote_hash_tick_received + 1,
+			InputMessageKey.STATE_HASHES: state_hashes,
 		}
 		
 		var bytes = message_serializer.serialize_message(msg)
@@ -932,6 +1002,9 @@ func _physics_process(delta: float) -> void:
 		
 		# Check again if we're still getting input buffer underruns.
 		if not _cleanup_buffers():
+			# This can happen if there's a fatal error in _cleanup_buffers().
+			if not started:
+				return
 			# Even when we're skipping ticks, still send input.
 			_send_input_messages_to_all_peers()
 			if _logger:
@@ -957,6 +1030,9 @@ func _physics_process(delta: float) -> void:
 	
 	# Attempt to clean up buffers, but if we can't, that means we've lost sync.
 	elif not _cleanup_buffers():
+		# This can happen if there's a fatal error in _cleanup_buffers().
+		if not started:
+			return
 		emit_signal("sync_lost")
 		_ticks_spent_regaining_sync = 1
 		# Even when we're skipping ticks, still send input.
@@ -1137,11 +1213,11 @@ func _receive_input_tick(peer_id: int, serialized_msg: PoolByteArray) -> void:
 	var peer: Peer = peers[peer_id]
 	
 	# Only process if it contains ticks we haven't received yet.
-	if last_remote_tick > peer.last_remote_tick_received:
+	if last_remote_tick > peer.last_remote_input_tick_received:
 		# Integrate the input we received into the input buffer.
 		for remote_tick in all_remote_ticks:
 			# Skip ticks we already have.
-			if remote_tick <= peer.last_remote_tick_received:
+			if remote_tick <= peer.last_remote_input_tick_received:
 				continue
 			# This means the input frame has already been retired, which can only
 			# happen if we already had all the input.
@@ -1181,9 +1257,9 @@ func _receive_input_tick(peer_id: int, serialized_msg: PoolByteArray) -> void:
 				input_frame.players[peer_id] = InputForPlayer.new(remote_input, false)
 		
 		# Find what the last remote tick we received was after filling these in.
-		var index = (peer.last_remote_tick_received - _input_buffer_start_tick) + 1
-		while index < input_buffer.size() and not input_buffer[index].is_player_input_predicted(peer.peer_id):
-			peer.last_remote_tick_received += 1
+		var index = (peer.last_remote_input_tick_received - _input_buffer_start_tick) + 1
+		while index < input_buffer.size() and not input_buffer[index].is_player_input_predicted(peer_id):
+			peer.last_remote_input_tick_received += 1
 			index += 1
 		
 		# Update _input_complete_tick for new input.
@@ -1202,10 +1278,26 @@ func _receive_input_tick(peer_id: int, serialized_msg: PoolByteArray) -> void:
 			emit_signal("tick_input_complete", _input_complete_tick)
 	
 	# Record the next frame the other peer needs.
-	peer.next_local_tick_requested = max(msg[InputMessageKey.NEXT_TICK_REQUESTED], peer.next_local_tick_requested)
+	peer.next_local_input_tick_requested = max(msg[InputMessageKey.NEXT_INPUT_TICK_REQUESTED], peer.next_local_input_tick_requested)
 	
 	# Number of frames the remote is predicting for us.
-	peer.remote_lag = (peer.last_remote_tick_received + 1) - peer.next_local_tick_requested
+	peer.remote_lag = (peer.last_remote_input_tick_received + 1) - peer.next_local_input_tick_requested
+	
+	# Process state hashes.
+	var remote_state_hashes = msg[InputMessageKey.STATE_HASHES]
+	for remote_tick in remote_state_hashes:
+		var state_hash_frame := _get_state_hash_frame(remote_tick)
+		if state_hash_frame:
+			state_hash_frame.record_peer_hash(peer_id, remote_state_hashes[remote_tick])
+	
+	# Find what the last remote state hash we received was after filling these in.
+	var index = (peer.last_remote_hash_tick_received - _state_hashes_start_tick) + 1
+	while index < state_hashes.size() and state_hashes[index].has_peer_hash(peer_id):
+		peer.last_remote_hash_tick_received += 1
+		index += 1
+	
+	# Record the next state hash that the other peer needs.
+	peer.next_local_hash_tick_requested = max(msg[InputMessageKey.NEXT_HASH_TICK_REQUESTED], peer.next_local_hash_tick_requested)
 
 master func _log_saved_state(tick: int, remote_data: Dictionary) -> void:
 	if not started:
