@@ -3,10 +3,6 @@ TODO
 
 MILESTOE 2 (finish porting all the things):
 
- - Implement a non-debug comparison of state (maybe just sending the hashes of the remote state?)
-   o Ideally, passing these hashes would be required and included with other input
-     * We'd need a system of ACK'ing hashes, and some contingency if they weren't arriving
-   o Clients should count the number of state mismatches in a row - once a threshold is hit, bail
  - Add some detailed logging and a way to visualize it
    * Raname the TICK log entry type to FRAME
    * Have a "Frame" and "State/Input" mode
