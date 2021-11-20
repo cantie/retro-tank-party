@@ -273,6 +273,8 @@ var max_messages_at_once := 2
 var max_ticks_to_regain_sync := 300
 var min_lag_to_regain_sync := 5
 var interpolation := false
+var max_state_mismatch_count := 10
+
 var debug_rollback_ticks := 0
 var debug_random_rollback_ticks := 0
 var debug_message_bytes := 700
@@ -307,6 +309,7 @@ var _debug_skip_nth_message_counter := 0
 var _input_complete_tick := 0
 var _state_complete_tick := 0
 var _last_state_hashed_tick := 0
+var _state_mismatch_count := 0
 var _logged_remote_state: Dictionary
 var _in_rollback := false
 var _ran_physics_process := false
@@ -505,6 +508,7 @@ func _reset() -> void:
 	_input_complete_tick = 0
 	_state_complete_tick = 0
 	_last_state_hashed_tick = 0
+	_state_mismatch_count = 0
 	_logged_remote_state.clear()
 	_in_rollback = false
 	_ran_physics_process = false
@@ -740,7 +744,13 @@ func _cleanup_buffers() -> bool:
 			push_warning("Attempting to retire state hash frame %s, but we're still missing hashes (missing peer(s): %s)" % [state_hash_to_retire.tick, missing])
 			return false
 		
-		# @todo Check for mismatches!!
+		if state_hash_to_retire.mismatch:
+			_state_mismatch_count += 1
+		else:
+			_state_mismatch_count = 0
+		if _state_mismatch_count > max_state_mismatch_count:
+			_handle_fatal_error("Fatal state mismatch")
+			return false
 		
 		_state_hashes_start_tick += 1
 		state_hashes.pop_front()
@@ -992,6 +1002,9 @@ func _physics_process(delta: float) -> void:
 		
 		# Check again if we're still getting input buffer underruns.
 		if not _cleanup_buffers():
+			# This can happen if there's a fatal error in _cleanup_buffers().
+			if not started:
+				return
 			# Even when we're skipping ticks, still send input.
 			_send_input_messages_to_all_peers()
 			if _logger:
@@ -1017,6 +1030,9 @@ func _physics_process(delta: float) -> void:
 	
 	# Attempt to clean up buffers, but if we can't, that means we've lost sync.
 	elif not _cleanup_buffers():
+		# This can happen if there's a fatal error in _cleanup_buffers().
+		if not started:
+			return
 		emit_signal("sync_lost")
 		_ticks_spent_regaining_sync = 1
 		# Even when we're skipping ticks, still send input.
