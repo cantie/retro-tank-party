@@ -2,13 +2,13 @@ extends Reference
 
 enum LogType {
 	HEADER,
-	TICK,
+	FRAME,
 	STATE,
 	INPUT,
 }
 
-enum DataType {
-	UNKNOWN,
+enum FrameType {
+	INTERFRAME,
 	TICK,
 	INTERPOLATION_FRAME,
 }
@@ -98,10 +98,10 @@ func write_current_data() -> void:
 		return
 	
 	var copy := data.duplicate(true)
-	copy['log_type'] = LogType.TICK
+	copy['log_type'] = LogType.FRAME
 	
-	if not copy.has('data_type'):
-		copy['data_type'] = DataType.UNKNOWN
+	if not copy.has('frame_type'):
+		copy['frame_type'] = FrameType.INTERFRAME
 	
 	_writer_thread_mutex.lock()
 	_write_queue.push_back(copy)
@@ -144,7 +144,7 @@ func begin_tick(tick: int) -> void:
 	if data.size() > 0:
 		write_current_data()
 	
-	data['data_type'] = DataType.TICK
+	data['frame_type'] = FrameType.TICK
 	data['tick'] = tick
 	data['start_time'] = OS.get_system_time_msecs()
 
@@ -163,7 +163,7 @@ func begin_interpolation_frame(tick: int) -> void:
 	if data.size() > 0:
 		write_current_data()
 	
-	data['data_type'] = DataType.INTERPOLATION_FRAME
+	data['frame_type'] = FrameType.INTERPOLATION_FRAME
 	data['tick'] = tick
 	data['start_time'] = OS.get_system_time_msecs()
 

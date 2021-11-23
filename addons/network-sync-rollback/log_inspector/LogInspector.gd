@@ -197,7 +197,7 @@ func add_log_entry(log_entry: Dictionary, peer_id: int) -> void:
 					mismatches.append(tick)
 					print ("State mismatch on tick: %s" % tick)
 		
-		Logger.LogType.TICK:
+		Logger.LogType.FRAME:
 			pass
 
 func _on_TickNumber_value_changed(value: float) -> void:
