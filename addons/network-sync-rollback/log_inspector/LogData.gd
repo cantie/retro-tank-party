@@ -2,7 +2,7 @@ extends Node
 
 const Logger = preload("res://addons/network-sync-rollback/Logger.gd")
 
-class StateFrame:
+class StateData:
 	var tick: int
 	var state: Dictionary
 	var state_hash: int
@@ -20,7 +20,7 @@ class StateFrame:
 		mismatches[peer_id] = peer_state
 		return false
 
-class InputFrame:
+class InputData:
 	var tick: int
 	var input: Dictionary
 	var input_hash: int
@@ -52,13 +52,25 @@ class InputFrame:
 		mismatches[peer_id] = sorted_peer_input
 		return false
 
+class FrameData:
+	var frame: int
+	var type: int
+	var data: Dictionary
+	
+	func _init(_frame: int, _type: int, _data: Dictionary) -> void:
+		frame = _frame
+		type = _type
+		data = _data
+
 var peer_ids := []
 var mismatches := []
 var max_tick := 0
+var max_frame := 0
+var frame_counter := {}
 
 var input := {}
 var state := {}
-var peer_ticks := {}
+var frames := {}
 
 signal load_error (msg)
 
@@ -66,9 +78,10 @@ func clear() -> void:
 	peer_ids.clear()
 	mismatches.clear()
 	max_tick = 0
+	max_frame = 0
 	input.clear()
 	state.clear()
-	peer_ticks.clear()
+	frames.clear()
 
 func load_log_file(path: String) -> void:
 	var file = File.new()
@@ -101,7 +114,10 @@ func load_log_file(path: String) -> void:
 					file.close()
 					return
 				
-				peer_ids.append(header['peer_id'])
+				var peer_id = header['peer_id']
+				peer_ids.append(peer_id)
+				frame_counter[peer_id] = 0
+				frames[peer_id] = []
 				continue
 			else:
 				emit_signal("load_error", "No header at the top of log: %s" % path)
@@ -119,26 +135,43 @@ func add_log_entry(log_entry: Dictionary, peer_id: int) -> void:
 	
 	match log_entry['log_type'] as int:
 		Logger.LogType.INPUT:
-			var input_frame: InputFrame
+			var input_data: InputData
 			if not input.has(tick):
-				input_frame = InputFrame.new(tick, log_entry['input'])
-				input[tick] = input_frame
+				input_data = InputData.new(tick, log_entry['input'])
+				input[tick] = input_data
 			else:
-				input_frame = input[tick]
-				if not input_frame.compare_input(peer_id, log_entry['input']):
+				input_data = input[tick]
+				if not input_data.compare_input(peer_id, log_entry['input']):
 					mismatches.append(tick)
 					print ("Input mismatch on tick: %s" % tick)
 		
 		Logger.LogType.STATE:
-			var state_frame: StateFrame
+			var state_data: StateData
 			if not state.has(tick):
-				state_frame = StateFrame.new(tick, log_entry['state'])
-				state[tick] = state_frame
+				state_data = StateData.new(tick, log_entry['state'])
+				state[tick] = state_data
 			else:
-				state_frame = state[tick]
-				if not state_frame.compare_state(peer_id, log_entry['state']):
+				state_data = state[tick]
+				if not state_data.compare_state(peer_id, log_entry['state']):
 					mismatches.append(tick)
 					print ("State mismatch on tick: %s" % tick)
 		
 		Logger.LogType.FRAME:
-			pass
+			var frame_number = frame_counter[peer_id]
+			var frame_data := FrameData.new(frame_number, log_entry['frame_type'], log_entry)
+			frames[peer_id].append(frame_data)
+			frame_counter[peer_id] += 1
+			max_frame = int(max(max_frame, frame_number))
+
+func get_frame(peer_id: int, frame_number: int) -> FrameData:
+	if not frames.has(peer_id):
+		return null
+	if frame_number >= frames[peer_id].size():
+		return null
+	return frames[peer_id][frame_number]
+
+func get_frame_data(peer_id: int, frame_number: int, key: String, default_value = null):
+	var frame := get_frame(peer_id, frame_number)
+	if frame:
+		return frame.data.get(key, default_value)
+	return default_value

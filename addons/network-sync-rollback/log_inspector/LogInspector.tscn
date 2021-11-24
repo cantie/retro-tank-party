@@ -1,8 +1,9 @@
-[gd_scene load_steps=4 format=2]
+[gd_scene load_steps=5 format=2]
 
 [ext_resource path="res://addons/network-sync-rollback/log_inspector/ProgressDialog.gd" type="Script" id=1]
 [ext_resource path="res://addons/network-sync-rollback/log_inspector/LogInspector.gd" type="Script" id=2]
 [ext_resource path="res://addons/network-sync-rollback/log_inspector/StateInputViewer.tscn" type="PackedScene" id=3]
+[ext_resource path="res://addons/network-sync-rollback/log_inspector/FrameViewer.tscn" type="PackedScene" id=4]
 
 [node name="LogInspector" type="WindowDialog"]
 visible = true
@@ -11,6 +12,9 @@ margin_bottom = 400.0
 window_title = "Rollback log inspector"
 resizable = true
 script = ExtResource( 2 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
 
 [node name="FileDialog" type="FileDialog" parent="."]
 anchor_left = 0.5
@@ -101,37 +105,47 @@ text = "Add Any Log"
 
 [node name="Separator1" type="Control" parent="MarginContainer/VBoxContainer/HBoxContainer"]
 margin_left = 244.0
-margin_right = 313.0
+margin_right = 323.0
 margin_bottom = 20.0
 size_flags_horizontal = 3
 
 [node name="ModeButton" type="OptionButton" parent="MarginContainer/VBoxContainer/HBoxContainer"]
-margin_left = 317.0
-margin_right = 417.0
+margin_left = 327.0
+margin_right = 407.0
 margin_bottom = 20.0
 size_flags_horizontal = 3
-text = "State/Input"
+text = "Frame"
 items = [ "State/Input", null, false, 0, null, "Frame", null, false, 1, null ]
-selected = 0
+selected = 1
 
 [node name="Separator2" type="Control" parent="MarginContainer/VBoxContainer/HBoxContainer"]
-margin_left = 421.0
-margin_right = 491.0
+margin_left = 411.0
+margin_right = 490.0
 margin_bottom = 20.0
 size_flags_horizontal = 3
 
 [node name="DataDescriptionLabel" type="Label" parent="MarginContainer/VBoxContainer/HBoxContainer"]
-margin_left = 495.0
+margin_left = 494.0
 margin_top = 3.0
-margin_right = 580.0
+margin_right = 579.0
 margin_bottom = 17.0
 size_flags_horizontal = 3
 text = "0 logs loaded"
 align = 2
 
+[node name="FrameViewer" parent="MarginContainer/VBoxContainer" instance=ExtResource( 4 )]
+anchor_right = 0.0
+anchor_bottom = 0.0
+margin_top = 30.0
+margin_right = 580.0
+margin_bottom = 380.0
+size_flags_vertical = 3
+
 [node name="StateInputViewer" parent="MarginContainer/VBoxContainer" instance=ExtResource( 3 )]
+visible = false
 
 [connection signal="files_selected" from="FileDialog" to="." method="_on_FileDialog_files_selected"]
 [connection signal="pressed" from="MarginContainer/VBoxContainer/HBoxContainer/ClearButton" to="." method="_on_ClearButton_pressed"]
 [connection signal="pressed" from="MarginContainer/VBoxContainer/HBoxContainer/AddUserLogButton" to="." method="_on_AddUserLogButton_pressed"]
 [connection signal="pressed" from="MarginContainer/VBoxContainer/HBoxContainer/AddAnyLogButton" to="." method="_on_AddAnyLogButton_pressed"]
+[connection signal="item_selected" from="MarginContainer/VBoxContainer/HBoxContainer/ModeButton" to="." method="_on_ModeButton_item_selected"]

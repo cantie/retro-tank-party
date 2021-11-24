@@ -25,8 +25,8 @@ func refresh_from_log_data() -> void:
 func _on_TickNumber_value_changed(value: float) -> void:
 	var tick: int = int(value)
 	
-	var input_frame: LogData.InputFrame = log_data.input.get(tick, null)
-	var state_frame: LogData.StateFrame = log_data.state.get(tick, null)
+	var input_frame: LogData.InputData = log_data.input.get(tick, null)
+	var state_frame: LogData.StateData = log_data.state.get(tick, null)
 	
 	if input_frame:
 		input_data_label.text = JSON.print(input_frame.input, JSON_INDENT)

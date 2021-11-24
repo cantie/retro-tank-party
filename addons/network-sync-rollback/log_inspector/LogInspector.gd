@@ -9,6 +9,7 @@ onready var data_description_label = $MarginContainer/VBoxContainer/HBoxContaine
 onready var data_description_label_default_text = data_description_label.text
 onready var mode_button = $MarginContainer/VBoxContainer/HBoxContainer/ModeButton
 onready var state_input_viewer = $MarginContainer/VBoxContainer/StateInputViewer
+onready var frame_viewer = $MarginContainer/VBoxContainer/FrameViewer
 
 enum DataMode {
 	STATE_INPUT,
@@ -19,6 +20,7 @@ var log_data: LogData = LogData.new()
 
 func _ready() -> void:
 	state_input_viewer.set_log_data(log_data)
+	frame_viewer.set_log_data(log_data)
 	
 	log_data.connect("load_error", self, "_on_log_data_load_error")
 	
@@ -39,6 +41,7 @@ func _on_ClearButton_pressed() -> void:
 	log_data.clear()
 	data_description_label.text = data_description_label_default_text
 	state_input_viewer.refresh_from_log_data()
+	frame_viewer.refresh_from_log_data()
 
 func _on_AddUserLogButton_pressed() -> void:
 	file_dialog.access = FileDialog.ACCESS_USERDATA
@@ -67,6 +70,16 @@ func _on_FileDialog_files_selected(paths: PoolStringArray) -> void:
 		data_description_label.text += " with %s mismatches" % log_data.mismatches.size()
 	
 	state_input_viewer.refresh_from_log_data()
+	frame_viewer.refresh_from_log_data()
 
 func _on_log_data_load_error(msg) -> void:
 	OS.alert(msg)
+
+func _on_ModeButton_item_selected(index: int) -> void:
+	state_input_viewer.visible = false
+	frame_viewer.visible = false
+	
+	if index == DataMode.STATE_INPUT:
+		state_input_viewer.visible = true
+	elif index == DataMode.FRAME:
+		frame_viewer.visible = true
