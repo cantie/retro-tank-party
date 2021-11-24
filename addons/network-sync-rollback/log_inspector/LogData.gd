@@ -67,6 +67,8 @@ var mismatches := []
 var max_tick := 0
 var max_frame := 0
 var frame_counter := {}
+var start_time: int
+var end_time: int
 
 var input := {}
 var state := {}
@@ -79,6 +81,8 @@ func clear() -> void:
 	mismatches.clear()
 	max_tick = 0
 	max_frame = 0
+	start_time = 0
+	end_time = 0
 	input.clear()
 	state.clear()
 	frames.clear()
@@ -162,6 +166,10 @@ func add_log_entry(log_entry: Dictionary, peer_id: int) -> void:
 			frames[peer_id].append(frame_data)
 			frame_counter[peer_id] += 1
 			max_frame = int(max(max_frame, frame_number))
+			if log_entry.has('start_time'):
+				start_time = int(min(start_time, log_entry['start_time'])) if start_time > 0 else log_entry['start_time']
+			if log_entry.has('end_time'):
+				end_time = int(max(end_time, log_entry['end_time']))
 
 func get_frame(peer_id: int, frame_number: int) -> FrameData:
 	if not frames.has(peer_id):
@@ -175,3 +183,16 @@ func get_frame_data(peer_id: int, frame_number: int, key: String, default_value 
 	if frame:
 		return frame.data.get(key, default_value)
 	return default_value
+
+func get_frame_by_time(peer_id: int, time: int) -> FrameData:
+	if not frames.has(peer_id):
+		return null
+	var peer_frames: Array = frames[peer_id]
+	var last_frame: FrameData
+	var frame: FrameData
+	for i in range(peer_frames.size()):
+		frame = peer_frames[i]
+		if peer_frames[i].data.get('start_time', 0) > time:
+			return last_frame
+		last_frame = frame
+	return null

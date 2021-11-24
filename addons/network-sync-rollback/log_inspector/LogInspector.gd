@@ -24,11 +24,6 @@ func _ready() -> void:
 	
 	log_data.connect("load_error", self, "_on_log_data_load_error")
 	
-	if mode_button.items.size() == 0:
-		mode_button.add_item("State/Input", DataMode.STATE_INPUT)
-		mode_button.add_item("Frame", DataMode.FRAME)
-		mode_button.selected = DataMode.STATE_INPUT
-	
 	# Show and make full screen if the scene is being run on its own.
 	if get_parent() == get_tree().root:
 		visible = true

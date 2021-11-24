@@ -6,7 +6,6 @@
 [ext_resource path="res://addons/network-sync-rollback/log_inspector/FrameViewer.tscn" type="PackedScene" id=4]
 
 [node name="LogInspector" type="WindowDialog"]
-visible = true
 margin_right = 600.0
 margin_bottom = 400.0
 window_title = "Rollback log inspector"
