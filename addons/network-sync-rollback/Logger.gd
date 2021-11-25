@@ -140,9 +140,23 @@ func write_input(tick: int, input: Dictionary) -> void:
 	
 	_writer_thread_semaphore.post()
 
+func begin_interframe() -> void:
+	if not data.has('frame_type'):
+		data['frame_type'] = FrameType.INTERFRAME
+	if not data.has('start_time'):
+		data['start_time'] = OS.get_system_time_msecs()
+
+func end_interframe() -> void:
+	if not data.has('frame_type'):
+		data['frame_type'] = FrameType.INTERFRAME
+	if not data.has('start_time'):
+		data['start_time'] = OS.get_system_time_msecs() - 1
+	data['end_time'] = OS.get_system_time_msecs()
+	write_current_data()
+
 func begin_tick(tick: int) -> void:
 	if data.size() > 0:
-		write_current_data()
+		end_interframe()
 	
 	data['frame_type'] = FrameType.TICK
 	data['tick'] = tick
@@ -161,7 +175,7 @@ func skip_tick(skip_reason: int, start_ticks_usecs: int) -> void:
 
 func begin_interpolation_frame(tick: int) -> void:
 	if data.size() > 0:
-		write_current_data()
+		end_interframe()
 	
 	data['frame_type'] = FrameType.INTERPOLATION_FRAME
 	data['tick'] = tick

@@ -161,6 +161,7 @@ func add_log_entry(log_entry: Dictionary, peer_id: int) -> void:
 					print ("State mismatch on tick: %s" % tick)
 		
 		Logger.LogType.FRAME:
+			log_entry.erase('log_type')
 			var frame_number = frame_counter[peer_id]
 			var frame_data := FrameData.new(frame_number, log_entry['frame_type'], log_entry)
 			frames[peer_id].append(frame_data)
@@ -188,11 +189,12 @@ func get_frame_by_time(peer_id: int, time: int) -> FrameData:
 	if not frames.has(peer_id):
 		return null
 	var peer_frames: Array = frames[peer_id]
-	var last_frame: FrameData
-	var frame: FrameData
+	var last_matching_frame: FrameData
 	for i in range(peer_frames.size()):
-		frame = peer_frames[i]
-		if peer_frames[i].data.get('start_time', 0) > time:
-			return last_frame
-		last_frame = frame
-	return null
+		var frame: FrameData = peer_frames[i]
+		if frame.data.has('start_time'):
+			if frame.data['start_time'] <= time:
+				last_matching_frame = frame
+			else:
+				break
+	return last_matching_frame

@@ -9,15 +9,37 @@ onready var data_grid = $DataGrid
 
 var log_data: LogData
 
-var frame_type_names: Dictionary
+enum PropertyType {
+	BASIC,
+	ENUM,
+	TIME,
+}
+
+var _property_definitions := {}
 
 func _ready() -> void:
-	frame_type_names = _flip_dictionary(Logger.FrameType)
+	_property_definitions['frame_type'] = {
+		type = PropertyType.ENUM,
+		values = Logger.FrameType.keys(),
+	}
+	_property_definitions['tick'] = {}
+	_property_definitions['duration'] = {
+		suffix = ' ms',
+	}
+	_property_definitions['skipped'] = {}
+	_property_definitions['skipped_reason'] = {}
+	_property_definitions['start_time'] = {
+		type = PropertyType.TIME,
+	}
+	_property_definitions['end_time'] = {
+		type = PropertyType.TIME,
+	}
+	print (JSON.print(_property_definitions))
 
-static func _flip_dictionary(d: Dictionary) -> Dictionary:
+static func _enum_dictionary(d: Dictionary) -> Dictionary:
 	var r := {}
 	for k in d:
-		r[d[k]] = k
+		r[str(d[k])] = k
 	return r
 
 func set_log_data(_log_data: LogData) -> void:
@@ -27,41 +49,87 @@ func refresh_from_log_data() -> void:
 	time_field.max_value = log_data.end_time - log_data.start_time
 	_on_Time_value_changed(time_field.value)
 
+func _prop_to_string(data: Dictionary, prop_name: String, prop_def = null) -> String:
+	if prop_def == null:
+		prop_def = _property_definitions.get(prop_name, {})
+	var prop_type = prop_def.get('type', PropertyType.BASIC)
+	
+	var value = data.get(prop_name, prop_def.get('default', null))
+	
+	match prop_type:
+		PropertyType.ENUM:
+			if prop_def.has('values'):
+				var values = prop_def['values']
+				if value >= 0 and value < values.size():
+					value = values[value]
+		
+		PropertyType.BASIC:
+			if prop_def.has('values'):
+				value = prop_def['values'].get(value, value)
+		
+		PropertyType.TIME:
+			if value != null:
+				var datetime = OS.get_datetime_from_unix_time(value / 1000)
+				value = "%04d-%02d-%02d %02d:%02d:%02d" % [
+					datetime['year'],
+					datetime['month'],
+					datetime['day'],
+					datetime['hour'],
+					datetime['minute'],
+					datetime['second'],
+				]
+	
+	if value == null:
+		return ''
+	
+	value = str(value)
+	if prop_def.has('suffix'):
+		value += prop_def['suffix']
+	
+	return value
+
 func _on_Time_value_changed(value: float) -> void:
 	var time := int(value)
 	
 	var bbcode = '[table=%s][cell][/cell]' % [log_data.peer_ids.size() + 1]
+	var frames := {}
+	var prop_names := []
+	var extra_prop_names := []
+	
 	for peer_id in log_data.peer_ids:
 		bbcode += '[cell]%s[/cell]' % peer_id
+		
+		var frame: LogData.FrameData = log_data.get_frame_by_time(peer_id, log_data.start_time + time)
+		frames[peer_id] = frame
+		if frame:
+			for prop_name in frame.data:
+				if not _property_definitions.has(prop_name):
+					if not prop_name in extra_prop_names:
+						extra_prop_names.append(prop_name)
+				elif not prop_name in prop_names:
+					prop_names.append(prop_name)
 	
-	var cols := {}
-	for peer_id in log_data.peer_ids:
-		var frame = log_data.get_frame_by_time(peer_id, log_data.start_time + time)
-		if not frame:
+	for prop_name in _property_definitions:
+		if not prop_name in prop_names:
 			continue
 		
-		var row := {}
-		row['Frame Type'] = frame_type_names.get(int(frame.data.get('frame_type', 0)), 'UNKNOWN')
-		row['Tick'] = frame.data.get('tick', 0)
-		row['Duration'] = frame.data.get('duration', 0)
-		row['Skipped'] = frame.data.get('skipped', false)
-		row['Skipped Reason'] = frame.data.get('skipped_reason', '')
-		cols[peer_id] = row
-	
-	var v = [
-		'Frame Type',
-		'Tick',
-		'Duration',
-		'Skipped',
-		'Skipped Reason'
-	]
-	for k in v:
-		bbcode += '[cell]%s[/cell]' % k
+		var prop_def = _property_definitions.get(prop_name)
+		bbcode += '[cell]%s[/cell]' % prop_def.get('label', prop_name.capitalize())
 		for peer_id in log_data.peer_ids:
-			if cols.has(peer_id):
-				bbcode += '[cell]%s[/cell]' % cols[peer_id][k]
-			else:
+			var frame = frames[peer_id]
+			if not frame:
 				bbcode += '[cell][/cell]'
+			else:
+				bbcode += '[cell]%s[/cell]' % _prop_to_string(frame.data, prop_name, prop_def)
+	
+	for prop_name in extra_prop_names:
+		bbcode += '[cell]%s[/cell]' % prop_name.capitalize()
+		for peer_id in log_data.peer_ids:
+			var frame = frames[peer_id]
+			if not frame:
+				bbcode += '[cell][/cell]'
+			else:
+				bbcode += '[cell]%s[/cell]' % _prop_to_string(frame.data, prop_name, {})
 	
 	bbcode += '[/table]'
 	data_grid.bbcode_text = bbcode

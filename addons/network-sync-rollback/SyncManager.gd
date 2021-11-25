@@ -930,7 +930,7 @@ func _physics_process(delta: float) -> void:
 		return
 	
 	if _logger:
-		_logger.write_current_data()
+		_logger.begin_tick(current_tick + 1)
 	
 	var start_time := OS.get_ticks_usec()
 	
@@ -1065,9 +1065,6 @@ func _physics_process(delta: float) -> void:
 	
 	input_tick += 1
 	current_tick += 1
-	
-	if _logger:
-		_logger.begin_tick(current_tick)
 	
 	var input_frame := _get_or_create_input_frame(input_tick)
 	# The underlying error would have already been reported in
@@ -1209,6 +1206,9 @@ func _receive_input_tick(peer_id: int, serialized_msg: PoolByteArray) -> void:
 		# after integrating input, since the data in this message could be
 		# totally bunk (ie. if it's from a previous match).
 		return
+	
+	if _logger:
+		_logger.begin_interframe()
 	
 	var peer: Peer = peers[peer_id]
 	
