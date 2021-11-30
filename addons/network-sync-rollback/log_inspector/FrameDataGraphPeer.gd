@@ -6,13 +6,17 @@ const LogData = preload("res://addons/network-sync-rollback/log_inspector/LogDat
 export (int) var peer_id := 0 setget set_peer_id
 export (int) var start_time := 0 setget set_start_time
 
-var log_data: LogData
+var cursor_time := -1 setget set_cursor_time
 
 const FRAME_TYPE_COLOR = {
 	Logger.FrameType.INTERFRAME: Color(0.7, 0.7, 0.7),
 	Logger.FrameType.TICK: Color(0.0, 0.0, 0.5),
 	Logger.FrameType.INTERPOLATION_FRAME: Color(1.0, 1.0, 0.0),
 }
+
+var log_data: LogData
+
+signal cursor_time_changed (cursor_time)
 
 func set_log_data(_log_data: LogData) -> void:
 	log_data = _log_data
@@ -26,6 +30,17 @@ func set_start_time(_start_time: int) -> void:
 	if start_time != _start_time:
 		start_time = _start_time
 		update()
+
+func set_cursor_time(_cursor_time: int) -> void:
+	if cursor_time != _cursor_time:
+		cursor_time = _cursor_time
+		update()
+		emit_signal("cursor_time_changed", cursor_time)
+
+func _gui_input(event: InputEvent) -> void:
+	if event is InputEventMouseButton:
+		if event.button_index == BUTTON_LEFT and event.pressed:
+			set_cursor_time(int(start_time + event.position.x))
 
 func _draw() -> void:
 	if peer_id == 0:
@@ -49,11 +64,17 @@ func _draw() -> void:
 			Vector2(next_frame.start_time - absolute_start_time if next_frame else rect_size.x, rect_size.y))
 		frame_rect = frame_rect.clip(Rect2(Vector2.ZERO, rect_size))
 		
-		if frame_rect.position.x > 0 and frame_rect.size.x > 0:
+		if frame_rect.position.x >= 0 and frame_rect.size.x > 0:
 			draw_rect(frame_rect, FRAME_TYPE_COLOR[frame.type])
 		
 		# Move on to the next frame.
 		if next_frame == null:
 			break
 		frame = next_frame
-
+	
+	if cursor_time >= start_time and cursor_time <= start_time + rect_size.x:
+		draw_line(
+			Vector2(cursor_time - start_time, 0),
+			Vector2(cursor_time - start_time, rect_size.y),
+			Color(1.0, 0.0, 0.0),
+			3.0)
