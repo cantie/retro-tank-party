@@ -9,6 +9,8 @@ onready var data_grid = $DataGrid
 
 var log_data: LogData
 
+var current_frames := {}
+
 enum PropertyType {
 	BASIC,
 	ENUM,
@@ -34,7 +36,6 @@ func _ready() -> void:
 	_property_definitions['end_time'] = {
 		type = PropertyType.TIME,
 	}
-	print (JSON.print(_property_definitions))
 
 static func _enum_dictionary(d: Dictionary) -> Dictionary:
 	var r := {}
@@ -102,6 +103,7 @@ func _on_Time_value_changed(value: float) -> void:
 		var frame: LogData.FrameData = log_data.get_frame_by_time(peer_id, log_data.start_time + time)
 		frames[peer_id] = frame
 		if frame:
+			current_frames[peer_id] = frame.frame
 			for prop_name in frame.data:
 				if not _property_definitions.has(prop_name):
 					if not prop_name in extra_prop_names:
@@ -133,4 +135,31 @@ func _on_Time_value_changed(value: float) -> void:
 	
 	bbcode += '[/table]'
 	data_grid.bbcode_text = bbcode
+
+func _on_PreviousFrameButton_pressed() -> void:
+	var max_time := 0
+	for peer_id in current_frames:
+		var frame_id = current_frames[peer_id]
+		if frame_id > 0:
+			frame_id -= 1
+		var frame: LogData.FrameData = log_data.frames[peer_id][frame_id]
+		max_time = int(max(max_time, frame.start_time))
 	
+	if max_time > log_data.start_time:
+		time_field.value = max_time - log_data.start_time
+	else:
+		time_field.value = 0
+
+func _on_NextFrameButton_pressed() -> void:
+	var min_time := log_data.end_time
+	for peer_id in current_frames:
+		var frame_id = current_frames[peer_id]
+		if frame_id < log_data.frames[peer_id].size():
+			frame_id += 1
+			var frame: LogData.FrameData = log_data.frames[peer_id][frame_id]
+			min_time = int(min(min_time, frame.start_time))
+	
+	if min_time > log_data.start_time:
+		time_field.value = min_time - log_data.start_time
+	else:
+		time_field.value = 0

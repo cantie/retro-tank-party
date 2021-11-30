@@ -56,6 +56,8 @@ class FrameData:
 	var frame: int
 	var type: int
 	var data: Dictionary
+	var start_time: int
+	var end_time: int
 	
 	func _init(_frame: int, _type: int, _data: Dictionary) -> void:
 		frame = _frame
@@ -168,9 +170,11 @@ func add_log_entry(log_entry: Dictionary, peer_id: int) -> void:
 			frame_counter[peer_id] += 1
 			max_frame = int(max(max_frame, frame_number))
 			if log_entry.has('start_time'):
-				start_time = int(min(start_time, log_entry['start_time'])) if start_time > 0 else log_entry['start_time']
+				frame_data.start_time = log_entry['start_time']
+				start_time = int(min(start_time, frame_data.start_time)) if start_time > 0 else frame_data.start_time
 			if log_entry.has('end_time'):
-				end_time = int(max(end_time, log_entry['end_time']))
+				frame_data.end_time = log_entry['end_time']
+				end_time = int(max(end_time, frame_data.end_time))
 
 func get_frame(peer_id: int, frame_number: int) -> FrameData:
 	if not frames.has(peer_id):
@@ -192,8 +196,8 @@ func get_frame_by_time(peer_id: int, time: int) -> FrameData:
 	var last_matching_frame: FrameData
 	for i in range(peer_frames.size()):
 		var frame: FrameData = peer_frames[i]
-		if frame.data.has('start_time'):
-			if frame.data['start_time'] <= time:
+		if frame.start_time != 0:
+			if frame.start_time <= time:
 				last_matching_frame = frame
 			else:
 				break
