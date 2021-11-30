@@ -3,8 +3,10 @@ extends VBoxContainer
 
 const Logger = preload("res://addons/network-sync-rollback/Logger.gd")
 const LogData = preload("res://addons/network-sync-rollback/log_inspector/LogData.gd")
+const FrameDataGraphPeer = preload("res://addons/network-sync-rollback/log_inspector/FrameDataGraphPeer.tscn")
 
 onready var time_field = $HBoxContainer/Time
+onready var data_graph = $DataGraph
 onready var data_grid = $DataGrid
 
 var log_data: LogData
@@ -48,6 +50,16 @@ func set_log_data(_log_data: LogData) -> void:
 
 func refresh_from_log_data() -> void:
 	time_field.max_value = log_data.end_time - log_data.start_time
+	
+	# Make sure we have graphs for every peer.
+	for peer_id in log_data.frames:
+		if not data_graph.has_node(str(peer_id)):
+			var peer_data_graph = FrameDataGraphPeer.instance()
+			peer_data_graph.name = str(peer_id)
+			data_graph.add_child(peer_data_graph)
+			peer_data_graph.set_peer_id(peer_id)
+			peer_data_graph.set_log_data(log_data)
+	
 	_on_Time_value_changed(time_field.value)
 
 func _prop_to_string(data: Dictionary, prop_name: String, prop_def = null) -> String:
