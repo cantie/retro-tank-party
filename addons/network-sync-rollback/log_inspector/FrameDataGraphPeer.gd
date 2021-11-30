@@ -49,7 +49,8 @@ func _draw() -> void:
 			Vector2(next_frame.start_time - absolute_start_time if next_frame else rect_size.x, rect_size.y))
 		frame_rect = frame_rect.clip(Rect2(Vector2.ZERO, rect_size))
 		
-		draw_rect(frame_rect, FRAME_TYPE_COLOR[frame.type])
+		if frame_rect.position.x > 0 and frame_rect.size.x > 0:
+			draw_rect(frame_rect, FRAME_TYPE_COLOR[frame.type])
 		
 		# Move on to the next frame.
 		if next_frame == null:
