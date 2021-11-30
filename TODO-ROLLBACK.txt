@@ -4,8 +4,11 @@ TODO
 MILESTOE 2 (finish porting all the things):
 
  - Add some detailed logging and a way to visualize it
-   * Have a "Frame" and "State/Input" mode
-   * Visualize the the FRAME data to see how things play out in real time
+   * Draw tick numbers on the graph
+   * Consider swapping tick/interpolation colors?
+   * End frame at end_time (rather than start of the next frame)
+   * Scroll the cursor into view
+   * Draw skipped frame special
 
  - Bug: Pickup sometimes appears in one spot, gets picked up (with no effect) and then reappears in a different spot
  - Bug: Tank sometimes remains white after hit (not after despawn/respawn)
