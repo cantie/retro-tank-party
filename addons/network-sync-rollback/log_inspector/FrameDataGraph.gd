@@ -1,3 +1,4 @@
+tool
 extends VBoxContainer
 
 const LogData = preload("res://addons/network-sync-rollback/log_inspector/LogData.gd")

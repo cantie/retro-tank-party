@@ -30,7 +30,10 @@ func _ready() -> void:
 		suffix = ' ms',
 	}
 	_property_definitions['skipped'] = {}
-	_property_definitions['skipped_reason'] = {}
+	_property_definitions['skip_reason'] = {
+		type = PropertyType.ENUM,
+		values = Logger.SkipReason.keys(),
+	}
 	_property_definitions['start_time'] = {
 		type = PropertyType.TIME,
 	}
@@ -64,7 +67,7 @@ func _prop_to_string(data: Dictionary, prop_name: String, prop_def = null) -> St
 	
 	match prop_type:
 		PropertyType.ENUM:
-			if prop_def.has('values'):
+			if value != null and prop_def.has('values'):
 				var values = prop_def['values']
 				if value >= 0 and value < values.size():
 					value = values[value]

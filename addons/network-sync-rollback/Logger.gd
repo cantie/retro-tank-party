@@ -170,8 +170,7 @@ func end_tick(start_ticks_usecs: int) -> void:
 func skip_tick(skip_reason: int, start_ticks_usecs: int) -> void:
 	data['skipped'] = true
 	data['skip_reason'] = skip_reason
-	data['duration'] = float(OS.get_ticks_usec() - start_ticks_usecs) / 1000.0
-	write_current_data()
+	end_tick(start_ticks_usecs)
 
 func begin_interpolation_frame(tick: int) -> void:
 	if data.size() > 0:
