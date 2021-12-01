@@ -17,26 +17,26 @@ margin_bottom = 24.0
 
 [node name="TimeLabel" type="Label" parent="HBoxContainer"]
 margin_top = 5.0
-margin_right = 32.0
+margin_right = 64.0
 margin_bottom = 19.0
-text = "Time"
+text = "Time (ms)"
 
 [node name="Time" type="SpinBox" parent="HBoxContainer"]
-margin_left = 36.0
-margin_right = 110.0
+margin_left = 68.0
+margin_right = 142.0
 margin_bottom = 24.0
 max_value = 0.0
 rounded = true
 
 [node name="PreviousFrameButton" type="Button" parent="HBoxContainer"]
-margin_left = 114.0
-margin_right = 242.0
+margin_left = 146.0
+margin_right = 274.0
 margin_bottom = 24.0
 text = "<< Previous frame"
 
 [node name="NextFrameButton" type="Button" parent="HBoxContainer"]
-margin_left = 246.0
-margin_right = 349.0
+margin_left = 278.0
+margin_right = 381.0
 margin_bottom = 24.0
 text = "Next frame >>"
 

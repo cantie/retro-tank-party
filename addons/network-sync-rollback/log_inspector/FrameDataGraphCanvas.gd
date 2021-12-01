@@ -4,9 +4,7 @@ extends Control
 const Logger = preload("res://addons/network-sync-rollback/Logger.gd")
 const LogData = preload("res://addons/network-sync-rollback/log_inspector/LogData.gd")
 
-export (int) var peer_id := 0 setget set_peer_id
-export (int) var start_time := 0 setget set_start_time
-
+var start_time := 0 setget set_start_time
 var cursor_time := -1 setget set_cursor_time
 
 const FRAME_TYPE_COLOR = {
@@ -15,6 +13,8 @@ const FRAME_TYPE_COLOR = {
 	Logger.FrameType.INTERPOLATION_FRAME: Color(0.0, 0.0, 0.5),
 }
 
+const PEER_GAP := 10
+
 var log_data: LogData
 var _font: Font
 
@@ -22,11 +22,6 @@ signal cursor_time_changed (cursor_time)
 
 func set_log_data(_log_data: LogData) -> void:
 	log_data = _log_data
-
-func set_peer_id(_peer_id: int) -> void:
-	if peer_id != _peer_id:
-		peer_id = _peer_id
-		update()
 
 func set_start_time(_start_time: int) -> void:
 	if start_time != _start_time:
@@ -49,12 +44,9 @@ func _gui_input(event: InputEvent) -> void:
 		if event.button_index == BUTTON_LEFT and event.pressed:
 			set_cursor_time(int(start_time + event.position.x))
 
-func _draw() -> void:
-	if peer_id == 0:
-		return
-	
+func _draw_peer(peer_id: int, peer_rect: Rect2) -> void:
 	var absolute_start_time := log_data.start_time + start_time
-	var absolute_end_time := absolute_start_time + rect_size.x
+	var absolute_end_time := absolute_start_time + peer_rect.size.x
 	var frame: LogData.FrameData = log_data.get_frame_by_time(peer_id, absolute_start_time)
 	if frame == null and log_data.frames[peer_id].size() > 0:
 		frame = log_data.frames[peer_id][0]
@@ -65,12 +57,13 @@ func _draw() -> void:
 	
 	while frame.start_time <= absolute_end_time:
 		var frame_rect = Rect2(
-			Vector2(frame.start_time - absolute_start_time, 0),
-			Vector2(frame.end_time - frame.start_time, rect_size.y))
-		frame_rect = frame_rect.clip(Rect2(Vector2.ZERO, rect_size))
-		if frame_rect.size.x == 0:
-			frame_rect.size.x = 1
-		if frame_rect.position.x >= 0:
+			Vector2(frame.start_time - absolute_start_time, peer_rect.position.y),
+			Vector2(frame.end_time - frame.start_time, peer_rect.size.y))
+		if frame_rect.intersects(peer_rect, true):
+			frame_rect = frame_rect.clip(peer_rect)
+			if frame_rect.size.x == 0:
+				frame_rect.size.x = 1
+			
 			var skipped: bool = frame.data.get('skipped', false)
 			var frame_color: Color
 			
@@ -86,7 +79,6 @@ func _draw() -> void:
 			
 			if frame.type == Logger.FrameType.TICK and frame.data.has('tick') and not skipped:
 				tick_numbers_to_draw.append([frame_rect.position + (frame_rect.size / 2.0) - Vector2(3, 0), str(frame.data['tick'])])
-				
 		
 		# Move on to the next frame.
 		if frame.frame < log_data.frames[peer_id].size() - 1:
@@ -94,12 +86,31 @@ func _draw() -> void:
 		else:
 			break
 	
+	for tick_number_to_draw in tick_numbers_to_draw:
+		draw_string(_font, tick_number_to_draw[0], tick_number_to_draw[1], Color(1.0, 1.0, 1.0))
+
+func _draw() -> void:
+	if log_data == null:
+		return
+	var peer_count = log_data.peer_ids.size()
+	if peer_count == 0:
+		return
+	
+	var peer_height: float = (rect_size.y - ((peer_count - 1) * PEER_GAP)) / peer_count
+	var current_y := 0
+	for peer_index in range(peer_count):
+		var peer_id = log_data.peer_ids[peer_index]
+		var peer_rect := Rect2(
+			Vector2(0, current_y),
+			Vector2(rect_size.x, peer_height))
+		_draw_peer(peer_id, peer_rect)
+		current_y += (peer_height + PEER_GAP)
+	
 	if cursor_time >= start_time and cursor_time <= start_time + rect_size.x:
 		draw_line(
 			Vector2(cursor_time - start_time, 0),
 			Vector2(cursor_time - start_time, rect_size.y),
 			Color(1.0, 0.0, 0.0),
 			3.0)
-	
-	for tick_number_to_draw in tick_numbers_to_draw:
-		draw_string(_font, tick_number_to_draw[0], tick_number_to_draw[1], Color(1.0, 1.0, 1.0))
+
+
