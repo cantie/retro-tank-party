@@ -18,11 +18,7 @@ func set_log_data(_log_data: LogData) -> void:
 
 func refresh_from_log_data() -> void:
 	scroll_bar.max_value = log_data.end_time - log_data.start_time
-	canvas.update()
-	canvas.connect("cursor_time_changed", self, "_on_canvas_cursor_time_changed")
-
-func _on_ScrollBar_value_changed(value: float) -> void:
-	canvas.start_time = int(value)
+	canvas.refresh_from_log_data()
 
 func set_cursor_time(_cursor_time: int) -> void:
 	if cursor_time != _cursor_time:
@@ -30,5 +26,8 @@ func set_cursor_time(_cursor_time: int) -> void:
 		canvas.cursor_time = cursor_time
 		emit_signal("cursor_time_changed", cursor_time)
 
-func _on_canvas_cursor_time_changed(_cursor_time: int) -> void:
+func _on_ScrollBar_value_changed(value: float) -> void:
+	canvas.start_time = int(value)
+
+func _on_Canvas_cursor_time_changed(_cursor_time) -> void:
 	set_cursor_time(_cursor_time)
