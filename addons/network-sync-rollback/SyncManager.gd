@@ -713,16 +713,25 @@ func _cleanup_buffers() -> bool:
 		var state_frame_to_retire: StateBufferFrame = state_buffer[0]
 		var input_frame = get_input_frame(state_frame_to_retire.tick + 1)
 		if input_frame == null:
-			push_warning("Attempting to retire state frame %s, but input frame %s is missing" % [state_frame_to_retire.tick, state_frame_to_retire.tick + 1])
+			var message = "Attempting to retire state frame %s, but input frame %s is missing" % [state_frame_to_retire.tick, state_frame_to_retire.tick + 1]
+			push_warning(message)
+			if _logger:
+				_logger.data['buffer_underrun_message'] = message
 			return false
 		if not input_frame.is_complete(peers):
 			var missing: Array = input_frame.get_missing_peers(peers)
-			push_warning("Attempting to retire state frame %s, but input frame %s is still missing input (missing peer(s): %s)" % [state_frame_to_retire.tick, input_frame.tick, missing])
+			var message = "Attempting to retire state frame %s, but input frame %s is still missing input (missing peer(s): %s)" % [state_frame_to_retire.tick, input_frame.tick, missing]
+			push_warning(message)
+			if _logger:
+				_logger.data['buffer_underrun_message'] = message
 			return false
 		
 		if state_frame_to_retire.tick > _last_state_hashed_tick:
-			push_warning("Unable to retire state frame %s, because we haven't hashed it yet" % state_frame_to_retire.tick)
-			break
+			var message = "Unable to retire state frame %s, because we haven't hashed it yet" % state_frame_to_retire.tick
+			push_warning(message)
+			if _logger:
+				_logger.data['buffer_underrun_message'] = message
+			return false
 		
 		state_buffer.pop_front()
 		_state_buffer_start_tick += 1
@@ -741,7 +750,10 @@ func _cleanup_buffers() -> bool:
 		var state_hash_to_retire: StateHashFrame = state_hashes[0]
 		if not state_hash_to_retire.is_complete(peers):
 			var missing: Array = state_hash_to_retire.get_missing_peers(peers)
-			push_warning("Attempting to retire state hash frame %s, but we're still missing hashes (missing peer(s): %s)" % [state_hash_to_retire.tick, missing])
+			var message = "Attempting to retire state hash frame %s, but we're still missing hashes (missing peer(s): %s)" % [state_hash_to_retire.tick, missing]
+			push_warning(message)
+			if _logger:
+				_logger.data['buffer_underrun_message'] = message
 			return false
 		
 		if state_hash_to_retire.mismatch:

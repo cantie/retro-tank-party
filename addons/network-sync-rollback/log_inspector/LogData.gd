@@ -1,4 +1,5 @@
-extends Node
+tool
+extends Reference
 
 const Logger = preload("res://addons/network-sync-rollback/Logger.gd")
 

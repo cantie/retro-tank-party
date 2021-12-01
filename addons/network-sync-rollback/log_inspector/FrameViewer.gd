@@ -34,6 +34,7 @@ func _ready() -> void:
 		type = PropertyType.ENUM,
 		values = Logger.SkipReason.keys(),
 	}
+	_property_definitions['buffer_underrun_message'] = {}
 	_property_definitions['start_time'] = {
 		type = PropertyType.TIME,
 	}
