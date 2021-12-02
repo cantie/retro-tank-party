@@ -20,6 +20,7 @@ const NETWORK_ARROW_COLOR1 := Color(1.0, 0,5, 1.0)
 const NETWORK_ARROW_COLOR2 := Color(0.0, 0.5, 1.0)
 const NETWORK_ARROW_SIZE := 8
 
+const EXTRA_WIDTH := 1000
 const PEER_GAP := 10
 
 var log_data: LogData
@@ -59,8 +60,12 @@ func _gui_input(event: InputEvent) -> void:
 			set_cursor_time(int(start_time + event.position.x))
 
 func _draw_peer(peer_id: int, peer_rect: Rect2, draw_data: Dictionary) -> void:
-	var absolute_start_time := log_data.start_time + start_time
-	var absolute_end_time := absolute_start_time + peer_rect.size.x
+	var relative_start_time := start_time - EXTRA_WIDTH
+	if relative_start_time < 0:
+		relative_start_time = 0
+	
+	var absolute_start_time := log_data.start_time + relative_start_time
+	var absolute_end_time := absolute_start_time + peer_rect.size.x + (EXTRA_WIDTH * 2)
 	var frame: LogData.FrameData = log_data.get_frame_by_time(peer_id, absolute_start_time)
 	if frame == null and log_data.frames[peer_id].size() > 0:
 		frame = log_data.frames[peer_id][0]
@@ -81,9 +86,13 @@ func _draw_peer(peer_id: int, peer_rect: Rect2, draw_data: Dictionary) -> void:
 				break
 	var other_network_arrow_peer_key = "remote_ticks_received_from_%s" % other_network_arrow_peer_id
 	
+	# Adjust the peer rect for the extra width.
+	peer_rect.position.x -= (EXTRA_WIDTH if start_time > EXTRA_WIDTH else start_time)
+	peer_rect.size.x += (EXTRA_WIDTH * 2)
+	
 	while frame.start_time <= absolute_end_time:
 		var frame_rect = Rect2(
-			Vector2(frame.start_time - absolute_start_time, peer_rect.position.y),
+			Vector2(peer_rect.position.x + frame.start_time - absolute_start_time, peer_rect.position.y),
 			Vector2(frame.end_time - frame.start_time, peer_rect.size.y))
 		if frame_rect.intersects(peer_rect, true):
 			frame_rect = frame_rect.clip(peer_rect)
@@ -172,6 +181,7 @@ func _draw() -> void:
 	
 	var draw_data := {}
 	
+	var extra_width := 500
 	var peer_height: float = (rect_size.y - ((peer_count - 1) * PEER_GAP)) / peer_count
 	var current_y := 0
 	for peer_index in range(peer_count):
