@@ -4,8 +4,9 @@ TODO
 MILESTOE 2 (finish porting all the things):
 
  - Add some detailed logging and a way to visualize it
+   * Expand canvas a little past the edges of its parent so arrows can come from or go off screen
    * Allow enabling disabling the network arrows (settings dialog)
-   * Add some actual graph lines for rollback count
+   * Add some actual graph lines for rollback count (include in settings dialog)
    * Label each peer's graph (text in the top-left)
    * Maybe use Label controls for the tick numbers so we can position them more intelligently?
    * Scroll the cursor into view if set to a value that's off screen
