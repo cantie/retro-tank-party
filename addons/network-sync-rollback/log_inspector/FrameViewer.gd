@@ -151,6 +151,9 @@ func _on_Time_value_changed(value: float) -> void:
 	data_grid.bbcode_text = bbcode
 
 func _on_PreviousFrameButton_pressed() -> void:
+	jump_to_previous_frame()
+
+func jump_to_previous_frame() -> void:
 	var max_time := 0
 	for peer_id in current_frames:
 		var frame_id = current_frames[peer_id]
@@ -165,6 +168,9 @@ func _on_PreviousFrameButton_pressed() -> void:
 		time_field.value = 0
 
 func _on_NextFrameButton_pressed() -> void:
+	jump_to_next_frame()
+
+func jump_to_next_frame() -> void:
 	var min_time := log_data.end_time
 	for peer_id in current_frames:
 		var frame_id = current_frames[peer_id]
@@ -183,3 +189,15 @@ func _on_DataGraph_cursor_time_changed(cursor_time) -> void:
 
 func _on_SettingsButton_pressed() -> void:
 	settings_dialog.popup_centered()
+
+func _unhandled_key_input(event: InputEventKey) -> void:
+	if event.pressed:
+		if event.scancode == KEY_PAGEUP:
+			jump_to_next_frame()
+		elif event.scancode == KEY_PAGEDOWN:
+			jump_to_previous_frame()
+		elif event.scancode == KEY_UP:
+			time_field.value += 1
+		elif event.scancode == KEY_DOWN:
+			time_field.value -= 1
+
