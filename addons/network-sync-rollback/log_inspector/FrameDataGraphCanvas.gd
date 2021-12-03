@@ -31,6 +31,7 @@ const CURSOR_SCROLL_GAP := 100
 
 var log_data: LogData
 var _font: Font
+var _font_big: Font
 
 signal cursor_time_changed (cursor_time)
 signal start_time_changed (start_time)
@@ -67,6 +68,10 @@ func _ready() -> void:
 	_font = DynamicFont.new()
 	_font.font_data = load("res://addons/network-sync-rollback/log_inspector/monogram_extended.ttf")
 	_font.size = 16
+	
+	_font_big = DynamicFont.new()
+	_font_big.font_data = load("res://addons/network-sync-rollback/log_inspector/monogram_extended.ttf")
+	_font_big.size = 32
 
 func _gui_input(event: InputEvent) -> void:
 	if event is InputEventMouseButton:
@@ -117,6 +122,7 @@ func _draw_peer(peer_id: int, peer_rect: Rect2, draw_data: Dictionary) -> void:
 				frame_rect.size.x = 1
 			
 			var skipped: bool = frame.data.get('skipped', false)
+			var center_position: Vector2 = frame_rect.position + (frame_rect.size / 2.0)
 			var frame_color: Color
 			
 			if skipped:
@@ -124,17 +130,26 @@ func _draw_peer(peer_id: int, peer_rect: Rect2, draw_data: Dictionary) -> void:
 				if frame_rect.size.x <= 1.0:
 					frame_rect.size.x = 3
 					frame_rect.position.x -= 1.5
+				
+				if frame.data.has('skip_reason'):
+					var tick_letter: String = ''
+					match int(frame.data['skip_reason']):
+						Logger.SkipReason.INPUT_BUFFER_UNDERRUN:
+							tick_letter = 'B'
+						Logger.SkipReason.WAITING_TO_REGAIN_SYNC:
+							tick_letter = 'W'
+						Logger.SkipReason.ADVANTAGE_ADJUSTMENT:
+							tick_letter = 'A'
+					if tick_letter != '':
+						tick_numbers_to_draw.append([_font_big, center_position - Vector2(5, 0), tick_letter, Color('f04dff')])
 			else:
 				frame_color = FRAME_TYPE_COLOR[frame.type]
-			
-			var center_position: Vector2 = frame_rect.position + (frame_rect.size / 2.0)
 			
 			draw_rect(frame_rect, frame_color)
 			
 			if frame.type == Logger.FrameType.TICK and frame.data.has('tick') and not skipped:
-				
 				var tick: int = frame.data['tick']
-				tick_numbers_to_draw.append([center_position - Vector2(3, 0), str(tick)])
+				tick_numbers_to_draw.append([_font, center_position - Vector2(3, 0), str(tick), Color(1.0, 1.0, 1.0)])
 				
 				if capture_network_arrow_positions:
 					network_arrow_start_positions[tick] = center_position
@@ -159,7 +174,7 @@ func _draw_peer(peer_id: int, peer_rect: Rect2, draw_data: Dictionary) -> void:
 			break
 	
 	for tick_number_to_draw in tick_numbers_to_draw:
-		draw_string(_font, tick_number_to_draw[0], tick_number_to_draw[1], Color(1.0, 1.0, 1.0))
+		draw_string(tick_number_to_draw[0], tick_number_to_draw[1], tick_number_to_draw[2], tick_number_to_draw[3])
 	
 	if capture_network_arrow_positions:
 		if not draw_data.has("network_arrow_positions"):
