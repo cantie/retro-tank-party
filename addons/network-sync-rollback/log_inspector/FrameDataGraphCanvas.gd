@@ -181,7 +181,6 @@ func _draw() -> void:
 	
 	var draw_data := {}
 	
-	var extra_width := 500
 	var peer_height: float = (rect_size.y - ((peer_count - 1) * PEER_GAP)) / peer_count
 	var current_y := 0
 	for peer_index in range(peer_count):

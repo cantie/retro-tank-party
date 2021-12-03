@@ -1,12 +1,13 @@
 tool
-extends VBoxContainer
+extends Control
 
 const Logger = preload("res://addons/network-sync-rollback/Logger.gd")
 const LogData = preload("res://addons/network-sync-rollback/log_inspector/LogData.gd")
 
-onready var time_field = $HBoxContainer/Time
-onready var data_graph = $DataGraph
-onready var data_grid = $DataGrid
+onready var time_field = $VBoxContainer/HBoxContainer/Time
+onready var data_graph = $VBoxContainer/DataGraph
+onready var data_grid = $VBoxContainer/DataGrid
+onready var settings_dialog = $SettingsDialog
 
 var log_data: LogData
 
@@ -51,11 +52,13 @@ static func _enum_dictionary(d: Dictionary) -> Dictionary:
 func set_log_data(_log_data: LogData) -> void:
 	log_data = _log_data
 	data_graph.set_log_data(log_data)
+	settings_dialog.setup_settings_dialog(log_data, data_graph, data_grid)
 
 func refresh_from_log_data() -> void:
 	time_field.max_value = log_data.end_time - log_data.start_time
 	
 	data_graph.refresh_from_log_data()
+	settings_dialog.refresh_from_log_data()
 	
 	_on_Time_value_changed(time_field.value)
 
@@ -177,3 +180,6 @@ func _on_NextFrameButton_pressed() -> void:
 
 func _on_DataGraph_cursor_time_changed(cursor_time) -> void:
 	time_field.value = cursor_time
+
+func _on_SettingsButton_pressed() -> void:
+	settings_dialog.popup_centered()

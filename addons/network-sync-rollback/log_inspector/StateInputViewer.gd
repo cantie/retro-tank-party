@@ -11,7 +11,6 @@ onready var input_data_label = $GridContainer/InputPanel/InputDataLabel
 onready var input_mismatches_data_label = $GridContainer/InputMismatchesPanel/InputMismatchesDataLabel
 onready var state_data_label = $GridContainer/StatePanel/StateDataLabel
 onready var state_mismatches_data_label = $GridContainer/StateMismatchesPanel/StateMismatchesDataLabel
-onready var mode_button = $HBoxContainer/ModeButton
 
 var log_data: LogData
 
