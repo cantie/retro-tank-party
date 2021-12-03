@@ -10,11 +10,16 @@ var cursor_time := -1 setget set_cursor_time
 var show_network_arrows := true
 var network_arrow_peers := []
 
+var show_rollback_ticks := true
+var max_rollback_ticks := 15
+
 const FRAME_TYPE_COLOR = {
 	Logger.FrameType.INTERFRAME: Color(0.7, 0.7, 0.7),
 	Logger.FrameType.TICK: Color(0.0, 0.75, 0.0),
 	Logger.FrameType.INTERPOLATION_FRAME: Color(0.0, 0.0, 0.5),
 }
+
+const ROLLBACK_LINE_COLOR := Color(1.0, 0.5, 0.0)
 
 const NETWORK_ARROW_COLOR1 := Color(1.0, 0,5, 1.0)
 const NETWORK_ARROW_COLOR2 := Color(0.0, 0.5, 1.0)
@@ -90,6 +95,8 @@ func _draw_peer(peer_id: int, peer_rect: Rect2, draw_data: Dictionary) -> void:
 	peer_rect.position.x -= (EXTRA_WIDTH if start_time > EXTRA_WIDTH else start_time)
 	peer_rect.size.x += (EXTRA_WIDTH * 2)
 	
+	var last_rollback_point = null
+	
 	while frame.start_time <= absolute_end_time:
 		var frame_rect = Rect2(
 			Vector2(peer_rect.position.x + frame.start_time - absolute_start_time, peer_rect.position.y),
@@ -125,6 +132,15 @@ func _draw_peer(peer_id: int, peer_rect: Rect2, draw_data: Dictionary) -> void:
 			if capture_network_arrow_positions and frame.data.has(other_network_arrow_peer_key):
 				for tick in frame.data[other_network_arrow_peer_key]:
 					network_arrow_end_positions[int(tick)] = center_position
+			
+			if show_rollback_ticks and frame.data.has('rollback_ticks'):
+				var rollback_height = peer_rect.size.y * (float(frame.data['rollback_ticks']) / float(max_rollback_ticks))
+				if rollback_height > peer_rect.size.y:
+					rollback_height = peer_rect.size.y
+				var rollback_point = Vector2(center_position.x, frame_rect.position.y + frame_rect.size.y - rollback_height)
+				if last_rollback_point != null:
+					draw_line(last_rollback_point, rollback_point, ROLLBACK_LINE_COLOR, 2.0, true)
+				last_rollback_point = rollback_point
 				
 		# Move on to the next frame.
 		if frame.frame < log_data.frames[peer_id].size() - 1:

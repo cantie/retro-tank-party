@@ -7,6 +7,8 @@ const DataGraph = preload("res://addons/network-sync-rollback/log_inspector/Fram
 onready var show_network_arrows_field := $MarginContainer/GridContainer/ShowNetworkArrows
 onready var network_arrows_peer1_field := $MarginContainer/GridContainer/NetworkArrowsPeer1
 onready var network_arrows_peer2_field := $MarginContainer/GridContainer/NetworkArrowsPeer2
+onready var show_rollback_ticks_field = $MarginContainer/GridContainer/ShowRollbackTicks
+onready var max_rollback_ticks_field = $MarginContainer/GridContainer/MaxRollbackTicks
 
 var log_data: LogData
 var data_graph: DataGraph
@@ -29,6 +31,9 @@ func refresh_from_log_data() -> void:
 		network_arrows_peer1_field.select(network_arrows_peer1_field.get_item_index(network_arrow_peers[0]))
 	if network_arrow_peers.size() > 1:
 		network_arrows_peer2_field.select(network_arrows_peer2_field.get_item_index(network_arrow_peers[1]))
+	
+	show_rollback_ticks_field.pressed = data_graph.canvas.show_rollback_ticks
+	max_rollback_ticks_field.text = str(data_graph.canvas.max_rollback_ticks)
 
 func _rebuild_peer_options(option_button: OptionButton) -> void:
 	var value = option_button.get_selected_id()
@@ -59,3 +64,15 @@ func _on_NetworkArrowsPeer1_item_selected(index: int) -> void:
 
 func _on_NetworkArrowsPeer2_item_selected(index: int) -> void:
 	update_network_arrows()
+
+func _on_ShowRollbackTicks_pressed() -> void:
+	data_graph.canvas.show_rollback_ticks = show_rollback_ticks_field.pressed
+	data_graph.canvas.update()
+
+func _on_MaxRollbackTicks_text_changed(new_text: String) -> void:
+	var value = max_rollback_ticks_field.text
+	if value.is_valid_integer():
+		var value_int = value.to_int()
+		if value_int > 0:
+			data_graph.canvas.max_rollback_ticks = value_int
+			data_graph.canvas.update()
