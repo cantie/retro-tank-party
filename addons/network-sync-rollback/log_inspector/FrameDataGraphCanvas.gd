@@ -27,11 +27,13 @@ const NETWORK_ARROW_SIZE := 8
 
 const EXTRA_WIDTH := 1000
 const PEER_GAP := 10
+const CURSOR_SCROLL_GAP := 100
 
 var log_data: LogData
 var _font: Font
 
 signal cursor_time_changed (cursor_time)
+signal start_time_changed (start_time)
 
 func set_log_data(_log_data: LogData) -> void:
 	log_data = _log_data
@@ -47,12 +49,19 @@ func set_start_time(_start_time: int) -> void:
 	if start_time != _start_time:
 		start_time = _start_time
 		update()
+		emit_signal("start_time_changed", start_time)
 
 func set_cursor_time(_cursor_time: int) -> void:
 	if cursor_time != _cursor_time:
 		cursor_time = _cursor_time
 		update()
 		emit_signal("cursor_time_changed", cursor_time)
+		
+		var relative_cursor_time = cursor_time - start_time
+		if relative_cursor_time < 0:
+			set_start_time(cursor_time - (rect_size.x - CURSOR_SCROLL_GAP))
+		elif relative_cursor_time > rect_size.x:
+			set_start_time(cursor_time - CURSOR_SCROLL_GAP)
 
 func _ready() -> void:
 	_font = DynamicFont.new()

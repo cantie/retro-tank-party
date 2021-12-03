@@ -80,6 +80,7 @@ bbcode_text = "Data Grid"
 text = "Data Grid"
 
 [node name="SettingsDialog" parent="." instance=ExtResource( 3 )]
+visible = false
 
 [connection signal="value_changed" from="VBoxContainer/HBoxContainer/Time" to="." method="_on_Time_value_changed"]
 [connection signal="pressed" from="VBoxContainer/HBoxContainer/PreviousFrameButton" to="." method="_on_PreviousFrameButton_pressed"]

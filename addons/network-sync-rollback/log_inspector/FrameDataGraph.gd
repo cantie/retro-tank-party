@@ -31,3 +31,6 @@ func _on_ScrollBar_value_changed(value: float) -> void:
 
 func _on_Canvas_cursor_time_changed(_cursor_time) -> void:
 	set_cursor_time(_cursor_time)
+
+func _on_Canvas_start_time_changed(start_time) -> void:
+	scroll_bar.value = start_time
