@@ -92,17 +92,18 @@ func _draw_peer(peer_id: int, peer_rect: Rect2, draw_data: Dictionary) -> void:
 	var other_network_arrow_peer_key = "remote_ticks_received_from_%s" % other_network_arrow_peer_id
 	
 	# Adjust the peer rect for the extra width.
-	peer_rect.position.x -= (EXTRA_WIDTH if start_time > EXTRA_WIDTH else start_time)
-	peer_rect.size.x += (EXTRA_WIDTH * 2)
+	var extended_peer_rect = peer_rect
+	extended_peer_rect.position.x -= (EXTRA_WIDTH if start_time > EXTRA_WIDTH else start_time)
+	extended_peer_rect.size.x += (EXTRA_WIDTH * 2)
 	
 	var last_rollback_point = null
 	
 	while frame.start_time <= absolute_end_time:
 		var frame_rect = Rect2(
-			Vector2(peer_rect.position.x + frame.start_time - absolute_start_time, peer_rect.position.y),
-			Vector2(frame.end_time - frame.start_time, peer_rect.size.y))
-		if frame_rect.intersects(peer_rect, true):
-			frame_rect = frame_rect.clip(peer_rect)
+			Vector2(extended_peer_rect.position.x + frame.start_time - absolute_start_time, extended_peer_rect.position.y),
+			Vector2(frame.end_time - frame.start_time, extended_peer_rect.size.y))
+		if frame_rect.intersects(extended_peer_rect, true):
+			frame_rect = frame_rect.clip(extended_peer_rect)
 			if frame_rect.size.x == 0:
 				frame_rect.size.x = 1
 			
@@ -134,9 +135,9 @@ func _draw_peer(peer_id: int, peer_rect: Rect2, draw_data: Dictionary) -> void:
 					network_arrow_end_positions[int(tick)] = center_position
 			
 			if show_rollback_ticks and frame.data.has('rollback_ticks'):
-				var rollback_height = peer_rect.size.y * (float(frame.data['rollback_ticks']) / float(max_rollback_ticks))
-				if rollback_height > peer_rect.size.y:
-					rollback_height = peer_rect.size.y
+				var rollback_height = extended_peer_rect.size.y * (float(frame.data['rollback_ticks']) / float(max_rollback_ticks))
+				if rollback_height > extended_peer_rect.size.y:
+					rollback_height = extended_peer_rect.size.y
 				var rollback_point = Vector2(center_position.x, frame_rect.position.y + frame_rect.size.y - rollback_height)
 				if last_rollback_point != null:
 					draw_line(last_rollback_point, rollback_point, ROLLBACK_LINE_COLOR, 2.0, true)
@@ -196,6 +197,7 @@ func _draw() -> void:
 		return
 	
 	var draw_data := {}
+	var peer_rects := {}
 	
 	var peer_height: float = (rect_size.y - ((peer_count - 1) * PEER_GAP)) / peer_count
 	var current_y := 0
@@ -204,6 +206,7 @@ func _draw() -> void:
 		var peer_rect := Rect2(
 			Vector2(0, current_y),
 			Vector2(rect_size.x, peer_height))
+		peer_rects[peer_id] = peer_rect
 		_draw_peer(peer_id, peer_rect, draw_data)
 		current_y += (peer_height + PEER_GAP)
 	
@@ -212,6 +215,10 @@ func _draw() -> void:
 		if network_arrows_positions.size() == 2:
 			_draw_network_arrows(network_arrows_positions[0][0], network_arrows_positions[1][1], NETWORK_ARROW_COLOR1)
 			_draw_network_arrows(network_arrows_positions[1][0], network_arrows_positions[0][1], NETWORK_ARROW_COLOR2)
+	
+	for peer_id in peer_rects:
+		var peer_rect: Rect2 = peer_rects[peer_id]
+		draw_string(_font, peer_rect.position + Vector2(0, PEER_GAP), "Peer %s" % peer_id, Color(1.0, 1.0, 1.0))
 	
 	if cursor_time >= start_time and cursor_time <= start_time + rect_size.x:
 		draw_line(
