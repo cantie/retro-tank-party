@@ -8,5 +8,5 @@ func set_label(text: String) -> void:
 	label.text = text
 
 func update_progress(value, max_value) -> void:
-	progress_bar.value = value
 	progress_bar.max_value = max_value
+	progress_bar.value = value
