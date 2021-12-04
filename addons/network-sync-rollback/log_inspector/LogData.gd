@@ -77,9 +77,22 @@ var input := {}
 var state := {}
 var frames := {}
 
+var _is_loading := false
+var _loader_thread: Thread
+var _loader_mutex: Mutex
+
+signal load_progress (current, total)
+signal load_finished ()
 signal load_error (msg)
 
+func _init() -> void:
+	_loader_mutex = Mutex.new()
+
 func clear() -> void:
+	if is_loading():
+		push_error("Cannot clear() log data while loading")
+		return
+	
 	peer_ids.clear()
 	mismatches.clear()
 	max_tick = 0
@@ -91,14 +104,42 @@ func clear() -> void:
 	frames.clear()
 
 func load_log_file(path: String) -> void:
+	if is_loading():
+		push_error("Attempting to load log file when one is already loading")
+		return
+	
 	var file = File.new()
 	var error = file.open(path, File.READ)
 	if file.open(path, File.READ) != OK:
 		emit_signal("load_error", "Unable to open file for reading: %s" % path)
 		return
 	
+	if _loader_thread:
+		_loader_thread.wait_to_finish()
+	_loader_thread = Thread.new()
+	
+	_is_loading = true
+	_loader_thread.start(self, "_loader_thread_function", [file, path])
+
+func _set_loading(_value: bool) -> void:
+	_loader_mutex.lock()
+	_is_loading = _value
+	_loader_mutex.unlock()
+
+func is_loading() -> bool:
+	var value: bool
+	_loader_mutex.lock()
+	value = _is_loading
+	_loader_mutex.unlock()
+	return value
+
+func _loader_thread_function(data: Array) -> void:
+	var file: File = data[0]
+	var path: String = data[1]
+	
 	var header
 	var line_number := 0
+	var file_size = file.get_len()
 	
 	while not file.eof_reached():
 		line_number += 1
@@ -117,8 +158,9 @@ func load_log_file(path: String) -> void:
 				header = json_result.result
 				header['peer_id'] = int(header['peer_id'])
 				if header['peer_id'] in peer_ids:
-					emit_signal("load_error", "Log file has data for peer_id %s, which is already loaded" % header['peer_id'])
 					file.close()
+					call_deferred("emit_signal", "load_error", "Log file has data for peer_id %s, which is already loaded" % header['peer_id'])
+					_set_loading(false)
 					return
 				
 				var peer_id = header['peer_id']
@@ -127,15 +169,19 @@ func load_log_file(path: String) -> void:
 				frames[peer_id] = []
 				continue
 			else:
-				emit_signal("load_error", "No header at the top of log: %s" % path)
 				file.close()
+				call_deferred("emit_signal", "load_error", "No header at the top of log: %s" % path)
+				_set_loading(false)
 				return
 		
-		add_log_entry(json_result.result, header['peer_id'])
+		_add_log_entry(json_result.result, header['peer_id'])
+		call_deferred("emit_signal", "load_progress", file.get_position(), file_size)
 	
 	file.close()
+	call_deferred("emit_signal", "load_finished")
+	_set_loading(false)
 
-func add_log_entry(log_entry: Dictionary, peer_id: int) -> void:
+func _add_log_entry(log_entry: Dictionary, peer_id: int) -> void:
 	var tick: int = log_entry.get('tick', 0)
 	
 	max_tick = int(max(max_tick, tick))
@@ -178,6 +224,10 @@ func add_log_entry(log_entry: Dictionary, peer_id: int) -> void:
 				end_time = int(max(end_time, frame_data.end_time))
 
 func get_frame(peer_id: int, frame_number: int) -> FrameData:
+	if is_loading():
+		push_error("Cannot get_frame() while loading")
+		return null
+	
 	if not frames.has(peer_id):
 		return null
 	if frame_number >= frames[peer_id].size():
@@ -185,12 +235,20 @@ func get_frame(peer_id: int, frame_number: int) -> FrameData:
 	return frames[peer_id][frame_number]
 
 func get_frame_data(peer_id: int, frame_number: int, key: String, default_value = null):
+	if is_loading():
+		push_error("Cannot get_frame_data() while loading")
+		return null
+	
 	var frame := get_frame(peer_id, frame_number)
 	if frame:
 		return frame.data.get(key, default_value)
 	return default_value
 
 func get_frame_by_time(peer_id: int, time: int) -> FrameData:
+	if is_loading():
+		push_error("Cannot get_frame_by_time() while loading")
+		return null
+	
 	if not frames.has(peer_id):
 		return null
 	var peer_frames: Array = frames[peer_id]

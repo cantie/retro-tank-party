@@ -1,11 +1,12 @@
 tool
 extends PopupDialog
 
-onready var progress_bar = $ProgressBar
+onready var label = $MarginContainer/VBoxContainer/Label
+onready var progress_bar = $MarginContainer/VBoxContainer/ProgressBar
 
-func setup_progress(max_value: float) -> void:
-	progress_bar.value = 0.0
-	progress_bar.max_value = max_value
+func set_label(text: String) -> void:
+	label.text = text
 
-func update_progress(value: float) -> void:
+func update_progress(value, max_value) -> void:
 	progress_bar.value = value
+	progress_bar.max_value = max_value
