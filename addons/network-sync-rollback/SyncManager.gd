@@ -867,7 +867,7 @@ func _record_advantage(force_calculate_advantage: bool = false) -> void:
 		if _logger:
 			_logger.add_value("peer_%s" % peer.peer_id, {
 				local_lag = peer.local_lag,
-				remote_log = peer.remote_lag,
+				remote_lag = peer.remote_lag,
 				advantage = peer.local_lag - peer.remote_lag,
 				calculated_advantage = peer.calculated_advantage,
 			})
