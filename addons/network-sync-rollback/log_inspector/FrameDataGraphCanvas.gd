@@ -151,8 +151,9 @@ func _draw_peer(peer_id: int, peer_rect: Rect2, draw_data: Dictionary) -> void:
 				var tick: int = frame.data['tick']
 				tick_numbers_to_draw.append([_font, center_position - Vector2(3, 0), str(tick), Color(1.0, 1.0, 1.0)])
 				
-				if capture_network_arrow_positions:
-					network_arrow_start_positions[tick] = center_position
+				if frame.data.has('input_tick') and capture_network_arrow_positions:
+					var input_tick: int = frame.data['input_tick']
+					network_arrow_start_positions[input_tick] = center_position
 			
 			if capture_network_arrow_positions and frame.data.has(other_network_arrow_peer_key):
 				for tick in frame.data[other_network_arrow_peer_key]:

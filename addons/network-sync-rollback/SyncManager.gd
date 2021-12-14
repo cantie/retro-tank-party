@@ -1084,6 +1084,9 @@ func _physics_process(delta: float) -> void:
 	if input_frame == null:
 		return
 	
+	if _logger:
+		_logger.data['input_tick'] = input_tick
+	
 	var local_input = _call_get_local_input()
 	_calculate_data_hash(local_input)
 	input_frame.players[get_tree().get_network_unique_id()] = InputForPlayer.new(local_input, false)
