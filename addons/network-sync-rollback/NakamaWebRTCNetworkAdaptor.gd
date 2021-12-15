@@ -11,7 +11,7 @@ var max_skipped_input_in_a_row := 1
 # The number of messages of history to check for duplicates.
 var max_duplicate_history := 10
 # The number of milliseconds to keep a message in the duplicate history.
-var max_duplicate_msecs := 15
+var max_duplicate_msecs := 100
 # The maximum packet lifetime for WebRTC to try to redeliver messages.
 var max_packet_lifetime := 66
 
@@ -67,6 +67,9 @@ func _on_OnlineMatch_webrtc_peer_added(webrtc_peer: WebRTCPeerConnection, player
 	if data_channel != null:
 		data_channel.write_mode = WebRTCDataChannel.WRITE_MODE_BINARY
 		_data_channels[peer_id] = data_channel
+		
+		if SyncManager._logger:
+			SyncManager.data['nakama_webrtc_data_channel_created_for_peer_%s' % peer_id] = true
 
 func _on_OnlineMatch_webrtc_peer_removed(webrtc_peer: WebRTCPeerConnection, player: OnlineMatch.Player) -> void:
 	var peer_id := player.peer_id
@@ -97,7 +100,8 @@ func send_input_tick(peer_id: int, msg: PoolByteArray) -> void:
 				_skipped_tick_count = 0
 			
 			if _skipped_tick_count < max_skipped_input_in_a_row:
-				print ("[%s] Skipping send because buffer is too full (%s bytes)" % [SyncManager.current_tick, data_channel.get_buffered_amount()])
+				if SyncManager._logger:
+					SyncManager._logger.data['nakama_webrtc_send_skipped_to_peer_%s' % peer_id] = "Skipping send because buffer is too full (%s bytes)" % data_channel.get_buffered_amount()
 				_last_skipped_tick = SyncManager.current_tick
 				return
 			else:
@@ -122,13 +126,15 @@ func send_input_tick(peer_id: int, msg: PoolByteArray) -> void:
 		var msg_hash_value = hash(msg)
 		for msg_hash in last_messages_for_peer:
 			if msg_hash.value == msg_hash_value:
-				print ("[%s] Skipping duplicate message" % [SyncManager.current_tick])
+				if SyncManager._logger:
+					SyncManager._logger.increment_value("nakama_webrtc_skipping_duplicate_messages_for_%s" % peer_id)
 				return
 		
 		data_channel.put_packet(msg)
 		
 		# Add message hash to duplicate history and push out old messages.
-		last_messages_for_peer.append(MessageHash.new(msg_hash_value, current_time))
+		#last_messages_for_peer.append(MessageHash.new(msg_hash_value, current_time))
+		_last_messages[peer_id].append(MessageHash.new(msg_hash_value, current_time))
 		while last_messages_for_peer.size() > max_duplicate_history:
 			last_messages_for_peer.pop_front()
 

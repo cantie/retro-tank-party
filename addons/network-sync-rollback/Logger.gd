@@ -198,6 +198,18 @@ func add_value(key: String, value) -> void:
 		data[key] = []
 	data[key].append(value)
 
+func merge_array_value(key: String, value: Array) -> void:
+	if not data.has(key):
+		data[key] = value
+	else:
+		data[key] = data[key] + value
+
+func increment_value(key: String, amount: int = 1) -> void:
+	if not data.has(key):
+		data[key] = amount
+	else:
+		data[key] += amount
+
 func start_timing(timer: String) -> void:
 	assert(not _start_times.has(timer), "Timer already exists: %s" % timer)
 	_start_times[timer] = OS.get_ticks_usec()

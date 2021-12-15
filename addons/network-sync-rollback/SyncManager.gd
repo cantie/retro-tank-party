@@ -905,6 +905,10 @@ func _send_input_messages_to_peer(peer_id: int) -> void:
 	var peer = peers[peer_id]
 	
 	var state_hashes = _get_state_hashes_for_peer(peer)
+	var input_messages = _get_input_messages_from_send_queue_for_peer(peer)
+	
+	if _logger:
+		_logger.data['messages_sent_to_peer_%s' % peer_id] = input_messages.size()
 	
 	for input in _get_input_messages_from_send_queue_for_peer(peer):
 		var msg = {
@@ -920,6 +924,11 @@ func _send_input_messages_to_peer(peer_id: int) -> void:
 		if debug_message_bytes:
 			if bytes.size() > debug_message_bytes:
 				push_error("Sending message w/ size %s bytes" % bytes.size())
+		
+		if _logger:
+			_logger.add_value("messages_sent_to_peer_%s_size" % peer_id, bytes.size())
+			_logger.increment_value("messages_sent_to_peer_%s_total_size" % peer_id, bytes.size())
+			_logger.merge_array_value("input_ticks_sent_to_peer_%s" % peer_id, input.keys())
 		
 		#var ticks = msg[InputMessageKey.INPUT].keys()
 		#print ("[%s] Sending ticks %s - %s" % [current_tick, min(ticks[0], ticks[-1]), max(ticks[0], ticks[-1])])

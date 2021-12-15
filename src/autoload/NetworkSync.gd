@@ -124,7 +124,7 @@ func _ready() -> void:
 	#SyncDebugger.print_previous_state = true
 	#SyncManager.debug_rollback_ticks = 15
 	#SyncManager.debug_random_rollback_ticks = 10
-	SyncManager.debug_log_state = true
+	#SyncManager.debug_log_state = true
 	SyncManager.debug_message_bytes = 600
 	SyncManager.debug_skip_nth_message = 0
 	

@@ -3,8 +3,14 @@ TODO
 
 MILESTOE 2 (finish porting all the things):
 
+ - Remove the debug_log_state mode - it's not very useful when we have the detailed logs
+ - Disable the detailed logs on HTML5
  - Dig into issues when network is bad
+   o Try using Linux build of the webrtc plugin with the buffer changes
+   o Try using different values for reliability time in WebRTC
+   o Try using different methods of switching back to being in sync
  - Bug: State mismatches due to _properties in spawn data (should be ignored in hash calculation)
+ - Bug: Railgun bounce had off by one rotation (the x component of the y axis)
  - Bug: Pickup sometimes appears in one spot, gets picked up (with no effect) and then reappears in a different spot
  - Bug: Tank sometimes remains white after hit (not after despawn/respawn)
  - Bug: TheKlin boosted and immediately zapped and then was zooming all over

@@ -27,6 +27,7 @@ func _ready() -> void:
 		values = Logger.FrameType.keys(),
 	}
 	_property_definitions['tick'] = {}
+	_property_definitions['input_tick'] = {}
 	_property_definitions['duration'] = {
 		suffix = ' ms',
 	}
@@ -174,7 +175,7 @@ func jump_to_next_frame() -> void:
 	var min_time := log_data.end_time
 	for peer_id in current_frames:
 		var frame_id = current_frames[peer_id]
-		if frame_id < log_data.frames[peer_id].size():
+		if frame_id < log_data.frames[peer_id].size() - 1:
 			frame_id += 1
 			var frame: LogData.FrameData = log_data.frames[peer_id][frame_id]
 			min_time = int(min(min_time, frame.start_time))
