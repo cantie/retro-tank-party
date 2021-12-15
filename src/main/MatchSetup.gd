@@ -126,6 +126,7 @@ func _on_OnlineMatch_disconnected():
 	_on_OnlineMatch_error('')
 
 func _on_OnlineMatch_player_left(player) -> void:
+	SyncManager.remove_peer(player.peer_id)
 	if OnlineMatch.players.size() < 2:
 		_on_OnlineMatch_error(player.username + " has left - not enough players!")
 	else:

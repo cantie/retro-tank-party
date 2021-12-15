@@ -88,6 +88,7 @@ func _on_OnlineMatch_disconnected():
 func _on_OnlineMatch_player_left(player) -> void:
 	ui_layer.show_message(player.username + " has left")
 	players_ready.erase(player.session_id)
+	SyncManager.remove_peer(player.peer_id)
 	
 	# It's possible that all players marked ready except for the one who left,
 	# so check if all are ready, and if so, start the match.
