@@ -72,8 +72,8 @@ func quit_match() -> void:
 	SyncManager.stop()
 	OnlineMatch.leave()
 	
-	if GameSettings.use_detailed_logging:
-		SyncManager.stop_logging()
+	# Do this last because it will block until the logging thread stops.
+	SyncManager.stop_logging()
 	
 	get_tree().change_scene("res://src/main/SessionSetup.tscn")
 
