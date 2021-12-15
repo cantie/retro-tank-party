@@ -21,6 +21,10 @@ func refresh_from_log_data() -> void:
 	tick_number_field.max_value = log_data.max_tick
 	_on_TickNumber_value_changed(tick_number_field.value)
 
+func clear() -> void:
+	tick_number_field.max_value = 0
+	tick_number_field.value = 0
+
 func _on_TickNumber_value_changed(value: float) -> void:
 	var tick: int = int(value)
 	

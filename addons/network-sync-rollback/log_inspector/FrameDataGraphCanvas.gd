@@ -40,7 +40,14 @@ func set_log_data(_log_data: LogData) -> void:
 	log_data = _log_data
 
 func refresh_from_log_data() -> void:
+	# Remove any invalid peers from network_arrow_peers
+	for peer_id in network_arrow_peers:
+		if not peer_id in log_data.peer_ids:
+			network_arrow_peers.erase(peer_id)
+	
 	if show_network_arrows:
+		# If we have at least two peers, set network_arrow_peers to first valid
+		# options.
 		if network_arrow_peers.size() < 2 and log_data.peer_ids.size() >= 2:
 			network_arrow_peers = [log_data.peer_ids[0], log_data.peer_ids[1]]
 	
@@ -150,7 +157,6 @@ func _draw_peer(peer_id: int, peer_rect: Rect2, draw_data: Dictionary) -> void:
 			if frame.type == Logger.FrameType.TICK and frame.data.has('tick') and not skipped:
 				var tick: int = frame.data['tick']
 				tick_numbers_to_draw.append([_font, center_position - Vector2(3, 0), str(tick), Color(1.0, 1.0, 1.0)])
-				
 				if frame.data.has('input_tick') and capture_network_arrow_positions:
 					var input_tick: int = frame.data['input_tick']
 					network_arrow_start_positions[input_tick] = center_position

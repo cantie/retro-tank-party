@@ -41,8 +41,8 @@ func _ready() -> void:
 func _on_ClearButton_pressed() -> void:
 	log_data.clear()
 	data_description_label.text = data_description_label_default_text
-	state_input_viewer.refresh_from_log_data()
-	frame_viewer.refresh_from_log_data()
+	state_input_viewer.clear()
+	frame_viewer.clear()
 
 func _on_AddUserLogButton_pressed() -> void:
 	file_dialog.access = FileDialog.ACCESS_USERDATA
@@ -82,6 +82,9 @@ func refresh_from_log_data() -> void:
 	frame_viewer.refresh_from_log_data()
 
 func _on_log_data_load_error(msg) -> void:
+	refresh_from_log_data()
+	progress_dialog.hide()
+	_files_to_load.clear()
 	OS.alert(msg)
 
 func _on_log_data_load_progress(current, total) -> void:

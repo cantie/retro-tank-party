@@ -31,6 +31,8 @@ func _ready() -> void:
 	_property_definitions['duration'] = {
 		suffix = ' ms',
 	}
+	_property_definitions['fatal_error'] = {}
+	_property_definitions['fatal_error_message'] = {}
 	_property_definitions['skipped'] = {}
 	_property_definitions['skip_reason'] = {
 		type = PropertyType.ENUM,
@@ -62,6 +64,10 @@ func refresh_from_log_data() -> void:
 	settings_dialog.refresh_from_log_data()
 	
 	_on_Time_value_changed(time_field.value)
+
+func clear() -> void:
+	current_frames.clear()
+	refresh_from_log_data()
 
 func _prop_to_string(data: Dictionary, prop_name: String, prop_def = null) -> String:
 	if prop_def == null:
