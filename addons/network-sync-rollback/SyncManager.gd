@@ -496,6 +496,7 @@ func _reset() -> void:
 	rollback_ticks = 0
 	input_buffer.clear()
 	state_buffer.clear()
+	state_hashes.clear()
 	_input_buffer_start_tick = 1
 	_state_buffer_start_tick = 0
 	_state_hashes_start_tick = 1

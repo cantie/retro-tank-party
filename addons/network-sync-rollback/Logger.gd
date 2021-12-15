@@ -80,7 +80,7 @@ func _writer_thread_function() -> void:
 	while true:
 		_writer_thread_semaphore.wait()
 		
-		var data_to_write: Dictionary
+		var data_to_write
 		var should_exit: bool
 		
 		_writer_thread_mutex.lock()
@@ -88,7 +88,7 @@ func _writer_thread_function() -> void:
 		should_exit = not _started
 		_writer_thread_mutex.unlock()
 		
-		if data_to_write:
+		if data_to_write is Dictionary:
 			_log_file.store_string(JSON.print(data_to_write) + "\n")
 		elif should_exit:
 			break
