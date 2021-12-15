@@ -3,14 +3,6 @@ TODO
 
 MILESTOE 2 (finish porting all the things):
 
- - Game crashing right away when playing with Elliot:
-   o WARNING: Unable to retire state frame 27, because we haven't hashed it yet
-   o WARNING: Attempting to retire state frame 13, but input frame 14 is still missing input (missing peer(s): [2])
-   o ERROR: NETWORK SYNC LOST: Fatal state mismatch
-     * Most of these seem to actually be fatal state mismatches that are only registered as such on Elliot's machine,
-	   but in the state viewer, I don't actually see any mismatches
-	 * This appears to always happen in a second match after having started the app
-   o WARNING: Unable to retire state frame 1, because we haven't hashed it yet
  - Remove the debug_log_state mode - it's not very useful when we have the detailed logs
    o Log *production* state mismatches in the debug overlay
  - Disable the detailed logs on HTML5

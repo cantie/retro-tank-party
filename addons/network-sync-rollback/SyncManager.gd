@@ -46,6 +46,8 @@ class Peer extends Reference:
 		time_delta = 0
 		last_remote_input_tick_received = 0
 		next_local_input_tick_requested = 0
+		last_remote_hash_tick_received = 0
+		next_local_hash_tick_requested = 0
 		remote_lag = 0
 		local_lag = 0
 		clear_advantage()

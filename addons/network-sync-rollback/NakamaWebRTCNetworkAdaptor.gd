@@ -45,6 +45,8 @@ func detach_network_adaptor(sync_manager) -> void:
 
 func start_network_adaptor(sync_manager) -> void:
 	_last_messages.clear()
+	_last_skipped_tick = 0
+	_skipped_tick_count = 0
 
 func stop_network_adaptor(sync_manager) -> void:
 	pass
@@ -69,7 +71,7 @@ func _on_OnlineMatch_webrtc_peer_added(webrtc_peer: WebRTCPeerConnection, player
 		_data_channels[peer_id] = data_channel
 		
 		if SyncManager._logger:
-			SyncManager.data['nakama_webrtc_data_channel_created_for_peer_%s' % peer_id] = true
+			SyncManager._logger.data['nakama_webrtc_data_channel_created_for_peer_%s' % peer_id] = true
 
 func _on_OnlineMatch_webrtc_peer_removed(webrtc_peer: WebRTCPeerConnection, player: OnlineMatch.Player) -> void:
 	var peer_id := player.peer_id
