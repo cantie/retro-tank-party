@@ -9,6 +9,7 @@ var cursor_time := -1 setget set_cursor_time
 
 var show_network_arrows := true
 var network_arrow_peers := []
+var peer_time_offsets := {}
 
 var show_rollback_ticks := true
 var max_rollback_ticks := 15
@@ -44,6 +45,14 @@ func refresh_from_log_data() -> void:
 	for peer_id in network_arrow_peers:
 		if not peer_id in log_data.peer_ids:
 			network_arrow_peers.erase(peer_id)
+	
+	# Add/remove time offset values.
+	for peer_id in peer_time_offsets.keys():
+		if not peer_id in log_data.peer_ids:
+			peer_time_offsets.erase(peer_id)
+	for peer_id in log_data.peer_ids:
+		if not peer_time_offsets.has(peer_id):
+			peer_time_offsets[peer_id] = 0
 	
 	if show_network_arrows:
 		# If we have at least two peers, set network_arrow_peers to first valid
@@ -90,8 +99,8 @@ func _draw_peer(peer_id: int, peer_rect: Rect2, draw_data: Dictionary) -> void:
 	if relative_start_time < 0:
 		relative_start_time = 0
 	
-	var absolute_start_time := log_data.start_time + relative_start_time
-	var absolute_end_time := absolute_start_time + peer_rect.size.x + (EXTRA_WIDTH * 2)
+	var absolute_start_time: int = log_data.start_time + relative_start_time - peer_time_offsets[peer_id]
+	var absolute_end_time: int = absolute_start_time + peer_rect.size.x + (EXTRA_WIDTH * 2) - peer_time_offsets[peer_id]
 	var frame: LogData.FrameData = log_data.get_frame_by_time(peer_id, absolute_start_time)
 	if frame == null and log_data.frames[peer_id].size() > 0:
 		frame = log_data.frames[peer_id][0]
