@@ -624,6 +624,21 @@ func _save_current_state() -> void:
 		# _input_complete_tick, otherwise, cap it to the _input_complete_tick.
 		_state_complete_tick = current_tick if current_tick <= _input_complete_tick else _input_complete_tick
 
+func _update_input_complete_tick() -> void:
+	while current_tick > _input_complete_tick + 1:
+		var input_frame: InputBufferFrame = get_input_frame(_input_complete_tick + 1)
+		if not input_frame:
+			break
+		if not input_frame.is_complete(peers):
+			break
+		
+		if _logger:
+			_logger.write_input(input_frame.tick, input_frame.players)
+		
+		_input_complete_tick += 1
+		
+		emit_signal("tick_input_complete", _input_complete_tick)
+
 func _update_state_hashes() -> void:
 	while _state_complete_tick > _last_state_hashed_tick:
 		var state_frame: StateBufferFrame = _get_state_frame(_last_state_hashed_tick + 1)
@@ -1151,6 +1166,12 @@ func _process(delta: float) -> void:
 				weight = 1.0
 			_call_interpolate_state(weight)
 		
+		# If there are no other peers, then we'll never receive any new input,
+		# so we need to update the _input_complete_tick elsewhere. Here's a fine
+		# place to do it!
+		if peers.size() == 0:
+			_update_input_complete_tick()
+		
 		_update_state_hashes()
 		
 		if interpolation:
@@ -1277,19 +1298,7 @@ func _receive_input_tick(peer_id: int, serialized_msg: PoolByteArray) -> void:
 			index += 1
 		
 		# Update _input_complete_tick for new input.
-		while current_tick > _input_complete_tick + 1:
-			var input_frame: InputBufferFrame = get_input_frame(_input_complete_tick + 1)
-			if not input_frame:
-				break
-			if not input_frame.is_complete(peers):
-				break
-			
-			if _logger:
-				_logger.write_input(input_frame.tick, input_frame.players)
-			
-			_input_complete_tick += 1
-			
-			emit_signal("tick_input_complete", _input_complete_tick)
+		_update_input_complete_tick()
 	
 	# Record the next frame the other peer needs.
 	peer.next_local_input_tick_requested = max(msg[InputMessageKey.NEXT_INPUT_TICK_REQUESTED], peer.next_local_input_tick_requested)
