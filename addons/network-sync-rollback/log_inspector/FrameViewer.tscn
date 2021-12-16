@@ -36,20 +36,32 @@ margin_bottom = 24.0
 max_value = 0.0
 rounded = true
 
-[node name="PreviousFrameButton" type="Button" parent="VBoxContainer/HBoxContainer"]
+[node name="StartButton" type="Button" parent="VBoxContainer/HBoxContainer"]
 margin_left = 146.0
-margin_right = 274.0
+margin_right = 187.0
+margin_bottom = 24.0
+text = "Start"
+
+[node name="PreviousFrameButton" type="Button" parent="VBoxContainer/HBoxContainer"]
+margin_left = 191.0
+margin_right = 319.0
 margin_bottom = 24.0
 text = "<< Previous frame"
 
 [node name="NextFrameButton" type="Button" parent="VBoxContainer/HBoxContainer"]
-margin_left = 278.0
-margin_right = 381.0
+margin_left = 323.0
+margin_right = 426.0
 margin_bottom = 24.0
 text = "Next frame >>"
 
+[node name="EndButton" type="Button" parent="VBoxContainer/HBoxContainer"]
+margin_left = 430.0
+margin_right = 465.0
+margin_bottom = 24.0
+text = "End"
+
 [node name="Separator" type="Control" parent="VBoxContainer/HBoxContainer"]
-margin_left = 385.0
+margin_left = 469.0
 margin_right = 1213.0
 margin_bottom = 24.0
 size_flags_horizontal = 3
@@ -83,7 +95,9 @@ text = "Data Grid"
 visible = false
 
 [connection signal="value_changed" from="VBoxContainer/HBoxContainer/Time" to="." method="_on_Time_value_changed"]
+[connection signal="pressed" from="VBoxContainer/HBoxContainer/StartButton" to="." method="_on_StartButton_pressed"]
 [connection signal="pressed" from="VBoxContainer/HBoxContainer/PreviousFrameButton" to="." method="_on_PreviousFrameButton_pressed"]
 [connection signal="pressed" from="VBoxContainer/HBoxContainer/NextFrameButton" to="." method="_on_NextFrameButton_pressed"]
+[connection signal="pressed" from="VBoxContainer/HBoxContainer/EndButton" to="." method="_on_EndButton_pressed"]
 [connection signal="pressed" from="VBoxContainer/HBoxContainer/SettingsButton" to="." method="_on_SettingsButton_pressed"]
 [connection signal="cursor_time_changed" from="VBoxContainer/DataGraph" to="." method="_on_DataGraph_cursor_time_changed"]

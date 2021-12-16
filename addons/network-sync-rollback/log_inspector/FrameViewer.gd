@@ -191,6 +191,12 @@ func jump_to_next_frame() -> void:
 	else:
 		time_field.value = 0
 
+func _on_StartButton_pressed() -> void:
+	time_field.value = 0
+
+func _on_EndButton_pressed() -> void:
+	time_field.value = time_field.max_value
+
 func _on_DataGraph_cursor_time_changed(cursor_time) -> void:
 	time_field.value = cursor_time
 
@@ -207,4 +213,3 @@ func _unhandled_key_input(event: InputEventKey) -> void:
 			time_field.value += 1
 		elif event.scancode == KEY_DOWN:
 			time_field.value -= 1
-

@@ -90,3 +90,8 @@ func _on_NextMismatchButton_pressed() -> void:
 	if next_mismatch != -1:
 		tick_number_field.value = next_mismatch
 
+func _on_StartButton_pressed() -> void:
+	tick_number_field.value = 0
+
+func _on_EndButton_pressed() -> void:
+	tick_number_field.value = tick_number_field.max_value

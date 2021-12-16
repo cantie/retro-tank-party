@@ -3,20 +3,22 @@ TODO
 
 MILESTOE 2 (finish porting all the things):
 
- - Add "Start" / "End" buttons to the State/Input viewer in the LogInspector (maybe to the FrameViewer too?)
  - Remove the debug_log_state mode - it's not very useful when we have the detailed logs
-   o Log *production* state mismatches in the debug overlay
+   o Log *production* state mismatches in the debug overlay (and print to console)
  - Disable the detailed logs on HTML5
  - Re-introduce some of the NakamaWebRTCNetworkAdaptor print statements (since we won't see detailed logs in HTML5)
+ - Add setting to add time offset to each peer (to correct for out of sync clocks)
  - Dig into issues when network is bad
    o Try using Linux build of the webrtc plugin with the buffer changes
    o Try using different values for reliability time in WebRTC
    o Try using different methods of switching back to being in sync
  - Make turrent rotation visible in state in detailed logs?
    o Or, can we rely on the input value for that?
+
  - Bug: State mismatches due to _properties in spawn data (should be ignored in hash calculation)
  - Bug: Railgun bounce had off by one rotation (the x component of the y axis)
  - Bug: Spawn records of GreenTwigs mismatching on fixed_position
+
  - Bug: Pickup sometimes appears in one spot, gets picked up (with no effect) and then reappears in a different spot
  - Bug: Tank sometimes remains white after hit (not after despawn/respawn)
  - Bug: TheKlin boosted and immediately zapped and then was zooming all over
