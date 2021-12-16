@@ -129,10 +129,13 @@ func _draw_peer(peer_id: int, peer_rect: Rect2, draw_data: Dictionary) -> void:
 				frame_rect.size.x = 1
 			
 			var skipped: bool = frame.data.get('skipped', false)
+			var fatal_error: bool = frame.data.get('fatal_error', false)
 			var center_position: Vector2 = frame_rect.position + (frame_rect.size / 2.0)
 			var frame_color: Color
 			
-			if skipped:
+			if fatal_error:
+				frame_color = Color(1.0, 0.0, 0.0)
+			elif skipped:
 				frame_color = Color(1.0, 1.0, 0.0)
 				if frame_rect.size.x <= 1.0:
 					frame_rect.size.x = 3

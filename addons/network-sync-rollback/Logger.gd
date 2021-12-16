@@ -186,6 +186,8 @@ func end_interpolation_frame(start_ticks_usecs: int) -> void:
 	write_current_data()
 
 func log_fatal_error(msg: String) -> void:
+	if not data.has('end_time'):
+		data['end_time'] = OS.get_system_time_msecs()
 	data['fatal_error'] = true
 	data['fatal_error_message'] = msg
 	write_current_data()

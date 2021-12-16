@@ -221,7 +221,9 @@ func _add_log_entry(log_entry: Dictionary, peer_id: int) -> void:
 				start_time = int(min(start_time, frame_data.start_time)) if start_time > 0 else frame_data.start_time
 			if log_entry.has('end_time'):
 				frame_data.end_time = log_entry['end_time']
-				end_time = int(max(end_time, frame_data.end_time))
+			else:
+				frame_data.end_time = frame_data.start_time
+			end_time = int(max(end_time, frame_data.end_time))
 
 func get_frame(peer_id: int, frame_number: int) -> FrameData:
 	if is_loading():
