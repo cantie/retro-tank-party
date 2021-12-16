@@ -8,6 +8,7 @@ onready var tank_engine_sounds_field = $Panel/VBoxContainer/ScrollContainer/Grid
 onready var full_screen_field = $Panel/VBoxContainer/ScrollContainer/GridContainer/FullScreenOptions
 onready var screenshake_field := $Panel/VBoxContainer/ScrollContainer/GridContainer/ScreenshakeOptions
 onready var network_relay_field := $Panel/VBoxContainer/ScrollContainer/GridContainer/NetworkRelayOptions
+onready var detailed_logging_label := $Panel/VBoxContainer/ScrollContainer/GridContainer/DetailedLoggingLabel
 onready var detailed_logging_field := $Panel/VBoxContainer/ScrollContainer/GridContainer/DetailedLoggingOptions
 onready var control_scheme_field := $Panel/VBoxContainer/ScrollContainer/GridContainer/ControlScheme
 onready var gamepad_device_field = $Panel/VBoxContainer/ScrollContainer/GridContainer/GamepadDeviceOptions
@@ -41,9 +42,14 @@ func _ready() -> void:
 	network_relay_field.add_item("Fallback (Forced)", GameSettings.NetworkRelay.FORCED_FALLBACK)
 	network_relay_field.set_value(GameSettings.use_network_relay, false)
 	
-	detailed_logging_field.add_item("Disabled", false)
-	detailed_logging_field.add_item("Enabled", true)
-	detailed_logging_field.set_value(GameSettings.use_detailed_logging, false)
+	if OS.can_use_threads():
+		detailed_logging_field.add_item("Disabled", false)
+		detailed_logging_field.add_item("Enabled", true)
+		detailed_logging_field.set_value(GameSettings.use_detailed_logging, false)
+	else:
+		# Detailed logs only work if we have threads, so hide option otherwise.
+		detailed_logging_label.visible = false
+		detailed_logging_field.visible = false
 	
 	_update_gamepad_options()
 	Input.connect("joy_connection_changed", self, "_on_joy_connection_changed")
@@ -55,6 +61,8 @@ func _ready() -> void:
 func _setup_field_neighbors() -> void:
 	var previous_neighbor = null;
 	for child in field_container.get_children():
+		if not child.visible:
+			continue
 		if previous_neighbor:
 			previous_neighbor.focus_neighbour_bottom = child.get_path()
 			previous_neighbor.focus_next = child.get_path()

@@ -452,6 +452,10 @@ remote func _remote_ping_back(msg: Dictionary) -> void:
 	emit_signal("peer_pinged_back", peer)
 
 func start_logging(log_file_name: String) -> void:
+	# Our logger needs threads!
+	if not OS.can_use_threads():
+		return
+	
 	if not _logger:
 		_logger = Logger.new()
 	else:

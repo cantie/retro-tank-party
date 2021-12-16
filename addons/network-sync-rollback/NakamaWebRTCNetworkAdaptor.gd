@@ -102,6 +102,7 @@ func send_input_tick(peer_id: int, msg: PoolByteArray) -> void:
 				_skipped_tick_count = 0
 			
 			if _skipped_tick_count < max_skipped_input_in_a_row:
+				print ("[%s] Skipping send because buffer is too full (%s bytes)" % [SyncManager.current_tick, data_channel.get_buffered_amount()])
 				if SyncManager._logger:
 					SyncManager._logger.data['nakama_webrtc_send_skipped_to_peer_%s' % peer_id] = "Skipping send because buffer is too full (%s bytes)" % data_channel.get_buffered_amount()
 				_last_skipped_tick = SyncManager.current_tick
@@ -128,6 +129,7 @@ func send_input_tick(peer_id: int, msg: PoolByteArray) -> void:
 		var msg_hash_value = hash(msg)
 		for msg_hash in last_messages_for_peer:
 			if msg_hash.value == msg_hash_value:
+				print ("[%s] Skipping duplicate message" % [SyncManager.current_tick])
 				if SyncManager._logger:
 					SyncManager._logger.increment_value("nakama_webrtc_skipping_duplicate_messages_for_%s" % peer_id)
 				return
