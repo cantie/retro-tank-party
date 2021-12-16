@@ -61,37 +61,12 @@ func _on_SyncManager_rollback_flagged(tick: int, peer_id: int, local_input: Dict
 	if _debug_overlay:
 		_debug_overlay.add_message(peer_id, "%s: Rollback %s ticks" % [tick, SyncManager.rollback_ticks])
 
-func _on_SyncManager_remote_state_mismatch(tick: int, peer_id: int, local_state: Dictionary, remote_state: Dictionary) -> void:
+func _on_SyncManager_remote_state_mismatch(tick: int, peer_id: int, local_hash: int, remote_hash: int) -> void:
 	print ("-----")
-	print ("On tick %s, remote state from %s doesn't match local state:\n" % [tick, peer_id])
-	
-	var state_comparer = DebugStateComparer.new()
-	state_comparer.find_mismatches(local_state, remote_state)
-	print(state_comparer.print_mismatches())
+	print ("On tick %s, remote state (%s) from %s doesn't match local state (%s)" % [tick, remote_hash, peer_id, local_hash])
 	
 	if _debug_overlay:
 		_debug_overlay.add_message(peer_id, "%s: State mismatch" % tick)
-	
-	if not print_previous_state:
-		return
-	
-	var state_frame = SyncManager._get_state_frame(tick - 1)
-	if state_frame:
-		print (" === PREVIOUS STATE === ")
-		print (JSON.print(SyncManager.hash_serializer.serialize(state_frame.data.duplicate(true)), JSON_INDENT))
-	else:
-		print (" === MISSING PREVIOUS STATE FRAME?! === ")
-	
-	var input_frame = SyncManager.get_input_frame(tick)
-	if input_frame:
-		print (" === INPUT === ")
-		var player_info := {}
-		for player_id in input_frame.players:
-			assert(not input_frame.players[player_id].predicted)
-			player_info[player_id] = input_frame.players[player_id].input.duplicate(true)
-		print (JSON.print(SyncManager.hash_serializer.serialize(player_info), JSON_INDENT))
-	else:
-		print (" === MISSING INPUT FRAME ?! === ")
 
 func _on_SyncManager_peer_pinged_back(peer: SyncManager.Peer) -> void:
 	print ("-----")

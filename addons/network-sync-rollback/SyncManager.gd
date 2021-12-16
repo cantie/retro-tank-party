@@ -101,16 +101,13 @@ class StateBufferFrame:
 class StateHashFrame:
 	var tick: int
 	var state_hash: int
-	# This is only used on the host when using debug_log_state.
-	var state_data
 	
 	var peer_hashes := {}
 	var mismatch := false
 	
-	func _init(_tick: int, _state_hash: int, _state_data = null) -> void:
+	func _init(_tick: int, _state_hash: int) -> void:
 		tick = _tick
 		state_hash = _state_hash
-		state_data = _state_data
 	
 	func record_peer_hash(peer_id: int, peer_hash: int) -> bool:
 		peer_hashes[peer_id] = peer_hash
@@ -221,8 +218,7 @@ class MessageSerializer:
 		return msg
 
 # The hash serializer will convert state or input into primitive types so that
-# we can hash the Dictionary for use in comparisons. It's also used to serialize
-# the state before passing it to the host when debug_log_state is true.
+# we can hash the Dictionary for use in comparisons.
 #
 # The default implementation can't handle Objects in a smart way, and if you
 # include any in your input or state, it could lead to SyncManager thinking that
@@ -281,7 +277,6 @@ var debug_rollback_ticks := 0
 var debug_random_rollback_ticks := 0
 var debug_message_bytes := 700
 var debug_skip_nth_message := 0
-var debug_log_state := false
 var debug_physics_process_msecs := 10.0
 var debug_process_msecs := 10.0
 
@@ -312,7 +307,6 @@ var _input_complete_tick := 0
 var _state_complete_tick := 0
 var _last_state_hashed_tick := 0
 var _state_mismatch_count := 0
-var _logged_remote_state: Dictionary
 var _in_rollback := false
 var _ran_physics_process := false
 
@@ -324,7 +318,7 @@ signal sync_error (msg)
 
 signal skip_ticks_flagged (count)
 signal rollback_flagged (tick, peer_id, local_input, remote_input)
-signal remote_state_mismatch (tick, peer_id, local_state, remote_state)
+signal remote_state_mismatch (tick, peer_id, local_hash, remote_hash)
 
 signal peer_added (peer_id)
 signal peer_removed (peer_id)
@@ -512,7 +506,6 @@ func _reset() -> void:
 	_state_complete_tick = 0
 	_last_state_hashed_tick = 0
 	_state_mismatch_count = 0
-	_logged_remote_state.clear()
 	_in_rollback = false
 	_ran_physics_process = false
 
@@ -642,17 +635,10 @@ func _update_state_hashes() -> void:
 		var serialized = hash_serializer.serialize(cleaned)
 		var serialized_hash = serialized.hash()
 		
-		if debug_log_state and get_tree().is_network_server():
-			state_hashes.append(StateHashFrame.new(_last_state_hashed_tick, serialized_hash, serialized))
-		else:
-			state_hashes.append(StateHashFrame.new(_last_state_hashed_tick, serialized_hash))
+		state_hashes.append(StateHashFrame.new(_last_state_hashed_tick, serialized_hash))
 		
 		if _logger:
 			_logger.write_state(_last_state_hashed_tick, serialized, serialized_hash)
-		
-		if debug_log_state and not get_tree().is_network_server():
-			serialized['$'] = serialized_hash
-			rpc_id(1, "_log_saved_state", _last_state_hashed_tick, serialized)
 
 func _do_tick(delta: float, is_rollback: bool = false) -> bool:
 	var input_frame := get_input_frame(current_tick)
@@ -1163,9 +1149,6 @@ func _process(delta: float) -> void:
 		
 		_update_state_hashes()
 		
-		if get_tree().is_network_server() and _logged_remote_state.size() > 0:
-			_process_logged_remote_state()
-		
 		if interpolation:
 			emit_signal("interpolation_frame")
 		
@@ -1314,8 +1297,9 @@ func _receive_input_tick(peer_id: int, serialized_msg: PoolByteArray) -> void:
 	var remote_state_hashes = msg[InputMessageKey.STATE_HASHES]
 	for remote_tick in remote_state_hashes:
 		var state_hash_frame := _get_state_hash_frame(remote_tick)
-		if state_hash_frame:
-			state_hash_frame.record_peer_hash(peer_id, remote_state_hashes[remote_tick])
+		if state_hash_frame and not state_hash_frame.has_peer_hash(peer_id):
+			if not state_hash_frame.record_peer_hash(peer_id, remote_state_hashes[remote_tick]):
+				emit_signal("remote_state_mismatch", remote_tick, peer_id, state_hash_frame.state_hash, remote_state_hashes[remote_tick])
 	
 	# Find what the last remote state hash we received was after filling these in.
 	var index = (peer.last_remote_hash_tick_received - _state_hashes_start_tick) + 1
@@ -1325,38 +1309,6 @@ func _receive_input_tick(peer_id: int, serialized_msg: PoolByteArray) -> void:
 	
 	# Record the next state hash that the other peer needs.
 	peer.next_local_hash_tick_requested = max(msg[InputMessageKey.NEXT_HASH_TICK_REQUESTED], peer.next_local_hash_tick_requested)
-
-master func _log_saved_state(tick: int, remote_data: Dictionary) -> void:
-	if not started:
-		return
-	
-	var peer_id = get_tree().get_rpc_sender_id()
-	if not _logged_remote_state.has(peer_id):
-		_logged_remote_state[peer_id] = []
-		
-	# The logged state will be processed once we have complete player input in
-	# the _process_logged_remote_state() method below.
-	_logged_remote_state[peer_id].append(StateHashFrame.new(tick, remote_data['$'], remote_data))
-
-func _process_logged_remote_state() -> void:
-	for peer_id in _logged_remote_state:
-		var remote_state_buffer = _logged_remote_state[peer_id]
-		while remote_state_buffer.size() > 0:
-			var remote_tick = remote_state_buffer[0].tick
-			if remote_tick > _input_complete_tick:
-				break
-			
-			var remote_state: StateHashFrame = remote_state_buffer.pop_front()
-			var local_state: StateHashFrame = _get_state_hash_frame(remote_tick)
-			if local_state == null:
-				break
-			
-			if local_state.state_hash != remote_state.state_hash:
-				emit_signal("remote_state_mismatch", 
-					local_state.tick,
-					peer_id,
-					hash_serializer.serialize(local_state.state_data.duplicate(true)),
-					remote_state.state_data)
 
 func sort_dictionary_keys(input: Dictionary) -> Dictionary:
 	var output := {}
