@@ -1196,13 +1196,19 @@ func _clean_data_for_hashing(input: Dictionary) -> Dictionary:
 	for path in input:
 		if path == '$':
 			continue
-		var input_at_path = input[path]
-		var data := {}
-		for key in input_at_path:
-			if (key is String and key.begins_with('_')) or (key is int and key < 0):
-				continue
-			data[key] = input_at_path[key]
-		cleaned[path] = data
+		cleaned[path] = _clean_data_for_hashing_recursive(input[path])
+	return cleaned
+
+func _clean_data_for_hashing_recursive(input: Dictionary) -> Dictionary:
+	var cleaned := {}
+	for key in input:
+		if (key is String and key.begins_with('_')) or (key is int and key < 0):
+			continue
+		var value = input[key]
+		if value is Dictionary:
+			cleaned[key] = _clean_data_for_hashing_recursive(value)
+		else:
+			cleaned[key] = value
 	return cleaned
 
 # Calculates the hash without any keys that start with '_' (if string)
