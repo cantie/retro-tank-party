@@ -13,11 +13,13 @@ var damage := 10
 
 func _network_spawn_preprocess(data: Dictionary) -> Dictionary:
 	var _tank = data['tank']
+	var global_fixed_transform: SGFixedTransform2D = _tank.bullet_start_position.get_global_fixed_transform()
 	return {
 		tank = _tank.get_path(),
 		player_id = _tank.get_network_master(),
 		player_index = _tank.player_index,
-		fixed_transform = _tank.bullet_start_position.get_global_fixed_transform().copy(),
+		fixed_position = global_fixed_transform.origin,
+		fixed_rotation = global_fixed_transform.get_rotation(),
 		damage = data['weapon_type'].damage,
 	}
 
@@ -25,7 +27,8 @@ func _network_spawn(data: Dictionary) -> void:
 	tank = get_node(data['tank'])
 	player_id = data['player_id']
 	player_index = data['player_index']
-	set_global_fixed_transform(data['fixed_transform'])
+	fixed_position = data['fixed_position']
+	fixed_rotation = data['fixed_rotation']
 	vector = fixed_transform.x.copy()
 	damage = data['damage']
 	lifetime_timer.start()
