@@ -43,7 +43,7 @@ func spawn_drop_crate() -> void:
 		var contents = possible_contents[rng.randi() % possible_contents.size()]
 		
 		SyncManager.spawn('DropCrate', spawns, DropCrate, {
-			fixed_position = crate_position,
+			fixed_position = crate_position.copy(),
 			contents_path = contents.resource_path,
 		}, false)
 
