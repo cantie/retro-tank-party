@@ -12,6 +12,7 @@ MILESTOE 2 (finish porting all the things):
    o Try using different values for reliability time in WebRTC
    o Try using different methods of switching back to being in sync
 
+ - Bug: Predicted Elliot's death, then corrected the prediction (he didn't die), but didn't restore the normal camera
  - Bug: Pickup sometimes appears in one spot, gets picked up (with no effect) and then reappears in a different spot
  - Bug: Tank sometimes remains white after hit (not after despawn/respawn)
  - Bug: TheKlin boosted and immediately zapped and then was zooming all over
