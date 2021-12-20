@@ -12,6 +12,8 @@ var spawn_rate := 1
 var spawn_counter := 0
 
 func attach_ability() -> void:
+	last_movement_direction = 0
+	spawn_counter = 0
 	tank.hooks.subscribe("shoot", self, "_hook_tank_shoot", -100)
 	tank.hooks.subscribe("calculate_movement_vector", self, "_hook_tank_calculate_movement_vector", 10)
 
