@@ -3,21 +3,32 @@ TODO
 
 MILESTONE 3 (cleanup & bug fix):
 
+ - Bug: Time offset in LogInspector doesn't really work when offset is large enough
+ - Bug: Declared David (P1) the winner when Ross (P2) is killed, even though Elliot (P3) is still alive
+ - Bug: P1 uses Zap, on the next frame P1 & P2 agree on its position, but P3 has a different position (it moved slightly - shouldn't happen)
+ - Bug: Tank shoots when new round starts (because player clicked just before they died)
+ - Bug: P1 has tracer, bullet targets P2, but P2 has null for the target
+ - Bug: P2 is hit by tracer per P1 & P2, but P3 doesn't count it
  - Bug: Predicted Elliot's death, then corrected the prediction (he didn't die), but didn't restore the normal camera
- - Bug: Pickup sometimes appears in one spot, gets picked up (with no effect) and then reappears in a different spot
  - Bug: Tank sometimes remains white after hit (not after despawn/respawn)
- - Bug: TheKlin boosted and immediately zapped and then was zooming all over
- - Bug: Crash sometimes when player is killed
  - Bug (confirmed): Peer with given id already exists
    * Join two players, but don't press Ready
    * Have non-host leave, and then quit game altogether
    * Host should go back (ending match), then start a new one
    * The have non-host connect again
    * Error will happen!
- - Bug: State hash frame retreived from state hashes has mismatched tick number
  - Bug: Rolled back player death but left "player has won" message up
    |-> Saving and restoring state won't help, because it breaks our "Regaining sync" messages - this needs the full solution!
    |-> Wait to actually show the message until we have complete input for the frame where the point was scored
+ 
+ - Allow Tank._save/load_state() to be extended by mods
+   * What if a player picks up Zap and uses it, but a rollback happens and it turns out they really picked up Boost?
+     |-> I think they'll be left half Zapped with their collision shape disabled and player info hidden
+   * Let the core mod extend some of the state that gets saved/loaded
+   * Or... should we clean-up that stuff on _network_despawn()?
+
+ - Bug: Pickup sometimes appears in one spot, gets picked up (with no effect) and then reappears in a different spot
+ - Bug: TheKlin boosted and immediately zapped and then was zooming all over
 
  - Dig into issues when network is bad
    o Try using Linux build of the webrtc plugin with the buffer changes
@@ -54,6 +65,7 @@ UNCONFIRMED BUGS:
 
 BACKLOG:
 
+ - Automatically upload detailed logs to server?
  - Bug: input just stops even though I've never stopped pressing it
    o Easiest to reproduce by pressing a direction on the D-pad
  - Implement spectators
