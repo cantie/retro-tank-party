@@ -5,7 +5,6 @@ MILESTONE 3 (cleanup & bug fix):
 
  - Bug: Time offset in LogInspector doesn't really work when offset is large enough
  - Bug: P1 uses Zap, on the next frame P1 & P2 agree on its position, but P3 has a different position (it moved slightly - shouldn't happen)
- - Bug: Tank shoots when new round starts (because player clicked just before they died)
  - Bug: P1 has tracer, bullet targets P2, but P2 has null for the target
  - Bug: P2 is hit by tracer per P1 & P2, but P3 doesn't count it
  - Bug: Predicted Elliot's death, then corrected the prediction (he didn't die), but didn't restore the normal camera

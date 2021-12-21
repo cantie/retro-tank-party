@@ -191,6 +191,9 @@ func _network_despawn() -> void:
 	health = 100
 	can_shoot = true
 	camera = null
+	_input_shoot = false
+	_input_use_ability = false
+	_input_mouse_control = true
 
 func pickup_weapon(_weapon_type: WeaponType) -> void:
 	hooks.dispatch_event("pickup_weapon", PickupWeaponEvent.new(self, _weapon_type))
