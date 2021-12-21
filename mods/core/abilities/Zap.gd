@@ -72,6 +72,8 @@ func _save_state() -> Dictionary:
 		destination = destination.copy(),
 		move_increment = move_increment.copy(),
 		current_scale = current_scale,
+		tank_collision_shape_disabled = tank.collision_shape.disabled,
+		_tank_player_info_node_visible = tank.player_info_node.visible,
 	}
 
 func _load_state(state: Dictionary) -> void:
@@ -80,6 +82,8 @@ func _load_state(state: Dictionary) -> void:
 	destination = state['destination'].copy()
 	move_increment = state['move_increment'].copy()
 	current_scale = state['current_scale']
+	tank.collision_shape.disabled = state['tank_collision_shape_disabled']
+	tank.player_info_node.visible = state['_tank_player_info_node_visible']
 
 func _network_process(delta: float, input: Dictionary) -> void:
 	if zap_stage == ZapStage.NONE:

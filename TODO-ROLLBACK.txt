@@ -3,7 +3,6 @@ TODO
 
 MILESTONE 3 (cleanup & bug fix):
 
- - Bug: State mismatch where bullet hit on one client but missed on the other
  - Bug: Predicted Elliot's death, then corrected the prediction (he didn't die), but didn't restore the normal camera
  - Bug: Pickup sometimes appears in one spot, gets picked up (with no effect) and then reappears in a different spot
  - Bug: Tank sometimes remains white after hit (not after despawn/respawn)

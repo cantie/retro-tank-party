@@ -3,9 +3,7 @@
 [ext_resource path="res://mods/core/abilities/Zap.gd" type="Script" id=1]
 [ext_resource path="res://addons/network-sync-rollback/NetworkRandomNumberGenerator.gd" type="Script" id=5]
 
-[node name="Zap" type="Node2D" groups=[
-"network_sync",
-]]
+[node name="Zap" type="Node2D" groups=["network_sync"]]
 script = ExtResource( 1 )
 
 [node name="RandomNumberGenerator" type="Node" parent="."]
