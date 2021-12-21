@@ -97,7 +97,6 @@ func respawn_player(peer_id: int, start_transform = null) -> void:
 	if not players.has(peer_id):
 		return
 	var player = players[peer_id]
-	players_alive[peer_id] = player
 	
 	var spawn_data := {
 		game = self,
@@ -113,6 +112,10 @@ func respawn_player(peer_id: int, start_transform = null) -> void:
 
 func _on_SyncManager_scene_spawned(name: String, spawned_node: Node, scene: PackedScene, data: Dictionary) -> void:
 	if name == 'Tank':
+		var peer_id = data['peer_id']
+		if players.has(peer_id):
+			players_alive[peer_id] = players[peer_id]
+		
 		if not spawned_node.is_connected("player_dead", self, "_on_player_dead"):
 			spawned_node.connect("player_dead", self, "_on_player_dead", [spawned_node])
 		emit_signal("player_spawned", spawned_node)

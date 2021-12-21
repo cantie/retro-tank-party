@@ -4,7 +4,6 @@ TODO
 MILESTONE 3 (cleanup & bug fix):
 
  - Bug: Time offset in LogInspector doesn't really work when offset is large enough
- - Bug: Declared David (P1) the winner when Ross (P2) is killed, even though Elliot (P3) is still alive
  - Bug: P1 uses Zap, on the next frame P1 & P2 agree on its position, but P3 has a different position (it moved slightly - shouldn't happen)
  - Bug: Tank shoots when new round starts (because player clicked just before they died)
  - Bug: P1 has tracer, bullet targets P2, but P2 has null for the target
