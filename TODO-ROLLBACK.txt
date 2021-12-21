@@ -19,6 +19,9 @@ MILESTONE 3 (cleanup & bug fix):
    |-> Saving and restoring state won't help, because it breaks our "Regaining sync" messages - this needs the full solution!
    |-> Wait to actually show the message until we have complete input for the frame where the point was scored
  
+ - Instead of ability.detach_ability() should we do everything on _network_despawn()?
+   * It's possible an ability could be despawned in a rollback, causing detach not to run
+ - Convert weapons into nodes? It'd be basically making them the attachment...
  - Allow Tank._save/load_state() to be extended by mods
    * What if a player picks up Zap and uses it, but a rollback happens and it turns out they really picked up Boost?
      |-> I think they'll be left half Zapped with their collision shape disabled and player info hidden
@@ -42,7 +45,6 @@ MILESTONE 3 (cleanup & bug fix):
 
  - Fix white hover state on menu buttons (started in 3.4, I think?)
  - Move ping and other RPCs out of SyncManager and into NetworkAdaptor - will hepl with unit tests
- - Convert weapons into nodes? It'd be basically making them the attachment...
 
 BEFORE RELEASE:
 
