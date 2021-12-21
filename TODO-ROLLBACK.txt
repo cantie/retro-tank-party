@@ -1,8 +1,9 @@
 TODO
 ====
 
-MILESTOE 2 (finish porting all the things):
+MILESTONE 3 (cleanup & bug fix):
 
+ - Bug: State mismatch where bullet hit on one client but missed on the other
  - Bug: Predicted Elliot's death, then corrected the prediction (he didn't die), but didn't restore the normal camera
  - Bug: Pickup sometimes appears in one spot, gets picked up (with no effect) and then reappears in a different spot
  - Bug: Tank sometimes remains white after hit (not after despawn/respawn)
@@ -25,9 +26,11 @@ MILESTOE 2 (finish porting all the things):
    o Try using different methods of switching back to being in sync
 
  - Try: Quantize the analog values for movement to prevent excessive missed predictions
+ - Try: Decay analog inputs for each frame we are predicting
  - Try: Can we make interpolation faster by reusing the previous _interpolation_state[1]
 
-MILESTONE 3 (internal cleanup):
+ - Test on all platforms with Steam integration
+   o Does MacOS work?
 
  - Fix white hover state on menu buttons (started in 3.4, I think?)
  - Move ping and other RPCs out of SyncManager and into NetworkAdaptor - will hepl with unit tests
@@ -35,7 +38,7 @@ MILESTONE 3 (internal cleanup):
 
 BEFORE RELEASE:
 
- - Implement a way to kick problematic peers, rather than 
+ - Implement a way to kick problematic peers, rather than kill the match
  - Smooth out our frame skipping so we don't do it all at once
  - Document and release stuff that was created:
    o Rollback addon
