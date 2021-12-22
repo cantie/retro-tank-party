@@ -3,15 +3,6 @@ TODO
 
 MILESTONE 3 (cleanup & bug fix):
 
- - Instead of ability.detach_ability() should we do everything on _network_despawn()?
-   * It's possible an ability could be despawned in a rollback, causing detach not to run
- - Convert weapons into nodes? It'd be basically making them the attachment...
- - Allow Tank._save/load_state() to be extended by mods
-   * What if a player picks up Zap and uses it, but a rollback happens and it turns out they really picked up Boost?
-     |-> I think they'll be left half Zapped with their collision shape disabled and player info hidden
-   * Let the core mod extend some of the state that gets saved/loaded
-   * Or... should we clean-up that stuff on _network_despawn()?
-
  - Bug: Time offset in LogInspector doesn't really work when offset is large enough
  - Bug (confirmed): Peer with given id already exists
    * Join two players, but don't press Ready
