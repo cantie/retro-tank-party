@@ -19,7 +19,6 @@ MILESTONE 3 (cleanup & bug fix):
    * Host should go back (ending match), then start a new one
    * The have non-host connect again
    * Error will happen!
- - Bug: Tank sometimes remains white after hit (not after despawn/respawn)
  - Bug: Predicted Elliot's death, then corrected the prediction (he didn't die), but didn't restore the normal camera
  - Bug: Rolled back player death but left "player has won" message up
    |-> Saving and restoring state won't help, because it breaks our "Regaining sync" messages - this needs the full solution!
