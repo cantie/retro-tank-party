@@ -160,7 +160,7 @@ func _network_spawn_preprocess(data: Dictionary) -> Dictionary:
 
 func _on_SyncManager_scene_spawned(spawned_name, spawned_node, scene, data):
 	if spawned_name == 'Player' + name + 'Ability':
-		_setup_and_use_ability(spawned_node, data['ability_type'])
+		_setup_ability(spawned_node, data['ability_type'])
 
 func _network_spawn(data: Dictionary) -> void:
 	dead = false
@@ -481,7 +481,7 @@ func _hook_default_use_ability(event: TankEvent):
 		_update_ability_label()
 
 # Called via the 'scene_spawned' signal when the ability is created.
-func _setup_and_use_ability(new_ability, new_ability_type):
+func _setup_ability(new_ability, new_ability_type):
 	if ability:
 		_on_ability_finished(ability)
 	

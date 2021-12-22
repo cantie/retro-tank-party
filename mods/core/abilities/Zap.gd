@@ -41,9 +41,13 @@ func attach_ability() -> void:
 	tank.hooks.subscribe("gather_input", self, "_hook_tank_gather_input", 10)
 
 func detach_ability() -> void:
+	tank.collision_shape.disabled = false
+	tank.player_info_node.visible = true
+	
 	if detector:
 		detector.queue_free()
 		detector = null
+	
 	tank.hooks.unsubscribe("gather_input", self, "_hook_tank_gather_input")
 
 func use_ability() -> void:

@@ -18,6 +18,7 @@ func attach_ability() -> void:
 	tank.hooks.subscribe("calculate_movement_vector", self, "_hook_tank_calculate_movement_vector", 10)
 
 func detach_ability() -> void:
+	tank.speed = Tank.DEFAULT_SPEED
 	tank.hooks.unsubscribe("shoot", self, "_hook_tank_shoot")
 	tank.hooks.unsubscribe("calculate_movement_vector", self, "_hook_tank_calculate_movement_vector")
 
