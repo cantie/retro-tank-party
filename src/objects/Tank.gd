@@ -26,6 +26,7 @@ onready var engine_sound := $EngineSound
 
 const DEFAULT_TURN_SPEED := 10923
 const DEFAULT_SPEED := 873726
+const INPUT_QUANTIZE_FACTOR := 2048
 
 var turn_speed := DEFAULT_TURN_SPEED
 var speed := DEFAULT_SPEED
@@ -257,6 +258,11 @@ func _get_local_input() -> Dictionary:
 	hooks.dispatch_event("gather_input", event)
 	return event.input
 
+static func quantize_input_vector(input_vector: SGFixedVector2) -> SGFixedVector2:
+	input_vector.x = (input_vector.x / INPUT_QUANTIZE_FACTOR) * INPUT_QUANTIZE_FACTOR
+	input_vector.y = (input_vector.y / INPUT_QUANTIZE_FACTOR) * INPUT_QUANTIZE_FACTOR
+	return input_vector
+
 func _hook_default_gather_input(event: GatherInputEvent) -> void:
 	var input = event.input
 	
@@ -274,7 +280,7 @@ func _hook_default_gather_input(event: GatherInputEvent) -> void:
 		input_vector.y += min(Input.get_action_strength("player1_backward") + 0.5, 1.0)
 	
 	if input_vector != Vector2.ZERO:
-		input[PlayerInput.INPUT_VECTOR] = SGFixed.from_float_vector2(input_vector)
+		input[PlayerInput.INPUT_VECTOR] = quantize_input_vector(SGFixed.from_float_vector2(input_vector))
 	
 	if _input_mouse_control:
 		input[PlayerInput.TURRET_ROTATION] = SGFixed.from_float((get_global_mouse_position() - turret_pivot.global_position).angle())

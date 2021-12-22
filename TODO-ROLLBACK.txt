@@ -15,7 +15,6 @@ MILESTONE 3 (cleanup & bug fix):
    |-> Saving and restoring state won't help, because it breaks our "Regaining sync" messages - this needs the full solution!
    |-> Wait to actually show the message until we have complete input for the frame where the point was scored
 
- - Try: Quantize the analog values for movement to prevent excessive missed predictions
  - Try: Decay analog inputs for each frame we are predicting
  
  - Fix white hover state on menu buttons (started in 3.4, I think?)
