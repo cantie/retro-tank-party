@@ -169,9 +169,13 @@ func _on_SyncManager_sync_lost() -> void:
 	regaining_sync_message.visible = true
 	regaining_sync_animation_player.play("Flash")
 
-func _on_SyncManager_sync_regained() -> void:
+func _hide_regaining_sync_message() -> void:
 	regaining_sync_message.visible = false
 	regaining_sync_animation_player.stop()
 
+func _on_SyncManager_sync_regained() -> void:
+	_hide_regaining_sync_message()
+
 func _on_SyncManager_sync_error(_msg) -> void:
+	_hide_regaining_sync_message()
 	_on_OnlineMatch_error('Synchronization lost')
