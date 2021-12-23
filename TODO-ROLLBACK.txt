@@ -3,12 +3,6 @@ TODO
 
 MILESTONE 3 (cleanup & bug fix):
 
- - Bug (confirmed): Peer with given id already exists
-   * Join two players, but don't press Ready
-   * Have non-host leave, and then quit game altogether
-   * Host should go back (ending match), then start a new one
-   * The have non-host connect again
-   * Error will happen!
  - Bug: Predicted Elliot's death, then corrected the prediction (he didn't die), but didn't restore the normal camera
  - Bug: Rolled back player death but left "player has won" message up
    |-> Saving and restoring state won't help, because it breaks our "Regaining sync" messages - this needs the full solution!
