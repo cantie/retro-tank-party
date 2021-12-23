@@ -18,9 +18,6 @@ MILESTONE 3 (cleanup & bug fix):
  - Bug: Weapons not timing out in Deathmatch mode
  - Bug: Mismatched position starting at tick 1
    |-> Is it the initial state not matching? Or, are we receiving input ticks from a previous match?
- - Bug: ShootCooldownTimer and AnimationPlayer order swapped on Tank
-   |-> Frequently this just happens for one frame, but it has been persistent on occasion, killing a match
-   |-> Maybe caused by the tanks children getting sorted when adding an ability node?
  
  - Show some message about changing network relay if networking is bad? Change default to "Forced"?
 
