@@ -14,6 +14,16 @@ MILESTONE 3 (cleanup & bug fix):
  - Bug: Rolled back player death but left "player has won" message up
    |-> Saving and restoring state won't help, because it breaks our "Regaining sync" messages - this needs the full solution!
    |-> Wait to actually show the message until we have complete input for the frame where the point was scored
+ 
+ - Bug: Weapons not timing out in Deathmatch mode
+ - Bug: Mismatched position starting at tick 1
+   |-> Is it the initial state not matching? Or, are we receiving input ticks from a previous match?
+ - Bug: ShootCooldownTimer and AnimationPlayer order swapped on Tank
+   |-> Frequently this just happens for one frame, but it has been persistent on occasion, killing a match
+   |-> Maybe caused by the tanks children getting sorted when adding an ability node?
+ - Bug: P2 is hit by tracer per P1 & P2, but P3 doesn't count it
+ 
+ - Show some message about changing network relay if networking is bad? Change default to "Forced"?
 
  - Try: Decay analog inputs for each frame we are predicting
  
@@ -28,7 +38,6 @@ BUG THAT MIGHT BE FIXED (watch out for them):
  - Bug: P1 uses Zap, on the next frame P1 & P2 agree on its position, but P3 has a different position
    |-> It moved slightly on the frame that zap is used - shouldn't happen
  - Bug: P1 has tracer, bullet targets P2, but P2 has null for the target
- - Bug: P2 is hit by tracer per P1 & P2, but P3 doesn't count it
  - Bug: Pickup sometimes appears in one spot, gets picked up (with no effect) and then reappears in a different spot
  - Bug: TheKlin boosted and immediately zapped and then was zooming all over
 
