@@ -24,6 +24,10 @@ func refresh_from_log_data() -> void:
 func clear() -> void:
 	tick_number_field.max_value = 0
 	tick_number_field.value = 0
+	input_data_label.text = ''
+	input_mismatches_data_label.text = ''
+	state_data_label.text = ''
+	state_mismatches_data_label.text = ''
 
 func _on_TickNumber_value_changed(value: float) -> void:
 	var tick: int = int(value)

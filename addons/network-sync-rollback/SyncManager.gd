@@ -967,6 +967,10 @@ func _physics_process(delta: float) -> void:
 	# Store an initial state before any ticks.
 	if current_tick == 0:
 		_save_current_state()
+		if _logger:
+			var cleaned = _clean_data_for_hashing(state_buffer[0].data)
+			var serialized = hash_serializer.serialize(cleaned)
+			_logger.write_state(0, serialized, serialized.hash())
 	
 	#####
 	# STEP 1: PERFORM ANY ROLLBACKS, IF NECESSARY.
