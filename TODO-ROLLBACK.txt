@@ -4,18 +4,20 @@ TODO
 MILESTONE 3 (cleanup & bug fix):
 
  - Bug: Predicted Elliot's death, then corrected the prediction (he didn't die), but didn't restore the normal camera
- 
  - Bug: Weapons not timing out in Deathmatch mode
  - Bug: Mismatched position starting at tick 1
    |-> Is it the initial state not matching? Or, are we receiving input ticks from a previous match?
    |-> If previous match we could use some kind of random "Match ID" (int) to keep messages unique
- 
- - Show some message about changing network relay if networking is bad? Change default to "Forced"?
+
+ - Add timer after player wins round or match before putting message on screen
+   |-> If the timer is longer than 15 frames (our buffer size) it should never get shown if not true
+
+ - Fix white hover state on menu buttons (started in 3.4, I think?)
+ - Move ping and other RPCs out of SyncManager and into NetworkAdaptor - will help with unit tests
 
  - Try: Decay analog inputs for each frame we are predicting
  
- - Fix white hover state on menu buttons (started in 3.4, I think?)
- - Move ping and other RPCs out of SyncManager and into NetworkAdaptor - will help with unit tests
+ - Show some message about changing network relay if networking is bad? Change default to "Forced"?
 
  - Test on all platforms with Steam integration
    o Does MacOS work?
