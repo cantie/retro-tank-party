@@ -30,4 +30,5 @@ func _network_process(delta: float, input: Dictionary) -> void:
 			var target_vector = target.get_global_fixed_position().sub(get_global_fixed_position()).normalized()
 			vector = vector.linear_interpolate(target_vector, target_seek_speed).normalized()
 			fixed_rotation = vector.angle()
+			sync_to_physics_engine()
 

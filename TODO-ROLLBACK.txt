@@ -21,7 +21,6 @@ MILESTONE 3 (cleanup & bug fix):
  - Bug: ShootCooldownTimer and AnimationPlayer order swapped on Tank
    |-> Frequently this just happens for one frame, but it has been persistent on occasion, killing a match
    |-> Maybe caused by the tanks children getting sorted when adding an ability node?
- - Bug: P2 is hit by tracer per P1 & P2, but P3 doesn't count it
  
  - Show some message about changing network relay if networking is bad? Change default to "Forced"?
 
