@@ -23,12 +23,11 @@ func _load_state(state: Dictionary) -> void:
 	target_path = state['target_path']
 
 func _network_process(delta: float, input: Dictionary) -> void:
-	._network_process(delta, input)
 	if target_path != '':
 		var target = get_node_or_null(target_path)
 		if target:
 			var target_vector = target.get_global_fixed_position().sub(get_global_fixed_position()).normalized()
 			vector = vector.linear_interpolate(target_vector, target_seek_speed).normalized()
 			fixed_rotation = vector.angle()
-			sync_to_physics_engine()
-
+	
+	._network_process(delta, input)
