@@ -64,6 +64,12 @@ class FrameData:
 		frame = _frame
 		type = _type
 		data = _data
+	
+	func clone_with_offset(offset: int) -> FrameData:
+		var clone = FrameData.new(frame, type, data)
+		clone.start_time = start_time + offset
+		clone.end_time = end_time + offset
+		return clone
 
 var peer_ids := []
 var mismatches := []
@@ -77,6 +83,10 @@ var input := {}
 var state := {}
 var frames := {}
 
+var peer_time_offsets := {}
+var peer_start_times := {}
+var peer_end_times := {}
+
 var _is_loading := false
 var _loader_thread: Thread
 var _loader_mutex: Mutex
@@ -84,6 +94,7 @@ var _loader_mutex: Mutex
 signal load_progress (current, total)
 signal load_finished ()
 signal load_error (msg)
+signal data_updated ()
 
 func _init() -> void:
 	_loader_mutex = Mutex.new()
@@ -102,6 +113,7 @@ func clear() -> void:
 	input.clear()
 	state.clear()
 	frames.clear()
+	peer_time_offsets.clear()
 
 func load_log_file(path: String) -> void:
 	if is_loading():
@@ -159,17 +171,22 @@ func _loader_thread_function(data: Array) -> void:
 				header['peer_id'] = int(header['peer_id'])
 				if header['peer_id'] in peer_ids:
 					file.close()
+					call_deferred("emit_signal", "data_updated")
 					call_deferred("emit_signal", "load_error", "Log file has data for peer_id %s, which is already loaded" % header['peer_id'])
 					_set_loading(false)
 					return
 				
 				var peer_id = header['peer_id']
 				peer_ids.append(peer_id)
+				peer_time_offsets[peer_id] = 0
+				peer_start_times[peer_id] = 0
+				peer_end_times[peer_id] = 0
 				frame_counter[peer_id] = 0
 				frames[peer_id] = []
 				continue
 			else:
 				file.close()
+				call_deferred("emit_signal", "data_updated")
 				call_deferred("emit_signal", "load_error", "No header at the top of log: %s" % path)
 				_set_loading(false)
 				return
@@ -178,6 +195,8 @@ func _loader_thread_function(data: Array) -> void:
 		call_deferred("emit_signal", "load_progress", file.get_position(), file_size)
 	
 	file.close()
+	_update_start_end_times()
+	call_deferred("emit_signal", "data_updated")
 	call_deferred("emit_signal", "load_finished")
 	_set_loading(false)
 
@@ -218,12 +237,40 @@ func _add_log_entry(log_entry: Dictionary, peer_id: int) -> void:
 			max_frame = int(max(max_frame, frame_number))
 			if log_entry.has('start_time'):
 				frame_data.start_time = log_entry['start_time']
-				start_time = int(min(start_time, frame_data.start_time)) if start_time > 0 else frame_data.start_time
+				var peer_start_time = peer_start_times[peer_id]
+				peer_start_times[peer_id] = int(min(peer_start_time, frame_data.start_time)) if peer_start_time > 0 else frame_data.start_time
 			if log_entry.has('end_time'):
 				frame_data.end_time = log_entry['end_time']
 			else:
 				frame_data.end_time = frame_data.start_time
-			end_time = int(max(end_time, frame_data.end_time))
+			peer_end_times[peer_id] = int(max(peer_end_times[peer_id], frame_data.end_time))
+
+func _update_start_end_times() -> void:
+	var peer_id: int 
+	
+	peer_id = peer_ids[0]
+	start_time = peer_start_times[peer_id] + peer_time_offsets[peer_id]
+	for i in range(1, peer_start_times.size()):
+		peer_id = peer_ids[i]
+		start_time = min(start_time, peer_start_times[peer_id] + peer_time_offsets[peer_id])
+	
+	peer_id = peer_ids[0]
+	end_time = peer_end_times[peer_id] + peer_time_offsets[peer_id]
+	for i in range(1, peer_end_times.size()):
+		peer_id = peer_ids[i]
+		end_time = max(end_time, peer_end_times[peer_id] + peer_time_offsets[peer_id])
+
+func set_peer_time_offset(peer_id: int, offset: int) -> void:
+	peer_time_offsets[peer_id] = offset
+	_update_start_end_times()
+	call_deferred("emit_signal", "data_updated")
+
+func get_frame_count(peer_id: int) -> int:
+	if is_loading():
+		push_error("Cannot get_frame() while loading")
+		return 0
+	
+	return frames[peer_id].size()
 
 func get_frame(peer_id: int, frame_number: int) -> FrameData:
 	if is_loading():
@@ -234,7 +281,12 @@ func get_frame(peer_id: int, frame_number: int) -> FrameData:
 		return null
 	if frame_number >= frames[peer_id].size():
 		return null
-	return frames[peer_id][frame_number]
+	var frame = frames[peer_id][frame_number]
+	
+	if peer_time_offsets[peer_id] != 0:
+		return frame.clone_with_offset(peer_time_offsets[peer_id])
+	
+	return frame
 
 func get_frame_data(peer_id: int, frame_number: int, key: String, default_value = null):
 	if is_loading():
@@ -253,13 +305,19 @@ func get_frame_by_time(peer_id: int, time: int) -> FrameData:
 	
 	if not frames.has(peer_id):
 		return null
+	
 	var peer_frames: Array = frames[peer_id]
+	var peer_time_offset: int = peer_time_offsets[peer_id]
 	var last_matching_frame: FrameData
 	for i in range(peer_frames.size()):
 		var frame: FrameData = peer_frames[i]
 		if frame.start_time != 0:
-			if frame.start_time <= time:
+			if frame.start_time + peer_time_offset <= time:
 				last_matching_frame = frame
 			else:
 				break
+	
+	if last_matching_frame != null and peer_time_offset != 0:
+		return last_matching_frame.clone_with_offset(peer_time_offset)
+	
 	return last_matching_frame

@@ -29,6 +29,7 @@ func _ready() -> void:
 	log_data.connect("load_error", self, "_on_log_data_load_error")
 	log_data.connect("load_progress", self, "_on_log_data_load_progress")
 	log_data.connect("load_finished", self, "_on_log_data_load_finished")
+	log_data.connect("data_updated", self, "refresh_from_log_data")
 	
 	# Show and make full screen if the scene is being run on its own.
 	if get_parent() == get_tree().root:
@@ -82,7 +83,6 @@ func refresh_from_log_data() -> void:
 	frame_viewer.refresh_from_log_data()
 
 func _on_log_data_load_error(msg) -> void:
-	refresh_from_log_data()
 	progress_dialog.hide()
 	_files_to_load.clear()
 	OS.alert(msg)
@@ -96,7 +96,6 @@ func _on_log_data_load_finished() -> void:
 		progress_dialog.set_label(LOADING_LABEL % next_file.get_file())
 		log_data.load_log_file(next_file)
 	else:
-		refresh_from_log_data()
 		progress_dialog.hide()
 
 func _on_ModeButton_item_selected(index: int) -> void:

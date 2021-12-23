@@ -3,8 +3,6 @@ TODO
 
 MILESTONE 3 (cleanup & bug fix):
 
- - Bug: Time offset in LogInspector doesn't really work when offset is large enough
-   o Move offset into LogData so that everything uses the offset (including the DataGrid - not just the graph)
  - Bug (confirmed): Peer with given id already exists
    * Join two players, but don't press Ready
    * Have non-host leave, and then quit game altogether
