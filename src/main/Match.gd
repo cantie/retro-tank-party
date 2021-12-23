@@ -5,6 +5,9 @@ const LOG_FILE_DIRECTORY = 'user://detailed_logs'
 onready var game := $Game
 onready var ui_layer := $UILayer
 
+onready var regaining_sync_message := $UILayer2/RegainingSyncMessage
+onready var regaining_sync_animation_player := $UILayer2/RegainingSyncMessage/AnimationPlayer
+
 var match_manager
 var match_info: Dictionary
 
@@ -163,10 +166,12 @@ func _on_SyncManager_sync_started() -> void:
 	match_manager.match_start()
 
 func _on_SyncManager_sync_lost() -> void:
-	ui_layer.show_message("Attempting to regain sync...")
+	regaining_sync_message.visible = true
+	regaining_sync_animation_player.play("Flash")
 
 func _on_SyncManager_sync_regained() -> void:
-	ui_layer.hide_message()
+	regaining_sync_message.visible = false
+	regaining_sync_animation_player.stop()
 
 func _on_SyncManager_sync_error(_msg) -> void:
 	_on_OnlineMatch_error('Synchronization lost')

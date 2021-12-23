@@ -4,9 +4,6 @@ TODO
 MILESTONE 3 (cleanup & bug fix):
 
  - Bug: Predicted Elliot's death, then corrected the prediction (he didn't die), but didn't restore the normal camera
- - Bug: Rolled back player death but left "player has won" message up
-   |-> Saving and restoring state won't help, because it breaks our "Regaining sync" messages - this needs the full solution!
-   |-> Wait to actually show the message until we have complete input for the frame where the point was scored
  
  - Bug: Weapons not timing out in Deathmatch mode
  - Bug: Mismatched position starting at tick 1
