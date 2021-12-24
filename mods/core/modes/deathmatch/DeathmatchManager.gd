@@ -7,6 +7,8 @@ const TANK_DIMENSION = 128 * SGFixed.ONE
 onready var hud := $CanvasLayer/TimedMatchHUD
 onready var player_managers_node := $PlayerManagers
 onready var rng := $RandomNumberGenerator
+onready var you_lose_timer := $YouLoseTimer
+onready var show_winner_timer := $ShowWinnerTimer
 onready var show_score_timer := $ShowScoreTimer
 onready var match_finished_timer := $MatchFinishedTimer
 
@@ -91,7 +93,7 @@ func _on_player_manager_weapon_timeout() -> void:
 func _on_game_player_dead(player_id: int, killer_id: int) -> void:
 	var my_id = get_tree().get_network_unique_id()
 	if player_id == my_id:
-		ui_layer.show_message("Wasted!")
+		you_lose_timer.start()
 	
 	if not game_over:
 		if killer_id != -1:
@@ -111,15 +113,12 @@ func _on_game_player_dead(player_id: int, killer_id: int) -> void:
 					score.decrement_score(killer_id)
 				var player_index = players[killer_id].index
 				hud.score.set_score(player_index, score.get_score(killer_id))
-
+	
 		if instant_death:
-			if player_id == my_id:
-				game.enable_watch_camera()
-			
 			winners = score.find_highest()
 			if winners.size() == 1:
 				game_over = true
-				show_winner(score.get_name(winners[0]))
+				show_winner_timer.start()
 		elif player_managers.has(player_id):
 			var player_manager = player_managers[player_id]
 			player_manager.start_respawn_timer()
@@ -130,8 +129,7 @@ func _on_player_manager_respawn_player(player_id: int) -> void:
 	
 	var spawn_position = detector.detect_free_space()
 	var spawn_transform = SGFixedTransform2D.new()
-	# 411774 = TAU
-	spawn_transform = spawn_transform.rotated(rng.randi() % 411774)
+	spawn_transform = spawn_transform.rotated(rng.randi() % SGFixed.TAU)
 	spawn_transform.set_origin(spawn_position)
 	
 	game.respawn_player(player_id, spawn_transform)
@@ -145,7 +143,7 @@ func _on_countdown_finished() -> void:
 	
 	if winners.size() == 1:
 		game_over = true
-		show_winner(score.get_name(winners[0]))
+		show_winner_timer.start()
 	else:
 		instant_death = true
 		
@@ -158,7 +156,14 @@ func _on_countdown_finished() -> void:
 		
 		hud.show_instant_death_label()
 
-func show_winner(winner_name: String) -> void:
+func _on_YouLoseTimer_timeout() -> void:
+	if not game_over:
+		ui_layer.show_message("Wasted!")
+	if instant_death:
+		game.enable_watch_camera()
+
+func _on_ShowWinnerTimer_timeout() -> void:
+	var winner_name = score.get_name(winners[0])
 	ui_layer.show_message(winner_name + " WINS THIS DEATHMATCH!")
 	show_score_timer.start()
 
@@ -168,3 +173,4 @@ func _on_ShowScoreTimer_timeout() -> void:
 
 func _on_MatchFinishedTimer_timeout() -> void:
 	match_scene.finish_match()
+

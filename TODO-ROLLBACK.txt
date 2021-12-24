@@ -8,8 +8,6 @@ MILESTONE 3 (cleanup & bug fix):
    |-> Is it the initial state not matching? Or, are we receiving input ticks from a previous match?
    |-> If previous match we could use some kind of random "Match ID" (int) to keep messages unique
 
- - Add timer to DeathmatchManager to prevent showing message or changing camera until after at least 15 frames have elapsed
-
  - Fix white hover state on menu buttons (started in 3.4, I think?)
  - Move ping and other RPCs out of SyncManager and into NetworkAdaptor - will help with unit tests
 

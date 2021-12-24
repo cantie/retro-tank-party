@@ -16,7 +16,6 @@ hash_state = false
 script = ExtResource( 2 )
 one_shot = true
 wait_ticks = 15
-hash_state = false
 
 [node name="ShowScoreTimer" type="Node" parent="."]
 script = ExtResource( 2 )
