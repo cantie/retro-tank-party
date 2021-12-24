@@ -3,7 +3,7 @@ extends Node
 export (bool) var autostart := false
 export (bool) var one_shot := false
 export (int) var wait_ticks := 0
-export (bool) var timeout_with_incomplete_input := true
+export (bool) var hash_state := true
 
 var ticks_left := 0
 
@@ -45,17 +45,28 @@ func _network_process(_delta: float, _input: Dictionary) -> void:
 	if ticks_left == 0:
 		if not one_shot:
 			ticks_left = wait_ticks
-		if timeout_with_incomplete_input or SyncManager.is_current_tick_input_complete():
-			emit_signal("timeout")
+		emit_signal("timeout")
 
 func _save_state() -> Dictionary:
-	return {
-		running = _running,
-		wait_ticks = wait_ticks,
-		ticks_left = ticks_left,
-	}
+	if hash_state:
+		return {
+			running = _running,
+			wait_ticks = wait_ticks,
+			ticks_left = ticks_left,
+		}
+	else:
+		return {
+			_running = _running,
+			_wait_ticks = wait_ticks,
+			_ticks_left = ticks_left,
+		}
 
 func _load_state(state: Dictionary) -> void:
-	_running = state['running']
-	wait_ticks = state['wait_ticks']
-	ticks_left = state['ticks_left']
+	if hash_state:
+		_running = state['running']
+		wait_ticks = state['wait_ticks']
+		ticks_left = state['ticks_left']
+	else:
+		_running = state['_running']
+		wait_ticks = state['_wait_ticks']
+		ticks_left = state['_ticks_left']
