@@ -1,4 +1,4 @@
-extends "res://addons/network-sync-rollback/NetworkAdaptor.gd"
+extends "res://addons/network-sync-rollback/RPCNetworkAdaptor.gd"
 
 #onready var OnlineMatch = get_node('/root/OnlineMatch')
 

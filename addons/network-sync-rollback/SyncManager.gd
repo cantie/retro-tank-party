@@ -370,14 +370,23 @@ func set_network_adaptor(_network_adaptor: NetworkAdaptor) -> void:
 	
 	if network_adaptor != null:
 		network_adaptor.detach_network_adaptor(self)
-		network_adaptor.disconnect("received_input_tick", self, "_receive_input_tick")
+		network_adaptor.disconnect("received_ping", self, "_on_received_ping")
+		network_adaptor.disconnect("received_ping_back", self, "_on_received_ping_back")
+		network_adaptor.disconnect("received_remote_start", self, "_on_received_remote_start")
+		network_adaptor.disconnect("received_remote_stop", self, "_on_received_remote_stop")
+		network_adaptor.disconnect("received_input_tick", self, "_on_received_input_tick")
+		
 		remove_child(network_adaptor)
 		network_adaptor.queue_free()
 	
 	network_adaptor = _network_adaptor
 	network_adaptor.name = 'NetworkAdaptor'
 	add_child(network_adaptor)
-	network_adaptor.connect("received_input_tick", self, "_receive_input_tick")
+	network_adaptor.connect("received_ping", self, "_on_received_ping")
+	network_adaptor.connect("received_ping_back", self, "_on_received_ping_back")
+	network_adaptor.connect("received_remote_start", self, "_on_received_remote_start")
+	network_adaptor.connect("received_remote_stop", self, "_on_received_remote_stop")
+	network_adaptor.connect("received_input_tick", self, "_on_received_input_tick")
 	network_adaptor.attach_network_adaptor(self)
 
 func set_message_serializer(_message_serializer: MessageSerializer) -> void:
@@ -434,17 +443,15 @@ func _on_ping_timer_timeout() -> void:
 		var msg = {
 			local_time = system_time,
 		}
-		rpc_unreliable_id(peer_id, "_remote_ping", msg)
+		network_adaptor.send_ping(peer_id, msg)
 
-remote func _remote_ping(msg: Dictionary) -> void:
-	var peer_id = get_tree().get_rpc_sender_id()
+func _on_received_ping(peer_id: int, msg: Dictionary) -> void:
 	assert(peer_id != get_tree().get_network_unique_id(), "Cannot ping back ourselves")
 	msg['remote_time'] = OS.get_system_time_msecs()
-	rpc_unreliable_id(peer_id, "_remote_ping_back", msg)
+	network_adaptor.send_ping_back(peer_id, msg)
 
-remote func _remote_ping_back(msg: Dictionary) -> void:
+func _on_received_ping_back(peer_id: int, msg: Dictionary) -> void:
 	var system_time = OS.get_system_time_msecs()
-	var peer_id = get_tree().get_rpc_sender_id()
 	var peer = peers[peer_id]
 	peer.last_ping_received = system_time
 	peer.rtt = system_time - msg['local_time']
@@ -479,7 +486,8 @@ func start() -> void:
 			highest_rtt = max(highest_rtt, peer.rtt)
 		
 		# Call _remote_start() on all the other peers.
-		rpc("_remote_start")
+		for peer_id in peers:
+			network_adaptor.send_remote_start(peer_id)
 		
 		# Set started on host right away to prevent double starting.
 		started = true
@@ -487,7 +495,7 @@ func start() -> void:
 		# Wait for half the highest RTT to start locally.
 		print ("Delaying host start by %sms" % (highest_rtt / 2))
 		yield(get_tree().create_timer(highest_rtt / 2000.0), 'timeout')
-		_remote_start()
+		_on_received_remote_start()
 
 func _reset() -> void:
 	input_tick = 0
@@ -513,7 +521,7 @@ func _reset() -> void:
 	_in_rollback = false
 	_ran_physics_process = false
 
-remote func _remote_start() -> void:
+func _on_received_remote_start() -> void:
 	_reset()
 	_tick_time = (1.0 / Engine.iterations_per_second)
 	started = true
@@ -522,11 +530,12 @@ remote func _remote_start() -> void:
 
 func stop() -> void:
 	if get_tree().is_network_server():
-		rpc("_remote_stop")
-	else:
-		_remote_stop()
+		for peer_id in peers:
+			network_adaptor.send_remote_stop(peer_id)
+	
+	_on_received_remote_stop()
 
-remotesync func _remote_stop() -> void:
+func _on_received_remote_stop() -> void:
 	network_adaptor.stop_network_adaptor(self)
 	started = false
 	_reset()
@@ -1227,7 +1236,7 @@ func _calculate_data_hash(input: Dictionary) -> void:
 	var serialized = hash_serializer.serialize(cleaned)
 	input['$'] = serialized.hash()
 
-func _receive_input_tick(peer_id: int, serialized_msg: PoolByteArray) -> void:
+func _on_received_input_tick(peer_id: int, serialized_msg: PoolByteArray) -> void:
 	if not started:
 		return
 	
