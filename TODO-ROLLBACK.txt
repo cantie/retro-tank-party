@@ -3,7 +3,6 @@ TODO
 
 MILESTONE 3 (cleanup & bug fix):
 
- - Fix white hover state on menu buttons (started in 3.4, I think?)
  - Move ping and other RPCs out of SyncManager and into NetworkAdaptor - will help with unit tests
 
  - Bug: Mismatched position starting at tick 1
