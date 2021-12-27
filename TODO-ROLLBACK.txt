@@ -5,8 +5,6 @@ MILESTONE 3 (cleanup & bug fix):
 
  - Bug: Practice mode logging input and state as part of a real match
    o Maybe logging wasn't stoppeding when it should have been?
- - Bug: LogInspector counting mismatches multiple times if multiple peers mismatch on the same frame
-   o Should count only 1 per frame
 
  - Bug: Mismatched position starting at tick 1
    |-> Is it the initial state not matching? Or, are we receiving input ticks from a previous match?

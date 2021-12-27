@@ -213,7 +213,7 @@ func _add_log_entry(log_entry: Dictionary, peer_id: int) -> void:
 				input[tick] = input_data
 			else:
 				input_data = input[tick]
-				if not input_data.compare_input(peer_id, log_entry['input']):
+				if not input_data.compare_input(peer_id, log_entry['input']) and not tick in mismatches:
 					mismatches.append(tick)
 					print ("Input mismatch on tick: %s" % tick)
 		
@@ -224,7 +224,7 @@ func _add_log_entry(log_entry: Dictionary, peer_id: int) -> void:
 				state[tick] = state_data
 			else:
 				state_data = state[tick]
-				if not state_data.compare_state(peer_id, log_entry['state']):
+				if not state_data.compare_state(peer_id, log_entry['state']) and not tick in mismatches:
 					mismatches.append(tick)
 					print ("State mismatch on tick: %s" % tick)
 		
