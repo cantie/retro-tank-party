@@ -50,7 +50,7 @@ func _on_tank_shoot() -> void:
 func _on_tank_hurt(damage, attacker_id, attack_vector) -> void:
 	expose_hidden_tank()
 
-func _on_tank_weapon_type_changed(weapon_type: WeaponType) -> void:
+func _on_tank_weapon_type_changed(weapon_type: WeaponType, old_weapon_type: WeaponType) -> void:
 	if weapon_type != Tank.BaseWeaponType:
 		expose_hidden_tank()
 

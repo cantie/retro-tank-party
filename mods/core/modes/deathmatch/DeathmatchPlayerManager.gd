@@ -56,7 +56,7 @@ func start_respawn_timer() -> void:
 func _on_RespawnTimer_timeout() -> void:
 	emit_signal("respawn_player", player.peer_id)
 
-func _on_tank_weapon_type_changed(weapon_type: WeaponType) -> void:
+func _on_tank_weapon_type_changed(weapon_type: WeaponType, old_weapon_type: WeaponType) -> void:
 	if config.get('weapon_timeout', 0) == 0:
 		return
 	if weapon_type != Tank.BaseWeaponType:
