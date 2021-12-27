@@ -66,6 +66,8 @@ func scene_start() -> void:
 
 func finish_match() -> void:
 	SyncManager.stop()
+	SyncManager.stop_logging()
+	
 	if get_tree().is_network_server():
 		match_manager.match_stop()
 		# @todo pass current config so we start from the same settings
