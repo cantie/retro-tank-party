@@ -20,6 +20,10 @@ func attach_ability() -> void:
 
 func detach_ability() -> void:
 	set_tank_visible(true)
+	lifetime_timer.stop()
+	warning_timer.stop()
+	visible_timer.stop()
+	blink_timer.stop()
 	tank.disconnect("shoot", self, "_on_tank_shoot")
 	tank.disconnect("hurt", self, "_on_tank_hurt")
 	tank.disconnect("weapon_type_changed", self, "_on_tank_weapon_type_changed")
