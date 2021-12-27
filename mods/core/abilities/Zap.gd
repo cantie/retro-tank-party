@@ -31,14 +31,10 @@ var current_scale := SGFixed.ONE
 
 func attach_ability() -> void:
 	game = tank.game
-	rng.set_seed(game.generate_random_seed())
 	
-	detector = game.create_free_space_detector(
-		game.map.get_map_fixed_rect(),
-		SGFixed.vector2(TANK_DIMENSION, TANK_DIMENSION),
-		rng)
-	
-	tank.hooks.subscribe("gather_input", self, "_hook_tank_gather_input", 10)
+	tank.hooks.subscribe("calculate_movement_vector", self, "_hook_tank_prevent_default", -1000)
+	tank.hooks.subscribe("shoot", self, "_hook_tank_prevent_default", -1000)
+	tank.hooks.subscribe("use_ability", self, "_hook_tank_prevent_default", -1000)
 
 func detach_ability() -> void:
 	tank.collision_shape.disabled = false
@@ -48,11 +44,20 @@ func detach_ability() -> void:
 		detector.queue_free()
 		detector = null
 	
-	tank.hooks.unsubscribe("gather_input", self, "_hook_tank_gather_input")
+	tank.hooks.unsubscribe("calculate_movement_vector", self, "_hook_tank_prevent_default")
+	tank.hooks.unsubscribe("shoot", self, "_hook_tank_prevent_default")
+	tank.hooks.unsubscribe("use_ability", self, "_hook_tank_prevent_default")
 
 func use_ability() -> void:
+	rng.set_seed(game.generate_random_seed())
+	
+	detector = game.create_free_space_detector(
+		game.map.get_map_fixed_rect(),
+		SGFixed.vector2(TANK_DIMENSION, TANK_DIMENSION),
+		rng)
 	destination = detector.detect_free_space()
 	move_increment = destination.sub(tank.get_global_fixed_position()).div(MOVE_FRAME_COUNT * SGFixed.ONE)
+	current_scale = SGFixed.ONE
 	
 	tank.collision_shape.disabled = true
 	
@@ -127,8 +132,5 @@ func _network_process(delta: float, input: Dictionary) -> void:
 			_change_stage(ZapStage.NONE, 0)
 			mark_finished()
 
-func _hook_tank_gather_input(event: Tank.GatherInputEvent) -> void:
-	if zap_stage != ZapStage.NONE:
-		event.input.erase(Tank.PlayerInput.INPUT_VECTOR)
-		event.input.erase(Tank.PlayerInput.SHOOTING)
-		event.input.erase(Tank.PlayerInput.USING_ABILITY)
+func _hook_tank_prevent_default(event: Tank.TankEvent) -> void:
+	event.stop_propagation()
