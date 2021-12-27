@@ -3,10 +3,6 @@ TODO
 
 MILESTONE 3 (cleanup & bug fix):
 
- - Bug: Mismatched position starting at tick 1
-   |-> Is it the initial state not matching? Or, are we receiving input ticks from a previous match?
-   |-> If previous match we could use some kind of random "Match ID" (int) to keep messages unique
-
  - Try: Decay analog inputs for each frame we are predicting
  
  - Show some message about changing network relay if networking is bad? Change default to "Forced"?
@@ -17,6 +13,10 @@ MILESTONE 3 (cleanup & bug fix):
 
  - Test on all platforms with Steam integration
    o Does MacOS work?
+
+ - Bug: Mismatched position starting at tick 1
+   |-> Is it the initial state not matching? Or, are we receiving input ticks from a previous match?
+   |-> If previous match we could use some kind of random "Match ID" (int) to keep messages unique
 
 BUG THAT MIGHT BE FIXED (watch out for them):
 
