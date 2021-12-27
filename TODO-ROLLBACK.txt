@@ -3,6 +3,8 @@ TODO
 
 MILESTONE 3 (cleanup & bug fix):
 
+ - Bug: Team scoring not working at all on Deathmatch (all scores stay at 0)
+ - Bug: P1 zaps; P1 & P1 are in sync, but P3 is simulating 1 frame behind (despite having the same input - no input mismatch)
  - Bug: Mismatched position starting at tick 1
    |-> Is it the initial state not matching? Or, are we receiving input ticks from a previous match?
    |-> If previous match we could use some kind of random "Match ID" (int) to keep messages unique
