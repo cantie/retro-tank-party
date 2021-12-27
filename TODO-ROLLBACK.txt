@@ -3,9 +3,6 @@ TODO
 
 MILESTONE 3 (cleanup & bug fix):
 
- - Bug: Practice mode logging input and state as part of a real match
-   o Maybe logging wasn't stoppeding when it should have been?
-
  - Bug: Mismatched position starting at tick 1
    |-> Is it the initial state not matching? Or, are we receiving input ticks from a previous match?
    |-> If previous match we could use some kind of random "Match ID" (int) to keep messages unique
