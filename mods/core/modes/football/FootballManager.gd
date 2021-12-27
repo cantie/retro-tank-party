@@ -174,7 +174,7 @@ func start_new_round(message: String, team_with_ball: int) -> void:
 	round_over = true
 	next_round_timer.start()
 
-func _on_NextRoundTimer_timeout() -> void:	
+func _on_NextRoundTimer_timeout() -> void:
 	# Get the specific player with the ball.
 	var player_with_ball = -1
 	if next_team_with_ball != -1:
