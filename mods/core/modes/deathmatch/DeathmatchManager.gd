@@ -105,7 +105,7 @@ func _on_game_player_dead(player_id: int, killer_id: int) -> void:
 						score.increment_score(killer_team)
 					else:
 						score.decrement_score(killer_team)
-					hud.set_score(killer_team + 1, score.get_score(killer_team))
+					hud.score.set_score(killer_team + 1, score.get_score(killer_team))
 			else:
 				if killer_id != player_id:
 					score.increment_score(killer_id)

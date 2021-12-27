@@ -18,7 +18,7 @@ func _ready() -> void:
 		teams_label.visible = false
 		teams_field.visible = false
 	
-	weapon_timeout_field.add_item("Forever", 0)
+	weapon_timeout_field.add_item("Never", 0)
 	for i in range(10, 70, 10):
 		weapon_timeout_field.add_item("%s sec" % i, int(i * 30))
 	weapon_timeout_field.set_value(int(20 * 30), false)
