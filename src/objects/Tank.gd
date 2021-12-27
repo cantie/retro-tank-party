@@ -51,7 +51,7 @@ var camera: Camera2D = null
 var weapon_type: WeaponType
 var weapon
 var held_ability_type: AbilityType
-var ability_charges := 1
+var ability_charges := 0
 var ability
 
 var player_index: int
@@ -234,14 +234,14 @@ func _hook_default_pickup_ability(event: PickupAbilityEvent) -> void:
 
 func set_held_ability_type(_ability_type: AbilityType) -> void:
 	if _ability_type != null and held_ability_type == _ability_type and _ability_type.charges > 1:
-		ability_charges = _ability_type.charges
+		ability_charges = _ability_type.charges if _ability_type.charges > 0 else 1
 		_update_ability_label()
 		emit_signal("ability_recharged", ability)
 	else:
 		var old_held_ability_type = held_ability_type
 		held_ability_type = _ability_type
 		if held_ability_type:
-			ability_charges = held_ability_type.charges
+			ability_charges = held_ability_type.charges if held_ability_type.charges > 0 else 1
 		
 		_update_ability_label()
 		emit_signal("ability_type_changed", held_ability_type, old_held_ability_type)
