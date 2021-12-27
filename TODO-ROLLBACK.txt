@@ -5,10 +5,6 @@ MILESTONE 3 (cleanup & bug fix):
 
  - Try: Decay analog inputs for each frame we are predicting
  
- - Show some message about changing network relay if networking is bad? Change default to "Forced"?
-   o Put on the ready screen? Or, the SessionSetup scene?
-     |-> "hint" like "Hint: If you're having network issues, try different Network Relay settings before starting the match"
-
  - Test on all platforms with Steam integration
    o Does MacOS work?
 
