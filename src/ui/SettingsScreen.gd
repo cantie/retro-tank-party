@@ -7,6 +7,7 @@ onready var sound_slider := $Panel/VBoxContainer/ScrollContainer/GridContainer/S
 onready var tank_engine_sounds_field = $Panel/VBoxContainer/ScrollContainer/GridContainer/TankEngineSoundsOptions
 onready var full_screen_field = $Panel/VBoxContainer/ScrollContainer/GridContainer/FullScreenOptions
 onready var screenshake_field := $Panel/VBoxContainer/ScrollContainer/GridContainer/ScreenshakeOptions
+onready var network_relay_label := $Panel/VBoxContainer/ScrollContainer/GridContainer/NetworkRelayLabel
 onready var network_relay_field := $Panel/VBoxContainer/ScrollContainer/GridContainer/NetworkRelayOptions
 onready var detailed_logging_label := $Panel/VBoxContainer/ScrollContainer/GridContainer/DetailedLoggingLabel
 onready var detailed_logging_field := $Panel/VBoxContainer/ScrollContainer/GridContainer/DetailedLoggingOptions
@@ -71,6 +72,13 @@ func _setup_field_neighbors() -> void:
 		previous_neighbor = child
 
 func _show_screen(info: Dictionary = {}) -> void:
+	network_relay_label.visible = not SyncManager.started
+	network_relay_field.visible = not SyncManager.started
+	
+	if OS.can_use_threads():
+		detailed_logging_label.visible = not SyncManager.started
+		detailed_logging_field.visible = not SyncManager.started
+	
 	scroll_container.scroll_vertical = 0
 	music_slider.focus.grab_without_sound()
 	ui_layer.show_back_button()

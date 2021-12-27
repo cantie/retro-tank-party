@@ -8,8 +8,6 @@ MILESTONE 3 (cleanup & bug fix):
  - Show some message about changing network relay if networking is bad? Change default to "Forced"?
    o Put on the ready screen? Or, the SessionSetup scene?
      |-> "hint" like "Hint: If you're having network issues, try different Network Relay settings before starting the match"
- - Prevent changing some settings during a match
-   o Network relay, detailed logging, etc
 
  - Test on all platforms with Steam integration
    o Does MacOS work?
