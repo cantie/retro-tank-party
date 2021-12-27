@@ -4,6 +4,12 @@ TODO
 MILESTONE 3 (cleanup & bug fix):
 
  - Bug: P1 zaps; P1 & P1 are in sync, but P3 is simulating 1 frame behind (despite having the same input - no input mismatch)
+ - Bug: VisibleTimer of Invisible ability finishes 5 frames earlier on P3, than on P1 & P2 (which both agree)
+ - Bug: Practice mode logging input and state as part of a real match
+   o Maybe logging wasn't stoppeding when it should have been?
+ - Bug: LogInspector counting mismatches multiple times if multiple peers mismatch on the same frame
+   o Should count only 1 per frame
+
  - Bug: Mismatched position starting at tick 1
    |-> Is it the initial state not matching? Or, are we receiving input ticks from a previous match?
    |-> If previous match we could use some kind of random "Match ID" (int) to keep messages unique
