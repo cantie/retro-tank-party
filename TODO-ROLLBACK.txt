@@ -6,7 +6,10 @@ MILESTONE 3 (cleanup & bug fix):
  - Test on all platforms with Steam integration
    o Does MacOS work?
 
+ - Bug: Zap (3) immediately goes to Zap (1) -- we only get 2 charges
+
  - Move settings for SyncManager into ProjectSettings? (ie. eliminate NetworkSync singleton)
+ - Remove the "fallback" options from Network Relay
  - Split addon into its own repo
    o Ensure we can easily enable the addon on a new project
    o Move any issues specific to the addon to GitLab
