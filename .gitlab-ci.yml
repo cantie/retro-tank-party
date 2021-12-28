@@ -439,7 +439,7 @@ macosx-steam:
 
     # Change to our custom export template.
     - echo "\"$PWD/build/godot/bin/osx.zip\""
-    - ls -l "\"$PWD/build/godot/bin/osx.zip\""
+    - ls -l "$PWD/build/godot/bin/osx.zip"
     - ./scripts/update-export-setting.py export_presets.cfg preset.6.options custom_template/debug "\"$PWD/build/godot/bin/osx.zip\""
     - ./scripts/update-export-setting.py export_presets.cfg preset.6.options custom_template/release "\"$PWD/build/godot/bin/osx.zip\""
     - cat export_presets.cfg
