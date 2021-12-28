@@ -18,18 +18,8 @@ BUG THAT MIGHT BE FIXED (watch out for them):
  - Bug: Pickup sometimes appears in one spot, gets picked up (with no effect) and then reappears in a different spot
  - Bug: TheKlin boosted and immediately zapped and then was zooming all over
 
- - Dig into issues when network is bad
-   o Try using Linux build of the webrtc plugin with the buffer changes
-   o Try using different values for reliability time in WebRTC
-   o Try using different methods of switching back to being in sync
-
 UNCONFIRMED BUGS:
 
- - Bug: Network issues with Elliot
-   * Attempt to determine how two clients are connected (relay or not, which relay)
-   * Change the "Auto" mode to try non-relayed first, and then relayed after a timeout
-   * Experiment with increasing how long messages are "reliable"
-   * Experiment with switching from Twilio to custom Coturn? (I wonder if we're just using the wrong regions?)
  - Bug: Elliot having input issues during "Regaining sync..."
 
 BACKLOG:
@@ -41,7 +31,5 @@ BACKLOG:
  - Bug: input just stops even though I've never stopped pressing it
    o Easiest to reproduce by pressing a direction on the D-pad
  - Implement spectators
- - Solve problems packet loss
-   o Dig deeper into WebRTC and try to see where things are going awry!
  - Setup the debug_rollback_ticks to compare the save states with the original save states so we can know the exact same things happened
 
