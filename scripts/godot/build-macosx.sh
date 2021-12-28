@@ -37,7 +37,8 @@ rm -rf osx_template.app
 cp -r ../misc/dist/osx_template.app ./
 mkdir osx_template.app/Contents/MacOS
 cp godot.osx.opt.$ARCH osx_template.app/Contents/MacOS/godot_osx_release.64
-zip osx.zip $(find osx_template.app)
+chmod +x osx_template.app/Contents/MacOS/godot_osx_release.64
+zip -q -9 -r osx.zip osx_template.app
 rm -rf osx_template.app
 popd
 
