@@ -2,7 +2,6 @@ extends Reference
 
 var tank
 var weapon_type
-var bullet_spawn_pool
 
 func setup_weapon(_tank, _weapon_type) -> void:
 	tank = _tank
