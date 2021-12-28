@@ -43,16 +43,5 @@ BACKLOG:
  - Implement spectators
  - Solve problems packet loss
    o Dig deeper into WebRTC and try to see where things are going awry!
- - Convert concave polygons to a set of convex via triangulation?
-   * https://stackoverflow.com/questions/5247994/simple-2d-polygon-triangulation
-   * http://gamma.cs.unc.edu/SEIDEL/
-   * https://en.wikipedia.org/wiki/Polygon_triangulation
-   * Header only library:
-     - https://github.com/mapbox/earcut.hpp 
-   * Easy to read C library:
-     - https://people.sc.fsu.edu/~jburkardt/c_src/polygon_triangulate/polygon_triangulate.html
- - Physics: Have SGArea2D directly build its Array to avoid allocating the intermediate vector
-   o OR, pass in a function pointer and use that to build the Array
- - Physics: Implement capsule shape?
  - Setup the debug_rollback_ticks to compare the save states with the original save states so we can know the exact same things happened
 
