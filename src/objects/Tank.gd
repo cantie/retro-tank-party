@@ -26,7 +26,9 @@ onready var engine_sound := $EngineSound
 
 const DEFAULT_TURN_SPEED := 10923
 const DEFAULT_SPEED := 873726
-const INPUT_QUANTIZE_FACTOR := 2048
+const INPUT_QUANTIZE_FACTOR := 2048 # 1/32
+const INPUT_QUANTIZE_FACTOR_HALF: int = INPUT_QUANTIZE_FACTOR/2
+const INPUT_DECAY_FACTOR := 8192 # 1/8
 
 var turn_speed := DEFAULT_TURN_SPEED
 var speed := DEFAULT_SPEED
@@ -259,6 +261,7 @@ func _get_local_input() -> Dictionary:
 	return event.input
 
 static func quantize_input_vector(input_vector: SGFixedVector2) -> SGFixedVector2:
+	input_vector.iadd(INPUT_QUANTIZE_FACTOR_HALF)
 	input_vector.x = (input_vector.x / INPUT_QUANTIZE_FACTOR) * INPUT_QUANTIZE_FACTOR
 	input_vector.y = (input_vector.y / INPUT_QUANTIZE_FACTOR) * INPUT_QUANTIZE_FACTOR
 	return input_vector
@@ -344,11 +347,28 @@ func _hook_default_calculate_movement_vector(event: CalculateMovementVectorEvent
 
 func _predict_remote_input(previous_input: Dictionary, ticks_since_real_input: int) -> Dictionary:
 	var input = previous_input.duplicate()
-	if ticks_since_real_input > 5:
-		input.erase(PlayerInput.INPUT_VECTOR)
-	elif input.has(PlayerInput.INPUT_VECTOR):
+	
+	if input.has(PlayerInput.INPUT_VECTOR) and ticks_since_real_input > 2:
 		# Need to copy so that all predicted frames aren't using the same reference.
-		input[PlayerInput.INPUT_VECTOR] = input[PlayerInput.INPUT_VECTOR].copy()
+		var input_vector: SGFixedVector2 = input[PlayerInput.INPUT_VECTOR].copy()
+		var adjustment: int = INPUT_DECAY_FACTOR
+		
+		# Decay input by fixed amount every frame.
+		if input_vector.x > 0:
+			input_vector.x -= adjustment if input_vector.x > adjustment else 0
+		elif input_vector.x < 0:
+			input_vector.x += adjustment if input_vector.x < -adjustment else 0
+		if input_vector.y > 0:
+			input_vector.y -= adjustment if input_vector.y > adjustment else 0
+		elif input_vector.y < 0:
+			input_vector.y += adjustment if input_vector.y < -adjustment else 0
+		
+		input_vector = quantize_input_vector(input_vector)
+		
+		if input_vector.x == 0 and input_vector.y == 0:
+			input.erase(PlayerInput.INPUT_VECTOR)
+		else:
+			input[PlayerInput.INPUT_VECTOR] = input_vector
 	
 	# We get turrent input from the most recent input.
 	var latest_input: Dictionary = SyncManager.get_latest_input_for_node(self)

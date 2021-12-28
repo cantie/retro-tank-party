@@ -3,8 +3,6 @@ TODO
 
 MILESTONE 3 (cleanup & bug fix):
 
- - Try: Decay analog inputs for each frame we are predicting
- 
  - Test on all platforms with Steam integration
    o Does MacOS work?
 
