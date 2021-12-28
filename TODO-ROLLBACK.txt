@@ -6,6 +6,12 @@ MILESTONE 3 (cleanup & bug fix):
  - Test on all platforms with Steam integration
    o Does MacOS work?
 
+ - Move settings for SyncManager into ProjectSettings? (ie. eliminate NetworkSync singleton)
+ - Split addon into its own repo
+   o Ensure we can easily enable the addon on a new project
+   o Move any issues specific to the addon to GitLab
+   o Make an -alpha1 release
+
  - Bug: Mismatched position starting at tick 1
    |-> Is it the initial state not matching? Or, are we receiving input ticks from a previous match?
    |-> If previous match we could use some kind of random "Match ID" (int) to keep messages unique
@@ -24,6 +30,7 @@ UNCONFIRMED BUGS:
 
 BACKLOG:
 
+ - Use a Tree control for the LogInspector output rather than text boxes
  - Implement a way to kick problematic peers, rather than kill the match
  - Smooth out our frame skipping so we don't do it all at once
  - Try: Can we make interpolation faster by reusing the previous _interpolation_state[1]
