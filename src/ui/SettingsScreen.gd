@@ -39,8 +39,8 @@ func _ready() -> void:
 	network_relay_field.add_item("Disabled", GameSettings.NetworkRelay.DISABLED)
 	network_relay_field.add_item("Auto", GameSettings.NetworkRelay.AUTO)
 	network_relay_field.add_item("Forced", GameSettings.NetworkRelay.FORCED)
-	network_relay_field.add_item("Fallback (Auto)", GameSettings.NetworkRelay.FALLBACK)
-	network_relay_field.add_item("Fallback (Forced)", GameSettings.NetworkRelay.FORCED_FALLBACK)
+	#network_relay_field.add_item("Fallback (Auto)", GameSettings.NetworkRelay.FALLBACK)
+	#network_relay_field.add_item("Fallback (Forced)", GameSettings.NetworkRelay.FORCED_FALLBACK)
 	network_relay_field.set_value(GameSettings.use_network_relay, false)
 	
 	if OS.can_use_threads():
