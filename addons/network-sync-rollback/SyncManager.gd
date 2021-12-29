@@ -3,7 +3,8 @@ extends Node
 const SpawnManager = preload("res://addons/network-sync-rollback/SpawnManager.gd")
 const SoundManager = preload("res://addons/network-sync-rollback/SoundManager.gd")
 const NetworkAdaptor = preload("res://addons/network-sync-rollback/NetworkAdaptor.gd")
-const RPCNetworkAdaptor = preload("res://addons/network-sync-rollback/RPCNetworkAdaptor.gd")
+const MessageSerializer = preload("res://addons/network-sync-rollback/MessageSerializer.gd")
+const HashSerializer = preload("res://addons/network-sync-rollback/HashSerializer.gd")
 const Logger = preload("res://addons/network-sync-rollback/Logger.gd")
 
 class Peer extends Reference:
@@ -132,127 +133,9 @@ class StateHashFrame:
 				missing.append(peer_id)
 		return missing
 
-enum InputMessageKey {
-	NEXT_INPUT_TICK_REQUESTED,
-	INPUT,
-	NEXT_HASH_TICK_REQUESTED,
-	STATE_HASHES,
-}
-
-const DEFAULT_MESSAGE_BUFFER_SIZE = 1280
-
-# The message serializer will convert input messages to bytes in order to send
-# them to the other clients.
-#
-# The default implementation is relatively wasteful (ie. uses a lot of bytes),
-# so you probably want to replace it with an your own to pack your data as 
-# small as possible. This is only possible by knowing the structure and meaning
-# of your data.
-class MessageSerializer:
-	func serialize_input(input: Dictionary) -> PoolByteArray:
-		return var2bytes(input)
-
-	func unserialize_input(serialized: PoolByteArray) -> Dictionary:
-		return bytes2var(serialized)
-
-	func serialize_message(msg: Dictionary) -> PoolByteArray:
-		var buffer := StreamPeerBuffer.new()
-		buffer.resize(DEFAULT_MESSAGE_BUFFER_SIZE)
-	
-		buffer.put_u32(msg[InputMessageKey.NEXT_INPUT_TICK_REQUESTED])
-		
-		var input_ticks = msg[InputMessageKey.INPUT]
-		buffer.put_u8(input_ticks.size())
-		if input_ticks.size() > 0:
-			var input_keys = input_ticks.keys()
-			input_keys.sort()
-			buffer.put_u32(input_keys[0])
-			for input_key in input_keys:
-				var input = input_ticks[input_key]
-				buffer.put_u16(input.size())
-				buffer.put_data(input)
-		
-		buffer.put_u32(msg[InputMessageKey.NEXT_HASH_TICK_REQUESTED])
-		
-		var state_hashes = msg[InputMessageKey.STATE_HASHES]
-		buffer.put_u8(state_hashes.size())
-		if state_hashes.size() > 0:
-			var state_hash_keys = state_hashes.keys()
-			state_hash_keys.sort()
-			buffer.put_u32(state_hash_keys[0])
-			for state_hash_key in state_hash_keys:
-				buffer.put_u32(state_hashes[state_hash_key])
-		
-		buffer.resize(buffer.get_position())
-		return buffer.data_array
-
-	func unserialize_message(serialized) -> Dictionary:
-		var buffer := StreamPeerBuffer.new()
-		buffer.put_data(serialized)
-		buffer.seek(0)
-		
-		var msg := {
-			InputMessageKey.INPUT: {},
-			InputMessageKey.STATE_HASHES: {},
-		}
-		
-		msg[InputMessageKey.NEXT_INPUT_TICK_REQUESTED] = buffer.get_u32()
-		
-		var input_tick_count = buffer.get_u8()
-		if input_tick_count > 0:
-			var input_tick = buffer.get_u32()
-			for input_tick_index in range(input_tick_count):
-				var input_size = buffer.get_u16()
-				msg[InputMessageKey.INPUT][input_tick] = buffer.get_data(input_size)[1]
-				input_tick += 1
-		
-		msg[InputMessageKey.NEXT_HASH_TICK_REQUESTED] = buffer.get_u32()
-		
-		var hash_tick_count = buffer.get_u8()
-		if hash_tick_count > 0:
-			var hash_tick = buffer.get_u32()
-			for hash_tick_index in range(hash_tick_count):
-				msg[InputMessageKey.STATE_HASHES][hash_tick] = buffer.get_u32()
-				hash_tick += 1
-		
-		return msg
-
-# The hash serializer will convert state or input into primitive types so that
-# we can hash the Dictionary for use in comparisons.
-#
-# The default implementation can't handle Objects in a smart way, and if you
-# include any in your input or state, it could lead to SyncManager thinking that
-# input/state doesn't match, when it does. Replace this with your own version
-# to convert any objects into a primitive type.
-class HashSerializer:
-	func serialize(value):
-		if value is Dictionary:
-			return serialize_dictionary(value)
-		elif value is Array:
-			return serialize_array(value)
-		elif value is Resource:
-			return serialize_resource(value)
-		elif value is Object:
-			return serialize_object(value)
-		return value
-	
-	func serialize_dictionary(value: Dictionary) -> Dictionary:
-		var serialized := {}
-		for key in value:
-			serialized[key] = serialize(value[key])
-		return serialized
-	
-	func serialize_array(value: Array):
-		var serialized := []
-		for item in value:
-			serialized.append(serialize(item))
-		return serialized
-	
-	func serialize_resource(value: Resource):
-		return value.resource_path
-	
-	func serialize_object(value: Object):
-		return value.to_string()
+const DEFAULT_NETWORK_ADAPTOR_PATH := "res://addons/network-sync-rollback/RPCNetworkAdaptor.gd"
+const DEFAULT_MESSAGE_SERIALIZER_PATH := "res://addons/network-sync-rollback/MessageSerializer.gd"
+const DEFAULT_HASH_SERIALIZER_PATH := "res://addons/network-sync-rollback/HashSerializer.gd"
 
 var network_adaptor: NetworkAdaptor setget set_network_adaptor
 var message_serializer: MessageSerializer setget set_message_serializer
@@ -335,6 +218,29 @@ func _ready() -> void:
 	#get_tree().connect("network_peer_disconnected", self, "remove_peer")
 	#get_tree().connect("server_disconnected", self, "stop")
 	
+	var project_settings := {
+		max_buffer_size = 'network/rollback/max_buffer_size',
+		ticks_to_calculate_advantage = 'network/rollback/ticks_to_calculate_advantage',
+		input_delay = 'network/rollback/input_delay',
+		ping_frequency = 'network/rollback/ping_frequency',
+		interpolation = 'network/rollback/interpolation',
+		max_input_frames_per_message = 'network/rollback/limits/max_input_frames_per_message',
+		max_messages_at_once = 'network/rollback/limits/max_messages_at_once',
+		max_ticks_to_regain_sync = 'network/rollback/limits/max_ticks_to_regain_sync',
+		min_lag_to_regain_sync = 'network/rollback/limits/min_lag_to_regain_sync',
+		max_state_mismatch_count = 'network/rollback/limits/max_state_mismatch_count',
+		debug_rollback_ticks = 'network/rollback/debug/rollback_ticks',
+		debug_random_rollback_ticks = 'network/rollback/debug/random_rollback_ticks',
+		debug_message_bytes = 'network/rollback/debug/message_bytes',
+		debug_skip_nth_message = 'network/rollback/debug/skip_nth_message',
+		debug_physics_process_msecs = 'network/rollback/debug/physics_process_msecs',
+		debug_process_msecs = 'network/rollback/debug/process_msecs',
+	}
+	for property_name in project_settings:
+		var setting_name = project_settings[property_name]
+		if ProjectSettings.has_setting(setting_name):
+			set(property_name, ProjectSettings.get_setting(setting_name))
+	
 	_ping_timer = Timer.new()
 	_ping_timer.name = "PingTimer"
 	_ping_timer.wait_time = ping_frequency
@@ -356,14 +262,22 @@ func _ready() -> void:
 	_sound_manager.setup_sound_manager(self)
 	
 	if network_adaptor == null:
-		set_network_adaptor(RPCNetworkAdaptor.new())
+		set_network_adaptor(_create_class_from_project_settings('network/rollback/classes/network_adaptor', DEFAULT_NETWORK_ADAPTOR_PATH))
 	if message_serializer == null:
-		set_message_serializer(MessageSerializer.new())
+		set_message_serializer(_create_class_from_project_settings('network/rollback/classes/message_serializer', DEFAULT_MESSAGE_SERIALIZER_PATH))
 	if hash_serializer == null:
-		set_hash_serializer(HashSerializer.new())
+		set_hash_serializer(_create_class_from_project_settings('network/rollback/classes/hash_serializer', DEFAULT_HASH_SERIALIZER_PATH))
 
 func _set_readonly_variable(_value) -> void:
 	pass
+
+func _create_class_from_project_settings(setting_name: String, default_path: String):
+	var class_path := ''
+	if ProjectSettings.has_setting(setting_name):
+		class_path = ProjectSettings.get_setting(setting_name)
+	if class_path == '':
+		class_path = default_path
+	return load(class_path).new()
 
 func set_network_adaptor(_network_adaptor: NetworkAdaptor) -> void:
 	assert(not started, "Changing the network adaptor after SyncManager has started will probably break everything")
@@ -929,16 +843,16 @@ func _send_input_messages_to_peer(peer_id: int) -> void:
 	
 	for input in _get_input_messages_from_send_queue_for_peer(peer):
 		var msg = {
-			InputMessageKey.NEXT_INPUT_TICK_REQUESTED: peer.last_remote_input_tick_received + 1,
-			InputMessageKey.INPUT: input,
-			InputMessageKey.NEXT_HASH_TICK_REQUESTED: peer.last_remote_hash_tick_received + 1,
-			InputMessageKey.STATE_HASHES: state_hashes,
+			MessageSerializer.InputMessageKey.NEXT_INPUT_TICK_REQUESTED: peer.last_remote_input_tick_received + 1,
+			MessageSerializer.InputMessageKey.INPUT: input,
+			MessageSerializer.InputMessageKey.NEXT_HASH_TICK_REQUESTED: peer.last_remote_hash_tick_received + 1,
+			MessageSerializer.InputMessageKey.STATE_HASHES: state_hashes,
 		}
 		
 		var bytes = message_serializer.serialize_message(msg)
 		
 		# See https://gafferongames.com/post/packet_fragmentation_and_reassembly/
-		if debug_message_bytes:
+		if debug_message_bytes > 0:
 			if bytes.size() > debug_message_bytes:
 				push_error("Sending message w/ size %s bytes" % bytes.size())
 		
@@ -1038,7 +952,7 @@ func _physics_process(delta: float) -> void:
 	
 	if _ticks_spent_regaining_sync > 0:
 		_ticks_spent_regaining_sync += 1
-		if _ticks_spent_regaining_sync > max_ticks_to_regain_sync:
+		if max_ticks_to_regain_sync > 0 and _ticks_spent_regaining_sync > max_ticks_to_regain_sync:
 			_handle_fatal_error("Unable to regain synchronization")
 			return
 		
@@ -1054,7 +968,7 @@ func _physics_process(delta: float) -> void:
 			return
 		
 		# Check if our max lag is still greater than the min lag to regain sync.
-		if _calculate_max_local_lag() > min_lag_to_regain_sync:
+		if min_lag_to_regain_sync > 0 and _calculate_max_local_lag() > min_lag_to_regain_sync:
 			#print ("REGAINING SYNC: wait for local lag to reduce")
 			# Even when we're skipping ticks, still send input.
 			_send_input_messages_to_all_peers()
@@ -1151,7 +1065,7 @@ func _physics_process(delta: float) -> void:
 	_ran_physics_process = true
 	
 	var total_time_msecs = float(OS.get_ticks_usec() - start_time) / 1000.0
-	if total_time_msecs > debug_physics_process_msecs:
+	if debug_physics_process_msecs > 0 and total_time_msecs > debug_physics_process_msecs:
 		push_error("[%s] SyncManager._physics_process() took %.02fms" % [current_tick, total_time_msecs])
 	
 	if _logger:
@@ -1201,7 +1115,7 @@ func _process(delta: float) -> void:
 	_ran_physics_process = false
 	
 	var total_time_msecs = float(OS.get_ticks_usec() - start_time) / 1000.0
-	if total_time_msecs > debug_process_msecs:
+	if debug_process_msecs > 0 and total_time_msecs > debug_process_msecs:
 		push_error("[%s] SyncManager._process() took %.02fms" % [current_tick, total_time_msecs])
 
 func _clean_data_for_hashing(input: Dictionary) -> Dictionary:
@@ -1242,7 +1156,7 @@ func _on_received_input_tick(peer_id: int, serialized_msg: PoolByteArray) -> voi
 	
 	var msg = message_serializer.unserialize_message(serialized_msg)
 	
-	var all_remote_input: Dictionary = msg[InputMessageKey.INPUT]
+	var all_remote_input: Dictionary = msg[MessageSerializer.InputMessageKey.INPUT]
 	var all_remote_ticks = all_remote_input.keys()
 	all_remote_ticks.sort()
 	
@@ -1320,13 +1234,13 @@ func _on_received_input_tick(peer_id: int, serialized_msg: PoolByteArray) -> voi
 		_update_input_complete_tick()
 	
 	# Record the next frame the other peer needs.
-	peer.next_local_input_tick_requested = max(msg[InputMessageKey.NEXT_INPUT_TICK_REQUESTED], peer.next_local_input_tick_requested)
+	peer.next_local_input_tick_requested = max(msg[MessageSerializer.InputMessageKey.NEXT_INPUT_TICK_REQUESTED], peer.next_local_input_tick_requested)
 	
 	# Number of frames the remote is predicting for us.
 	peer.remote_lag = (peer.last_remote_input_tick_received + 1) - peer.next_local_input_tick_requested
 	
 	# Process state hashes.
-	var remote_state_hashes = msg[InputMessageKey.STATE_HASHES]
+	var remote_state_hashes = msg[MessageSerializer.InputMessageKey.STATE_HASHES]
 	for remote_tick in remote_state_hashes:
 		var state_hash_frame := _get_state_hash_frame(remote_tick)
 		if state_hash_frame and not state_hash_frame.has_peer_hash(peer_id):
@@ -1340,7 +1254,7 @@ func _on_received_input_tick(peer_id: int, serialized_msg: PoolByteArray) -> voi
 		index += 1
 	
 	# Record the next state hash that the other peer needs.
-	peer.next_local_hash_tick_requested = max(msg[InputMessageKey.NEXT_HASH_TICK_REQUESTED], peer.next_local_hash_tick_requested)
+	peer.next_local_hash_tick_requested = max(msg[MessageSerializer.InputMessageKey.NEXT_HASH_TICK_REQUESTED], peer.next_local_hash_tick_requested)
 
 func sort_dictionary_keys(input: Dictionary) -> Dictionary:
 	var output := {}

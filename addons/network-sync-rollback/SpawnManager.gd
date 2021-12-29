@@ -1,18 +1,23 @@
 extends Node
 
+const REUSE_DESPAWNED_NODES_SETTING := 'network/rollback/spawn_manager/reuse_despawned_nodes'
+
 var spawn_records := {}
 var spawned_nodes := {}
 var node_scenes := {}
 var retired_nodes := {}
 var counter := {}
 
-var reuse_despawned_nodes := true
+var reuse_despawned_nodes := false
 
 var is_respawning := false
 
 signal scene_spawned (name, spawned_node, scene, data)
 
 func _ready() -> void:
+	if ProjectSettings.has_setting(REUSE_DESPAWNED_NODES_SETTING):
+		reuse_despawned_nodes = ProjectSettings.get_setting(REUSE_DESPAWNED_NODES_SETTING)
+	
 	add_to_group('network_sync')
 
 func setup_spawn_manager(SyncManager) -> void:

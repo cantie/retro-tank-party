@@ -1,9 +1,15 @@
 extends Node
 
-var default_bus = "Master"
+const DEFAULT_SOUND_BUS_SETTING := 'network/rollback/sound_manager/default_sound_bus'
+
+var default_bus := "Master"
 var ticks := {}
 
 var SyncManager
+
+func _ready() -> void:
+	if ProjectSettings.has_setting(DEFAULT_SOUND_BUS_SETTING):
+		default_bus = ProjectSettings.get_setting(DEFAULT_SOUND_BUS_SETTING)
 
 func setup_sound_manager(_sync_manager) -> void:
 	SyncManager = _sync_manager

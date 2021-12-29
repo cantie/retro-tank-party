@@ -333,6 +333,15 @@ sync_debug={
 
 ssl/certificates="res://ca-certificates.crt"
 limits/debugger_stdout/max_chars_per_second=4096
+rollback/max_buffer_size=15
+rollback/interpolation=true
+rollback/limits/max_input_frames_per_message=15
+rollback/spawn_manager/reuse_despawned_nodes=true
+rollback/sound_manager/default_sound_bus="Sound"
+rollback/classes/network_adaptor="res://src/utils/RTPNetworkAdaptor.gd"
+rollback/classes/message_serializer="res://src/utils/RTPMessageSerializer.gd"
+rollback/classes/hash_serializer="res://src/utils/RTPHashSerializer.gd"
+rollback/debug/message_bytes=600
 
 [physics]
 
