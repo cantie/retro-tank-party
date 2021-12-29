@@ -3,11 +3,6 @@ TODO
 
 MILESTONE 3 (cleanup & bug fix):
 
- - Split addon into its own repo
-   o Ensure we can easily enable the addon on a new project
-   o Move any issues specific to the addon to GitLab
-   o Make an -alpha1 release
-
  - Bug: Mismatched position starting at tick 1
    |-> Is it the initial state not matching? Or, are we receiving input ticks from a previous match?
    |-> If previous match we could use some kind of random "Match ID" (int) to keep messages unique
@@ -23,16 +18,4 @@ BUG THAT MIGHT BE FIXED (watch out for them):
 UNCONFIRMED BUGS:
 
  - Bug: Elliot having input issues during "Regaining sync..."
-
-BACKLOG:
-
- - Use a Tree control for the LogInspector output rather than text boxes
- - Implement a way to kick problematic peers, rather than kill the match
- - Smooth out our frame skipping so we don't do it all at once
- - Try: Can we make interpolation faster by reusing the previous _interpolation_state[1]
- - Automatically upload detailed logs to server?
- - Bug: input just stops even though I've never stopped pressing it
-   o Easiest to reproduce by pressing a direction on the D-pad
- - Implement spectators
- - Setup the debug_rollback_ticks to compare the save states with the original save states so we can know the exact same things happened
 
