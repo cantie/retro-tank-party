@@ -172,6 +172,7 @@ var skip_ticks: int = 0 setget _set_readonly_variable
 var rollback_ticks: int = 0 setget _set_readonly_variable
 var started := false setget _set_readonly_variable
 
+var _host_starting := false
 var _ping_timer: Timer
 var _spawn_manager
 var _sound_manager
@@ -392,7 +393,7 @@ func stop_logging() -> void:
 
 func start() -> void:
 	assert(get_tree().is_network_server(), "start() should only be called on the host")
-	if started:
+	if started or _host_starting:
 		return
 	if get_tree().is_network_server():
 		var highest_rtt: int = 0
@@ -403,13 +404,14 @@ func start() -> void:
 		for peer_id in peers:
 			network_adaptor.send_remote_start(peer_id)
 		
-		# Set started on host right away to prevent double starting.
-		started = true
+		# Attempt to prevent double starting on the host.
+		_host_starting = true
 		
 		# Wait for half the highest RTT to start locally.
 		print ("Delaying host start by %sms" % (highest_rtt / 2))
 		yield(get_tree().create_timer(highest_rtt / 2000.0), 'timeout')
 		_on_received_remote_start()
+		_host_starting = false
 
 func _reset() -> void:
 	input_tick = 0
@@ -450,8 +452,12 @@ func stop() -> void:
 	_on_received_remote_stop()
 
 func _on_received_remote_stop() -> void:
+	if not (started or _host_starting):
+		return
+	
 	network_adaptor.stop_network_adaptor(self)
 	started = false
+	_host_starting = false
 	_reset()
 	
 	for peer in peers.values():
