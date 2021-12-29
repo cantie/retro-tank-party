@@ -1,7 +1,7 @@
 extends Node2D
 
-var TankScene = preload("res://src/objects/Tank.tscn")
-var FreeSpaceDetector = preload("res://src/game/FreeSpaceDetector.tscn")
+const TankScene = preload("res://src/objects/Tank.tscn")
+const FreeSpaceDetector = preload("res://src/game/FreeSpaceDetector.tscn")
 
 onready var map: Node2D = $Map
 onready var players_node := $Players

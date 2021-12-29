@@ -1,4 +1,5 @@
 extends AnimationPlayer
+class_name NetworkAnimationPlayer
 
 export (bool) var auto_reset := true
 
