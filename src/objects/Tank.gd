@@ -187,6 +187,7 @@ func _network_despawn() -> void:
 	if ability:
 		_on_ability_finished(ability)
 	set_held_ability_type(null)
+	ability_charges = 0
 	shoot_cooldown_timer.stop()
 	animation_player.stop(true)
 	animation_player.play("RESET")
