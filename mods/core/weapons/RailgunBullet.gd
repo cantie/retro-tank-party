@@ -18,7 +18,7 @@ const LASER_COLORS := {
 func _ready():
 	line.set_as_toplevel(true)
 	line.global_position = Vector2(0, 0)
-	lifetime_timer.wait_ticks = 10
+	lifetime_timer.wait_ticks = 8
 
 func _network_spawn(data: Dictionary) -> void:
 	._network_spawn(data)
