@@ -46,7 +46,7 @@ func _on_UILayer_back_button() -> void:
 	if ui_layer.current_screen_name in ['ConnectionScreen', 'MatchScreen']:
 		get_tree().change_scene("res://src/main/Title.tscn")
 	else:
-		ui_layer.show_screen("MatchScreen")
+		_return_to_match_screen()
 
 func _on_ReadyScreen_ready_pressed() -> void:
 	rpc("player_ready", OnlineMatch.get_my_session_id())
@@ -71,19 +71,20 @@ func _start_match_if_all_ready() -> void:
 		
 		RemoteOperations.change_scene("res://src/main/MatchSetup.tscn")
 
+func _return_to_match_screen() -> void:
+	SyncManager.clear_peers()
+	ui_layer.show_screen("MatchScreen")
+
 #####
 # OnlineMatch callbacks
 #####
 
 func _on_OnlineMatch_error(message: String):
-	if message != '':
-		ui_layer.show_message(message)
-	ui_layer.show_screen("MatchScreen")
-	SyncManager.clear_peers()
+	ui_layer.show_message(message)
+	_return_to_match_screen()
 
 func _on_OnlineMatch_disconnected():
-	#_on_OnlineMatch_error("Disconnected from host")
-	_on_OnlineMatch_error('')
+	_return_to_match_screen()
 
 func _on_OnlineMatch_player_left(player) -> void:
 	ui_layer.show_message(player.username + " has left")
