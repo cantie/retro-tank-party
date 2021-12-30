@@ -358,7 +358,7 @@ func _on_ping_timer_timeout() -> void:
 		local_time = OS.get_system_time_msecs(),
 	}
 	for peer_id in peers:
-		assert(peer_id != get_tree().get_network_unique_id(), "Cannot ping ourselves")	
+		assert(peer_id != get_tree().get_network_unique_id(), "Cannot ping ourselves")
 		network_adaptor.send_ping(peer_id, msg)
 
 func _on_received_ping(peer_id: int, msg: Dictionary) -> void:
