@@ -195,6 +195,7 @@ func _network_despawn() -> void:
 	health = 100
 	can_shoot = true
 	camera = null
+	speed = DEFAULT_SPEED
 	_input_shoot = false
 	_input_use_ability = false
 	_input_mouse_control = true
