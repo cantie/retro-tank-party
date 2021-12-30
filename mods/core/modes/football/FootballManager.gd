@@ -233,7 +233,6 @@ func _on_player_manager_respawn_player(player_id: int) -> void:
 	
 	if player_id == get_tree().get_network_unique_id():
 		ui_layer.hide_message()
-		game.make_player_controlled(player_id)
 
 func _on_countdown_finished() -> void:
 	var winners = score.find_highest()

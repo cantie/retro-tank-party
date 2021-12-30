@@ -17,6 +17,7 @@ var players := {}
 var players_alive := {}
 var possible_pickups := []
 var player_start_transforms
+var player_listener: Listener2D
 
 signal game_error (message)
 signal game_started ()
@@ -118,17 +119,14 @@ func _on_SyncManager_scene_spawned(name: String, spawned_node: Node, scene: Pack
 		
 		if not spawned_node.is_connected("player_dead", self, "_on_player_dead"):
 			spawned_node.connect("player_dead", self, "_on_player_dead", [spawned_node])
+		
+		if peer_id == get_tree().get_network_unique_id():
+			spawned_node.player_controlled = true
+			_setup_player_camera(spawned_node.global_position)
+			spawned_node.camera = player_camera
+			_setup_player_listener(spawned_node)
+		
 		emit_signal("player_spawned", spawned_node)
-
-func make_player_controlled(peer_id) -> void:
-	var my_player := players_node.get_node(str(peer_id))
-	if my_player:
-		my_player.player_controlled = true
-		_setup_player_camera(my_player.global_position)
-		my_player.camera = player_camera
-		_setup_player_listener(my_player)
-	else:
-		print ("Unable to make player controlled: node not found")
 
 func get_tank(player_id: int):
 	return players_node.get_node(str(player_id))
@@ -148,9 +146,6 @@ func game_start() -> void:
 			var player = players[peer_id]
 			var start_transform = player_start_transforms[player.index - 1] if player_start_transforms and player.index <= player_start_transforms.size() else null
 			respawn_player(peer_id, start_transform)
-		
-		var my_id: int = get_tree().get_network_unique_id()
-		make_player_controlled(my_id)
 		
 		if map.has_method('map_start'):
 			map.map_start(self)
@@ -221,9 +216,17 @@ func _setup_player_camera(camera_position: Vector2) -> void:
 		player_camera.limit_bottom = map_rect.end.y
 
 func _setup_player_listener(my_player) -> void:
-	var listener = Listener2D.new()
-	my_player.add_child(listener)
-	listener.make_current()
+	_teardown_player_listener()
+	
+	player_listener = Listener2D.new()
+	my_player.add_child(player_listener)
+	player_listener.make_current()
+
+func _teardown_player_listener() -> void:
+	if player_listener:
+		player_listener.clear_current()
+		player_listener.queue_free()
+		player_listener = null
 
 func kill_player(player_id) -> void:
 	var player_node = players_node.get_node(str(player_id))
@@ -252,6 +255,7 @@ func _on_player_dead(killer_id, tank) -> void:
 		
 		var player_node = players_node.get_node(str(peer_id))
 		if player_node and player_node.player_controlled:
+			_teardown_player_listener()
 			hud.clear_all_labels()
 		
 		emit_signal("player_dead", peer_id, killer_id)
