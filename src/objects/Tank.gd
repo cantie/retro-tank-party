@@ -263,8 +263,9 @@ func _get_local_input() -> Dictionary:
 	return event.input
 
 static func quantize_input_vector(input_vector: SGFixedVector2) -> SGFixedVector2:
-	input_vector.iadd(INPUT_QUANTIZE_FACTOR_HALF)
+	input_vector.x += -INPUT_QUANTIZE_FACTOR_HALF if input_vector.x < 0 else INPUT_QUANTIZE_FACTOR_HALF
 	input_vector.x = (input_vector.x / INPUT_QUANTIZE_FACTOR) * INPUT_QUANTIZE_FACTOR
+	input_vector.y += -INPUT_QUANTIZE_FACTOR_HALF if input_vector.y < 0 else INPUT_QUANTIZE_FACTOR_HALF
 	input_vector.y = (input_vector.y / INPUT_QUANTIZE_FACTOR) * INPUT_QUANTIZE_FACTOR
 	return input_vector
 
