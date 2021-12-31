@@ -205,7 +205,6 @@ func _finish_link_steam() -> void:
 	# We don't check if this succeeded or not. Even if it fails, we're still
 	# logged in, so we keep going, and we'll try again the next time the user
 	# logs in.
-	print ("Steam auth ticket: %s" % _steam_auth_session_ticket)
 	Online.nakama_client.link_steam_async(Online.nakama_session, _steam_auth_session_ticket)
 
 func _on_SteamLoginButton_pressed() -> void:
