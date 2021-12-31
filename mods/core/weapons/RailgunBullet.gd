@@ -7,6 +7,7 @@ onready var line: Line2D = $Line2D
 var speed = 6116693
 var growing := true
 var bounces := 0
+var first := true
 
 const LASER_COLORS := {
 	1: Color("419fdd"),
@@ -24,6 +25,7 @@ func _network_spawn(data: Dictionary) -> void:
 	._network_spawn(data)
 	growing = true
 	bounces = 0
+	first = true
 	line.default_color = LASER_COLORS[player_index]
 	line.add_point(fixed_position.to_float())
 
@@ -40,6 +42,7 @@ func _save_state() -> Dictionary:
 	var state = ._save_state()
 	state['growing'] = growing
 	state['bounces'] = bounces
+	state['first'] = first
 	state['_points'] = line.points
 	
 	var exceptions := []
@@ -56,6 +59,7 @@ func _save_state() -> Dictionary:
 func _load_state(state: Dictionary) -> void:
 	growing = state['growing']
 	bounces = state['bounces']
+	first = state['first']
 	line.points = state['_points']
 	
 	ray_cast.clear_exceptions()
@@ -68,6 +72,12 @@ func _load_state(state: Dictionary) -> void:
 
 func _network_process(delta: float, input: Dictionary) -> void:
 	# Note: We don't call the parent _network_process() on purpose.
+	
+	if first:
+		# In the first frame, we check collision at our original position.
+		check_collision()
+		first = false
+	
 	if growing:
 		ray_cast.update_raycast_collision()
 		if ray_cast.is_colliding():
