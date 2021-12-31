@@ -36,7 +36,7 @@ func _init() -> void:
 	_writer_thread = Thread.new()
 	_log_file = File.new()
 
-func start(log_file_name: String, peer_id: int) -> int:
+func start(log_file_name: String, peer_id: int, match_info: Dictionary = {}) -> int:
 	if not _started:
 		var err: int
 		
@@ -47,6 +47,7 @@ func start(log_file_name: String, peer_id: int) -> int:
 		var header := {
 			log_type = LogType.HEADER,
 			peer_id = peer_id,
+			match_info = match_info,
 		}
 		_log_file.store_string(JSON.print(header) + "\n")
 		

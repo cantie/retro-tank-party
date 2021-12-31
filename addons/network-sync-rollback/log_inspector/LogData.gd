@@ -79,6 +79,7 @@ var frame_counter := {}
 var start_time: int
 var end_time: int
 
+var match_info := {}
 var input := {}
 var state := {}
 var frames := {}
@@ -110,6 +111,7 @@ func clear() -> void:
 	max_frame = 0
 	start_time = 0
 	end_time = 0
+	match_info.clear()
 	input.clear()
 	state.clear()
 	frames.clear()
@@ -168,6 +170,7 @@ func _loader_thread_function(data: Array) -> void:
 		if header == null:
 			if json_result.result['log_type'] == Logger.LogType.HEADER:
 				header = json_result.result
+				
 				header['peer_id'] = int(header['peer_id'])
 				if header['peer_id'] in peer_ids:
 					file.close()
@@ -175,6 +178,16 @@ func _loader_thread_function(data: Array) -> void:
 					call_deferred("emit_signal", "load_error", "Log file has data for peer_id %s, which is already loaded" % header['peer_id'])
 					_set_loading(false)
 					return
+				
+				var header_match_info = header.get('match_info', {})
+				if match_info.size() > 0 and match_info.hash() != header_match_info.hash():
+					file.close()
+					call_deferred("emit_signal", "data_updated")
+					call_deferred("emit_signal", "load_error", "Log file for peer_id %s has match info that doesn't match already loaded data" % header['peer_id'])
+					_set_loading(false)
+					return
+				else:
+					match_info = header_match_info
 				
 				var peer_id = header['peer_id']
 				peer_ids.append(peer_id)
