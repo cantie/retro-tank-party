@@ -69,9 +69,6 @@ func _load_state(state: Dictionary) -> void:
 func _network_process(delta: float, input: Dictionary) -> void:
 	# Note: We don't call the parent _network_process() on purpose.
 	if growing:
-		check_collision()
-		
-		var increment = vector.mul(speed)
 		ray_cast.update_raycast_collision()
 		if ray_cast.is_colliding():
 			var collider = ray_cast.get_collider()
@@ -80,21 +77,19 @@ func _network_process(delta: float, input: Dictionary) -> void:
 				set_global_fixed_position(ray_cast.get_collision_point())
 			
 				var collision_normal = ray_cast.get_collision_normal()
-				#print ("[%s] collision normal: (%s, %s)" % [SyncManager.current_tick, collision_normal.x, collision_normal.y])
 				if !(collision_normal.x == 0 and collision_normal.y == 0):
 					vector = vector.bounce(collision_normal).normalized()
-					#print ("[%s] vector: (%s, %s)" % [SyncManager.current_tick, vector.x, vector.y])
 					fixed_rotation = vector.angle()
-					#print ("[%s] angle: %s" % [SyncManager.current_tick, fixed_rotation])
 				
-				bounces += 1
-			
-			ray_cast.clear_exceptions()
-			ray_cast.add_exception(collider)
+					bounces += 1
+					
+					ray_cast.clear_exceptions()
+					ray_cast.add_exception(collider)
 		else:
-			fixed_position.iadd(increment)
+			fixed_position.iadd(vector.mul(speed))
 		
 		sync_to_physics_engine()
+		check_collision()
 		
 		line.add_point(fixed_position.to_float())
 		
