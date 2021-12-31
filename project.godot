@@ -354,6 +354,7 @@ rollback/classes/network_adaptor="res://src/utils/RTPNetworkAdaptor.gd"
 rollback/classes/message_serializer="res://src/utils/RTPMessageSerializer.gd"
 rollback/classes/hash_serializer="res://src/utils/RTPHashSerializer.gd"
 rollback/debug/message_bytes=600
+rollback/log_inspector/replay_launch_wait_time=2000
 
 [physics]
 

@@ -2,6 +2,7 @@ tool
 extends Control
 
 const LogData = preload("res://addons/network-sync-rollback/log_inspector/LogData.gd")
+const ReplayClient = preload("res://addons/network-sync-rollback/log_inspector/ReplayClient.gd")
 
 onready var file_dialog = $FileDialog
 onready var progress_dialog = $ProgressDialog
@@ -19,6 +20,7 @@ enum DataMode {
 const LOADING_LABEL := "Loading %s..."
 
 var log_data: LogData = LogData.new()
+var replay_client: ReplayClient
 
 var _files_to_load := []
 
@@ -30,6 +32,12 @@ func _ready() -> void:
 	log_data.connect("load_progress", self, "_on_log_data_load_progress")
 	log_data.connect("load_finished", self, "_on_log_data_load_finished")
 	log_data.connect("data_updated", self, "refresh_from_log_data")
+	
+	replay_client = ReplayClient.new()
+	replay_client.name = 'ReplayClient'
+	add_child(replay_client)
+	
+	state_input_viewer.set_replay_client(replay_client)
 	
 	# Show and make full screen if the scene is being run on its own.
 	if get_parent() == get_tree().root:

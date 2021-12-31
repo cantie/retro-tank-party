@@ -1,5 +1,7 @@
 extends Node2D
 
+const SyncReplay = preload("res://addons/network-sync-rollback/SyncReplay.gd")
+
 const LOG_FILE_DIRECTORY = 'user://detailed_logs'
 
 onready var game := $Game
@@ -10,6 +12,7 @@ onready var regaining_sync_animation_player := $UILayer2/RegainingSyncMessage/An
 
 var match_manager
 var match_info: Dictionary
+var replay: SyncReplay
 
 func _ready() -> void:
 	OnlineMatch.connect("error", self, "_on_OnlineMatch_error")
@@ -25,6 +28,29 @@ func _ready() -> void:
 	
 	var songs := ['Track1', 'Track2', 'Track3']
 	Music.play(songs[randi() % songs.size()])
+	
+	if "replay" in OS.get_cmdline_args():
+		replay = SyncReplay.new()
+		replay.connect("setup_match", self, "_on_replay_setup_match")
+		add_child(replay)
+		replay.listen()
+
+func _on_replay_setup_match(my_peer_id: int, peer_ids: Array, match_info: Dictionary) -> void:
+	# Clean up a previous match if one exists.
+	if match_manager:
+		SyncManager.stop()
+		match_manager.stop()
+		game.stop()
+		
+		ui_layer.hide_message()
+		ui_layer.hide_screen()
+		
+		remove_child(match_manager)
+		match_manager.queue_free()
+		match_manager = null
+	
+	scene_setup(null, match_info)
+	scene_start()
 
 func scene_setup(operation: RemoteOperations.ClientOperation, info: Dictionary) -> void:
 	# Store the match info for when we return to the match setup screen.
@@ -35,11 +61,13 @@ func scene_setup(operation: RemoteOperations.ClientOperation, info: Dictionary) 
 	add_child(match_manager)
 	match_manager.match_setup(info, self, game, ui_layer)
 	
-	ui_layer.show_back_button()
+	if not replay:
+		ui_layer.show_back_button()
 	
-	operation.mark_done()
+	if operation:
+		operation.mark_done()
 	
-	if GameSettings.use_detailed_logging:
+	if GameSettings.use_detailed_logging and not replay:
 		var dir = Directory.new()
 		if not dir.dir_exists(LOG_FILE_DIRECTORY):
 			dir.make_dir(LOG_FILE_DIRECTORY)
@@ -59,7 +87,7 @@ func scene_setup(operation: RemoteOperations.ClientOperation, info: Dictionary) 
 			get_tree().get_network_unique_id(),
 		]
 		
-		SyncManager.start_logging(LOG_FILE_DIRECTORY + '/' + log_file_name)
+		SyncManager.start_logging(LOG_FILE_DIRECTORY + '/' + log_file_name, match_info)
 
 func scene_start() -> void:
 	SyncManager.start()
@@ -68,8 +96,9 @@ func finish_match() -> void:
 	SyncManager.stop()
 	SyncManager.stop_logging()
 	
-	if get_tree().is_network_server():
+	if get_tree().is_network_server() and not replay:
 		match_manager.match_stop()
+		
 		# @todo pass current config so we start from the same settings
 		RemoteOperations.change_scene("res://src/main/MatchSetup.tscn", match_info)
 
@@ -88,7 +117,9 @@ func _on_Game_game_error(message) -> void:
 func _on_Game_game_started() -> void:
 	ui_layer.hide_screen()
 	ui_layer.hide_all()
-	ui_layer.show_back_button()
+	
+	if not replay:
+		ui_layer.show_back_button()
 
 func _on_UILayer_back_button() -> void:
 	if ui_layer.current_screen_name in ['', 'SettingsScreen']:
