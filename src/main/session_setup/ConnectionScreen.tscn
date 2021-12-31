@@ -287,8 +287,8 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 margin_left = 6.93966
 margin_top = 66.493
-margin_right = -6.81128
-margin_bottom = -6.03992
+margin_right = -6.81115
+margin_bottom = -6.04007
 
 [node name="GridContainer" type="GridContainer" parent="TabContainer/Forgot password\?"]
 anchor_left = 0.5
@@ -329,6 +329,7 @@ script = ExtResource( 6 )
 __meta__ = {
 "_edit_use_anchors_": false
 }
+
 [connection signal="pressed" from="TabContainer/Steam/SteamLoginButton" to="." method="_on_SteamLoginButton_pressed"]
 [connection signal="pressed" from="TabContainer/Login/LoginButton" to="." method="_on_LoginButton_pressed"]
 [connection signal="pressed" from="TabContainer/Create Account/CreateAccountButton" to="." method="_on_CreateAccountButton_pressed"]
