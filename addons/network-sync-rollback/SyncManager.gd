@@ -402,7 +402,7 @@ func stop_logging() -> void:
 		_logger = null
 
 func start() -> void:
-	assert(get_tree().is_network_server() and not mechanized, "start() should only be called on the host")
+	assert(get_tree().is_network_server() or mechanized, "start() should only be called on the host")
 	if started or _host_starting:
 		return
 	if mechanized:

@@ -26,19 +26,14 @@ func _ready() -> void:
 	var songs := ['Track1', 'Track2', 'Track3']
 	Music.play(songs[randi() % songs.size()])
 
-func _on_replay_setup_match(my_peer_id: int, peer_ids: Array, match_info: Dictionary) -> void:
-	# Clean up a previous match if one exists.
-	if match_manager:
-		SyncManager.stop()
-		match_manager.stop()
-		game.stop()
-		
-		ui_layer.hide_message()
-		ui_layer.hide_screen()
-		
-		remove_child(match_manager)
-		match_manager.queue_free()
-		match_manager = null
+func setup_match_for_replay(my_peer_id: int, peer_ids: Array, match_info: Dictionary) -> void:
+	# Hack the player list into OnlineMatch.
+	# @todo Handle this with one more layer of indirection?
+	peer_ids = peer_ids.duplicate()
+	peer_ids.push_front(my_peer_id)
+	OnlineMatch.players.clear()
+	for peer_id in peer_ids:
+		OnlineMatch.players[str(peer_id)] = OnlineMatch.Player.new(str(peer_id), 'Peer %s' % peer_id, peer_id)
 	
 	scene_setup(null, match_info)
 	scene_start()

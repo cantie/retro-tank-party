@@ -140,7 +140,7 @@ size_flags_horizontal = 3
 margin_left = 254.0
 margin_right = 353.0
 margin_bottom = 20.0
-text = "Launch Game"
+text = "Launch Replay Client"
 
 [node name="DisconnectButton" type="Button" parent="MarginContainer/VBoxContainer/ReplayToolbar"]
 margin_left = 357.0
@@ -189,6 +189,7 @@ script = ExtResource( 5 )
 [connection signal="pressed" from="MarginContainer/VBoxContainer/LoadToolbar/AddAnyLogButton" to="." method="_on_AddAnyLogButton_pressed"]
 [connection signal="item_selected" from="MarginContainer/VBoxContainer/LoadToolbar/ModeButton" to="." method="_on_ModeButton_item_selected"]
 [connection signal="pressed" from="MarginContainer/VBoxContainer/ReplayToolbar/LaunchGameButton" to="." method="_on_LaunchGameButton_pressed"]
+[connection signal="pressed" from="MarginContainer/VBoxContainer/ReplayToolbar/DisconnectButton" to="." method="_on_DisconnectButton_pressed"]
 [connection signal="game_connected" from="ReplayServer" to="." method="_on_ReplayServer_game_connected"]
 [connection signal="game_disconnected" from="ReplayServer" to="." method="_on_ReplayServer_game_disconnected"]
 [connection signal="started_listening" from="ReplayServer" to="." method="_on_ReplayServer_started_listening"]

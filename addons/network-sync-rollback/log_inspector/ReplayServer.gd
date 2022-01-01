@@ -42,6 +42,7 @@ func disconnect_from_game(restart_listening: bool = true) -> void:
 		connection.disconnect_from_host()
 		emit_signal("game_disconnected")
 		connection = null
+	stop_game()
 	if restart_listening:
 		start_listening()
 
@@ -94,10 +95,7 @@ func send_message(msg: Dictionary) -> void:
 func poll() -> void:
 	if connection:
 		if connection.get_status() == StreamPeerTCP.STATUS_NONE or connection.get_status() == StreamPeerTCP.STATUS_ERROR:
-			connection.disconnect_from_host()
-			connection = null
-			emit_signal("game_disconnected")
-			start_listening()
+			disconnect_from_game()
 	if server and not connection and server.is_connection_available():
 		connection = server.take_connection()
 		stop_listening()
