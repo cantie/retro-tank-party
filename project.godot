@@ -210,9 +210,9 @@ Sounds="*res://src/autoload/Sounds.tscn"
 Music="*res://src/autoload/Music.tscn"
 Modding="*res://src/autoload/Modding.gd"
 Utils="*res://src/autoload/Utils.gd"
-SyncManager="*res://addons/network-sync-rollback/SyncManager.gd"
 SyncDebugger="*res://addons/network-sync-rollback/SyncDebugger.gd"
 SyncReplay="*res://addons/network-sync-rollback/SyncReplay.gd"
+SyncManager="*res://addons/network-sync-rollback/SyncManager.gd"
 
 [debug]
 
@@ -355,6 +355,7 @@ rollback/classes/network_adaptor="res://src/utils/RTPNetworkAdaptor.gd"
 rollback/classes/message_serializer="res://src/utils/RTPMessageSerializer.gd"
 rollback/classes/hash_serializer="res://src/utils/RTPHashSerializer.gd"
 rollback/debug/message_bytes=600
+rollback/log_inspector/replay_match_scene_path="res://src/main/Match.tscn"
 rollback/log_inspector/replay_launch_wait_time=2000
 
 [physics]

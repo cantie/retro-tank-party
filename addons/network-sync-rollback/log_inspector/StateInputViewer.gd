@@ -104,23 +104,3 @@ func _on_StartButton_pressed() -> void:
 
 func _on_EndButton_pressed() -> void:
 	tick_number_field.value = tick_number_field.max_value
-
-#func _on_LoadStateInGameButton_pressed() -> void:
-#	if not replay_client:
-#		return
-#	if not log_data or log_data.peer_ids.size() == 0:
-#		OS.alert("Cannot load in game without any data")
-#		return
-#
-#	if not replay_client.is_connected_to_game():
-#		if replay_client.connect_to_game():	
-#			var my_peer_id = log_data.peer_ids[0]
-#			var peer_ids = log_data.peer_ids.slice(1, log_data.peer_ids.size())
-#
-#			var msg := {
-#				type = "setup_match",
-#				my_peer_id = my_peer_id,
-#				peer_ids = peer_ids,
-#				match_info = log_data.match_info,
-#			}
-#			replay_client.send_message(msg)

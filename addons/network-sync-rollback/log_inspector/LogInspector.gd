@@ -90,6 +90,7 @@ func refresh_from_log_data() -> void:
 	
 	state_input_viewer.refresh_from_log_data()
 	frame_viewer.refresh_from_log_data()
+	send_match_info_for_replay()
 
 func _on_log_data_load_error(msg) -> void:
 	progress_dialog.hide()
@@ -125,14 +126,35 @@ func update_replay_server_status() -> void:
 		ReplayServer.Status.CONNECTED:
 			replay_server_status_label.text = 'Connected to game.'
 
+func send_match_info_for_replay() -> void:
+	if not replay_server or not replay_server.is_connected_to_game():
+		return
+	if not log_data or log_data.peer_ids.size() == 0:
+		return
+	
+	var my_peer_id = log_data.peer_ids[0]
+	var peer_ids = log_data.peer_ids.slice(1, log_data.peer_ids.size())
+
+	var msg := {
+		type = "setup_match",
+		my_peer_id = my_peer_id,
+		peer_ids = peer_ids,
+		match_info = log_data.match_info,
+	}
+	replay_server.send_message(msg)
+
 func _on_ReplayServer_started_listening() -> void:
 	update_replay_server_status()
 
 func _on_ReplayServer_game_connected() -> void:
 	update_replay_server_status()
+	send_match_info_for_replay()
 
 func _on_ReplayServer_game_disconnected() -> void:
 	update_replay_server_status()
 
 func _on_LaunchGameButton_pressed() -> void:
 	replay_server.launch_game()
+
+func _on_DisconnectButton_pressed() -> void:
+	replay_server.disconnect_from_game()
