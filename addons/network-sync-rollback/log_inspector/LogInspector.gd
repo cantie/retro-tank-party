@@ -2,15 +2,17 @@ tool
 extends Control
 
 const LogData = preload("res://addons/network-sync-rollback/log_inspector/LogData.gd")
-const ReplayClient = preload("res://addons/network-sync-rollback/log_inspector/ReplayClient.gd")
+const ReplayServer = preload("res://addons/network-sync-rollback/log_inspector/ReplayServer.gd")
 
 onready var file_dialog = $FileDialog
 onready var progress_dialog = $ProgressDialog
-onready var data_description_label = $MarginContainer/VBoxContainer/HBoxContainer/DataDescriptionLabel
+onready var data_description_label = $MarginContainer/VBoxContainer/LoadToolbar/DataDescriptionLabel
 onready var data_description_label_default_text = data_description_label.text
 onready var mode_button = $MarginContainer/VBoxContainer/HBoxContainer/ModeButton
 onready var state_input_viewer = $MarginContainer/VBoxContainer/StateInputViewer
 onready var frame_viewer = $MarginContainer/VBoxContainer/FrameViewer
+onready var replay_server = $ReplayServer
+onready var replay_server_status_label = $MarginContainer/VBoxContainer/ReplayToolbar/ReplayStatusLabel
 
 enum DataMode {
 	STATE_INPUT,
@@ -20,7 +22,6 @@ enum DataMode {
 const LOADING_LABEL := "Loading %s..."
 
 var log_data: LogData = LogData.new()
-var replay_client: ReplayClient
 
 var _files_to_load := []
 
@@ -33,11 +34,7 @@ func _ready() -> void:
 	log_data.connect("load_finished", self, "_on_log_data_load_finished")
 	log_data.connect("data_updated", self, "refresh_from_log_data")
 	
-	replay_client = ReplayClient.new()
-	replay_client.name = 'ReplayClient'
-	add_child(replay_client)
-	
-	state_input_viewer.set_replay_client(replay_client)
+	state_input_viewer.set_replay_server(replay_server)
 	
 	# Show and make full screen if the scene is being run on its own.
 	if get_parent() == get_tree().root:
@@ -46,6 +43,10 @@ func _ready() -> void:
 		anchor_bottom = 1
 		margin_right = 0
 		margin_bottom = 0
+		setup_log_inspector()
+
+func setup_log_inspector() -> void:
+	replay_server.start_listening()
 
 func _on_ClearButton_pressed() -> void:
 	log_data.clear()
@@ -114,3 +115,24 @@ func _on_ModeButton_item_selected(index: int) -> void:
 		state_input_viewer.visible = true
 	elif index == DataMode.FRAME:
 		frame_viewer.visible = true
+
+func update_replay_server_status() -> void:
+	match replay_server.get_status():
+		ReplayServer.Status.NONE:
+			replay_server_status_label.text = 'Disabled.'
+		ReplayServer.Status.LISTENING:
+			replay_server_status_label.text = 'Listening for connections...'
+		ReplayServer.Status.CONNECTED:
+			replay_server_status_label.text = 'Connected to game.'
+
+func _on_ReplayServer_started_listening() -> void:
+	update_replay_server_status()
+
+func _on_ReplayServer_game_connected() -> void:
+	update_replay_server_status()
+
+func _on_ReplayServer_game_disconnected() -> void:
+	update_replay_server_status()
+
+func _on_LaunchGameButton_pressed() -> void:
+	replay_server.launch_game()

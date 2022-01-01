@@ -209,9 +209,10 @@ RemoteOperations="*res://src/autoload/RemoteOperations.gd"
 Sounds="*res://src/autoload/Sounds.tscn"
 Music="*res://src/autoload/Music.tscn"
 Modding="*res://src/autoload/Modding.gd"
-SyncDebugger="*res://addons/network-sync-rollback/SyncDebugger.gd"
 Utils="*res://src/autoload/Utils.gd"
 SyncManager="*res://addons/network-sync-rollback/SyncManager.gd"
+SyncDebugger="*res://addons/network-sync-rollback/SyncDebugger.gd"
+SyncReplay="*res://addons/network-sync-rollback/SyncReplay.gd"
 
 [debug]
 
