@@ -5,12 +5,8 @@ MILESTONE 4 (beyond!):
 
  - Add in-game replay to LogInspector:
    * Invert the model: make the LogInspector the server, and the game the client
-     o Add a new row in LogInspector that allows launching the game, and shows wheather we are connected or not (and let's us kill it)
 	 o It should let us pick which peer we are currently acting as
-	 o As soon as a client connects, the LogInspector should send the match_setup info and load whatever we're looking at
-   * Is there a sane way to switch to using a singleton for SyncReplay?
-     o Could we use some project settings to control what scene and method get called?
-	 o Maybe the singleton detects the arguments, sets some flag and immediately starts trying to connect to the server
-	 o The game could check the flag and prevent normal behavior (ie. in Title.gd)
-	 o As soon as SyncReplay receives the match_setup message, it'll load the given scene and call the method with the data
+	 o Figure out how to get _properties and input into the replay
+	 o Get the actual player names and session ids into the replay
+   * Make a FrameViewer version of the replay where it simulates how each frame is actually executed
 
