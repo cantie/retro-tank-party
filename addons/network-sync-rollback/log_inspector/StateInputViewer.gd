@@ -74,6 +74,12 @@ func _on_TickNumber_value_changed(value: float) -> void:
 			state_mismatches_data_label.text = mismatch_text
 		else:
 			state_mismatches_data_label.text = ''
+		
+		if replay_server and replay_server.is_connected_to_game():
+			replay_server.send_message({
+				type = "load_state",
+				state = state_frame.state,
+			})
 	else:
 		state_data_label.text = ''
 		state_mismatches_data_label.text = ''

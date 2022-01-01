@@ -88,9 +88,9 @@ func refresh_from_log_data() -> void:
 	if log_data.mismatches.size() > 0:
 		data_description_label.text += " with %s mismatches" % log_data.mismatches.size()
 	
+	send_match_info_for_replay()
 	state_input_viewer.refresh_from_log_data()
 	frame_viewer.refresh_from_log_data()
-	send_match_info_for_replay()
 
 func _on_log_data_load_error(msg) -> void:
 	progress_dialog.hide()

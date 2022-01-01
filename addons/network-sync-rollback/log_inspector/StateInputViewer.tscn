@@ -52,18 +52,6 @@ margin_right = 482.0
 margin_bottom = 24.0
 text = "End"
 
-[node name="Seperator" type="Control" parent="HBoxContainer"]
-margin_left = 486.0
-margin_right = 1140.0
-margin_bottom = 24.0
-size_flags_horizontal = 3
-
-[node name="LoadStateInGameButton" type="Button" parent="HBoxContainer"]
-margin_left = 1144.0
-margin_right = 1280.0
-margin_bottom = 24.0
-text = "Load State in Game"
-
 [node name="GridContainer" type="GridContainer" parent="."]
 margin_top = 28.0
 margin_right = 1280.0
@@ -163,4 +151,3 @@ selection_enabled = true
 [connection signal="pressed" from="HBoxContainer/PreviousMismatchButton" to="." method="_on_PreviousMismatchButton_pressed"]
 [connection signal="pressed" from="HBoxContainer/NextMismatchButton" to="." method="_on_NextMismatchButton_pressed"]
 [connection signal="pressed" from="HBoxContainer/EndButton" to="." method="_on_EndButton_pressed"]
-[connection signal="pressed" from="HBoxContainer/LoadStateInGameButton" to="." method="_on_LoadStateInGameButton_pressed"]
