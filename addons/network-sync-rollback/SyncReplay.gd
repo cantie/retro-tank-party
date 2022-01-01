@@ -2,43 +2,59 @@ extends Node
 
 const DummyNetworkAdaptor = preload("res://addons/network-sync-rollback/DummyNetworkAdaptor.gd")
 
-var server: TCP_Server
+const GAME_PORT_SETTING = 'network/rollback/log_inspector/replay_port'
+
+var active := false
 var connection: StreamPeerTCP
 
-signal setup_match (my_peer_id, peer_ids, match_info)
-
 func _ready() -> void:
-	pass
+	if "replay" in OS.get_cmdline_args():
+		active = true
+		
+		print ("Connecting to replay server...")
+		if not connect_to_replay_server():
+			OS.alert("Unable to connect to replay server")
+			get_tree().quit(1)
 
-func listen(port: int = 49111) -> void:
-	if server:
-		push_error("SyncReplay already listening")
-	else:
-		server = TCP_Server.new()
-		server.listen(port, "127.0.0.1")
-
-func stop() -> void:
+func connect_to_replay_server() -> bool:
+	if is_connected_to_replay_server():
+		return true
+	
 	if connection:
 		connection.disconnect_from_host()
 		connection = null
-	if server:
-		server.stop()
-		server = null
+	
+	var port = 49111
+	if ProjectSettings.has_setting(GAME_PORT_SETTING):
+		port = ProjectSettings.get_setting(GAME_PORT_SETTING)
+	
+	connection = StreamPeerTCP.new()
+	return connection.connect_to_host('127.0.0.1', port) == OK
+
+func is_connected_to_replay_server() -> bool:
+	return connection and connection.is_connected_to_host()
 
 func poll() -> void:
-	if server and not connection:
-		connection = server.take_connection()
-	if connection and connection.get_status() == StreamPeerTCP.STATUS_CONNECTED:
-		while connection.get_available_bytes() >= 4:
-			var length = connection.get_u32()
-			var data = connection.get_utf8_string(length)
-			
-			var result = JSON.parse(data)
-			if result.error != OK:
-				print ("SyncReplay received invalid JSON: %s" % data)
-				continue
-			
-			process_message(result.result)
+	if not active:
+		return
+	if connection:
+		var status = connection.get_status()
+		if status == StreamPeerTCP.STATUS_CONNECTED:
+			while connection.get_available_bytes() >= 4:
+				var length = connection.get_u32()
+				var data = connection.get_utf8_string(length)
+				
+				var result = JSON.parse(data)
+				if result.error != OK:
+					print ("SyncReplay received invalid JSON: %s" % data)
+					continue
+				
+				process_message(result.result)
+		elif status == StreamPeerTCP.STATUS_NONE:
+			get_tree().quit()
+		elif status == StreamPeerTCP.STATUS_ERROR:
+			OS.alert("Error in connection to replay server")
+			get_tree().quit(1)
 
 func _process(delta: float) -> void:
 	poll()
@@ -64,23 +80,25 @@ func process_message(msg: Dictionary) -> void:
 			push_error("SyncReplay message has unknown type: %s" % type)
 
 func _do_setup_match(my_peer_id: int, peer_ids: Array, match_info: Dictionary) -> void:
-	SyncManager.stop()
-	SyncManager.clear_peers()
-	
-	SyncManager.network_adaptor = DummyNetworkAdaptor.new()
-	SyncManager.mechanized = true
-	
-	# Abuse WebRTCMultiplayer in order to set our peer id.
-	var faux_multiplayer = WebRTCMultiplayer.new()
-	faux_multiplayer.initialize(my_peer_id)
-	get_tree().set_network_peer(faux_multiplayer)
-	
-	for peer_id in peer_ids:
-		SyncManager.add_peer(peer_id)
-	
-	emit_signal("setup_match", my_peer_id, peer_ids, match_info)
-	
-	SyncManager.start()
+	pass
+#	SyncManager.stop()
+#	SyncManager.clear_peers()
+#
+#	SyncManager.network_adaptor = DummyNetworkAdaptor.new()
+#	SyncManager.mechanized = true
+#
+#	# Abuse WebRTCMultiplayer in order to set our peer id.
+#	var faux_multiplayer = WebRTCMultiplayer.new()
+#	faux_multiplayer.initialize(my_peer_id)
+#	get_tree().set_network_peer(faux_multiplayer)
+#
+#	for peer_id in peer_ids:
+#		SyncManager.add_peer(peer_id)
+#
+#	emit_signal("setup_match", my_peer_id, peer_ids, match_info)
+#
+#	SyncManager.start()
 
 func _do_load_state(state: Dictionary) -> void:
-	SyncManager._call_load_state(state)
+	pass
+	#SyncManager._call_load_state(state)

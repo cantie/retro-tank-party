@@ -55,7 +55,6 @@ func _enter_tree() -> void:
 	
 	_add_project_setting('network/rollback/log_inspector/replay_arguments', TYPE_STRING, 'replay')
 	_add_project_setting('network/rollback/log_inspector/replay_port', TYPE_INT, 49111)
-	_add_project_setting('network/rollback/log_inspector/replay_launch_wait_time', TYPE_INT, 0)
 	
 	add_custom_type("NetworkTimer", "Node", preload("res://addons/network-sync-rollback/NetworkTimer.gd"), null)
 	add_custom_type("NetworkAnimationPlayer", "AnimationPlayer", preload("res://addons/network-sync-rollback/NetworkAnimationPlayer.gd"), null)
@@ -65,6 +64,7 @@ func _enter_tree() -> void:
 	log_inspector = LogInspector.instance()
 	get_editor_interface().get_base_control().add_child(log_inspector)
 	add_tool_menu_item("Log inspector...", self, "open_log_inspector")
+	log_inspector.setup_log_inspector()
 
 func open_log_inspector(ud) -> void:
 	log_inspector.popup_centered_ratio()
