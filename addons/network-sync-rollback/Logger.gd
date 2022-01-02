@@ -112,12 +112,11 @@ func write_current_data() -> void:
 	
 	data.clear()
 
-func write_state(tick: int, state: Dictionary, state_hash: int) -> void:
+func write_state(tick: int, state: Dictionary) -> void:
 	var data_to_write := {
 		'log_type': LogType.STATE,
 		'tick': tick,
-		'$': state_hash,
-		'state': state.duplicate(true), 
+		'state': SyncManager.hash_serializer.serialize(state.duplicate(true)),
 	}
 	
 	_writer_thread_mutex.lock()

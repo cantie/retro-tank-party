@@ -591,16 +591,11 @@ func _update_state_hashes() -> void:
 		
 		_last_state_hashed_tick += 1
 		
-		# We're duplicating code from _calculate_data_hash() so that we can
-		# reuse the serialized Dictionary to log our state with the host.
-		var cleaned = _clean_data_for_hashing(state_frame.data)
-		var serialized = hash_serializer.serialize(cleaned)
-		var serialized_hash = serialized.hash()
-		
-		state_hashes.append(StateHashFrame.new(_last_state_hashed_tick, serialized_hash))
+		var state_hash = _calculate_data_hash(state_frame.data)
+		state_hashes.append(StateHashFrame.new(_last_state_hashed_tick, state_hash))
 		
 		if _logger:
-			_logger.write_state(_last_state_hashed_tick, serialized, serialized_hash)
+			_logger.write_state(_last_state_hashed_tick, state_frame.data)
 
 func _do_tick(delta: float, is_rollback: bool = false) -> bool:
 	var input_frame := get_input_frame(current_tick)
@@ -913,9 +908,8 @@ func _physics_process(delta: float) -> void:
 	if current_tick == 0:
 		_save_current_state()
 		if _logger:
-			var cleaned = _clean_data_for_hashing(state_buffer[0].data)
-			var serialized = hash_serializer.serialize(cleaned)
-			_logger.write_state(0, serialized, serialized.hash())
+			_calculate_data_hash(state_buffer[0].data)
+			_logger.write_state(0, state_buffer[0].data)
 	
 	#####
 	# STEP 1: PERFORM ANY ROLLBACKS, IF NECESSARY.
@@ -1167,10 +1161,12 @@ func _clean_data_for_hashing_recursive(input: Dictionary) -> Dictionary:
 # This can be used for comparing input (to prevent a difference betwen predicted
 # input and real input from causing a rollback) and state (for when a property
 # is only used for interpolation).
-func _calculate_data_hash(input: Dictionary) -> void:
+func _calculate_data_hash(input: Dictionary) -> int:
 	var cleaned = _clean_data_for_hashing(input)
 	var serialized = hash_serializer.serialize(cleaned)
-	input['$'] = serialized.hash()
+	var serialized_hash = serialized.hash()
+	input['$'] = serialized_hash
+	return serialized_hash
 
 func _on_received_input_tick(peer_id: int, serialized_msg: PoolByteArray) -> void:
 	if not started:

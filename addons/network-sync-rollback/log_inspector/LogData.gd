@@ -12,10 +12,10 @@ class StateData:
 	func _init(_tick: int, _state: Dictionary) -> void:
 		tick = _tick
 		state = _state
-		state_hash = state.hash()
+		state_hash = _state['$']
 	
 	func compare_state(peer_id: int, peer_state: Dictionary) -> bool:
-		if state_hash == peer_state.hash():
+		if state_hash == peer_state['$']:
 			return true
 		
 		mismatches[peer_id] = peer_state
