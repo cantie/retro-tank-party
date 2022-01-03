@@ -3,12 +3,11 @@ TODO
 
 MILESTONE 4 (beyond!):
 
- - Add in-game replay to LogInspector:
-   * Invert the model: make the LogInspector the server, and the game the client
-     o It should let us pick which peer we are currently acting as
-     o Get the actual player names and session ids into the replay
-     o Add a way to completely stop the server, and only start it the first time the window is shown
-     o When replay client launches, it should start with the state on the current tick (if we are in the state viewer)
-   * Make a FrameViewer version of the replay where it simulates how each frame is actually executed
-     o Get debugger working with the replaying version of the game
+ - Invert the model: make the LogInspector the server, and the game the client
+   * It should let us pick which peer we are currently acting as
+   * Get the actual player names and session ids into the replay
+   * Add a way to completely stop the server, and only start it the first time the window is shown
+   * When replay client launches, it should start with the state on the current tick (if we are in the state viewer)
+ - Make a FrameViewer version of the replay where it simulates how each frame is actually executed
+   * Get debugger working with the replaying version of the game
 
