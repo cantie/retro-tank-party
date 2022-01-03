@@ -1,6 +1,6 @@
 extends Node
 
-const DummyNetworkAdaptor = preload("res://addons/network-sync-rollback/DummyNetworkAdaptor.gd")
+const DummyNetworkAdaptor = preload("res://addons/godot-rollback-netcode/DummyNetworkAdaptor.gd")
 
 const GAME_PORT_SETTING = 'network/rollback/log_inspector/replay_port'
 const MATCH_SCENE_PATH_SETTING = 'network/rollback/log_inspector/replay_match_scene_path'

@@ -1,8 +1,8 @@
 tool
 extends Control
 
-const LogData = preload("res://addons/network-sync-rollback/log_inspector/LogData.gd")
-const ReplayServer = preload("res://addons/network-sync-rollback/log_inspector/ReplayServer.gd")
+const LogData = preload("res://addons/godot-rollback-netcode/log_inspector/LogData.gd")
+const ReplayServer = preload("res://addons/godot-rollback-netcode/log_inspector/ReplayServer.gd")
 
 onready var file_dialog = $FileDialog
 onready var progress_dialog = $ProgressDialog
