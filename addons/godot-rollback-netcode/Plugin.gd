@@ -67,7 +67,6 @@ func _enter_tree() -> void:
 	log_inspector = LogInspector.instance()
 	get_editor_interface().get_base_control().add_child(log_inspector)
 	add_tool_menu_item("Log inspector...", self, "open_log_inspector")
-	log_inspector.setup_log_inspector()
 	
 	if not ProjectSettings.has_setting("input/sync_debug"):
 		var sync_debug = InputEventKey.new()

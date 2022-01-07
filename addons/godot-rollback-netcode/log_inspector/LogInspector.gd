@@ -8,11 +8,16 @@ onready var file_dialog = $FileDialog
 onready var progress_dialog = $ProgressDialog
 onready var data_description_label = $MarginContainer/VBoxContainer/LoadToolbar/DataDescriptionLabel
 onready var data_description_label_default_text = data_description_label.text
-onready var mode_button = $MarginContainer/VBoxContainer/HBoxContainer/ModeButton
+onready var mode_button = $MarginContainer/VBoxContainer/LoadToolbar/ModeButton
 onready var state_input_viewer = $MarginContainer/VBoxContainer/StateInputViewer
 onready var frame_viewer = $MarginContainer/VBoxContainer/FrameViewer
 onready var replay_server = $ReplayServer
-onready var replay_server_status_label = $MarginContainer/VBoxContainer/ReplayToolbar/ReplayStatusLabel
+onready var replay_server_status_label = $MarginContainer/VBoxContainer/ReplayToolbar/ServerContainer/HBoxContainer/ReplayStatusLabel
+onready var start_server_button = $MarginContainer/VBoxContainer/ReplayToolbar/ServerContainer/HBoxContainer/StartServerButton
+onready var stop_server_button = $MarginContainer/VBoxContainer/ReplayToolbar/ServerContainer/HBoxContainer/StopServerButton
+onready var disconnect_button = $MarginContainer/VBoxContainer/ReplayToolbar/ServerContainer/HBoxContainer/DisconnectButton
+onready var launch_game_button = $MarginContainer/VBoxContainer/ReplayToolbar/ClientContainer/HBoxContainer/LaunchGameButton
+onready var show_peer_field = $MarginContainer/VBoxContainer/ReplayToolbar/ClientContainer/HBoxContainer/ShowPeerField
 
 enum DataMode {
 	STATE_INPUT,
@@ -45,7 +50,11 @@ func _ready() -> void:
 		margin_bottom = 0
 		setup_log_inspector()
 
+func _on_LogInspector_about_to_show() -> void:
+	setup_log_inspector()
+
 func setup_log_inspector() -> void:
+	update_replay_server_status()
 	replay_server.start_listening()
 
 func _on_ClearButton_pressed() -> void:
@@ -117,14 +126,38 @@ func _on_ModeButton_item_selected(index: int) -> void:
 	elif index == DataMode.FRAME:
 		frame_viewer.visible = true
 
+func _on_StartServerButton_pressed() -> void:
+	replay_server.start_listening()
+
+func _on_StopServerButton_pressed() -> void:
+	if replay_server.is_connected_to_game():
+		replay_server.disconnect_from_game(false)
+	else:
+		replay_server.stop_listening()
+
 func update_replay_server_status() -> void:
 	match replay_server.get_status():
 		ReplayServer.Status.NONE:
 			replay_server_status_label.text = 'Disabled.'
+			start_server_button.disabled = false
+			stop_server_button.disabled = true
+			disconnect_button.disabled = true
+			launch_game_button.disabled = true
+			show_peer_field.disabled = true
 		ReplayServer.Status.LISTENING:
 			replay_server_status_label.text = 'Listening for connections...'
+			start_server_button.disabled = true
+			stop_server_button.disabled = false
+			disconnect_button.disabled = true
+			launch_game_button.disabled = false
+			show_peer_field.disabled = true
 		ReplayServer.Status.CONNECTED:
 			replay_server_status_label.text = 'Connected to game.'
+			start_server_button.disabled = true
+			stop_server_button.disabled = false
+			disconnect_button.disabled = false
+			launch_game_button.disabled = true
+			show_peer_field.disabled = false
 
 func send_match_info_for_replay() -> void:
 	if not replay_server or not replay_server.is_connected_to_game():
@@ -144,6 +177,9 @@ func send_match_info_for_replay() -> void:
 	replay_server.send_message(msg)
 
 func _on_ReplayServer_started_listening() -> void:
+	update_replay_server_status()
+
+func _on_ReplayServer_stopped_listening() -> void:
 	update_replay_server_status()
 
 func _on_ReplayServer_game_connected() -> void:
