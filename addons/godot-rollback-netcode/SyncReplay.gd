@@ -12,6 +12,8 @@ var connection: StreamPeerTCP
 var match_scene_path: String
 var match_scene_method: String = 'setup_match_for_replay'
 
+var _setting_up_match := false
+
 func _ready() -> void:
 	if "replay" in OS.get_cmdline_args():
 		if not ProjectSettings.has_setting(MATCH_SCENE_PATH_SETTING):
@@ -57,7 +59,7 @@ func poll() -> void:
 	if connection:
 		var status = connection.get_status()
 		if status == StreamPeerTCP.STATUS_CONNECTED:
-			while connection.get_available_bytes() >= 4:
+			while not _setting_up_match and connection.get_available_bytes() >= 4:
 				var length = connection.get_u32()
 				var data = connection.get_utf8_string(length)
 				
@@ -115,9 +117,12 @@ func _do_setup_match1(my_peer_id: int, peer_ids: Array, match_info: Dictionary) 
 		_show_error_and_quit("Unable to change scene to: %s" % match_scene_path)
 		return
 	
+	_setting_up_match = true
 	call_deferred("_do_setup_match2", my_peer_id, peer_ids, match_info)
 
 func _do_setup_match2(my_peer_id: int, peer_ids: Array, match_info: Dictionary) -> void:
+	_setting_up_match = false
+	
 	var match_scene = get_tree().current_scene
 	if not match_scene.has_method(match_scene_method):
 		_show_error_and_quit("Match scene has no such method: %s" % match_scene_method)

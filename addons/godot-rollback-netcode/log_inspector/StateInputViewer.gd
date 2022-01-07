@@ -26,6 +26,16 @@ func refresh_from_log_data() -> void:
 	tick_number_field.max_value = log_data.max_tick
 	_on_TickNumber_value_changed(tick_number_field.value)
 
+func refresh_replay() -> void:
+	if replay_server and replay_server.is_connected_to_game():
+		var tick: int = int(tick_number_field.value)
+		var state_frame: LogData.StateData = log_data.state.get(tick, null)
+		if state_frame:
+			replay_server.send_message({
+				type = "load_state",
+				state = state_frame.state,
+			})
+
 func clear() -> void:
 	tick_number_field.max_value = 0
 	tick_number_field.value = 0
@@ -75,11 +85,7 @@ func _on_TickNumber_value_changed(value: float) -> void:
 		else:
 			state_mismatches_data_label.text = ''
 		
-		if replay_server and replay_server.is_connected_to_game():
-			replay_server.send_message({
-				type = "load_state",
-				state = state_frame.state,
-			})
+		refresh_replay()
 	else:
 		state_data_label.text = ''
 		state_mismatches_data_label.text = ''

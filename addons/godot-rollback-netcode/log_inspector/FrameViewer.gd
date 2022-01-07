@@ -65,6 +65,9 @@ func refresh_from_log_data() -> void:
 	
 	_on_Time_value_changed(time_field.value)
 
+func refresh_replay() -> void:
+	pass
+
 func clear() -> void:
 	current_frames.clear()
 	refresh_from_log_data()

@@ -97,6 +97,10 @@ func refresh_from_log_data() -> void:
 	if log_data.mismatches.size() > 0:
 		data_description_label.text += " with %s mismatches" % log_data.mismatches.size()
 	
+	show_peer_field.clear()
+	for peer_id in log_data.peer_ids:
+		show_peer_field.add_item("Peer %s" % peer_id, peer_id)
+	
 	send_match_info_for_replay()
 	state_input_viewer.refresh_from_log_data()
 	frame_viewer.refresh_from_log_data()
@@ -165,8 +169,11 @@ func send_match_info_for_replay() -> void:
 	if not log_data or log_data.peer_ids.size() == 0:
 		return
 	
-	var my_peer_id = log_data.peer_ids[0]
-	var peer_ids = log_data.peer_ids.slice(1, log_data.peer_ids.size())
+	var my_peer_id = show_peer_field.get_selected_id()
+	var peer_ids := []
+	for peer_id in log_data.peer_ids:
+		if peer_id != my_peer_id:
+			peer_ids.append(peer_id)
 
 	var msg := {
 		type = "setup_match",
@@ -194,3 +201,12 @@ func _on_LaunchGameButton_pressed() -> void:
 
 func _on_DisconnectButton_pressed() -> void:
 	replay_server.disconnect_from_game()
+
+func _on_ShowPeerField_item_selected(index: int) -> void:
+	send_match_info_for_replay()
+	
+	var mode = mode_button.selected
+	if mode == DataMode.STATE_INPUT:
+		state_input_viewer.refresh_replay()
+	elif mode == DataMode.FRAME:
+		frame_viewer.refresh_replay()

@@ -5,6 +5,7 @@
 [ext_resource path="res://addons/godot-rollback-netcode/log_inspector/FrameViewerSettingsDialog.tscn" type="PackedScene" id=3]
 
 [node name="FrameViewer" type="Control"]
+visible = false
 anchor_right = 1.0
 anchor_bottom = 1.0
 script = ExtResource( 1 )
@@ -92,7 +93,6 @@ bbcode_text = "Data Grid"
 text = "Data Grid"
 
 [node name="SettingsDialog" parent="." instance=ExtResource( 3 )]
-visible = false
 
 [connection signal="value_changed" from="VBoxContainer/HBoxContainer/Time" to="." method="_on_Time_value_changed"]
 [connection signal="pressed" from="VBoxContainer/HBoxContainer/StartButton" to="." method="_on_StartButton_pressed"]

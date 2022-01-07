@@ -7,7 +7,6 @@
 [ext_resource path="res://addons/godot-rollback-netcode/log_inspector/ReplayServer.gd" type="Script" id=5]
 
 [node name="LogInspector" type="WindowDialog"]
-visible = true
 margin_right = 981.0
 margin_bottom = 653.0
 window_title = "Rollback log inspector"
@@ -248,6 +247,7 @@ script = ExtResource( 5 )
 [connection signal="pressed" from="MarginContainer/VBoxContainer/ReplayToolbar/ServerContainer/HBoxContainer/StopServerButton" to="." method="_on_StopServerButton_pressed"]
 [connection signal="pressed" from="MarginContainer/VBoxContainer/ReplayToolbar/ServerContainer/HBoxContainer/DisconnectButton" to="." method="_on_DisconnectButton_pressed"]
 [connection signal="pressed" from="MarginContainer/VBoxContainer/ReplayToolbar/ClientContainer/HBoxContainer/LaunchGameButton" to="." method="_on_LaunchGameButton_pressed"]
+[connection signal="item_selected" from="MarginContainer/VBoxContainer/ReplayToolbar/ClientContainer/HBoxContainer/ShowPeerField" to="." method="_on_ShowPeerField_item_selected"]
 [connection signal="game_connected" from="ReplayServer" to="." method="_on_ReplayServer_game_connected"]
 [connection signal="game_disconnected" from="ReplayServer" to="." method="_on_ReplayServer_game_disconnected"]
 [connection signal="started_listening" from="ReplayServer" to="." method="_on_ReplayServer_started_listening"]
