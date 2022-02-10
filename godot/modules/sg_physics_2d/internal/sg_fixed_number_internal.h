@@ -1,5 +1,5 @@
 /*************************************************************************/
-/* Copyright (c) 2021 David Snopek                                       */
+/* Copyright (c) 2021-2022 David Snopek                                  */
 /*                                                                       */
 /* Permission is hereby granted, free of charge, to any person obtaining */
 /* a copy of this software and associated documentation files (the       */
@@ -53,6 +53,7 @@ struct fixed {
 	static const fixed NEG_ONE;
 	static const fixed PI;
 	static const fixed TAU;
+	static const fixed PI_DIV_2;
 	static const fixed PI_DIV_4;
 	static const fixed EPSILON;
 	static const fixed ARITHMETIC_OVERFLOW;
@@ -155,6 +156,17 @@ struct fixed {
 		value = (*this / p_other).value;
 	}
 
+	_FORCE_INLINE_ fixed operator<<(size_t pos) const {
+		return fixed(value << pos);
+	}
+	_FORCE_INLINE_ fixed operator>>(size_t pos) const {
+		return fixed(value >> pos);
+	}
+
+	_FORCE_INLINE_ fixed operator%(fixed const& rhs) const {
+		return fixed(value % rhs.value);
+	}
+
 	_FORCE_INLINE_ bool operator==(const fixed &p_other) const { return value == p_other.value; }
 	_FORCE_INLINE_ bool operator!=(const fixed &p_other) const { return value != p_other.value; }
 	_FORCE_INLINE_ bool operator<=(const fixed &p_other) const { return value <= p_other.value; }
@@ -165,6 +177,7 @@ struct fixed {
 	_FORCE_INLINE_ fixed abs() const { return (value < 0) ? fixed(-value) : *this; }
 	_FORCE_INLINE_ fixed operator-() const { return fixed(-value); }
 	_FORCE_INLINE_ fixed sqrt() const { return fixed(sg_sqrt_64(value << 16)); }
+	_FORCE_INLINE_ fixed sign() const { return value < 0 ? fixed::NEG_ONE : (value > 0 ? fixed::ONE : fixed::ZERO); }
 
 	fixed  sin() const;
 	fixed  cos() const;
