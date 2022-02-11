@@ -65,8 +65,8 @@ func _enter_tree() -> void:
 	add_custom_type("NetworkRandomNumberGenerator", "Node", load("res://addons/godot-rollback-netcode/NetworkRandomNumberGenerator.gd"), null)
 	
 	log_inspector = LogInspector.instance()
-	log_inspector.set_editor_interface(get_editor_interface())
 	get_editor_interface().get_base_control().add_child(log_inspector)
+	log_inspector.set_editor_interface(get_editor_interface())
 	add_tool_menu_item("Log inspector...", self, "open_log_inspector")
 	
 	

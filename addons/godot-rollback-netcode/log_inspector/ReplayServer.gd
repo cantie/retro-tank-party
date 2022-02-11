@@ -7,6 +7,7 @@ const MAIN_RUN_ARGS_SETTING = 'editor/main_run_args'
 
 var server: TCP_Server
 var connection: StreamPeerTCP
+var editor_interface = null
 var game_pid: int = 0
 
 enum Status {
@@ -19,6 +20,9 @@ signal started_listening ()
 signal stopped_listening ()
 signal game_connected ()
 signal game_disconnected ()
+
+func set_editor_interface(_editor_interface) -> void:
+	editor_interface = _editor_interface
 
 func start_listening() -> void:
 	if server:
@@ -53,7 +57,7 @@ func _notification(what: int) -> void:
 		stop_listening()
 		stop_game()
 
-func launch_game(editor_interface: EditorInterface = null) -> void:
+func launch_game() -> void:
 	stop_game()
 	
 	var args_string = "replay"
@@ -72,11 +76,15 @@ func launch_game(editor_interface: EditorInterface = null) -> void:
 		game_pid = OS.execute(OS.get_executable_path(), args, false)
 
 func stop_game() -> void:
-	if game_pid != 0:
+	if editor_interface and editor_interface.is_playing_scene():
+		editor_interface.stop_playing_scene()
+	elif game_pid != 0:
 		OS.kill(game_pid)
 		game_pid = 0
 
 func is_game_started() -> bool:
+	if editor_interface:
+		return editor_interface.is_playing_scene()
 	return game_pid > 0
 
 func is_connected_to_game() -> bool:
