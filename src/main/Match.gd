@@ -29,11 +29,14 @@ func _ready() -> void:
 func setup_match_for_replay(my_peer_id: int, peer_ids: Array, match_info: Dictionary) -> void:
 	# Hack the player list into OnlineMatch.
 	# @todo Handle this with one more layer of indirection?
+	var player_names: Dictionary = match_info.get('player_names', {})
+	var player_session_ids: Dictionary = match_info.get('player_session_ids', {})
 	peer_ids = peer_ids.duplicate()
 	peer_ids.push_front(my_peer_id)
 	OnlineMatch.players.clear()
 	for peer_id in peer_ids:
-		OnlineMatch.players[str(peer_id)] = OnlineMatch.Player.new(str(peer_id), 'Peer %s' % peer_id, peer_id)
+		var session_id = player_session_ids.get(str(peer_id), str(peer_id))
+		OnlineMatch.players[session_id] = OnlineMatch.Player.new(session_id, player_names.get(str(peer_id), 'Peer %s' % peer_id), int(peer_id))
 	
 	scene_setup(null, match_info)
 	scene_start()

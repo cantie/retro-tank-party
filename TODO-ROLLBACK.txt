@@ -5,9 +5,7 @@ MILESTONE 4 (beyond!):
 
  - The "replay" argument should configure both sides: what argument we use, and what argument we detect
    * Some other setting will need to be used pass in additional arguments
- - Invert the model: make the LogInspector the server, and the game the client
-   * Get the actual player names and session ids into the replay
-   * When replay client launches, it should start with the state on the current tick (if we are in the state viewer)
+ - When replay client launches, it should start with the state on the current tick (if we are in the state viewer)
  - Make a FrameViewer version of the replay where it simulates how each frame is actually executed
    * Get debugger working with the replaying version of the game
 

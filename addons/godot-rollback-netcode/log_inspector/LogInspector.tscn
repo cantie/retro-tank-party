@@ -224,6 +224,7 @@ items = [ "Peer 1", null, false, 0, null ]
 selected = 0
 
 [node name="FrameViewer" parent="MarginContainer/VBoxContainer" instance=ExtResource( 4 )]
+visible = true
 anchor_right = 0.0
 anchor_bottom = 0.0
 margin_top = 74.0
