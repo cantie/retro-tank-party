@@ -3,6 +3,7 @@ extends Node
 
 const GAME_ARGUMENTS_SETTING = 'network/rollback/log_inspector/replay_arguments'
 const GAME_PORT_SETTING = 'network/rollback/log_inspector/replay_port'
+const MAIN_RUN_ARGS_SETTING = 'editor/main_run_args'
 
 var server: TCP_Server
 var connection: StreamPeerTCP
@@ -52,18 +53,23 @@ func _notification(what: int) -> void:
 		stop_listening()
 		stop_game()
 
-func launch_game() -> void:
+func launch_game(editor_interface: EditorInterface = null) -> void:
 	stop_game()
-	
-	var args := []
 	
 	var args_string = "replay"
 	if ProjectSettings.has_setting(GAME_ARGUMENTS_SETTING):
 		args_string = ProjectSettings.get_setting(GAME_ARGUMENTS_SETTING)
-	for arg in args_string.split(" "):
-		args.push_front(arg)
 	
-	game_pid = OS.execute(OS.get_executable_path(), args, false)
+	if editor_interface:
+		var old_main_run_args = ProjectSettings.get_setting(MAIN_RUN_ARGS_SETTING)
+		ProjectSettings.set_setting(MAIN_RUN_ARGS_SETTING, old_main_run_args + ' ' + args_string)
+		editor_interface.play_main_scene()
+		ProjectSettings.set_setting(MAIN_RUN_ARGS_SETTING, old_main_run_args)
+	else:
+		var args := []
+		for arg in args_string.split(" "):
+			args.push_back(arg)
+		game_pid = OS.execute(OS.get_executable_path(), args, false)
 
 func stop_game() -> void:
 	if game_pid != 0:

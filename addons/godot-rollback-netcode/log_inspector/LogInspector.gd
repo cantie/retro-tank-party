@@ -27,6 +27,7 @@ enum DataMode {
 const LOADING_LABEL := "Loading %s..."
 
 var log_data: LogData = LogData.new()
+var editor_interface: EditorInterface
 
 var _files_to_load := []
 
@@ -48,14 +49,17 @@ func _ready() -> void:
 		anchor_bottom = 1
 		margin_right = 0
 		margin_bottom = 0
-		setup_log_inspector()
+		start_log_inspector()
 
 func _on_LogInspector_about_to_show() -> void:
-	setup_log_inspector()
+	start_log_inspector()
 
-func setup_log_inspector() -> void:
+func start_log_inspector() -> void:
 	update_replay_server_status()
 	replay_server.start_listening()
+
+func set_editor_interface(_editor_interface: EditorInterface) -> void:
+	editor_interface = _editor_interface
 
 func _on_ClearButton_pressed() -> void:
 	log_data.clear()
@@ -197,7 +201,7 @@ func _on_ReplayServer_game_disconnected() -> void:
 	update_replay_server_status()
 
 func _on_LaunchGameButton_pressed() -> void:
-	replay_server.launch_game()
+	replay_server.launch_game(editor_interface)
 
 func _on_DisconnectButton_pressed() -> void:
 	replay_server.disconnect_from_game()
