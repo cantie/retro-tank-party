@@ -40,6 +40,7 @@ func _ready() -> void:
 	log_data.connect("data_updated", self, "refresh_from_log_data")
 	
 	state_input_viewer.set_replay_server(replay_server)
+	frame_viewer.set_replay_server(replay_server)
 	
 	# Show and make full screen if the scene is being run on its own.
 	if get_parent() == get_tree().root:
@@ -104,7 +105,7 @@ func refresh_from_log_data() -> void:
 	for peer_id in log_data.peer_ids:
 		show_peer_field.add_item("Peer %s" % peer_id, peer_id)
 	
-	send_match_info_for_replay()
+	refresh_replay()
 	state_input_viewer.refresh_from_log_data()
 	frame_viewer.refresh_from_log_data()
 
@@ -150,21 +151,18 @@ func update_replay_server_status() -> void:
 			stop_server_button.disabled = true
 			disconnect_button.disabled = true
 			launch_game_button.disabled = true
-			show_peer_field.disabled = true
 		ReplayServer.Status.LISTENING:
 			replay_server_status_label.text = 'Listening for connections...'
 			start_server_button.disabled = true
 			stop_server_button.disabled = false
 			disconnect_button.disabled = true
 			launch_game_button.disabled = false
-			show_peer_field.disabled = true
 		ReplayServer.Status.CONNECTED:
 			replay_server_status_label.text = 'Connected to game.'
 			start_server_button.disabled = true
 			stop_server_button.disabled = false
 			disconnect_button.disabled = false
 			launch_game_button.disabled = true
-			show_peer_field.disabled = false
 
 func send_match_info_for_replay() -> void:
 	if not replay_server or not replay_server.is_connected_to_game():
@@ -186,6 +184,19 @@ func send_match_info_for_replay() -> void:
 	}
 	replay_server.send_message(msg)
 
+func refresh_replay() -> void:
+	send_match_info_for_replay()
+	
+	var replay_peer_id = show_peer_field.get_selected_id()
+	state_input_viewer.set_replay_peer_id(replay_peer_id)
+	frame_viewer.set_replay_peer_id(replay_peer_id)
+	
+	var mode = mode_button.selected
+	if mode == DataMode.STATE_INPUT:
+		state_input_viewer.refresh_replay()
+	elif mode == DataMode.FRAME:
+		frame_viewer.refresh_replay()
+
 func _on_ReplayServer_started_listening() -> void:
 	update_replay_server_status()
 
@@ -206,10 +217,4 @@ func _on_DisconnectButton_pressed() -> void:
 	replay_server.disconnect_from_game()
 
 func _on_ShowPeerField_item_selected(index: int) -> void:
-	send_match_info_for_replay()
-	
-	var mode = mode_button.selected
-	if mode == DataMode.STATE_INPUT:
-		state_input_viewer.refresh_replay()
-	elif mode == DataMode.FRAME:
-		frame_viewer.refresh_replay()
+	refresh_replay()

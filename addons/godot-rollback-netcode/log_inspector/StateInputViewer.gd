@@ -22,6 +22,9 @@ func set_log_data(_log_data: LogData) -> void:
 func set_replay_server(_replay_server: ReplayServer) -> void:
 	replay_server = _replay_server
 
+func set_replay_peer_id(_replay_peer_id: int) -> void:
+	pass
+
 func refresh_from_log_data() -> void:
 	tick_number_field.max_value = log_data.max_tick
 	_on_TickNumber_value_changed(tick_number_field.value)
