@@ -15,6 +15,7 @@ onready var settings_dialog = $SettingsDialog
 var log_data: LogData
 var replay_server: ReplayServer
 var replay_peer_id: int
+var replay_frame: int = -1
 
 var current_frames := {}
 
@@ -223,6 +224,40 @@ func _get_next_frame_time_for_peer(peer_id: int) -> int:
 		return frame.start_time
 	return 0
 
+func replay_to_current_frame() -> void:
+	if not replay_server and not replay_server.is_connected_to_game():
+		return
+	if log_data.peer_ids.size() == 0:
+		return
+	
+	var current_frame: LogData.FrameData = current_frames[replay_peer_id]
+	
+	if replay_frame == current_frame.frame - 1:
+		_send_replay_frame_data(current_frame)
+	else:
+		replay_server.send_match_info(log_data, replay_peer_id)
+		for frame_id in log_data.frames:
+			if frame_id > current_frame.frame:
+				break
+			var frame_data: LogData.FrameData = log_data.frames[frame_id]
+			_send_replay_frame_data(frame_data)
+	
+	replay_frame = current_frame.frame
+
+func _send_replay_frame_data(frame_data: LogData.FrameData) -> void:
+	pass
+
+func _unhandled_key_input(event: InputEventKey) -> void:
+	if event.pressed:
+		if event.scancode == KEY_PAGEUP:
+			jump_to_next_frame()
+		elif event.scancode == KEY_PAGEDOWN:
+			jump_to_previous_frame()
+		elif event.scancode == KEY_UP:
+			time_field.value += 1
+		elif event.scancode == KEY_DOWN:
+			time_field.value -= 1
+
 func _on_StartButton_pressed() -> void:
 	time_field.value = 0
 
@@ -235,13 +270,5 @@ func _on_DataGraph_cursor_time_changed(cursor_time) -> void:
 func _on_SettingsButton_pressed() -> void:
 	settings_dialog.popup_centered()
 
-func _unhandled_key_input(event: InputEventKey) -> void:
-	if event.pressed:
-		if event.scancode == KEY_PAGEUP:
-			jump_to_next_frame()
-		elif event.scancode == KEY_PAGEDOWN:
-			jump_to_previous_frame()
-		elif event.scancode == KEY_UP:
-			time_field.value += 1
-		elif event.scancode == KEY_DOWN:
-			time_field.value -= 1
+func _on_ReplayToCurrentButton_pressed() -> void:
+	replay_to_current_frame()

@@ -164,30 +164,12 @@ func update_replay_server_status() -> void:
 			disconnect_button.disabled = false
 			launch_game_button.disabled = true
 
-func send_match_info_for_replay() -> void:
-	if not replay_server or not replay_server.is_connected_to_game():
-		return
-	if not log_data or log_data.peer_ids.size() == 0:
-		return
-	
-	var my_peer_id = show_peer_field.get_selected_id()
-	var peer_ids := []
-	for peer_id in log_data.peer_ids:
-		if peer_id != my_peer_id:
-			peer_ids.append(peer_id)
-
-	var msg := {
-		type = "setup_match",
-		my_peer_id = my_peer_id,
-		peer_ids = peer_ids,
-		match_info = log_data.match_info,
-	}
-	replay_server.send_message(msg)
-
 func refresh_replay() -> void:
-	send_match_info_for_replay()
-	
 	var replay_peer_id = show_peer_field.get_selected_id()
+	
+	if replay_server:
+		replay_server.send_match_info(log_data, replay_peer_id)
+	
 	state_input_viewer.set_replay_peer_id(replay_peer_id)
 	frame_viewer.set_replay_peer_id(replay_peer_id)
 	
@@ -205,7 +187,7 @@ func _on_ReplayServer_stopped_listening() -> void:
 
 func _on_ReplayServer_game_connected() -> void:
 	update_replay_server_status()
-	send_match_info_for_replay()
+	refresh_replay()
 
 func _on_ReplayServer_game_disconnected() -> void:
 	update_replay_server_status()

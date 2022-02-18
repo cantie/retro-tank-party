@@ -135,5 +135,6 @@ text = "Data Grid"
 [connection signal="pressed" from="VBoxContainer/HBoxContainer/PreviousFrameButton" to="." method="_on_PreviousFrameButton_pressed"]
 [connection signal="pressed" from="VBoxContainer/HBoxContainer/NextFrameButton" to="." method="_on_NextFrameButton_pressed"]
 [connection signal="pressed" from="VBoxContainer/HBoxContainer/EndButton" to="." method="_on_EndButton_pressed"]
+[connection signal="pressed" from="VBoxContainer/HBoxContainer/ReplayContainer/HBoxContainer/ReplayToCurrentButton" to="." method="_on_ReplayToCurrentButton_pressed"]
 [connection signal="pressed" from="VBoxContainer/HBoxContainer/SettingsButton" to="." method="_on_SettingsButton_pressed"]
 [connection signal="cursor_time_changed" from="VBoxContainer/DataGraph" to="." method="_on_DataGraph_cursor_time_changed"]

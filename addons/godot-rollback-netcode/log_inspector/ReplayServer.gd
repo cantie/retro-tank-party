@@ -1,6 +1,8 @@
 tool
 extends Node
 
+const LogData = preload("res://addons/godot-rollback-netcode/log_inspector/LogData.gd")
+
 const GAME_ARGUMENTS_SETTING = 'network/rollback/log_inspector/replay_arguments'
 const GAME_PORT_SETTING = 'network/rollback/log_inspector/replay_port'
 const MAIN_RUN_ARGS_SETTING = 'editor/main_run_args'
@@ -105,6 +107,25 @@ func send_message(msg: Dictionary) -> void:
 	var data := JSON.print(msg)
 	connection.put_u32(data.length())
 	connection.put_data(data.to_utf8())
+
+func send_match_info(log_data: LogData, my_peer_id: int) -> void:
+	if not is_connected_to_game():
+		return
+	if not log_data or log_data.peer_ids.size() == 0:
+		return
+	
+	var peer_ids := []
+	for peer_id in log_data.peer_ids:
+		if peer_id != my_peer_id:
+			peer_ids.append(peer_id)
+
+	var msg := {
+		type = "setup_match",
+		my_peer_id = my_peer_id,
+		peer_ids = peer_ids,
+		match_info = log_data.match_info,
+	}
+	send_message(msg)
 
 func poll() -> void:
 	if connection:
