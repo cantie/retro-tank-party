@@ -3,9 +3,7 @@ TODO
 
 MILESTONE 4 (beyond!):
 
- - The "replay" argument should configure both sides: what argument we use, and what argument we detect
-   * Some other setting will need to be used pass in additional arguments
- - When replay client launches, it should start with the state on the current tick (if we are in the state viewer)
+ - Merge with latest GRN code (project settings have moved)
 
 == NOT ACTUALLY RELATED TO REPLAY ==
 

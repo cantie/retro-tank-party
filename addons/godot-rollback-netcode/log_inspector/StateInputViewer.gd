@@ -15,6 +15,7 @@ onready var state_mismatches_data_label = $GridContainer/StateMismatchesPanel/St
 
 var log_data: LogData
 var replay_server: ReplayServer
+var replay_peer_id: int
 
 func set_log_data(_log_data: LogData) -> void:
 	log_data = _log_data
@@ -23,7 +24,7 @@ func set_replay_server(_replay_server: ReplayServer) -> void:
 	replay_server = _replay_server
 
 func set_replay_peer_id(_replay_peer_id: int) -> void:
-	pass
+	replay_peer_id = _replay_peer_id
 
 func refresh_from_log_data() -> void:
 	tick_number_field.max_value = log_data.max_tick
@@ -34,9 +35,15 @@ func refresh_replay() -> void:
 		var tick: int = int(tick_number_field.value)
 		var state_frame: LogData.StateData = log_data.state.get(tick, null)
 		if state_frame:
+			var state_data: Dictionary
+			if state_frame.mismatches.has(replay_peer_id):
+				state_data = state_frame.mismatches[replay_peer_id]
+			else:
+				state_data = state_frame.state
+			
 			replay_server.send_message({
 				type = "load_state",
-				state = state_frame.state,
+				state = state_data,
 			})
 
 func clear() -> void:
