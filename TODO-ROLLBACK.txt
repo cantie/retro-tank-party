@@ -6,6 +6,11 @@ MILESTONE 4 (beyond!):
  - The "replay" argument should configure both sides: what argument we use, and what argument we detect
    * Some other setting will need to be used pass in additional arguments
  - When replay client launches, it should start with the state on the current tick (if we are in the state viewer)
+ - Get rid of the confusing "Add User Log" vs "Add Any Log" - ideally, we'd be opening from the file system, just starting at user://detailed_logs/
+ - Fix height on button in frame viewer toolbar
+
+=== SAVE FOR LATER? ===
+
  - Make a FrameViewer version of the replay where it simulates how each frame is actually executed
    * Get debugger working with the replaying version of the game
 
