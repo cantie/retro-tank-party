@@ -6,8 +6,11 @@ MILESTONE 4 (beyond!):
  - The "replay" argument should configure both sides: what argument we use, and what argument we detect
    * Some other setting will need to be used pass in additional arguments
  - When replay client launches, it should start with the state on the current tick (if we are in the state viewer)
+
+== NOT ACTUALLY RELATED TO REPLAY ==
+
  - Get rid of the confusing "Add User Log" vs "Add Any Log" - ideally, we'd be opening from the file system, just starting at user://detailed_logs/
- - Fix height on button in frame viewer toolbar
+ - Update GRN docs to make it clear that 'sync_started' and 'sync_stopped' are emitted on both client and host, and that you can start logging in response to this signal
 
 === SAVE FOR LATER? ===
 

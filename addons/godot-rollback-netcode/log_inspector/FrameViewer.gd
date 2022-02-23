@@ -245,6 +245,7 @@ func replay_to_current_frame() -> void:
 	replay_frame = current_frame.frame
 
 func _send_replay_frame_data(frame_data: LogData.FrameData) -> void:
+	# TODO: send frame data to replay client.
 	pass
 
 func _unhandled_key_input(event: InputEventKey) -> void:
