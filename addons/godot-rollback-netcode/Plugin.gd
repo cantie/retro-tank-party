@@ -10,18 +10,12 @@ func _enter_tree() -> void:
 	project_settings_node.add_project_settings()
 	project_settings_node.free()
 	
-	_add_project_setting('network/rollback/log_inspector/replay_match_scene_path', TYPE_STRING, "", PROPERTY_HINT_FILE, "*.tscn,*.scn")
-	_add_project_setting('network/rollback/log_inspector/replay_match_scene_method', TYPE_STRING, 'setup_match_for_replay')
-	_add_project_setting('network/rollback/log_inspector/replay_arguments', TYPE_STRING, 'replay')
-	_add_project_setting('network/rollback/log_inspector/replay_port', TYPE_INT, 49111)
-	
 	add_autoload_singleton("SyncManager", "res://addons/godot-rollback-netcode/SyncManager.gd")
 	
 	log_inspector = LogInspector.instance()
 	get_editor_interface().get_base_control().add_child(log_inspector)
 	log_inspector.set_editor_interface(get_editor_interface())
 	add_tool_menu_item("Log inspector...", self, "open_log_inspector")
-	
 	
 	if not ProjectSettings.has_setting("input/sync_debug"):
 		var sync_debug = InputEventKey.new()
