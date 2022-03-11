@@ -61,15 +61,9 @@ func poll() -> void:
 		var status = connection.get_status()
 		if status == StreamPeerTCP.STATUS_CONNECTED:
 			while not _setting_up_match and connection.get_available_bytes() >= 4:
-				var length = connection.get_u32()
-				var data = connection.get_utf8_string(length)
-				
-				var result = JSON.parse(data)
-				if result.error != OK:
-					print ("SyncReplay received invalid JSON: %s" % data)
-					continue
-				
-				process_message(result.result)
+				var data = connection.get_var()
+				if data is Dictionary:
+					process_message(data)
 		elif status == StreamPeerTCP.STATUS_NONE:
 			get_tree().quit()
 		elif status == StreamPeerTCP.STATUS_ERROR:

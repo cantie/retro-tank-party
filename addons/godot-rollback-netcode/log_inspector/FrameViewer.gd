@@ -8,6 +8,7 @@ const LogData = preload("res://addons/godot-rollback-netcode/log_inspector/LogDa
 onready var time_field = $VBoxContainer/HBoxContainer/Time
 onready var seek_on_replay_peer_field = $VBoxContainer/HBoxContainer/SeekOnReplayPeerField
 onready var auto_replay_to_current_field = $VBoxContainer/HBoxContainer/ReplayContainer/HBoxContainer/AutoReplayToCurrentField
+onready var replay_to_current_button = $VBoxContainer/HBoxContainer/ReplayContainer/HBoxContainer/ReplayToCurrentButton
 onready var data_graph = $VBoxContainer/VSplitContainer/DataGraph
 onready var data_grid = $VBoxContainer/VSplitContainer/DataGrid
 onready var settings_dialog = $SettingsDialog
@@ -36,16 +37,26 @@ func refresh_from_log_data() -> void:
 	data_grid.refresh_from_log_data()
 	settings_dialog.refresh_from_log_data()
 	
+	replay_frame = -1
 	_on_Time_value_changed(time_field.value)
 
 func set_replay_server(_replay_server: ReplayServer) -> void:
+	if replay_server != null:
+		replay_server.disconnect("game_disconnected", self, "_on_replay_server_game_disconnected")
+	
 	replay_server = _replay_server
+	
+	if replay_server:
+		replay_server.connect("game_disconnected", self, "_on_replay_server_game_disconnected")
+
+func _on_replay_server_game_disconnected() -> void:
+	replay_frame = -1
 
 func set_replay_peer_id(_replay_peer_id: int) -> void:
 	replay_peer_id = _replay_peer_id
 
 func refresh_replay() -> void:
-	pass
+	replay_to_current_frame()
 
 func clear() -> void:
 	current_frames.clear()
@@ -65,6 +76,9 @@ func _on_Time_value_changed(value: float) -> void:
 	
 	data_graph.cursor_time = time
 	data_grid.cursor_time = time
+	
+	if auto_replay_to_current_field.pressed:
+		replay_to_current_frame()
 
 func _on_PreviousFrameButton_pressed() -> void:
 	jump_to_previous_frame()
@@ -130,18 +144,24 @@ func replay_to_current_frame() -> void:
 		return
 	if log_data.peer_ids.size() == 0:
 		return
+	if not current_frames.has(replay_peer_id):
+		return
 	
 	var current_frame_id: int = current_frames[replay_peer_id]
 	
-	if replay_frame == current_frame_id - 1:
-		_send_replay_frame_data(log_data.get_frame(replay_peer_id, current_frame_id))
-	else:
+	# If replay_frame is ahead of current frame, we have to replay from the beginning.
+	if replay_frame > current_frame_id:
+		replay_frame = -1
+	
+	if replay_frame == -1:
 		replay_server.send_match_info(log_data, replay_peer_id)
-		for frame_id in range(log_data.frames[replay_peer_id].size()):
-			if frame_id > current_frame_id:
-				break
-			var frame_data: LogData.FrameData = log_data.get_frame(replay_peer_id, frame_id)
-			_send_replay_frame_data(frame_data)
+	
+	replay_frame += 1
+	for frame_id in range(replay_frame, log_data.frames[replay_peer_id].size()):
+		if frame_id > current_frame_id:
+			break
+		var frame_data: LogData.FrameData = log_data.get_frame(replay_peer_id, frame_id)
+		_send_replay_frame_data(frame_data)
 	
 	replay_frame = current_frame_id
 
@@ -161,7 +181,7 @@ func _send_replay_frame_data(frame_data: LogData.FrameData) -> void:
 		if tick > 0:
 			# Get input for local peer.
 			input_frames_received[replay_peer_id] = {
-				tick: log_data.input[tick].get_input_for_peer(replay_peer_id),
+				tick: log_data.input[tick].get_input_for_peer(replay_peer_id, replay_peer_id),
 			}
 	
 	# Get input received from each of the peers.
@@ -171,10 +191,10 @@ func _send_replay_frame_data(frame_data: LogData.FrameData) -> void:
 			var peer_input_ticks := {}
 			for tick in ticks:
 				tick = int(tick)
-				peer_input_ticks[tick] = log_data.input[tick].get_input_for_peer(peer_id)
+				peer_input_ticks[tick] = log_data.input[tick].get_input_for_peer(peer_id, replay_peer_id)
 			input_frames_received[peer_id] = peer_input_ticks
-	
 	msg['input_frames_received'] = input_frames_received
+	
 	replay_server.send_message(msg)
 
 func _unhandled_key_input(event: InputEventKey) -> void:
@@ -202,3 +222,6 @@ func _on_SettingsButton_pressed() -> void:
 
 func _on_ReplayToCurrentButton_pressed() -> void:
 	replay_to_current_frame()
+
+func _on_AutoReplayToCurrentField_toggled(button_pressed: bool) -> void:
+	replay_to_current_button.disabled = button_pressed

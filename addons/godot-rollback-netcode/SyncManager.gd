@@ -1099,7 +1099,7 @@ func _physics_process(_delta: float) -> void:
 	input_tick += 1
 	current_tick += 1
 	
-	if mechanized:
+	if not mechanized:
 		var input_frame := _get_or_create_input_frame(input_tick)
 		# The underlying error would have already been reported in
 		# _get_or_create_input_frame() so we can just return here.

@@ -157,5 +157,6 @@ size_flags_vertical = 3
 [connection signal="pressed" from="VBoxContainer/HBoxContainer/NextFrameButton" to="." method="_on_NextFrameButton_pressed"]
 [connection signal="pressed" from="VBoxContainer/HBoxContainer/EndButton" to="." method="_on_EndButton_pressed"]
 [connection signal="pressed" from="VBoxContainer/HBoxContainer/ReplayContainer/HBoxContainer/ReplayToCurrentButton" to="." method="_on_ReplayToCurrentButton_pressed"]
+[connection signal="toggled" from="VBoxContainer/HBoxContainer/ReplayContainer/HBoxContainer/AutoReplayToCurrentField" to="." method="_on_AutoReplayToCurrentField_toggled"]
 [connection signal="pressed" from="VBoxContainer/HBoxContainer/SettingsButton" to="." method="_on_SettingsButton_pressed"]
 [connection signal="cursor_time_changed" from="VBoxContainer/VSplitContainer/DataGraph" to="." method="_on_DataGraph_cursor_time_changed"]
