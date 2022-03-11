@@ -52,6 +52,11 @@ class InputData:
 		
 		mismatches[peer_id] = sorted_peer_input
 		return false
+	
+	func get_input_for_peer(peer_id: int) -> Dictionary:
+		if mismatches.has(peer_id):
+			return mismatches[peer_id]
+		return input
 
 class FrameData:
 	var frame: int

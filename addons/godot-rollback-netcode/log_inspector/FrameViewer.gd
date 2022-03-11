@@ -131,23 +131,51 @@ func replay_to_current_frame() -> void:
 	if log_data.peer_ids.size() == 0:
 		return
 	
-	var current_frame: LogData.FrameData = current_frames[replay_peer_id]
+	var current_frame_id: int = current_frames[replay_peer_id]
 	
-	if replay_frame == current_frame.frame - 1:
-		_send_replay_frame_data(current_frame)
+	if replay_frame == current_frame_id - 1:
+		_send_replay_frame_data(log_data.get_frame(replay_peer_id, current_frame_id))
 	else:
 		replay_server.send_match_info(log_data, replay_peer_id)
-		for frame_id in log_data.frames:
-			if frame_id > current_frame.frame:
+		for frame_id in range(log_data.frames[replay_peer_id].size()):
+			if frame_id > current_frame_id:
 				break
-			var frame_data: LogData.FrameData = log_data.frames[frame_id]
+			var frame_data: LogData.FrameData = log_data.get_frame(replay_peer_id, frame_id)
 			_send_replay_frame_data(frame_data)
 	
-	replay_frame = current_frame.frame
+	replay_frame = current_frame_id
 
 func _send_replay_frame_data(frame_data: LogData.FrameData) -> void:
-	# TODO: send frame data to replay client.
-	pass
+	var frame_type: int = frame_data.data['frame_type']
+	
+	var msg := {
+		type = "execute_frame",
+		frame_type = frame_type,
+		rollback_ticks = frame_data.data.get('rollback_ticks', 0),
+	}
+	
+	var input_frames_received := {}
+	
+	if frame_type == Logger.FrameType.TICK:
+		var tick = int(frame_data.data['tick'])
+		if tick > 0:
+			# Get input for local peer.
+			input_frames_received[replay_peer_id] = {
+				tick: log_data.input[tick].get_input_for_peer(replay_peer_id),
+			}
+	
+	# Get input received from each of the peers.
+	for peer_id in log_data.peer_ids:
+		var ticks: Array = frame_data.data.get("remote_ticks_received_from_%s" % peer_id, [])
+		if ticks.size() > 0:
+			var peer_input_ticks := {}
+			for tick in ticks:
+				tick = int(tick)
+				peer_input_ticks[tick] = log_data.input[tick].get_input_for_peer(peer_id)
+			input_frames_received[peer_id] = peer_input_ticks
+	
+	msg['input_frames_received'] = input_frames_received
+	replay_server.send_message(msg)
 
 func _unhandled_key_input(event: InputEventKey) -> void:
 	if event.pressed:
