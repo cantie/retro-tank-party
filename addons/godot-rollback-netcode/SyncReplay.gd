@@ -143,6 +143,9 @@ func _do_execute_frame(msg: Dictionary) -> void:
 		Logger.FrameType.TICK:
 			SyncManager.execute_mechanized_tick()
 		
+		Logger.FrameType.INTERPOLATION_FRAME:
+			SyncManager.execute_mechanized_interpolation_frame(msg['delta'])
+		
 		_:
 			SyncManager.reset_mechanized_data()
 

@@ -17,6 +17,7 @@ var log_data: LogData
 var replay_server: ReplayServer
 var replay_peer_id: int
 var replay_frame: int = -1
+var replay_last_interpolation_frame_time: int = 0
 
 var current_frames := {}
 var _replay_peer_id: int
@@ -73,6 +74,8 @@ func _on_Time_value_changed(value: float) -> void:
 		var frame: LogData.FrameData = log_data.get_frame_by_time(peer_id, log_data.start_time + time)
 		if frame:
 			current_frames[peer_id] = frame.frame
+		else:
+			current_frames[peer_id] = 0
 	
 	data_graph.cursor_time = time
 	data_grid.cursor_time = time
@@ -153,7 +156,9 @@ func replay_to_current_frame() -> void:
 	if replay_frame > current_frame_id:
 		replay_frame = -1
 	
+	# Reset replay.
 	if replay_frame == -1:
+		replay_last_interpolation_frame_time = 0
 		replay_server.send_match_info(log_data, replay_peer_id)
 	
 	replay_frame += 1
@@ -183,6 +188,16 @@ func _send_replay_frame_data(frame_data: LogData.FrameData) -> void:
 			input_frames_received[replay_peer_id] = {
 				tick: log_data.input[tick].get_input_for_peer(replay_peer_id, replay_peer_id),
 			}
+		replay_last_interpolation_frame_time = frame_data.data['end_time']
+	elif frame_type == Logger.FrameType.INTERPOLATION_FRAME:
+		var start_time = frame_data.data['start_time']
+		if replay_last_interpolation_frame_time > 0:
+			msg['delta'] = (start_time - replay_last_interpolation_frame_time) / 1000.0
+		else:
+			# If we can't know the actual delta, let's use a small value that's
+			# bigger than zero, arbitrarily 1.0/120.0
+			msg['delta'] = 0.00833333
+		replay_last_interpolation_frame_time = start_time
 	
 	# Get input received from each of the peers.
 	for peer_id in log_data.peer_ids:

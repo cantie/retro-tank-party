@@ -1091,6 +1091,8 @@ func _physics_process(_delta: float) -> void:
 			if _logger:
 				_logger.skip_tick(Logger.SkipReason.ADVANTAGE_ADJUSTMENT, start_time)
 			return
+	else:
+		_cleanup_buffers()
 	
 	#####
 	# STEP 3: GATHER INPUT AND RUN CURRENT TICK
@@ -1361,6 +1363,12 @@ func _process_mechanized_input() -> void:
 func execute_mechanized_tick() -> void:
 	_process_mechanized_input()
 	_physics_process(tick_time)
+	reset_mechanized_data()
+
+func execute_mechanized_interpolation_frame(delta: float) -> void:
+	_ran_physics_process = false
+	_process(delta)
+	_process_mechanized_input()
 	reset_mechanized_data()
 
 func sort_dictionary_keys(input: Dictionary) -> Dictionary:
