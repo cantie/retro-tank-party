@@ -1371,6 +1371,10 @@ func execute_mechanized_interpolation_frame(delta: float) -> void:
 	_process_mechanized_input()
 	reset_mechanized_data()
 
+func execute_mechanized_interframe() -> void:
+	_process_mechanized_input()
+	reset_mechanized_data()
+
 func sort_dictionary_keys(input: Dictionary) -> Dictionary:
 	var output := {}
 	
