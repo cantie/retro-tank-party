@@ -228,6 +228,10 @@ func _enter_tree() -> void:
 	project_settings_node.add_project_settings()
 	project_settings_node.free()
 
+func _exit_tree() -> void:
+	stop()
+	stop_logging()
+
 func _ready() -> void:
 	#get_tree().connect("network_peer_disconnected", self, "remove_peer")
 	#get_tree().connect("server_disconnected", self, "stop")
@@ -747,7 +751,7 @@ func _cleanup_buffers() -> bool:
 	
 	while state_hashes.size() > (max_buffer_size * 2):
 		var state_hash_to_retire: StateHashFrame = state_hashes[0]
-		if not state_hash_to_retire.is_complete(peers):
+		if not state_hash_to_retire.is_complete(peers) and not mechanized:
 			var missing: Array = state_hash_to_retire.get_missing_peers(peers)
 			var message = "Attempting to retire state hash frame %s, but we're still missing hashes (missing peer(s): %s)" % [state_hash_to_retire.tick, missing]
 			push_warning(message)
@@ -1366,6 +1370,7 @@ func execute_mechanized_tick() -> void:
 	reset_mechanized_data()
 
 func execute_mechanized_interpolation_frame(delta: float) -> void:
+	_update_input_complete_tick()
 	_ran_physics_process = false
 	_process(delta)
 	_process_mechanized_input()
