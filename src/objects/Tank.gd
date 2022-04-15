@@ -138,8 +138,6 @@ func _ready():
 	
 	set_weapon_type(BaseWeaponType)
 	
-	SyncManager.connect("scene_spawned", self, "_on_SyncManager_scene_spawned")
-	
 	# If testing tank on its own, make player controlled
 	if get_tree().current_scene == self:
 		player_controlled = true
@@ -158,11 +156,8 @@ func _network_spawn_preprocess(data: Dictionary) -> Dictionary:
 	data['team'] = player.team
 	return data
 
-func _on_SyncManager_scene_spawned(spawned_name, spawned_node, scene, data):
-	if spawned_name == 'Player' + name + 'Ability':
-		_setup_ability(spawned_node, data['ability_type'])
-
 func _network_spawn(data: Dictionary) -> void:
+	data = _network_spawn_preprocess(data)
 	dead = false
 	game = get_node(data['game'])
 	
@@ -184,7 +179,7 @@ func set_tank_color(player_index: int) -> void:
 	body_visual.material = visual_material
 	turret_visual.material = visual_material
 
-func _network_despawn() -> void:
+func _network_prepare_for_reuse() -> void:
 	# Reset some stuff for when this node is reused
 	set_weapon_type(BaseWeaponType)
 	if ability:
@@ -501,9 +496,11 @@ func _hook_default_use_ability(event: TankEvent):
 		return
 	
 	if held_ability_type:
-		ability = SyncManager.spawn('Ability', self, held_ability_type.ability_scene, {
+		ability = SyncManager.spawn('Ability', self, held_ability_type.ability_scene, true)
+		ability._network_spawn({
 			ability_type = held_ability_type,
-		}, true, 'Player' + name + 'Ability')
+		})
+		_setup_ability(ability, held_ability_type)
 		
 		ability.use_ability()
 		
@@ -512,7 +509,6 @@ func _hook_default_use_ability(event: TankEvent):
 			held_ability_type = null
 		_update_ability_label()
 
-# Called via the 'scene_spawned' signal when the ability is created.
 func _setup_ability(new_ability, new_ability_type):
 	if ability:
 		_on_ability_finished(ability)
@@ -581,7 +577,8 @@ func _hook_default_die(event: DieEvent) -> void:
 	if not dead:
 		dead = true
 		
-		SyncManager.spawn("Explosion", get_parent(), Explosion, {
+		var explosion = SyncManager.spawn("Explosion", get_parent(), Explosion)
+		explosion._network_spawn({
 			fixed_position = fixed_position.copy(),
 			scale = ONE_POINT_FIVE,
 			type = "fire",

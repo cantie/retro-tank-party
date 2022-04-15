@@ -36,7 +36,7 @@ func _network_spawn(data: Dictionary) -> void:
 				position = global_position,
 			})
 
-func _network_despawn() -> void:
+func _network_prepare_for_reuse() -> void:
 	animation_player.stop(true)
 
 func _on_AnimationPlayer_animation_finished(anim_name: String) -> void:

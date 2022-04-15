@@ -19,7 +19,9 @@ func detach_weapon() -> void:
 func create_bullet(info: Dictionary = {}):
 	info['tank'] = tank
 	info['weapon_type'] = weapon_type
-	return SyncManager.spawn("Bullet", tank.get_parent(), weapon_type.bullet_scene, info)
+	var bullet = SyncManager.spawn("Bullet", tank.get_parent(), weapon_type.bullet_scene)
+	bullet._network_spawn(info)
+	return bullet
 
 func fire_weapon() -> void:
 	create_bullet()

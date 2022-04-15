@@ -9,7 +9,7 @@ func setup_ability(_tank, _ability_type) -> void:
 	tank = _tank
 	ability_type = _ability_type
 
-func _network_despawn() -> void:
+func _network_prepare_for_reuse() -> void:
 	mark_finished()
 
 func attach_ability() -> void:

@@ -47,9 +47,6 @@ class Player:
 	static func from_dict(data: Dictionary) -> Player:
 		return Player.new(data['peer_id'], data['name'], data['index'], data['team'])
 
-func _ready() -> void:
-	SyncManager.connect("scene_spawned", self, "_on_SyncManager_scene_spawned")
-
 # Initializes the game so that it is ready to really start.
 func game_setup(_players: Dictionary, map_path: String, random_seed: int, _player_start_transforms = null) -> void:
 	if SyncManager.started:
@@ -109,9 +106,11 @@ func respawn_player(peer_id: int, start_transform = null) -> void:
 	else:
 		spawn_data['start_transform'] = player_start_transforms[player.index - 1]
 	
-	var tank = SyncManager.spawn(str(peer_id), players_node, TankScene, spawn_data, false, "Tank")
+	var tank = SyncManager.spawn(str(peer_id), players_node, TankScene, false)
+	tank._network_spawn(spawn_data)
+	_setup_tank(tank, spawn_data)
 
-func _on_SyncManager_scene_spawned(name: String, spawned_node: Node, scene: PackedScene, data: Dictionary) -> void:
+func _setup_tank(spawned_node: Node, data: Dictionary) -> void:
 	if name == 'Tank':
 		var peer_id = data['peer_id']
 		if players.has(peer_id):

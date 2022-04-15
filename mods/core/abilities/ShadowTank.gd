@@ -11,6 +11,7 @@ func _network_spawn_preprocess(data: Dictionary) -> Dictionary:
 	}
 
 func _network_spawn(data: Dictionary) -> void:
+	data = _network_spawn_preprocess(data)
 	set_tank_color(data['player_index'])
 	fixed_transform = data['fixed_transform']
 	turret_pivot.fixed_rotation = data['_turret_rotation']

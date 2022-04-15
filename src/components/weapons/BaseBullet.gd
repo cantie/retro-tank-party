@@ -24,6 +24,7 @@ func _network_spawn_preprocess(data: Dictionary) -> Dictionary:
 	}
 
 func _network_spawn(data: Dictionary) -> void:
+	data = _network_spawn_preprocess(data)
 	tank = get_node(data['tank'])
 	player_id = data['player_id']
 	player_index = data['player_index']
@@ -34,7 +35,7 @@ func _network_spawn(data: Dictionary) -> void:
 	lifetime_timer.start()
 	sync_to_physics_engine()
 
-func _network_despawn() -> void:
+func _network_prepare_for_reuse() -> void:
 	lifetime_timer.stop()
 
 func _network_process(_input: Dictionary) -> void:
@@ -59,7 +60,8 @@ func explode(type: String):
 	if is_queued_for_deletion() or not is_inside_tree():
 		return
 	
-	SyncManager.spawn("Explosion", get_parent(), Explosion, {
+	var explosion = SyncManager.spawn("Explosion", get_parent(), Explosion)
+	explosion._network_spawn({
 		fixed_position = fixed_position.copy(),
 		scale = SGFixed.HALF,
 		type = type,

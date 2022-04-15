@@ -22,8 +22,8 @@ func _network_spawn(data: Dictionary) -> void:
 	line.default_color = Globals.art.get_tank_color(player_index)
 	line.add_point(fixed_position.to_float())
 
-func _network_despawn() -> void:
-	._network_despawn()
+func _network_prepare_for_reuse() -> void:
+	._network_prepare_for_reuse()
 	line.clear_points()
 	ray_cast.clear_exceptions()
 

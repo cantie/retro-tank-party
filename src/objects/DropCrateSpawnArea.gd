@@ -42,10 +42,11 @@ func spawn_drop_crate() -> void:
 		var crate_position = detector.detect_free_space()
 		var contents = possible_contents[rng.randi() % possible_contents.size()]
 		
-		SyncManager.spawn('DropCrate', spawns, DropCrate, {
+		var crate = SyncManager.spawn('DropCrate', spawns, DropCrate, false)
+		crate._network_spawn({
 			fixed_position = crate_position.copy(),
 			contents_path = contents.resource_path,
-		}, false)
+		})
 
 func _on_DropTimer_timeout() -> void:
 	spawn_drop_crate()

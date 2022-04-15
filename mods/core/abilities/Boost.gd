@@ -25,7 +25,8 @@ func detach_ability() -> void:
 func spawn() -> void:
 	# We start the name with 0 so that it gets put in the tree earlier than
 	# any of the tank nodes.
-	SyncManager.spawn("0ShadowTank", tank.get_parent(), ShadowTank, {
+	var shadow_tank = SyncManager.spawn("0ShadowTank", tank.get_parent(), ShadowTank)
+	shadow_tank._network_process({
 		tank = tank,
 	})
 

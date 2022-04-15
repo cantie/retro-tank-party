@@ -10,7 +10,7 @@ func _network_spawn(data: Dictionary) -> void:
 	fixed_position = data['fixed_position']
 	timer.start()
 
-func _network_despawn() -> void:
+func _network_prepare_for_reuse() -> void:
 	timer.stop()
 	animation_player.stop(true)
 	modulate = Color(1.0, 1.0, 1.0, 1.0)

@@ -19,13 +19,15 @@ func open_crate() -> void:
 	if get_parent() == null:
 		return
 	
-	SyncManager.spawn('GreenTwigs', get_parent(), GreenTwigs, {
+	var green_twigs = SyncManager.spawn('GreenTwigs', get_parent(), GreenTwigs)
+	green_twigs._network_spawn({
 		fixed_position = fixed_position.copy(),
 	})
 	
-	SyncManager.spawn('Powerup', get_parent(), contents.get_pickup_scene(), {
+	var powerup = SyncManager.spawn('Powerup', get_parent(), contents.get_pickup_scene(), false)
+	powerup._network_spawn({
 		fixed_position = fixed_position.copy(),
 		pickup_path = contents.resource_path,
-	}, false)
+	})
 	
 	SyncManager.despawn(self)
