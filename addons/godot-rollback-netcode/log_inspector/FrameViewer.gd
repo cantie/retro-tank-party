@@ -57,6 +57,7 @@ func set_replay_peer_id(_replay_peer_id: int) -> void:
 	replay_peer_id = _replay_peer_id
 
 func refresh_replay() -> void:
+	replay_frame = -1
 	replay_to_current_frame()
 
 func clear() -> void:
