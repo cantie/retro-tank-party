@@ -20,7 +20,6 @@ var replay_frame: int = -1
 var replay_last_interpolation_frame_time: int = 0
 
 var current_frames := {}
-var _replay_peer_id: int
 
 func set_log_data(_log_data: LogData) -> void:
 	log_data = _log_data
@@ -58,7 +57,8 @@ func set_replay_peer_id(_replay_peer_id: int) -> void:
 
 func refresh_replay() -> void:
 	replay_frame = -1
-	replay_to_current_frame()
+	if auto_replay_to_current_field.pressed:
+		replay_to_current_frame()
 
 func clear() -> void:
 	current_frames.clear()
@@ -241,3 +241,5 @@ func _on_ReplayToCurrentButton_pressed() -> void:
 
 func _on_AutoReplayToCurrentField_toggled(button_pressed: bool) -> void:
 	replay_to_current_button.disabled = button_pressed
+	if button_pressed:
+		replay_to_current_frame()

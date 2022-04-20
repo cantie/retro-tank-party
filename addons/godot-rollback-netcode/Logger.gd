@@ -45,7 +45,7 @@ func start(log_file_name: String, peer_id: int, match_info: Dictionary = {}) -> 
 	if not _started:
 		var err: int
 		
-		err = _log_file.open(log_file_name, File.WRITE)
+		err = _log_file.open_compressed(log_file_name, File.WRITE, File.COMPRESSION_ZSTD)
 		if err != OK:
 			return err
 		

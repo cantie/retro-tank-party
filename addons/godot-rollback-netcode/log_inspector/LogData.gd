@@ -128,8 +128,7 @@ func load_log_file(path: String) -> void:
 		return
 	
 	var file = File.new()
-	var error = file.open(path, File.READ)
-	if file.open(path, File.READ) != OK:
+	if file.open_compressed(path, File.READ, File.COMPRESSION_ZSTD) != OK:
 		emit_signal("load_error", "Unable to open file for reading: %s" % path)
 		return
 	
