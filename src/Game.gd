@@ -111,21 +111,20 @@ func respawn_player(peer_id: int, start_transform = null) -> void:
 	_setup_tank(tank, spawn_data)
 
 func _setup_tank(spawned_node: Node, data: Dictionary) -> void:
-	if name == 'Tank':
-		var peer_id = data['peer_id']
-		if players.has(peer_id):
-			players_alive[peer_id] = players[peer_id]
-		
-		if not spawned_node.is_connected("player_dead", self, "_on_player_dead"):
-			spawned_node.connect("player_dead", self, "_on_player_dead", [spawned_node])
-		
-		if peer_id == SyncManager.network_adaptor.get_network_unique_id():
-			spawned_node.player_controlled = true
-			_setup_player_camera(spawned_node.global_position)
-			spawned_node.camera = player_camera
-			_setup_player_listener(spawned_node)
-		
-		emit_signal("player_spawned", spawned_node)
+	var peer_id = data['peer_id']
+	if players.has(peer_id):
+		players_alive[peer_id] = players[peer_id]
+	
+	if not spawned_node.is_connected("player_dead", self, "_on_player_dead"):
+		spawned_node.connect("player_dead", self, "_on_player_dead", [spawned_node])
+	
+	if peer_id == SyncManager.network_adaptor.get_network_unique_id():
+		spawned_node.player_controlled = true
+		_setup_player_camera(spawned_node.global_position)
+		spawned_node.camera = player_camera
+		_setup_player_listener(spawned_node)
+	
+	emit_signal("player_spawned", spawned_node)
 
 func get_tank(player_id: int):
 	return players_node.get_node(str(player_id))

@@ -584,6 +584,18 @@ func _call_load_state(state: Dictionary) -> void:
 		if node and node.has_method('_load_state'):
 			node._load_state(state[node_path])
 
+func _call_load_state_forward(state: Dictionary) -> void:
+	for node_path in state:
+		if node_path == '$':
+			continue
+		var node = get_node_or_null(node_path)
+		assert(node != null, "Unable to restore state to missing node: %s" % node_path)
+		if node:
+			if node.has_method('_load_state_forward'):
+				node._load_state_forward(state[node_path])
+			elif node.has_method('_load_state'):
+				node._load_state(state[node_path])
+
 func _call_interpolate_state(weight: float) -> void:
 	for node_path in _interpolation_state:
 		if node_path == '$':
@@ -975,8 +987,8 @@ func _physics_process(_delta: float) -> void:
 	
 	# We need to resimulate the current tick since we did a partial rollback
 	# to the previous tick in order to interpolate.
-	if interpolation and current_tick > 1:
-		rollback_ticks = max(rollback_ticks, 1)
+#	if interpolation and current_tick > 1:
+#		rollback_ticks = max(rollback_ticks, 1)
 	
 	if rollback_ticks > 0:
 		if _logger:
@@ -1148,7 +1160,7 @@ func _physics_process(_delta: float) -> void:
 			
 			# Return to state from the previous frame, so we can interpolate
 			# towards the state of the current frame.
-			_call_load_state(state_buffer[-2].data)
+#			_call_load_state(state_buffer[-2].data)
 	
 	_time_since_last_tick = 0.0
 	_ran_physics_process = true

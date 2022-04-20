@@ -130,4 +130,4 @@ func _do_setup_match2(my_peer_id: int, peer_ids: Array, match_info: Dictionary) 
 
 func _do_load_state(state: Dictionary) -> void:
 	state = SyncManager.hash_serializer.unserialize(state)
-	SyncManager._call_load_state(state)
+	SyncManager._call_load_state_forward(state)
