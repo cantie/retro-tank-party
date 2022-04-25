@@ -55,7 +55,7 @@ var weapon_type: WeaponType
 var weapon
 var held_ability_type: AbilityType
 var ability_charges := 0
-var ability
+var ability setget set_ability
 
 var player_index: int
 
@@ -147,6 +147,9 @@ func _notification(what) -> void:
 		hooks.clear()
 
 func _network_spawn_preprocess(data: Dictionary) -> Dictionary:
+	if data.has("preprocessed"):
+		return data
+	
 	data['game'] = data['game'].get_path()
 	var player = data['player']
 	data.erase('player')
@@ -154,6 +157,7 @@ func _network_spawn_preprocess(data: Dictionary) -> Dictionary:
 	data['peer_id'] = player.peer_id
 	data['player_name'] = player.name
 	data['team'] = player.team
+	data['preprocessed'] = true
 	return data
 
 func _network_spawn(data: Dictionary) -> void:
@@ -434,6 +438,7 @@ func _save_state() -> Dictionary:
 		weapon_type = weapon_type,
 		held_ability_type = held_ability_type,
 		ability_charges = ability_charges,
+		ability_path = ability.get_path() if ability else '',
 	}
 	Utils.save_node_transform_state(self, state)
 	return state
@@ -448,6 +453,7 @@ func _load_state(state: Dictionary) -> void:
 	set_weapon_type(state['weapon_type'])
 	set_held_ability_type(state['held_ability_type'])
 	ability_charges = state['ability_charges']
+	self.ability = null if state['ability_path'] == '' else get_node(state['ability_path'])
 	
 	_update_ability_label()
 	sync_to_physics_engine()
@@ -496,27 +502,31 @@ func _hook_default_use_ability(event: TankEvent):
 		return
 	
 	if held_ability_type:
-		ability = SyncManager.spawn('Ability', self, held_ability_type.ability_scene, true)
-		ability._network_spawn({
-			ability_type = held_ability_type,
-		})
-		_setup_ability(ability, held_ability_type)
+		var ability_spawned = SyncManager.spawn('Ability', self, held_ability_type.ability_scene, true)
+		if ability_spawned.has_method("_network_spawn"):
+			ability_spawned._network_spawn({
+				ability_type = held_ability_type,
+			})
+		self.ability = ability_spawned
 		
-		ability.use_ability()
+		ability_spawned.use_ability()
 		
 		ability_charges -= 1
 		if ability_charges == 0:
 			held_ability_type = null
 		_update_ability_label()
 
-func _setup_ability(new_ability, new_ability_type):
+func set_ability(new_ability) -> void:
+	if new_ability == ability:
+		return
+	
 	if ability:
 		_on_ability_finished(ability)
-	
-	# We need to set the 'ability' member variable here for the case where
-	# the ability spawned by the SpawnManager due to a rollback.
 	ability = new_ability
-	
+	if ability:
+		_setup_ability(ability, held_ability_type)
+
+func _setup_ability(new_ability, new_ability_type):
 	ability.connect("finished", self, "_on_ability_finished", [ability])
 	ability.setup_ability(self, new_ability_type)
 	ability.attach_ability()
@@ -525,7 +535,8 @@ func _on_ability_finished(old_ability) -> void:
 	old_ability.disconnect("finished", self, "_on_ability_finished")
 	
 	old_ability.detach_ability()
-	SyncManager.despawn(old_ability)
+	if old_ability.is_inside_tree():
+		SyncManager.despawn(old_ability)
 	
 	if old_ability == ability:
 		ability = null

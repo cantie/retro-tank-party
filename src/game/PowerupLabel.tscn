@@ -14,9 +14,6 @@ margin_bottom = 13.0
 custom_fonts/font = SubResource( 1 )
 text = "Weapon"
 script = ExtResource( 2 )
-__meta__ = {
-"_edit_use_anchors_": false
-}
 
 [node name="ColorRect" type="ColorRect" parent="."]
 show_behind_parent = true

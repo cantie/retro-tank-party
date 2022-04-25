@@ -5,8 +5,13 @@ var target_seek_speed := 21845
 var target_path: String = ''
 
 func _network_spawn_preprocess(info: Dictionary) -> Dictionary:
-	info['target_path'] = str(info['target'].get_path()) if info['target'] != null else ''
-	return info
+	if info.has("preprocessed"):
+		return info
+	
+	var res := ._network_spawn_preprocess(info)
+	res['target_path'] = str(info['target'].get_path()) if info['target'] != null else ''
+	res['preprocessed'] = true
+	return res
 
 func _network_spawn(info: Dictionary) -> void:
 	info = _network_spawn_preprocess(info)
