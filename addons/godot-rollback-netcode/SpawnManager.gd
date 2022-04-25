@@ -114,12 +114,10 @@ func despawn(node: Node) -> void:
 
 func _network_process(_data: Dictionary) -> void:
 	var to_remove: = []
-	var keys := waiting_before_remove.keys()
-	var values := waiting_before_remove.values()
-	for i in values.size():
-		values[i] += 1
-		if values[i] > ticks_before_remove:
-			to_remove.append(keys[i])
+	for key in waiting_before_remove.keys():
+		waiting_before_remove[key] += 1
+		if waiting_before_remove[key] > ticks_before_remove:
+			to_remove.append(key)
 	for remove_node_path in to_remove:
 		_delete_node(remove_node_path)
 
