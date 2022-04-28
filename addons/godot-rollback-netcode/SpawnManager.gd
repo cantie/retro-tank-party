@@ -5,16 +5,18 @@ const REUSE_DESPAWNED_NODES_SETTING := 'network/rollback/spawn_manager/reuse_des
 var spawn_records := {}
 var spawned_nodes := {}
 var retired_nodes := {}
+var interpolation_nodes := {}
 var counter := {}
 var waiting_before_remove: = {}
 var ticks_before_remove: = 20
+var interpolation := false
 
 var reuse_despawned_nodes := false
 
 func _ready() -> void:
 	if ProjectSettings.has_setting(REUSE_DESPAWNED_NODES_SETTING):
 		reuse_despawned_nodes = ProjectSettings.get_setting(REUSE_DESPAWNED_NODES_SETTING)
-	
+	interpolation = ProjectSettings.get_setting('network/rollback/interpolation')
 	ticks_before_remove = ProjectSettings.get_setting("network/rollback/max_buffer_size")
 	
 	add_to_group('network_sync')
@@ -27,6 +29,8 @@ func reset() -> void:
 	for node in spawned_nodes.values():
 		node.queue_free()
 	spawned_nodes.clear()
+	
+	interpolation_nodes.clear()
 	
 	for nodes in retired_nodes.values():
 		for node in nodes:
@@ -120,6 +124,13 @@ func _network_process(_data: Dictionary) -> void:
 			to_remove.append(key)
 	for remove_node_path in to_remove:
 		_delete_node(remove_node_path)
+	
+	if interpolation:
+		# delete remaining nodes
+		for node_path in interpolation_nodes.keys():
+			if interpolation_nodes[node_path].type == "unspawn":
+				_delete_node(node_path)
+		interpolation_nodes.clear()
 
 func _delete_node(node_path: String) -> void:
 	# This node was already deleted and we are rolling back, just erase remaining state
@@ -135,7 +146,11 @@ func _delete_node(node_path: String) -> void:
 	if reuse_despawned_nodes and is_instance_valid(node) and not node.is_queued_for_deletion():
 		if node.has_method('_network_prepare_for_reuse'):
 			node._network_prepare_for_reuse()
-		var scene_path = spawn_records[node_path].scene
+		var scene_path
+		if interpolation and interpolation_nodes.has(node_path):
+			scene_path = interpolation_nodes[node_path]
+		else:
+			scene_path = spawn_records[node_path].scene
 		if not retired_nodes.has(scene_path):
 			retired_nodes[scene_path] = []
 		retired_nodes[scene_path].append(node)
@@ -154,6 +169,8 @@ func _save_state() -> Dictionary:
 	}
 
 func _load_state(state: Dictionary) -> void:
+	var next_interpolation_nodes := {}
+	
 	for node_path in spawned_nodes.keys():
 		if state.spawn_records.has(node_path):
 			if waiting_before_remove.has(node_path) and not state.waiting_before_remove.has(node_path):
@@ -162,9 +179,45 @@ func _load_state(state: Dictionary) -> void:
 				var parent: Node = get_node(state.spawn_records[node_path].parent)
 				parent.add_child(node)
 				_alphabetize_children(parent)
+				if interpolation:
+					next_interpolation_nodes[node_path] = {
+						type = "undespawn",
+						scene = spawn_records[node_path].scene,
+					}
+			elif interpolation and interpolation_nodes.has(node_path):
+				if interpolation_nodes[node_path].type == "unspawn":
+					# unspawn is cancelled, node is restored
+					var node: Node = spawned_nodes[node_path]
+					var parent: Node = get_node(state.spawn_records[node_path].parent)
+					parent.add_child(node)
+					_alphabetize_children(parent)
+					interpolation_nodes.erase(node_path)
+				elif interpolation_nodes[node_path].type == "undespawn":
+					# undespawn is cancelled, remove node
+					var node: Node = spawned_nodes[node_path]
+					if node.get_parent():
+						node.get_parent().remove_child(node)
 		else:
-			# This node's spawn was cancelled, we can remove it completely
-			_delete_node(node_path)
+			if interpolation:
+				if not interpolation_nodes.has(node_path):
+					# keep this node and delete it next load_state
+					next_interpolation_nodes[node_path] = {
+						type = "unspawn",
+						scene = spawn_records[node_path].scene,
+					}
+					var node: Node = spawned_nodes[node_path]
+					if node.get_parent():
+						node.get_parent().remove_child(node)
+			else:
+				# This node's spawn was cancelled, we can remove it completely
+				_delete_node(node_path)
+	
+	if interpolation:
+		# delete remaining nodes
+		for node_path in interpolation_nodes.keys():
+			if interpolation_nodes[node_path].type == "unspawn":
+				_delete_node(node_path)
+		interpolation_nodes = next_interpolation_nodes
 	
 	spawn_records = state['spawn_records'].duplicate()
 	counter = state['counter'].duplicate()

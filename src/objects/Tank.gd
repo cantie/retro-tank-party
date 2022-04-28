@@ -439,6 +439,8 @@ func _save_state() -> Dictionary:
 		held_ability_type = held_ability_type,
 		ability_charges = ability_charges,
 		ability_path = ability.get_path() if ability else '',
+		visible = visible,
+		modulate = modulate,
 	}
 	Utils.save_node_transform_state(self, state)
 	return state
@@ -454,6 +456,8 @@ func _load_state(state: Dictionary) -> void:
 	set_held_ability_type(state['held_ability_type'])
 	ability_charges = state['ability_charges']
 	self.ability = null if state['ability_path'] == '' else get_node(state['ability_path'])
+	visible = state['visible']
+	modulate = state['modulate']
 	
 	_update_ability_label()
 	sync_to_physics_engine()
