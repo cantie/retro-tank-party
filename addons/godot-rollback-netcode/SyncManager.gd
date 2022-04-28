@@ -134,6 +134,12 @@ class StateHashFrame:
 				missing.append(peer_id)
 		return missing
 
+enum LoadType {
+	ROLLBACK,
+	INTERPOLATION_BACKWARD,
+	INTERPOLATION_FORWARD,
+}
+
 const DEFAULT_NETWORK_ADAPTOR_PATH := "res://addons/godot-rollback-netcode/RPCNetworkAdaptor.gd"
 const DEFAULT_MESSAGE_SERIALIZER_PATH := "res://addons/godot-rollback-netcode/MessageSerializer.gd"
 const DEFAULT_HASH_SERIALIZER_PATH := "res://addons/godot-rollback-netcode/HashSerializer.gd"
@@ -178,6 +184,7 @@ var rollback_ticks: int = 0 setget _set_readonly_variable
 var requested_input_complete_tick: int = 0 setget _set_readonly_variable
 var started := false setget _set_readonly_variable
 var tick_time: float setget _set_readonly_variable
+var load_type: int = LoadType.ROLLBACK setget _set_readonly_variable
 
 var _host_starting := false
 var _ping_timer: Timer
@@ -577,7 +584,8 @@ func _call_save_state() -> Dictionary:
 	
 	return state
 
-func _call_load_state(state: Dictionary) -> void:
+func _call_load_state(state: Dictionary, type: int) -> void:
+	load_type = type
 	for node_path in state:
 		if node_path == '$':
 			continue
@@ -987,10 +995,10 @@ func _physics_process(_delta: float) -> void:
 	if debug_rollback_ticks > 0 and current_tick >= debug_rollback_ticks:
 		rollback_ticks = max(rollback_ticks, debug_rollback_ticks)
 	
-	# We need to resimulate the current tick since we did a partial rollback
+	# We need to reload the current tick since we did a partial rollback
 	# to the previous tick in order to interpolate.
 	if interpolation and current_tick > 0 and rollback_ticks == 0:
-		_call_load_state(state_buffer[-1].data)
+		_call_load_state(state_buffer[-1].data, LoadType.INTERPOLATION_FORWARD)
 	
 	if rollback_ticks > 0:
 		if _logger:
@@ -1005,7 +1013,7 @@ func _physics_process(_delta: float) -> void:
 			_handle_fatal_error("Not enough state in buffer to rollback %s frames" % rollback_ticks)
 			return
 		
-		_call_load_state(state_buffer[-rollback_ticks - 1].data)
+		_call_load_state(state_buffer[-rollback_ticks - 1].data, LoadType.ROLLBACK)
 		
 		current_tick -= rollback_ticks
 		
@@ -1167,7 +1175,7 @@ func _physics_process(_delta: float) -> void:
 			
 			# Return to state from the previous frame, so we can interpolate
 			# towards the state of the current frame.
-			_call_load_state(state_buffer[-2].data)
+			_call_load_state(state_buffer[-2].data, LoadType.INTERPOLATION_BACKWARD)
 	
 	_time_since_last_tick = 0.0
 	_ran_physics_process = true

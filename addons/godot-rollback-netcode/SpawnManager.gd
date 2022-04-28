@@ -9,14 +9,12 @@ var interpolation_nodes := {}
 var counter := {}
 var waiting_before_remove: = {}
 var ticks_before_remove: = 20
-var interpolation := false
 
 var reuse_despawned_nodes := false
 
 func _ready() -> void:
 	if ProjectSettings.has_setting(REUSE_DESPAWNED_NODES_SETTING):
 		reuse_despawned_nodes = ProjectSettings.get_setting(REUSE_DESPAWNED_NODES_SETTING)
-	interpolation = ProjectSettings.get_setting('network/rollback/interpolation')
 	ticks_before_remove = ProjectSettings.get_setting("network/rollback/max_buffer_size")
 	
 	add_to_group('network_sync')
@@ -124,13 +122,6 @@ func _network_process(_data: Dictionary) -> void:
 			to_remove.append(key)
 	for remove_node_path in to_remove:
 		_delete_node(remove_node_path)
-	
-	if interpolation:
-		# delete remaining nodes
-		for node_path in interpolation_nodes.keys():
-			if interpolation_nodes[node_path].type == "unspawn":
-				_delete_node(node_path)
-		interpolation_nodes.clear()
 
 func _delete_node(node_path: String) -> void:
 	# This node was already deleted and we are rolling back, just erase remaining state
@@ -147,7 +138,7 @@ func _delete_node(node_path: String) -> void:
 		if node.has_method('_network_prepare_for_reuse'):
 			node._network_prepare_for_reuse()
 		var scene_path
-		if interpolation and interpolation_nodes.has(node_path):
+		if interpolation_nodes.has(node_path):
 			scene_path = interpolation_nodes[node_path]
 		else:
 			scene_path = spawn_records[node_path].scene
@@ -169,7 +160,12 @@ func _save_state() -> Dictionary:
 	}
 
 func _load_state(state: Dictionary) -> void:
-	var next_interpolation_nodes := {}
+	if SyncManager.load_type == SyncManager.LoadType.ROLLBACK:
+		# clear interpolation data
+		for node_path in interpolation_nodes.keys():
+			if interpolation_nodes[node_path].type == "unspawn":
+				_delete_node(node_path)
+		interpolation_nodes.clear()
 	
 	for node_path in spawned_nodes.keys():
 		if state.spawn_records.has(node_path):
@@ -179,12 +175,12 @@ func _load_state(state: Dictionary) -> void:
 				var parent: Node = get_node(state.spawn_records[node_path].parent)
 				parent.add_child(node)
 				_alphabetize_children(parent)
-				if interpolation:
-					next_interpolation_nodes[node_path] = {
+				if SyncManager.load_type == SyncManager.LoadType.INTERPOLATION_BACKWARD:
+					interpolation_nodes[node_path] = {
 						type = "undespawn",
 						scene = spawn_records[node_path].scene,
 					}
-			elif interpolation and interpolation_nodes.has(node_path):
+			elif SyncManager.load_type == SyncManager.LoadType.INTERPOLATION_FORWARD and interpolation_nodes.has(node_path):
 				if interpolation_nodes[node_path].type == "unspawn":
 					# unspawn is cancelled, node is restored
 					var node: Node = spawned_nodes[node_path]
@@ -198,26 +194,18 @@ func _load_state(state: Dictionary) -> void:
 					if node.get_parent():
 						node.get_parent().remove_child(node)
 		else:
-			if interpolation:
-				if not interpolation_nodes.has(node_path):
-					# keep this node and delete it next load_state
-					next_interpolation_nodes[node_path] = {
-						type = "unspawn",
-						scene = spawn_records[node_path].scene,
-					}
-					var node: Node = spawned_nodes[node_path]
-					if node.get_parent():
-						node.get_parent().remove_child(node)
+			if SyncManager.load_type == SyncManager.LoadType.INTERPOLATION_BACKWARD:
+				# keep this node, it will be used in interpolation_forward
+				interpolation_nodes[node_path] = {
+					type = "unspawn",
+					scene = spawn_records[node_path].scene,
+				}
+				var node: Node = spawned_nodes[node_path]
+				if node.get_parent():
+					node.get_parent().remove_child(node)
 			else:
 				# This node's spawn was cancelled, we can remove it completely
 				_delete_node(node_path)
-	
-	if interpolation:
-		# delete remaining nodes
-		for node_path in interpolation_nodes.keys():
-			if interpolation_nodes[node_path].type == "unspawn":
-				_delete_node(node_path)
-		interpolation_nodes = next_interpolation_nodes
 	
 	spawn_records = state['spawn_records'].duplicate()
 	counter = state['counter'].duplicate()
