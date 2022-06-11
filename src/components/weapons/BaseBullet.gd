@@ -12,6 +12,9 @@ var vector := SGFixed.vector2(0, 0)
 var damage := 10
 
 func _network_spawn_preprocess(data: Dictionary) -> Dictionary:
+	if data.has("preprocessed"):
+		return data
+	
 	var _tank = data['tank']
 	var global_fixed_transform: SGFixedTransform2D = _tank.bullet_start_position.get_global_fixed_transform()
 	return {
@@ -21,6 +24,7 @@ func _network_spawn_preprocess(data: Dictionary) -> Dictionary:
 		fixed_position = global_fixed_transform.origin,
 		fixed_rotation = global_fixed_transform.get_rotation(),
 		damage = data['weapon_type'].damage,
+		preprocessed = true
 	}
 
 func _network_spawn(data: Dictionary) -> void:

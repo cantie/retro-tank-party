@@ -384,7 +384,13 @@ rollback/sound_manager/default_sound_bus="Sound"
 rollback/classes/network_adaptor="res://src/utils/RTPNetworkAdaptor.gd"
 rollback/classes/message_serializer="res://src/utils/RTPMessageSerializer.gd"
 rollback/classes/hash_serializer="res://src/utils/RTPHashSerializer.gd"
+rollback/debug/rollback_ticks=4
+rollback/debug/random_rollback_ticks=4
 rollback/debug/message_bytes=600
+rollback/debug/physics_process_msecs=0.0
+rollback/debug/process_msecs=0.0
+rollback/debug/check_message_serializer_roundtrip=true
+rollback/debug/check_local_state_consistency=true
 rollback/log_inspector/replay_match_scene_path="res://src/main/Match.tscn"
 
 [physics]

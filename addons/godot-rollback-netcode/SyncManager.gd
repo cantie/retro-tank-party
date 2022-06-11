@@ -6,6 +6,7 @@ const NetworkAdaptor = preload("res://addons/godot-rollback-netcode/NetworkAdapt
 const MessageSerializer = preload("res://addons/godot-rollback-netcode/MessageSerializer.gd")
 const HashSerializer = preload("res://addons/godot-rollback-netcode/HashSerializer.gd")
 const Logger = preload("res://addons/godot-rollback-netcode/Logger.gd")
+const DebugStateComparer = preload("res://addons/godot-rollback-netcode/DebugStateComparer.gd")
 
 class Peer extends Reference:
 	var peer_id: int
@@ -133,6 +134,12 @@ class StateHashFrame:
 				missing.append(peer_id)
 		return missing
 
+enum LoadType {
+	ROLLBACK,
+	INTERPOLATION_BACKWARD,
+	INTERPOLATION_FORWARD,
+}
+
 const DEFAULT_NETWORK_ADAPTOR_PATH := "res://addons/godot-rollback-netcode/RPCNetworkAdaptor.gd"
 const DEFAULT_MESSAGE_SERIALIZER_PATH := "res://addons/godot-rollback-netcode/MessageSerializer.gd"
 const DEFAULT_HASH_SERIALIZER_PATH := "res://addons/godot-rollback-netcode/HashSerializer.gd"
@@ -145,6 +152,7 @@ var peers := {}
 var input_buffer := []
 var state_buffer := []
 var state_hashes := []
+var debug_check_local_state_consistency_buffer := []
 var mechanized := false setget set_mechanized
 
 var max_buffer_size := 20
@@ -176,6 +184,7 @@ var rollback_ticks: int = 0 setget _set_readonly_variable
 var requested_input_complete_tick: int = 0 setget _set_readonly_variable
 var started := false setget _set_readonly_variable
 var tick_time: float setget _set_readonly_variable
+var load_type: int = LoadType.ROLLBACK setget _set_readonly_variable
 
 var _host_starting := false
 var _ping_timer: Timer
@@ -575,7 +584,8 @@ func _call_save_state() -> Dictionary:
 	
 	return state
 
-func _call_load_state(state: Dictionary) -> void:
+func _call_load_state(state: Dictionary, type: int) -> void:
+	load_type = type
 	for node_path in state:
 		if node_path == '$':
 			continue
@@ -985,10 +995,10 @@ func _physics_process(_delta: float) -> void:
 	if debug_rollback_ticks > 0 and current_tick >= debug_rollback_ticks:
 		rollback_ticks = max(rollback_ticks, debug_rollback_ticks)
 	
-	# We need to resimulate the current tick since we did a partial rollback
+	# We need to reload the current tick since we did a partial rollback
 	# to the previous tick in order to interpolate.
-#	if interpolation and current_tick > 1:
-#		rollback_ticks = max(rollback_ticks, 1)
+	if interpolation and current_tick > 0 and rollback_ticks == 0:
+		_call_load_state(state_buffer[-1].data, LoadType.INTERPOLATION_FORWARD)
 	
 	if rollback_ticks > 0:
 		if _logger:
@@ -1003,14 +1013,19 @@ func _physics_process(_delta: float) -> void:
 			_handle_fatal_error("Not enough state in buffer to rollback %s frames" % rollback_ticks)
 			return
 		
-		_call_load_state(state_buffer[-rollback_ticks - 1].data)
-		state_buffer.resize(state_buffer.size() - rollback_ticks)
+		_call_load_state(state_buffer[-rollback_ticks - 1].data, LoadType.ROLLBACK)
+		
 		current_tick -= rollback_ticks
 		
-		# Debug check that states computed multiple times with complete inputs are the same
-		if debug_check_local_state_consistency and _last_state_hashed_tick >= current_tick:
-			var state := StateBufferFrame.new(current_tick, _call_save_state())
-			_debug_check_consistent_local_state(state, "Loaded")
+		if debug_check_local_state_consistency:
+			# Save already computed states for better logging in case of discrepancy
+			debug_check_local_state_consistency_buffer = state_buffer.slice(state_buffer.size() - rollback_ticks - 1, state_buffer.size() - 1)
+			# Debug check that states computed multiple times with complete inputs are the same
+			if _last_state_hashed_tick >= current_tick:
+				var state := StateBufferFrame.new(current_tick, _call_save_state())
+				_debug_check_consistent_local_state(state, "Loaded")
+		
+		state_buffer.resize(state_buffer.size() - rollback_ticks)
 		
 		# Invalidate sync ticks after this, they may be asked for again
 		if requested_input_complete_tick > 0 and current_tick >= requested_input_complete_tick:
@@ -1160,7 +1175,7 @@ func _physics_process(_delta: float) -> void:
 			
 			# Return to state from the previous frame, so we can interpolate
 			# towards the state of the current frame.
-#			_call_load_state(state_buffer[-2].data)
+			_call_load_state(state_buffer[-2].data, LoadType.INTERPOLATION_BACKWARD)
 	
 	_time_since_last_tick = 0.0
 	_ran_physics_process = true
@@ -1413,10 +1428,11 @@ func ordered_dict2str(dict: Dictionary) -> String:
 func _debug_check_consistent_local_state(state: StateBufferFrame, message := "Loaded") -> void:
 	var hashed_state := _calculate_data_hash(state.data)
 	var previously_hashed_frame := _get_state_hash_frame(current_tick)
+	var previous_state = debug_check_local_state_consistency_buffer.pop_front()
 	if previously_hashed_frame and previously_hashed_frame.state_hash != hashed_state:
-		push_error("%s state is not consistent with saved state \n Saved: %s \n %s: %s" % [
+		var comparer = DebugStateComparer.new()
+		comparer.find_mismatches(previous_state.data, state.data)
+		push_error("%s state is not consistent with saved state:\n %s" % [
 			message,
-			ordered_dict2str(_get_state_frame(current_tick).data),
-			ordered_dict2str(state.data),
-			message
+			comparer.print_mismatches(),
 			])
