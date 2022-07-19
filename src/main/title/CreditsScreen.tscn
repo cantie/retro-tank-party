@@ -17,9 +17,6 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 theme = ExtResource( 2 )
 script = ExtResource( 1 )
-__meta__ = {
-"_edit_use_anchors_": false
-}
 
 [node name="PanelContainer" type="PanelContainer" parent="."]
 anchor_right = 1.0
@@ -38,8 +35,9 @@ margin_bottom = 690.0
 [node name="Title" type="Label" parent="PanelContainer/VBoxContainer"]
 margin_right = 1180.0
 margin_bottom = 51.0
-text = "CREDITS"
+text = "CREDITS_TITLE"
 align = 1
+uppercase = true
 
 [node name="Credits" type="RichTextLabel" parent="PanelContainer/VBoxContainer"]
 margin_top = 55.0
