@@ -157,7 +157,7 @@ func _on_countdown_finished() -> void:
 
 func _on_YouLoseTimer_timeout() -> void:
 	if not game_over:
-		ui_layer.show_message("Wasted!")
+		ui_layer.show_message("MESSAGE_PLAYER_DEAD")
 	if instant_death:
 		game.enable_watch_camera()
 
