@@ -6,6 +6,7 @@ onready var music_slider := $Panel/VBoxContainer/ScrollContainer/MarginContainer
 onready var sound_slider := $Panel/VBoxContainer/ScrollContainer/MarginContainer/GridContainer/SoundSlider
 onready var tank_engine_sounds_field = $Panel/VBoxContainer/ScrollContainer/MarginContainer/GridContainer/TankEngineSoundsOptions
 onready var full_screen_field = $Panel/VBoxContainer/ScrollContainer/MarginContainer/GridContainer/FullScreenOptions
+onready var language_field = $Panel/VBoxContainer/ScrollContainer/MarginContainer/GridContainer/LanguageOptions
 onready var screenshake_field := $Panel/VBoxContainer/ScrollContainer/MarginContainer/GridContainer/ScreenshakeOptions
 onready var art_style_label := $Panel/VBoxContainer/ScrollContainer/MarginContainer/GridContainer/ArtStyleLabel
 onready var art_style_field := $Panel/VBoxContainer/ScrollContainer/MarginContainer/GridContainer/ArtStyleOptions
@@ -29,6 +30,11 @@ func _ready() -> void:
 	full_screen_field.add_item("OPTION_DISABLED", false)
 	full_screen_field.add_item("OPTION_ENABLED", true)
 	full_screen_field.set_value(GameSettings.use_full_screen, false)
+
+	language_field.add_item("LANGUAGE_OPTION_DEFAULT", "default")
+	language_field.add_item("LANGUAGE_OPTION_ENGLISH", "en")
+	language_field.add_item("LANGUAGE_OPTION_SPANISH", "es")
+	language_field.set_value(GameSettings.language, false)
 
 	screenshake_field.add_item("OPTION_DISABLED", false)
 	screenshake_field.add_item("OPTION_ENABLED", true)
@@ -113,6 +119,9 @@ func _on_TankEngineSoundsOptions_item_selected(value, index) -> void:
 func _on_FullScreenOptions_item_selected(value, index) -> void:
 	GameSettings.use_full_screen = value
 
+func _on_LanguageOptions_item_selected(value, index) -> void:
+	GameSettings.language = value
+
 func _on_ScreenshakeOptions_item_selected(value, _index) -> void:
 	GameSettings.use_screenshake = value
 
@@ -150,4 +159,5 @@ func _unhandled_input(event: InputEvent) -> void:
 	if visible and event.is_action_pressed('ui_accept'):
 		get_tree().set_input_as_handled()
 		_on_DoneButton_pressed()
+
 

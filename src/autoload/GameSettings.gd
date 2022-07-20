@@ -24,6 +24,7 @@ var use_detailed_logging := false
 var control_scheme: int = ControlScheme.MODERN
 var joy_id := 0 setget set_joy_id
 var joy_name := "" setget set_joy_name
+var language := "" setget set_language
 
 const SETTINGS_KEYS = [
 	'art_style',
@@ -45,13 +46,17 @@ func _ready() -> void:
 	joy_name = Input.get_joy_name(joy_id)
 	load_settings()
 
+	# Set language to default for players that upgrade from older versions.
+	if language == '':
+		set_language('default')
+
 func set_art_style(_art_style: String) -> void:
 	art_style = _art_style
 	Globals.art.load_art_style(art_style)
 
 func set_music_volume(_music_volume: float) -> void:
 	music_volume = _music_volume
-	
+
 	var bus_index = AudioServer.get_bus_index("Music (User)")
 	if music_volume < 0.05:
 		AudioServer.set_bus_mute(bus_index, true)
@@ -61,7 +66,7 @@ func set_music_volume(_music_volume: float) -> void:
 
 func set_sound_volume(_sound_volume: float) -> void:
 	sound_volume = _sound_volume
-	
+
 	var bus_index = AudioServer.get_bus_index("Sound (User)")
 	if sound_volume < 0.05:
 		AudioServer.set_bus_mute(bus_index, true)
@@ -91,13 +96,13 @@ func set_use_network_relay(_use_network_relay: int) -> void:
 func set_joy_id(_joy_id: int) -> void:
 	if joy_id != _joy_id:
 		joy_id = _joy_id
-		
+
 		# Remap all the events
 		for action in InputMap.get_actions():
 			for event in InputMap.get_action_list(action):
 				if event is InputEventJoypadButton or event is InputEventJoypadMotion:
 					event.device = joy_id
-		
+
 		joy_name = Input.get_joy_name(joy_id)
 
 func set_joy_name(_joy_name: String) -> void:
@@ -106,9 +111,31 @@ func set_joy_name(_joy_name: String) -> void:
 			if Input.get_joy_name(joy_id) == _joy_name:
 				set_joy_id(joy_id)
 				return
-		
+
 		# If no matching joystick is found, then set the device id to 0.
 		set_joy_id(0)
+
+func set_language(_lang_code: String) -> void:
+	if language != _lang_code:
+		language = _lang_code
+
+		var locale = language
+		if language == 'default':
+			if SteamManager.use_steam:
+				var steam_language = SteamManager.Steam.getCurrentGameLanguage()
+				match steam_language:
+					"english":
+						locale = "en"
+					"spanish", "latam":
+						locale = "es"
+					_:
+						locale = OS.get_locale_language()
+			else:
+				locale = OS.get_locale_language()
+
+		if TranslationServer.get_locale() != locale:
+			TranslationServer.set_locale(locale)
+			get_node("/root").propagate_notification(NOTIFICATION_TRANSLATION_CHANGED)
 
 func _on_joy_connection_changed(device: int, connected: bool) -> void:
 	if connected:
@@ -128,7 +155,7 @@ func load_settings() -> void:
 			# retro, and only default to modern for new players.
 			if not result.result.has("control_scheme"):
 				result.result['control_scheme'] = ControlScheme.RETRO
-			
+
 			for k in result.result:
 				if k in SETTINGS_KEYS:
 					set(k, result.result[k])
