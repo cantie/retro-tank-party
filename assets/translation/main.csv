@@ -25,6 +25,20 @@ BUTTON_READY,I'm Ready!,
 BUTTON_RESET_PASSWORD,Reset Password,
 BUTTON_START_MATCH,Start Match!,
 CREDITS_TITLE,Credits,
+CREDITS_TEAM,"[b]Team:[/b]
+  [color=black]David Snopek[/color] from [color=#1ea7e1][url=https://www.snopekgames.com]Snopek Games[/url][/color]: [color=black]Programming and Design[/color]
+  [color=black]Ross Klettke[/color] from [color=#1ea7e1][url=https://www.whatnotory.com/]Whatnotory[/url][/color]:   [color=black]Additional Art Styles[/color]
+
+[b]Free assets:[/b]
+  [color=#1ea7e1][url=https://www.kenney.nl/assets/topdown-tanks-redux]Top-down Tanks Redux[/url][/color] by [color=black]Kenney.nl[/color]
+  [color=#1ea7e1][url=https://datagoblin.itch.io/monogram]Monogram font[/url][/color] by [color=black]datagoblin[/color]
+  [color=#1ea7e1][url=https://opengameart.org/content/sfx-the-ultimate-2017-16-bit-mini-pack]SFX: The Ultimate 2017 16 bit Mini pack[/url][/color] by [color=black]phoenix1291[/color]
+  [color=#1ea7e1][url=https://opengameart.org/content/engine-loop-heavy-vehicletank]Engine-loop heavy vehicle/tank[/url][/color] by [color=black]Nayckron[/color]
+  [color=#1ea7e1][url=https://www.kenney.nl/assets/interface-sounds/]Interface Sounds[/url][/color] by [color=black]Kenney.nl[/color]
+  [color=#1ea7e1][url=https://opengameart.org/content/ciptuned-rock-tune]Chiptuned Rock Tune[/url][/color] by [color=black]Bertsz[/color]
+  [color=#1ea7e1][url=https://opengameart.org/content/5-chiptunes-action]5 Action Chiptunes[/url][/color] by [color=black]Juhani Junkala[/color]
+  [color=#1ea7e1][url=https://sworndevelopment.itch.io/godot-splash-boot-video]Godot Splash Boot Video[/url][/color] by [color=black]SwornDevelopment[/color]
+  [color=#1ea7e1][url=https://orangefreesounds.com/goal-horn-sound-effect/]Goal Horn Sound Effect[/url][/color] by [color=black]Alexander[/color]",
 CHECKBOX_SAVE_CREDS,Save e-mail and password,
 CONTROL_SCHEME_OPTION_MODERN,Modern,
 CONTROL_SCHEME_OPTION_RETRO,Retro,
@@ -32,8 +46,8 @@ EMAIL_FIELD_LABEL,E-mail:,
 GAME_ERROR_UNABLE_TO_LOAD_MAP,Unable to load map,
 GAMEPAD_DEVICE_OPTION_DEFAULT,Default,
 LANGUAGE_OPTION_DEFAULT,Default,
-LANGUAGE_OPTION_ENGLISH,English,Ingles
-LANGUAGE_OPTION_SPANISH,Spanish,Espanol
+LANGUAGE_OPTION_ENGLISH,English,
+LANGUAGE_OPTION_SPANISH,Spanish,
 MAP_NAME_BATTLEFIELD,Battlefield,
 MAP_NAME_DESERT,Desert,
 MAP_NAME_FOOTBALL,Football,
