@@ -7,7 +7,7 @@ ALERT_LEAVE_MATCH,You will leave the session and won't be able to to rejoin,Sald
 ALERT_LEAVE_MATCH_HOST,This will end the match for everyone and return to the match setup screen.,Esto terminará el partido para todos y volverá a la pantalla de configuración de la partida.
 ALERT_LEAVE_MATCH_SETUP_HOST,This will end the match for everyone.,Esto terminará la partida para todos
 ALERT_LEAVE_MATCH_TITLE,Are you sure you want to exit?,¿Estás seguro de que quieres salir?
-ART_STYLE_NAME_ATARI,Atari 2600,Atari 2601
+ART_STYLE_NAME_ATARI,Atari 2600,Atari 2600
 ART_STYLE_NAME_CLASSIC,Classic,Clásico
 ART_STYLE_NAME_SNES,SNES,SNES
 ART_STYLE_NAME_VECTOR,Vector,Vector
@@ -95,7 +95,7 @@ MESSAGE_LOGGING_IN,Logging in...,
 MESSAGE_LOGIN_FAILED,Login failed!,
 MESSAGE_LOGIN_FAILED_STEAM,Unable to connect to Steam. Please try again later.,
 MESSAGE_LOOKING_FOR_MATCH,Looking for match...,
-MESSAGE_MATCH_ID_REQUIRED,Needs to paste Match ID to join,
+MESSAGE_MATCH_ID_REQUIRED,Need to paste Match ID to join,
 MESSAGE_NETWORK_ISSUES,"If you're having issues, try different ""Network Relay"" settings before starting a match.",
 MESSAGE_NO_USER_ACCOUNT,No user account found,
 MESSAGE_PASSWORD_REQUIRED,Must provide password,
