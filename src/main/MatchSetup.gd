@@ -12,7 +12,7 @@ func _ready() -> void:
 		get_tree().change_scene("res://src/main/SessionSetup.tscn")
 		return
 
-	OnlineMatch.connect("error", self, "_on_OnlineMatch_error")
+	OnlineMatch.connect("error_code", self, "_on_OnlineMatch_error")
 	OnlineMatch.connect("disconnected", self, "_on_OnlineMatch_disconnected")
 	OnlineMatch.connect("player_left", self, "_on_OnlineMatch_player_left")
 
@@ -121,20 +121,23 @@ func scene_setup(operation: RemoteOperations.ClientOperation, info: Dictionary) 
 
 	operation.mark_done()
 
-func _on_OnlineMatch_error(message: String):
+func _error(message: String):
 	if message != '':
 		ui_layer.show_message(message)
 	ui_layer.hide_screen()
 	yield(get_tree().create_timer(2.0), "timeout")
 	get_tree().change_scene("res://src/main/SessionSetup.tscn")
 
+func _on_OnlineMatch_error(code: int, message: String, extra):
+	_error(Utils.translate_online_match_error(code, message, extra))
+
 func _on_OnlineMatch_disconnected():
-	#_on_OnlineMatch_error("Disconnected from host")
-	_on_OnlineMatch_error('')
+	#_error("Disconnected from host")
+	_error('')
 
 func _on_OnlineMatch_player_left(player) -> void:
 	SyncManager.remove_peer(player.peer_id)
 	if OnlineMatch.players.size() < 2:
-		_on_OnlineMatch_error(tr("MESSAGE_PLAYER_HAS_LEFT_NOT_ENOUGH_PLAYERS") % player.username)
+		_error(tr("MESSAGE_PLAYER_HAS_LEFT_NOT_ENOUGH_PLAYERS") % player.username)
 	else:
 		ui_layer.show_message(tr("MESSAGE_PLAYER_HAS_LEFT") % player.username)

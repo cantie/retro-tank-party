@@ -12,7 +12,7 @@ var match_manager
 var match_info: Dictionary
 
 func _ready() -> void:
-	OnlineMatch.connect("error", self, "_on_OnlineMatch_error")
+	OnlineMatch.connect("error_code", self, "_on_OnlineMatch_error")
 	OnlineMatch.connect("disconnected", self, "_on_OnlineMatch_disconnected")
 	OnlineMatch.connect("player_left", self, "_on_OnlineMatch_player_left")
 
@@ -101,7 +101,7 @@ func quit_match() -> void:
 	get_tree().change_scene("res://src/main/SessionSetup.tscn")
 
 func _on_Game_game_error(message) -> void:
-	_on_OnlineMatch_error(message)
+	_error(message)
 
 func _on_Game_game_started() -> void:
 	ui_layer.hide_screen()
@@ -145,16 +145,19 @@ func _on_MenuScreen_exit_pressed() -> void:
 # OnlineMatch callbacks
 #####
 
-func _on_OnlineMatch_error(message: String):
+func _error(message: String = ''):
 	if message != '':
 		ui_layer.show_message(message)
 	ui_layer.hide_screen()
 	yield(get_tree().create_timer(2.0), "timeout")
 	quit_match()
 
+func _on_OnlineMatch_error(code: int, message: String, extra):
+	_error(Utils.translate_online_match_error(code, message, extra))
+
 func _on_OnlineMatch_disconnected():
-	#_on_OnlineMatch_error("Disconnected from host")
-	_on_OnlineMatch_error('')
+	#_error("Disconnected from host")
+	_error('')
 
 # Removes player from their team (if teams are enabled) and returns false if
 # the team still no longer has enough players; otherwise it returns true.
@@ -176,7 +179,7 @@ func _on_OnlineMatch_player_left(player) -> void:
 	game.call_deferred("remove_player", player.peer_id)
 
 	if not _remove_from_team(player.peer_id) or OnlineMatch.players.size() < 2:
-		_on_OnlineMatch_error(tr("MESSAGE_PLAYER_HAS_LEFT_NOT_ENOUGH_PLAYERS") % player.username)
+		_error(tr("MESSAGE_PLAYER_HAS_LEFT_NOT_ENOUGH_PLAYERS") % player.username)
 	else:
 		ui_layer.show_message(tr("MESSAGE_PLAYER_HAS_LEFT") % player.username)
 
@@ -200,4 +203,4 @@ func _on_SyncManager_sync_regained() -> void:
 
 func _on_SyncManager_sync_error(_msg) -> void:
 	_hide_regaining_sync_message()
-	_on_OnlineMatch_error('Synchronization lost')
+	_error("MESSAGE_SYNCHRONIZATION_LOST")

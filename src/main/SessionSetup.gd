@@ -14,7 +14,7 @@ func _ready() -> void:
 	# Reset the network adaptor if it has been changed by Practice mode.
 	SyncManager.reset_network_adaptor()
 
-	OnlineMatch.connect("error", self, "_on_OnlineMatch_error")
+	OnlineMatch.connect("error_code", self, "_on_OnlineMatch_error")
 	OnlineMatch.connect("disconnected", self, "_on_OnlineMatch_disconnected")
 	OnlineMatch.connect("player_status_changed", self, "_on_OnlineMatch_player_status_changed")
 	OnlineMatch.connect("player_left", self, "_on_OnlineMatch_player_left")
@@ -82,9 +82,12 @@ func _return_to_match_screen() -> void:
 # OnlineMatch callbacks
 #####
 
-func _on_OnlineMatch_error(message: String):
+func _error(message: String):
 	ui_layer.show_message(message)
 	_return_to_match_screen()
+
+func _on_OnlineMatch_error(code: int, message: String, extra):
+	_error(Utils.translate_online_match_error(code, message, extra))
 
 func _on_OnlineMatch_disconnected():
 	_return_to_match_screen()
