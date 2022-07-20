@@ -318,7 +318,7 @@ func _on_nakama_match_presence(data: NakamaRTAPI.MatchPresenceEvent) -> void:
 					reason = 'Sorry! The match has already begun.',
 				}))
 			
-			if players.size() < max_players:
+			elif players.size() < max_players:
 				var new_player = Player.from_presence(u, _next_peer_id)
 				_next_peer_id += 1
 				players[u.session_id] = new_player
