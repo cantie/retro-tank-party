@@ -208,7 +208,7 @@ margin_right = 549.324
 margin_bottom = 268.534
 rect_min_size = Vector2( 200, 0 )
 size_flags_horizontal = 4
-text = "BUTTON_MATCH"
+text = "BUTTON_MATCHMAKER"
 script = ExtResource( 3 )
 __meta__ = {
 "_edit_use_anchors_": false
