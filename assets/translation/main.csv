@@ -1,31 +1,31 @@
 keys,en,es
-ABILITY_NAME_BOOST,Boost,
-ABILITY_FIELD_LABEL,Ability,
-ABILITY_NAME_INVISIBLE,Invisible,
-ABILITY_NAME_ZAP,Zap!,
-ALERT_LEAVE_MATCH,You will leave the session and won't be able to to rejoin,
-ALERT_LEAVE_MATCH_HOST,This will end the match for everyone and return to the match setup screen.,
-ALERT_LEAVE_MATCH_SETUP_HOST,This will end the match for everyone.,
-ALERT_LEAVE_MATCH_TITLE,Are you sure you want to exit?,
-ART_STYLE_NAME_ATARI,Atari 2600,
-ART_STYLE_NAME_CLASSIC,Classic,
-ART_STYLE_NAME_SNES,SNES,
-ART_STYLE_NAME_VECTOR,Vector,
-BUTTON_MATCHMAKER,Match,
-BUTTON_CANCEL,Cancel,
-BUTTON_COPY,Copy,
-BUTTON_CREATE_ACCOUNT,Create Account,
-BUTTON_CREATE_MATCH,Create,
-BUTTON_DONE,Done,
-BUTTON_JOIN_MATCH,Join,
-BUTTON_LOGIN,Login,
-BUTTON_NEXT,Next,
-BUTTON_OK,OK,
-BUTTON_PASTE,Paste,
-BUTTON_READY,I'm Ready!,
-BUTTON_RESET_PASSWORD,Reset Password,
-BUTTON_START_MATCH,Start Match!,
-CREDITS_TITLE,Credits,
+ABILITY_NAME_BOOST,Boost,Boost
+ABILITY_FIELD_LABEL,Ability,Habilidad
+ABILITY_NAME_INVISIBLE,Invisible,Invisible
+ABILITY_NAME_ZAP,Zap!,¡Zap!
+ALERT_LEAVE_MATCH,You will leave the session and won't be able to to rejoin,Saldrás de la sesión y no podrás volver a entrar
+ALERT_LEAVE_MATCH_HOST,This will end the match for everyone and return to the match setup screen.,Esto terminará el partido para todos y volverá a la pantalla de configuración de la partida.
+ALERT_LEAVE_MATCH_SETUP_HOST,This will end the match for everyone.,Esto terminará la partida para todos
+ALERT_LEAVE_MATCH_TITLE,Are you sure you want to exit?,¿Estás seguro de que quieres salir?
+ART_STYLE_NAME_ATARI,Atari 2600,Atari 2601
+ART_STYLE_NAME_CLASSIC,Classic,Clásico
+ART_STYLE_NAME_SNES,SNES,SNES
+ART_STYLE_NAME_VECTOR,Vector,Vector
+BUTTON_MATCHMAKER,Match,Coincidir
+BUTTON_CANCEL,Cancel,Cancelar
+BUTTON_COPY,Copy,Copiar
+BUTTON_CREATE_ACCOUNT,Create Account,Crear cuenta
+BUTTON_CREATE_MATCH,Create,Crear
+BUTTON_DONE,Done,Donar
+BUTTON_JOIN_MATCH,Join,Unirse
+BUTTON_LOGIN,Login,Acceso
+BUTTON_NEXT,Next,Siguiente
+BUTTON_OK,OK,OK
+BUTTON_PASTE,Paste,Pegar
+BUTTON_READY,I'm Ready!,¡Estoy listo!
+BUTTON_RESET_PASSWORD,Reset Password,Restablecer contraseña
+BUTTON_START_MATCH,Start Match!,¡Empezar partida!
+CREDITS_TITLE,Credits,Créditos
 CREDITS_TEAM,"[b]Team:[/b]
   [color=black]David Snopek[/color] from [color=#1ea7e1][url=https://www.snopekgames.com]Snopek Games[/url][/color]: [color=black]Programming and Design[/color]
   [color=black]Ross Klettke[/color] from [color=#1ea7e1][url=https://www.whatnotory.com/]Whatnotory[/url][/color]:   [color=black]Additional Art Styles[/color]
@@ -39,30 +39,43 @@ CREDITS_TEAM,"[b]Team:[/b]
   [color=#1ea7e1][url=https://opengameart.org/content/ciptuned-rock-tune]Chiptuned Rock Tune[/url][/color] by [color=black]Bertsz[/color]
   [color=#1ea7e1][url=https://opengameart.org/content/5-chiptunes-action]5 Action Chiptunes[/url][/color] by [color=black]Juhani Junkala[/color]
   [color=#1ea7e1][url=https://sworndevelopment.itch.io/godot-splash-boot-video]Godot Splash Boot Video[/url][/color] by [color=black]SwornDevelopment[/color]
-  [color=#1ea7e1][url=https://orangefreesounds.com/goal-horn-sound-effect/]Goal Horn Sound Effect[/url][/color] by [color=black]Alexander[/color]",
-CHECKBOX_SAVE_CREDS,Save e-mail and password,
-CONTROL_SCHEME_OPTION_MODERN,Modern,
-CONTROL_SCHEME_OPTION_RETRO,Retro,
-DEBUG_TITLE,Debug,
-EMAIL_FIELD_LABEL,E-mail:,
-GAME_ERROR_UNABLE_TO_LOAD_MAP,Unable to load map,
-GAMEPAD_DEVICE_OPTION_DEFAULT,Default,
-HEALTH_FIELD_LABEL,Health,
-INVINCIBLE_FIELD_LABEL,Invincible,
-LANGUAGE_OPTION_DEFAULT,Default,
-LANGUAGE_OPTION_ENGLISH,English,
-LANGUAGE_OPTION_SPANISH,Spanish,
-MAP_NAME_BATTLEFIELD,Battlefield,
-MAP_NAME_DESERT,Desert,
-MAP_NAME_FOOTBALL,Football,
-MAP_NAME_MAZE,Maze,
-MAP_TITLE,Map,
-MATCH_ID_FIELD_LABEL,Match ID:,
-MATCH_OPTION_CREATE,Create a private match,
-MATCH_OPTION_CREATE_DESCRIPTION,Get a private match ID and send it to your friends.,
-MATCH_OPTION_JOIN,Join a private match,
-MATCH_OPTION_JOIN_DESCRIPTION,Paste the private match ID that your friend sent you.,
-MATCH_OPTION_MATCHMAKER,Find a public match,
+  [color=#1ea7e1][url=https://orangefreesounds.com/goal-horn-sound-effect/]Goal Horn Sound Effect[/url][/color] by [color=black]Alexander[/color]","[b]Equipo:[/b]
+  [color=black]David Snopek[/color] de [color=#1ea7e1][url=https://www.snopekgames.com]Snopek Games[/url][/color]: [color=black]Programación y diseño[/color] 
+  [color=black]Ross Klettke[/color] de [color=#1ea7e1][url=https://www.whatnotory.com/]Whatnotory[/url][/color]:   [color=black]Estilos de arte adicionales[/color]
+
+[b]Materiales gratuitos:[/b]
+  [color=#1ea7e1][url=https://www.kenney.nl/assets/topdown-tanks-redux]Top-down Tanks Redux[/url][/color] por [color=black]Kenney.nl[/color]
+  [color=#1ea7e1][url=https://datagoblin.itch.io/monogram]Monogram font[/url][/color] de [color=black]datagoblin[/color]
+  [color=#1ea7e1][url=https://opengameart.org/content/sfx-the-ultimate-2017-16-bit-mini-pack]SFX: The Ultimate 2017 16 bit Mini pack[/url][/color] de [color=black]phoenix1291[/color]
+  [color=#1ea7e1][url=https://opengameart.org/content/engine-loop-heavy-vehicletank]Vehículo/tanque pesado con motor[/url][/color] de [color=black]Nayckron[/color] 
+  [color=#1ea7e1][url=https://www.kenney.nl/assets/interface-sounds/]Sonidos de la interfaz[/url][/color] de [color=black]Kenney.nl[/color]
+  [color=#1ea7e1][url=https://opengameart.org/content/ciptuned-rock-tune]Chiptuned Rock Tune[/url][/color] de [color=black]Bertsz[/color]
+  [color=#1ea7e1][url=https://opengameart.org/content/5-chiptunes-action]5 Action Chiptunes[/url][/color] de [color=black]Juhani Junkala[/color]
+  [color=#1ea7e1][url=https://sworndevelopment.itch.io/godot-splash-boot-video]Godot Splash Boot Video[/url][/color] por [color=black]SwornDevelopment[/color]
+  [color=#1ea7e1][url=https://orangefreesounds.com/goal-horn-sound-effect/]Efecto de sonido del cuerno de la portería[/url][/color] by [color=black]Alexander[/color]"
+CHECKBOX_SAVE_CREDS,Save e-mail and password,Guardar e-mail y contraseña
+CONTROL_SCHEME_OPTION_MODERN,Modern,Moderno
+CONTROL_SCHEME_OPTION_RETRO,Retro,Retro
+DEBUG_TITLE,Debug,Depuración
+EMAIL_FIELD_LABEL,E-mail:,E-mail:
+GAME_ERROR_UNABLE_TO_LOAD_MAP,Unable to load map,Imposible cargar el mapa
+GAMEPAD_DEVICE_OPTION_DEFAULT,Default,Por defecto
+HEALTH_FIELD_LABEL,Health,Salud
+INVINCIBLE_FIELD_LABEL,Invincible,Invencibilidad
+LANGUAGE_OPTION_DEFAULT,Default,Por defecto
+LANGUAGE_OPTION_ENGLISH,English,Inglés
+LANGUAGE_OPTION_SPANISH,Spanish,Español
+MAP_NAME_BATTLEFIELD,Battlefield,Campo de batalla
+MAP_NAME_DESERT,Desert,Desierto
+MAP_NAME_FOOTBALL,Football,Fútbol
+MAP_NAME_MAZE,Maze,Laberinto
+MAP_TITLE,Map,Mapa
+MATCH_ID_FIELD_LABEL,Match ID:,Match ID:
+MATCH_OPTION_CREATE,Create a private match,Crear una partida privada
+MATCH_OPTION_CREATE_DESCRIPTION,Get a private match ID and send it to your friends.,Obtener un match ID privado y enviarlo a tus amigos
+MATCH_OPTION_JOIN,Join a private match,Unirse a una partida privada
+MATCH_OPTION_JOIN_DESCRIPTION,Paste the private match ID that your friend sent you.,Pegar el match ID privado que tus amigos te enviaron.
+MATCH_OPTION_MATCHMAKER,Find a public match,Encontrar una partida pública
 MATCH_OPTION_MATCHMAKER_DESCRIPTION,"There is matchmaking, but this is a tiny indie game. Don't expect to find randos to battle! It's super cheap - buy a couple copies for your friends!",
 MATCHMAKER_2_PLAYERS,2 players,
 MATCHMAKER_3_PLAYERS,3 players,

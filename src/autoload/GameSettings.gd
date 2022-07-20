@@ -32,6 +32,7 @@ const SETTINGS_KEYS = [
 	'sound_volume',
 	'tank_engine_sounds',
 	'use_full_screen',
+	'language',
 	'use_screenshake',
 	'use_network_relay',
 	'use_detailed_logging',
