@@ -25,4 +25,5 @@ margin_bottom = 32.767
 rect_min_size = Vector2( 350, 0 )
 text = "Start Match!"
 script = ExtResource( 3 )
+
 [connection signal="pressed" from="ReadyButton" to="." method="_on_ReadyButton_pressed"]

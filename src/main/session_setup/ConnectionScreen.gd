@@ -269,7 +269,7 @@ func _on_ResetPasswordButton_pressed() -> void:
 	var email = $"TabContainer/Forgot password?/GridContainer/Email".text.strip_edges()
 
 	if email == '':
-		ui_layer.show_message("Must provide email")
+		ui_layer.show_message("MESSAGE_EMAIL_REQUIRED")
 		return
 
 	var http_request := HTTPRequest.new()
