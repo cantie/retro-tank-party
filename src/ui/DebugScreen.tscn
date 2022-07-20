@@ -120,13 +120,13 @@ margin_right = 1032.0
 margin_bottom = 279.0
 
 [node name="DoneButton" type="Button" parent="Panel/VBoxContainer"]
-margin_left = 441.0
+margin_left = 377.0
 margin_top = 421.0
-margin_right = 591.0
+margin_right = 653.324
 margin_bottom = 486.534
 rect_min_size = Vector2( 150, 0 )
 size_flags_horizontal = 4
-text = "Done"
+text = "BUTTON_DONE"
 script = ExtResource( 4 )
 
 [connection signal="value_changed" from="Panel/VBoxContainer/ScrollContainer/GridContainer/HealthSlider" to="." method="_on_HealthSlider_value_changed"]
