@@ -110,12 +110,12 @@ CREDITS_TEAM,"[b]Team:[/b]
  [color=#1ea7e1][url=https://opengameart.org/content/ciptuned-rock-tune]芯片摇滚乐[/url][/color] 由 [color=black]Bertsz创作[/color]
  [color=#1ea7e1][url=https://opengameart.org/content/5-chiptunes-action]5首动感芯片乐[/url][/color] 由 [color=black]尤哈尼·容卡拉创作[/color]
  [color=#1ea7e1][url=https://sworndevelopment.itch.io/godot-splash-boot-video]Godot 启动视频[/url][/color] 由 [color=black]SwornDevelopment创作[/color]
- [color=#1ea7e1][url=https://orangefreesounds.com/goal-horn-sound-effect/]得分喇叭音效[/url][/color] 由 [color=black]亚历山大创作[/color]","[b]Team:[/b]
+ [color=#1ea7e1][url=https://orangefreesounds.com/goal-horn-sound-effect/]得分喇叭音效[/url][/color] 由 [color=black]亚历山大创作[/color]","[b]團隊:[/b]
   [color=black]David Snopek[/color] 來自 [color=#1ea7e1][url=https://www.snopekgames.com]Snopek Games[/url][/color]: [color=black]計畫和設計[/color]
-  [color=black]Ross Klettke[/color] 來自 [color=#1ea7e1][url=https://www.whatnotory.com/]Whatnotory[/url][/color]: [color=black] 添加的藝術風格 [/color]
-  [color=black]Theanyelpes[/color] ([color=#1ea7e1][url=https://twitter.com/Theanyelpes]Twitter[/url][/color]): [color=black] 西班牙文翻譯 [/color]
+  [color=black]Ross Klettke[/color] 來自 [color=#1ea7e1][url=https://www.whatnotory.com/]Whatnotory[/url][/color]: [color=black] 添加的藝術風格[/color]
+  [color=black]Theanyelpes[/color] ([color=#1ea7e1][url=https://twitter.com/Theanyelpes]Twitter[/url][/color]): [color=black] 西班牙文翻譯[/color]
 
-[b]Free assets:[/b]
+[b]免費資產:[/b]
   [color=#1ea7e1][url=https://www.kenney.nl/assets/topdown-tanks-redux]從總體到細節的坦克 Redux[/url][/color] 藉由 [color=black]Kenney.nl[/color]
   [color=#1ea7e1][url=https://datagoblin.itch.io/monogram]Monogram font[/url][/color] 藉由 [color=black]datagoblin[/color]
   [color=#1ea7e1][url=https://opengameart.org/content/sfx-the-ultimate-2017-16-bit-mini-pack]The Ultimate 2017 16 bit Mini pack[/url][/color] 藉由 [color=black]phoenix1291[/color]
@@ -175,12 +175,12 @@ MESSAGE_PASSWORD_RESET_FAILED,Unable to send password reset email! Try again lat
 MESSAGE_PASSWORD_RESET_SENDING,Sending password reset e-mail...,Mandando el restablecimiento de la contraseña al e-mail...,,E-Mail zum Zurücksetzen des Passworts senden …,Отправка письма для сброса пароля…,Надсилання електронного листа для скидання пароля...,重置密码邮件发送中......,正在傳送密碼重設電子郵件…
 MESSAGE_PASSWORD_RESET_SENT,Password reset email sent!,¡Email de restablecimiento de la contraseña enviado!,,E-Mail zum Zurücksetzen des Passworts gesendet!,Письмо для сброса пароля отправлено!,Електронного листа для скидання пароля надіслано!,重置密码邮件已发送！,密碼重設電子郵件已傳送！
 MESSAGE_PLAYER_DEAD,Wasted!,¡Muerto!,,Besiegt!,Тебя убили!,Втрата!,被干掉了！,倒下了！
-MESSAGE_PLAYER_HAS_LEFT,%s has left!,%s se ha ido!,,%s hat das Spiel verlassen!,%s ушел!,%s вийшов!,还剩%s！,% 已離開！
-MESSAGE_PLAYER_HAS_LEFT_NOT_ENOUGH_PLAYERS,%s has left - not enough players!,"%s se ha ido, no hay suficientes jugadores!",,%s hat das Spiel verlassen – nicht genügend Spieler!,%s ушел — недостаточно игроков!,%s вийшов — не вистачає гравців!,还剩%s - 玩家不足！,% 已離開 - 玩家不足！
+MESSAGE_PLAYER_HAS_LEFT,%s has left!,%s se ha ido!,,%s hat das Spiel verlassen!,%s ушел!,%s вийшов!,还剩%s！,%s 已離開！
+MESSAGE_PLAYER_HAS_LEFT_NOT_ENOUGH_PLAYERS,%s has left - not enough players!,"%s se ha ido, no hay suficientes jugadores!",,%s hat das Spiel verlassen – nicht genügend Spieler!,%s ушел — недостаточно игроков!,%s вийшов — не вистачає гравців!,还剩%s - 玩家不足！,%s 已離開 - 玩家不足！
 MESSAGE_PLAYER_LOSE,You lose!,¡Perdiste!,,Du verlierst!,Ты проиграл!,Ви програли!,您输了！,你輸了！
-MESSAGE_PLAYER_WINS_DEATHMATCH,%s WINS THIS DEATH MATCH!,%s GANA ESTE COMBATE A MUERTE!,,%s GEWINNT DIESES DEATHMATCH!,%s ВЫИГРАЛ ЭТУ СМЕРТЕЛЬНУЮ СХВАТКУ!,%s ВИГРАЄ ЦЕЙ СМЕРТЕЛЬНИЙ МАТЧ!,%s赢得了这场死亡比赛！,% 贏得了這場死鬥！
-MESSAGE_PLAYER_WINS_MATCH,%s WINS THE MATCH!,%s GANA LA PARTIDA!,,%s GEWINNT DIESES MATCH!,%s ВЫИГРАЛ ЭТОТ МАТЧ!,%s ВИГРАЄ МАТЧ!,%s 赢得了比赛!,% 贏得了這場比賽！
-MESSAGE_PLAYER_WINS_ROUND,%s wins this round!,%s gana esta ronda!,,%s GEWINNT DIESE RUNDE!,%s победил в этом раунде!,%s виграє цей раунд!,%s这一轮获得了胜利！,% 贏得了這回合！
+MESSAGE_PLAYER_WINS_DEATHMATCH,%s WINS THIS DEATH MATCH!,%s GANA ESTE COMBATE A MUERTE!,,%s GEWINNT DIESES DEATHMATCH!,%s ВЫИГРАЛ ЭТУ СМЕРТЕЛЬНУЮ СХВАТКУ!,%s ВИГРАЄ ЦЕЙ СМЕРТЕЛЬНИЙ МАТЧ!,%s 赢得了这场死亡比赛！,%s 贏得了這場死鬥！
+MESSAGE_PLAYER_WINS_MATCH,%s WINS THE MATCH!,%s GANA LA PARTIDA!,,%s GEWINNT DIESES MATCH!,%s ВЫИГРАЛ ЭТОТ МАТЧ!,%s ВИГРАЄ МАТЧ!,%s 赢得了比赛!,%s 贏得了這場比賽！
+MESSAGE_PLAYER_WINS_ROUND,%s wins this round!,%s gana esta ronda!,,%s GEWINNT DIESE RUNDE!,%s победил в этом раунде!,%s виграє цей раунд!,%s 这一轮获得了胜利！,%s 贏得了這回合！
 MESSAGE_SESSION_EXPIRED,Session expired! Reconnecting...,¡Sesión caducada! Reconectando...,,Sitzung abgelaufen! Neu verbinden …,Сессия истекла! Повторное подключение…,Сеанс закінчився! Перепідключення...,会话已过期！正在重新连接......,已過期！重新連線…
 MESSAGE_SESSION_EXPIRED_STEAM,Session expired! Reconnecting via Steam...,¡Sesión caducada! Reconectando vía Steam...,,Sitzung abgelaufen! Neu verbinden über Steam …,Сессия истекла! Повторное подключение через Steam…,Сеанс закінчився! Повторне підключення через Steam...,会话已过期！正在通过Steam重新连接......,已過期！透過Steam重新連線…
 MESSAGE_SESSION_LOGGING_IN_STEAM,Logging in via Steam...,Conectando vía Steam...,,Anmelden über Steam …,Вход через Steam…,Вхід через Steam...,正在通过Steam登录......,透過Stream登入
@@ -235,7 +235,7 @@ OPTION_YES,Yes,Sí,,Ja,Да,Так,是,是
 PASSWORD_FIELD_LABEL,Password:,Contraeña:,,Passwort:,Пароль:,Пароль:,密码：,密碼：
 PICKUP_NAME_HEALTH,Health,Salud,,Gesundheit,Здоровье,Здоров’я,健康,生命值
 PLAYER_NAME_PRACTICE,Practice,Práctica,,Übung,Тренировка,Практика,练习,練習
-PLAYER_PING,%sms,%sms,,%s ms,%sms,%смс,%sms,% 簡訊
+PLAYER_PING,%sms,%sms,,%s ms,%sms,%sms,%sms,%sms
 PLAYER_STATUS_CONNECTED,Connected.,Conectado.,,Verbunden.,Подключено.,Підключено.,已连接。,已連線
 PLAYER_STATUS_CONNECTING,Connecting...,Conectando.,,Verbinden …,Подключение…,Підключення...,正在连接中......,正在連線…
 PLAYER_STATUS_READY,READY!,¡Listo!,,BEREIT!,ГОТОВ!,ГОТОВИЙ!,预备！,準備！
