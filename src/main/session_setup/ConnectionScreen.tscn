@@ -1,15 +1,10 @@
-[gd_scene load_steps=8 format=2]
+[gd_scene load_steps=6 format=2]
 
 [ext_resource path="res://assets/theme.tres" type="Theme" id=1]
-[ext_resource path="res://assets/fonts/monogram_extended.ttf" type="DynamicFontData" id=2]
 [ext_resource path="res://assets/fonts/monogram.tres" type="DynamicFont" id=3]
 [ext_resource path="res://src/main/session_setup/ConnectionScreen.gd" type="Script" id=4]
 [ext_resource path="res://assets/fonts/monogram_small.tres" type="DynamicFont" id=5]
 [ext_resource path="res://src/ui/MyButton.gd" type="Script" id=6]
-
-[sub_resource type="DynamicFont" id=1]
-size = 32
-font_data = ExtResource( 2 )
 
 [node name="ConnectionScreen" type="Control"]
 anchor_right = 1.0
@@ -46,7 +41,7 @@ margin_left = -483.125
 margin_top = 65.8919
 margin_right = 453.875
 margin_bottom = 130.892
-custom_fonts/font = SubResource( 1 )
+custom_fonts/font = ExtResource( 5 )
 text = "SESSION_SETUP_TAB_STEAM_MESSAGE"
 autowrap = true
 
