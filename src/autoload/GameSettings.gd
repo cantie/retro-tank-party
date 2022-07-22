@@ -134,6 +134,8 @@ func update_language() -> void:
 					locale = "en"
 				"spanish", "latam":
 					locale = "es"
+				"russian":
+					locale = "ru"
 				_:
 					locale = OS.get_locale_language()
 		else:
