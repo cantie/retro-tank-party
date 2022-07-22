@@ -34,6 +34,7 @@ func _ready() -> void:
 	language_field.add_item("LANGUAGE_OPTION_DEFAULT", "default")
 	language_field.add_item("LANGUAGE_OPTION_ENGLISH", "en")
 	language_field.add_item("LANGUAGE_OPTION_SPANISH", "es")
+	language_field.add_item("LANGUAGE_OPTION_UKRAINIAN", "uk")
 	language_field.add_item("LANGUAGE_OPTION_RUSSIAN", "ru")
 	language_field.add_item("LANGUAGE_OPTION_GERMAN", "de")
 	language_field.add_item("LANGUAGE_OPTION_SIMPLIFIED_CHINESE", "zh_CN")
@@ -101,7 +102,7 @@ func _show_screen(info: Dictionary = {}) -> void:
 		detailed_logging_field.visible = not SyncManager.started
 
 	scroll_container.scroll_vertical = 0
-	music_slider.focus.grab_without_sound()
+	language_field.focus.grab_without_sound()
 	ui_layer.show_back_button()
 
 func _notification(what: int) -> void:
