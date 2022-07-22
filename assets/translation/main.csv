@@ -1,31 +1,31 @@
 keys,en,es,pl,de,ru,uk,zh_CN,zh_TW
-ABILITY_NAME_BOOST,Boost,Boost,,Boost,Усиление,,增强,
-ABILITY_FIELD_LABEL,Ability,Habilidad,,Fähigkeit,Способность,,能力,
-ABILITY_NAME_INVISIBLE,Invisible,Invisible,,Unsichtbar,Невидимость,,隐身,
-ABILITY_NAME_ZAP,Zap!,¡Zap!,,Zap!,Разряд,,击杀！,
-ALERT_LEAVE_MATCH,You will leave the session and won't be able to to rejoin,Saldrás de la sesión y no podrás volver a entrar,,Du verlässt die Sitzung und kannst nicht wieder beitreten.,Ты покинешь сеанс и не сможешь присоединиться повторно,,您将退出会话，且无法重新加入,
-ALERT_LEAVE_MATCH_HOST,This will end the match for everyone and return to the match setup screen.,Esto terminará el partido para todos y volverá a la pantalla de configuración de la partida.,,Du beendest das Match für alle und kehrst zum Bildschirm für die Spielvorbereitung zurück.,"Матч будет завершен для всех, и ты вернешься к экрану настройки матча.",,这将结束所有人的比赛，并返回到比赛设置界面。,
-ALERT_LEAVE_MATCH_SETUP_HOST,This will end the match for everyone.,Esto terminará la partida para todos,,Dadurch wird das Match für alle beendet.,Матч будет завершен для всех.,,这将结束所有人的比赛。,
-ALERT_LEAVE_MATCH_TITLE,Are you sure you want to exit?,¿Estás seguro de que quieres salir?,,Wirklich beenden?,Ты точно хочешь выйти?,,您确定要退出吗？,
-ART_STYLE_NAME_ATARI,Atari 2600,Atari 2600,,Atari 2600,Atari 2600,,雅达利2600,
-ART_STYLE_NAME_CLASSIC,Classic,Clásico,,Klassisch,Классика,,经典,
-ART_STYLE_NAME_SNES,SNES,SNES,,SNES,SNES,,超级任天堂,
-ART_STYLE_NAME_VECTOR,Vector,Vector,,Vektor,Векторная,,矢量,
-BUTTON_MATCHMAKER,Match,Coincidir,,Match,Подобрать,,比赛,
-BUTTON_CANCEL,Cancel,Cancelar,,Abbrechen,Отмена,,取消,
-BUTTON_COPY,Copy,Copiar,,Kopieren,Копировать,,复制,
-BUTTON_CREATE_ACCOUNT,Create Account,Crear cuenta,,Konto erstellen,Создать аккаунт,,创建账户,
-BUTTON_CREATE_MATCH,Create,Crear,,Erstellen,Создать,,创建,
-BUTTON_DONE,Done,Donar,,Fertig,Готово,,完成,
-BUTTON_JOIN_MATCH,Join,Unirse,,Beitreten,Вступить,,加入,
-BUTTON_LOGIN,Login,Acceso,,Anmelden,Войти,,登录,
-BUTTON_NEXT,Next,Siguiente,,Weiter,Далее,,下一个,
-BUTTON_OK,OK,OK,,Okay,ОК,,好的,
-BUTTON_PASTE,Paste,Pegar,,Einfügen,Вставить,,粘贴,
-BUTTON_READY,I'm Ready!,¡Estoy listo!,,Ich bin bereit!,Я готов!,,我准备好了！,
-BUTTON_RESET_PASSWORD,Reset Password,Restablecer contraseña,,Passwort zurücksetzen,Сбросить пароль,,重置密码,
-BUTTON_START_MATCH,Start Match!,¡Empezar partida!,,Match starten!,Начать матч!,,开始比赛！,
-CREDITS_TITLE,Credits,Créditos,,Credits,Авторы,,点数,
+ABILITY_NAME_BOOST,Boost,Boost,,Boost,Усиление,,增强,加速
+ABILITY_FIELD_LABEL,Ability,Habilidad,,Fähigkeit,Способность,,能力,能力
+ABILITY_NAME_INVISIBLE,Invisible,Invisible,,Unsichtbar,Невидимость,,隐身,隱形
+ABILITY_NAME_ZAP,Zap!,¡Zap!,,Zap!,Разряд,,击杀！,轟炸！
+ALERT_LEAVE_MATCH,You will leave the session and won't be able to to rejoin,Saldrás de la sesión y no podrás volver a entrar,,Du verlässt die Sitzung und kannst nicht wieder beitreten.,Ты покинешь сеанс и не сможешь присоединиться повторно,,您将退出会话，且无法重新加入,你將離開此配對，且無法再回來。
+ALERT_LEAVE_MATCH_HOST,This will end the match for everyone and return to the match setup screen.,Esto terminará el partido para todos y volverá a la pantalla de configuración de la partida.,,Du beendest das Match für alle und kehrst zum Bildschirm für die Spielvorbereitung zurück.,"Матч будет завершен для всех, и ты вернешься к экрану настройки матча.",,这将结束所有人的比赛，并返回到比赛设置界面。,這將會結束所有人的對戰，並且回到對戰設定畫面。
+ALERT_LEAVE_MATCH_SETUP_HOST,This will end the match for everyone.,Esto terminará la partida para todos,,Dadurch wird das Match für alle beendet.,Матч будет завершен для всех.,,这将结束所有人的比赛。,這將會結束所有人的對戰。
+ALERT_LEAVE_MATCH_TITLE,Are you sure you want to exit?,¿Estás seguro de que quieres salir?,,Wirklich beenden?,Ты точно хочешь выйти?,,您确定要退出吗？,你確定想要離開嗎？
+ART_STYLE_NAME_ATARI,Atari 2600,Atari 2600,,Atari 2600,Atari 2600,,雅达利2600,雅加達2600
+ART_STYLE_NAME_CLASSIC,Classic,Clásico,,Klassisch,Классика,,经典,經典
+ART_STYLE_NAME_SNES,SNES,SNES,,SNES,SNES,,超级任天堂,超級任天堂
+ART_STYLE_NAME_VECTOR,Vector,Vector,,Vektor,Векторная,,矢量,矢量跑酷
+BUTTON_MATCHMAKER,Match,Coincidir,,Match,Подобрать,,比赛,對戰
+BUTTON_CANCEL,Cancel,Cancelar,,Abbrechen,Отмена,,取消,取消
+BUTTON_COPY,Copy,Copiar,,Kopieren,Копировать,,复制,複製
+BUTTON_CREATE_ACCOUNT,Create Account,Crear cuenta,,Konto erstellen,Создать аккаунт,,创建账户,建立帳號
+BUTTON_CREATE_MATCH,Create,Crear,,Erstellen,Создать,,创建,建立
+BUTTON_DONE,Done,Donar,,Fertig,Готово,,完成,完成
+BUTTON_JOIN_MATCH,Join,Unirse,,Beitreten,Вступить,,加入,參加
+BUTTON_LOGIN,Login,Acceso,,Anmelden,Войти,,登录,登入
+BUTTON_NEXT,Next,Siguiente,,Weiter,Далее,,下一个,下一個
+BUTTON_OK,OK,OK,,Okay,ОК,,好的,OK
+BUTTON_PASTE,Paste,Pegar,,Einfügen,Вставить,,粘贴,貼上
+BUTTON_READY,I'm Ready!,¡Estoy listo!,,Ich bin bereit!,Я готов!,,我准备好了！,我準備好了！
+BUTTON_RESET_PASSWORD,Reset Password,Restablecer contraseña,,Passwort zurücksetzen,Сбросить пароль,,重置密码,重設密碼
+BUTTON_START_MATCH,Start Match!,¡Empezar partida!,,Match starten!,Начать матч!,,开始比赛！,開始對戰！
+CREDITS_TITLE,Credits,Créditos,,Credits,Авторы,,点数,功勞
 CREDITS_TEAM,"[b]Team:[/b]
   [color=black]David Snopek[/color] from [color=#1ea7e1][url=https://www.snopekgames.com]Snopek Games[/url][/color]: [color=black]Programming and Design[/color]
   [color=black]Ross Klettke[/color] from [color=#1ea7e1][url=https://www.whatnotory.com/]Whatnotory[/url][/color]:   [color=black]Additional Art Styles[/color]
@@ -96,147 +96,161 @@ CREDITS_TEAM,"[b]Team:[/b]
  [color=#1ea7e1][url=https://opengameart.org/content/ciptuned-rock-tune]芯片摇滚乐[/url][/color] 由 [color=black]Bertsz创作[/color]
  [color=#1ea7e1][url=https://opengameart.org/content/5-chiptunes-action]5首动感芯片乐[/url][/color] 由 [color=black]尤哈尼·容卡拉创作[/color]
  [color=#1ea7e1][url=https://sworndevelopment.itch.io/godot-splash-boot-video]Godot 启动视频[/url][/color] 由 [color=black]SwornDevelopment创作[/color]
- [color=#1ea7e1][url=https://orangefreesounds.com/goal-horn-sound-effect/]得分喇叭音效[/url][/color] 由 [color=black]亚历山大创作[/color]",
-CHECKBOX_SAVE_CREDS,Save e-mail and password,Guardar e-mail y contraseña,,E-Mail-Adresse und Passwort speichern,Сохранить эл. почту и пароль,,保存邮箱地址及密码,
-CONTROL_SCHEME_OPTION_MODERN,Modern,Moderno,,Modern,Современная,,现代,
-CONTROL_SCHEME_OPTION_RETRO,Retro,Retro,,Retro,Ретро,,复古,
-DEBUG_TITLE,Debug,Depuración,,Debug,Отладка,,调试,
-EMAIL_FIELD_LABEL,E-mail:,E-mail:,,E-Mail-Adresse:,Эл. почта:,,电子邮箱：,
-GAME_ERROR_UNABLE_TO_LOAD_MAP,Unable to load map,Imposible cargar el mapa,,Karte kann nicht geladen werden,Не удалось загрузить карту,,无法加载地图,
-GAMEPAD_DEVICE_OPTION_DEFAULT,Default,Por defecto,,Standard,По умолчанию,,默认,
-HEALTH_FIELD_LABEL,Health,Salud,,Gesundheit,Здоровье,,健康,
-INVINCIBLE_FIELD_LABEL,Invincible,Invencibilidad,,Unbesiegbar,Непобедимый,,无敌,
-LANGUAGE_OPTION_DEFAULT,Default,Por defecto,,Standard,По умолчанию,,默认,
-LANGUAGE_OPTION_ENGLISH,English,Inglés,,Englisch,Английский,,英语,
-LANGUAGE_OPTION_SPANISH,Spanish,Español,,Spanisch,Испанский,,西班牙语,
-MAP_NAME_BATTLEFIELD,Battlefield,Campo de batalla,,Schlachtfeld,Поле битвы,,战场,
-MAP_NAME_DESERT,Desert,Desierto,,Wüste,Пустыня,,沙漠,
-MAP_NAME_FOOTBALL,Football,Fútbol,,Fußball,Футбол,,足球,
-MAP_NAME_MAZE,Maze,Laberinto,,Labyrinth,Лабиринт,,迷宫,
-MAP_TITLE,Map,Mapa,,Karte,Карта,,地图,
-MATCH_ID_FIELD_LABEL,Match ID:,Match ID:,,Match-ID:,ID матча:,,比赛编号：,
-MATCH_OPTION_CREATE,Create a private match,Crear una partida privada,,Privates Match erstellen,Создать закрытый матч,,创建一场私人比赛,
-MATCH_OPTION_CREATE_DESCRIPTION,Get a private match ID and send it to your friends.,Obtener un match ID privado y enviarlo a tus amigos,,Erhalte eine private Match-ID und schicke sie an deine Freunde.,Получи ID закрытого матча и отправь его своим друзьям.,,获取一个私人比赛编号并发送给您的朋友们。,
-MATCH_OPTION_JOIN,Join a private match,Unirse a una partida privada,,Privatem Match beitreten,Вступить в закрытый матч,,加入私人比赛,
-MATCH_OPTION_JOIN_DESCRIPTION,Paste the private match ID that your friend sent you.,Pegar el match ID privado que tus amigos te enviaron.,,"Füge die private Match-ID ein, die dir dein Freund geschickt hat.","Вставь ID закрытого матча, который тебе прислал друг.",,粘贴您朋友发送给您的私人比赛编号,
-MATCH_OPTION_MATCHMAKER,Find a public match,Encontrar una partida pública,,Öffentliches Match finden,Найти открытый матч,,查找公开比赛,
-MATCH_OPTION_MATCHMAKER_DESCRIPTION,"There is matchmaking, but this is a tiny indie game. Don't expect to find randos to battle! It's super cheap - buy a couple copies for your friends!","Hay emparejamiento, pero se trata de un pequeño juego indie. No esperes encontrar a alguien con quien luchar. Es súper barato: ¡compra un par de copias para tus amigos!",,"Es gibt zwar Matchmaking, aber das hier ist ein kleines Indie-Spiel. Erwarte nicht, zufällige Mitspieler zu finden! Das Spiel ist supergünstig – verschenke es an deine Freunde!","Функция подбора матчей существует, но это крошечная инди-игра. Не ожидай найти тут случайных людей, с которыми будешь сражаться! Игра очень дешевая — купи пару копий своим друзьям!",,配对成功，但这仅仅是一个小的独立游戏。别指望能和随机对手去战斗！它超级便宜-给您的朋友们买几套吧！,
-MATCHMAKER_2_PLAYERS,2 players,2 jugadores,,2 Spieler,2 игрока,,2位玩家,
-MATCHMAKER_3_PLAYERS,3 players,3 jugadores,,3 Spieler,3 игрока,,3位玩家,
-MATCHMAKER_4_PLAYERS,4 players,4 jugadores,,4 Spieler,4 игрока,,4位玩家,
-MATCHMAKER_PLAYERS_FIELD_LABEL,Find at least:,Encontrar,,Finde mindestens:,Найти хотя бы:,,至少找到：,
-MENU_BATTLE,Battle!,¡Batalla!,,Kampf!,Сражаться!,,开战！,
-MENU_CREDITS,Credits,Créditos,,Credits,Авторы,,点数,
-MENU_EXIT,Exit,Salir,,Beenden,Выход,,退出,
-MENU_PRACTICE,Practice,Práctica,,Übung,Тренироваться,,练习,
-MENU_SETTINGS,Settings,Ajustes,,Einstellungen,Настройки,,设置,
-MESSAGE_CREATE_ACCOUNT_FAILED,Unable to create account,Imposible crear una cuenta,,Konto kann nicht erstellt werden,Не удалось создать аккаунт,,创建账户失败,
-MESSAGE_CREATING_ACCOUNT,Creating account...,Creando cuenta...,,Konto erstellen …,Создание аккаунта…,,创建账户......,
-MESSAGE_EMAIL_REQUIRED,Must provide email,Debes proporcionar un e-mail,,E-Mail-Adresse erforderlich,Необходимо указать эл. почту,,必须提供电子邮箱,
-MESSAGE_EMAIL_TAKEN,E-mail already in use,E-mail ya en uso,,E-Mail-Adresse wird bereits verwendet,Эта эл. почта уже занята,,该电子邮箱已注册,
-MESSAGE_INSTANT_DEATH,INSTANT DEATH!,¡MUERTA INSTANTÁNEA!,,SOFORTIGER TOD!,МГНОВЕННАЯ СМЕРТЬ!,,突然死亡！,
-MESSAGE_LOGGING_IN,Logging in...,Accediendo,,Anmelden …,Вход в систему…,,读取中,
-MESSAGE_LOGIN_FAILED,Login failed!,¡Acceso fallido!,,Anmeldung fehlgeschlagen!,Не удалось войти!,,读取失败！,
-MESSAGE_LOGIN_FAILED_STEAM,Unable to connect to Steam. Please try again later.,"Imposible conectar a Steam. Por favor, inténtalo de nuevo más tarde.",,Verbindung zu Steam nicht möglich. Bitte versuche es später erneut.,"Не удается подключиться к Steam. Пожалуйста, попробуй позже.",,无法连接到Steam。请稍后再试。,
-MESSAGE_LOOKING_FOR_MATCH,Looking for match...,Buscando una partida...,,Suchen nach Match …,Поиск матча…,,查找配对中......,
-MESSAGE_MATCH_ID_REQUIRED,Need to paste Match ID to join,Se necesita pegar el Match ID para unirse,,"Du musst die Match-ID einfügen, um beizutreten","Чтобы присоединиться, нужно вставить ID матча",,需要粘贴比赛编号以加入,
-MESSAGE_NETWORK_ISSUES,"If you're having issues, try different ""Network Relay"" settings before starting a match.","Si tienes problemas, prueba diferentes configuraciones de ""Relé de red"" antes de empezar una partida.",,"Wenn du Probleme hast, probiere verschiedene „Netzwerk-Relais“-Einstellungen aus, bevor du ein Match beginnst.","Если у тебя возникли проблемы, попробуй установить другие варианты «Сетевой ретрансляции» перед началом матча.",,如果您遇到问题，请在开始比赛前尝试不同的“网络中继”设置。,
-MESSAGE_NO_USER_ACCOUNT,No user account found,No se encontró la cuenta de usuario,,Kein Benutzerkonto gefunden,Аккаунт пользователя не найден,,未找到该账户,
-MESSAGE_PASSWORD_REQUIRED,Must provide password,Debes proveer una contraseña,,Passwort erforderlich,Необходимо указать пароль,,必须填写密码,
-MESSAGE_PASSWORD_RESET_FAILED,Unable to send password reset email! Try again later.,No se ha podido enviar el correo electrónico de restablecimiento de la contraseña. Vuelve a intentarlo más tarde.,,E-Mail zum Zurücksetzen des Passworts kann nicht gesendet werden! Versuche es später erneut.,Не удалось отправить письмо для сброса пароля! Попробуй позже.,,发送重置密码邮件失败！请稍后再试。,
-MESSAGE_PASSWORD_RESET_SENDING,Sending password reset e-mail...,Mandando el restablecimiento de la contraseña al e-mail...,,E-Mail zum Zurücksetzen des Passworts senden …,Отправка письма для сброса пароля…,,重置密码邮件发送中......,
-MESSAGE_PASSWORD_RESET_SENT,Password reset email sent!,¡Email de restablecimiento de la contraseña enviado!,,E-Mail zum Zurücksetzen des Passworts gesendet!,Письмо для сброса пароля отправлено!,,重置密码邮件已发送！,
-MESSAGE_PLAYER_DEAD,Wasted!,¡Muerto!,,Besiegt!,Тебя убили!,,被干掉了！,
-MESSAGE_PLAYER_HAS_LEFT,%s has left!,%s se ha ido!,,%s hat das Spiel verlassen!,%s ушел!,,还剩%s！,
-MESSAGE_PLAYER_HAS_LEFT_NOT_ENOUGH_PLAYERS,%s has left - not enough players!,"%s se ha ido, no hay suficientes jugadores!",,%s hat das Spiel verlassen – nicht genügend Spieler!,%s ушел — недостаточно игроков!,,还剩%s - 玩家不足！,
-MESSAGE_PLAYER_LOSE,You lose!,¡Perdiste!,,Du verlierst!,Ты проиграл!,,您输了！,
-MESSAGE_PLAYER_WINS_DEATHMATCH,%s WINS THIS DEATH MATCH!,%s GANA ESTE COMBATE A MUERTE!,,%s GEWINNT DIESES DEATHMATCH!,%s ВЫИГРАЛ ЭТУ СМЕРТЕЛЬНУЮ СХВАТКУ!,,%s赢得了这场死亡比赛！,
-MESSAGE_PLAYER_WINS_MATCH,%s WINS THE MATCH!,%s GANA LA PARTIDA!,,%s GEWINNT DIESES MATCH!,%s ВЫИГРАЛ ЭТОТ МАТЧ!,,%s 赢得了比赛!,
-MESSAGE_PLAYER_WINS_ROUND,%s wins this round!,%s gana esta ronda!,,%s GEWINNT DIESE RUNDE!,%s победил в этом раунде!,,%s这一轮获得了胜利！,
-MESSAGE_SESSION_EXPIRED,Session expired! Reconnecting...,¡Sesión caducada! Reconectando...,,Sitzung abgelaufen! Neu verbinden …,Сессия истекла! Повторное подключение…,,会话已过期！正在重新连接......,
-MESSAGE_SESSION_EXPIRED_STEAM,Session expired! Reconnecting via Steam...,¡Sesión caducada! Reconectando vía Steam...,,Sitzung abgelaufen! Neu verbinden über Steam …,Сессия истекла! Повторное подключение через Steam…,,会话已过期！正在通过Steam重新连接......,
-MESSAGE_SESSION_LOGGING_IN_STEAM,Logging in via Steam...,Conectando vía Steam...,,Anmelden über Steam …,Вход через Steam…,,正在通过Steam登录......,
-MESSAGE_SETUP_CLIENT,The host is configuring the match...,El anfitrión está configurando la partida...,,Der Host konfiguriert das Match …,Хост настраивает матч…,,房主正在设置比赛......,
-MESSAGE_SETUP_HOST,You're the host! How you wanna do this?,¡Tú eres el anfitrión! ¿Cómo quieres hacer esto?,,Du bist der Host! Wie möchtest du das machen?,Ты — хост! Как ты хочешь это сделать?,,您是房主！您想怎么玩？,
-MESSAGE_SYNCHRONIZATION_LOST,Synchronization lost,Sincronización perdida,,Synchronisation verloren,Синхронизация потеряна,,同步丢失,
-MESSAGE_TEAM_NEEDS_PLAYERS,Each team must have at least 1 player!,¡Cada equipo debe tener al menos 1 jugador!,,Jedes Team muss mindestens einen Spieler haben!,В каждой команде должен быть хотя бы 1 игрок!,,每支队伍至少要有一位玩家！,
-MESSAGE_USERNAME_REQUIRED,Must provide username,Debes proveer un nombre de usuario,,Benutzername erforderlich,Нужно указать имя пользователя,,必须提供用户名,
-MESSAGE_USERNAME_TAKEN,Username already taken,Nombre de usuario ya ocupado,,Benutzername bereits vergeben,Имя пользователя уже занято,,用户名已被占用,
-MODE_DESCRIPTION_BATTLE_ROYALE,The last tank standing wins the round.,El último tanque en pie gana la ronda.,,Der letzte verbliebene Panzer gewinnt die Runde.,Последний оставшийся танк побеждает в раунде.,,最后存活的坦克获得本轮的胜利。,
-MODE_DESCRIPTION_DEATHMATCH,The tank with the most kills wins.,El tanque con más muertes gana.,,Der Panzer mit den meisten Kills gewinnt.,Побеждает танк с наибольшим количеством убийств.,,击杀数最高的坦克获胜。,
-MODE_DESCRIPTION_FOOTBALL,Carry the ball to the goal to score points.,Lleva el balón a la portería para conseguir puntos.,,"Trage den Ball ins Tor, um zu punkten.","Принеси мяч к воротам, чтобы набрать очки.",,将球带到球门得分。,
-MODE_NAME_BATTLE_ROYALE,Battle Royale,Battle Royale,,Battle Royale,Королевская битва,,大逃杀,
-MODE_NAME_DEATHMATCH,Deathmatch,Partida a muerte,,Deathmatch,Смертельная схватка,,死亡比赛,
-MODE_NAME_FOOTBALL,Football,Fútbol,,Fußball,Футбол,,足球,
-NETWORK_RELAY_OPTION_AUTO,Auto,Auto,,Automatisch,Авто,,自动,
-NETWORK_RELAY_OPTION_DISABLED,Disabled,Desactivado,,Deaktiviert,Отключено,,禁用,
-NETWORK_RELAY_OPTION_FALLBACK_AUTO,Fallback (Auto),Retroceso (Auto),,Fallback (automatisch),Резервный (авто),,回退（自动）,
-NETWORK_RELAY_OPTION_FALLBACK_FORCED,Fallback,Retroceso (Auto),,Fallback,Резервный,,回退,
-NETWORK_RELAY_OPTION_FORCED,Forced,Forzado,,Erzwungen,Принудительно,,强制,
-ONLINE_MATCH_ERROR_CLIENT_JOIN_ERROR,Client not allowed to join,Cliente no permitido para unirse,,Client darf nicht beitreten,Клиент не может присоединиться,,客户机被禁止加入,
-ONLINE_MATCH_ERROR_CLIENT_VERSION_ERROR,Client version doesn't match host,La versión del cliente no coincide con el host,,Client-Version stimmt nicht mit Host überein,Версия клиента не соответствует версии хоста,,客户机版本与房主的不匹配,
-ONLINE_MATCH_ERROR_JOIN_MATCH_FAILED,Unable to join match,Imposible unirse a la partida,,Match-Beitritt nicht möglich,Не удалось присоединиться к матчу,,无法加入比赛,
-ONLINE_MATCH_ERROR_MATCH_CREATE_FAILED,Failed to create match,No se ha podido crear la partida,,Match-Erstellung fehlgeschlagen,Не удалось создать матч,,创建比赛失败,
-ONLINE_MATCH_ERROR_MATCH_HAS_ALREADY_BEGUN,Sorry! The match has already begun.,¡Lo siento! La partida ya empezó.,,Leider hat das Match bereits begonnen.,Извини! Матч уже начался.,,抱歉！比赛已经开始了。,
-ONLINE_MATCH_ERROR_MATCH_IS_FULL,Sorry! The match is full.,¡Lo siento! La partida está completa.,,Leider ist das Match voll.,Извини! В матче нет места.,,抱歉！比赛已经满员。,
-ONLINE_MATCH_ERROR_MATCHMAKER_ERROR,Matchmaker error,Error de emparejamiento,,Matchmaker-Fehler,Ошибка поиска матчей,,匹配错误,
-ONLINE_MATCH_ERROR_START_MATCHMAKING_FAILED,Unable to join match making pool,Imposible unirse al grupo de emparejamiento,,Beitritt zum Matchmaking-Pool nicht möglich,Не удалось присоединиться к пулу подбора игроков,,无法加入配对池,
-ONLINE_MATCH_ERROR_WEBSOCKET_CONNECTION_ERROR,WebSocket connection error,Error de conexión WebSocket,,WebSocket-Verbindungsfehler,Ошибка подключения через веб-сокет,,WebSocket连接错误,
-OPTION_10_SECOND,10 sec,10 seg,,10 s,10 сек.,,10秒,
-OPTION_20_SECOND,20 sec,20 seg,,20 s,20 сек.,,20秒,
-OPTION_30_SECOND,30 sec,30 seg,,30 s,30 сек.,,30秒,
-OPTION_40_SECOND,40 sec,40 seg,,40 s,40 сек.,,40秒,
-OPTION_50_SECOND,50 sec,50 seg,,50 s,50 сек.,,50秒,
-OPTION_60_SECOND,60 sec,60 seg,,60 s,60 сек.,,60秒,
-OPTION_1_MINUTE,1 min,2 min,,1 min,1 мин.,,1分钟,
-OPTION_2_MINUTE,2 min,3 min,,2 min,2 мин.,,2分钟,
-OPTION_3_MINUTE,3 min,4 min,,3 min,3 мин.,,3分钟,
-OPTION_4_MINUTE,4 min,5 min,,4 min,4 мин.,,4分钟,
-OPTION_5_MINUTE,5 min,6 min,,5 min,5 мин.,,5分钟,
-OPTION_6_MINUTE,6 min,7 min,,6 min,6 мин.,,6分钟,
-OPTION_7_MINUTE,7 min,8 min,,7 min,7 мин.,,7分钟,
-OPTION_8_MINUTE,8 min,9 min,,8 min,8 мин.,,8分钟,
-OPTION_9_MINUTE,9 min,10 min,,9 min,9 мин.,,9分钟,
-OPTION_10_MINUTE,10 min,11 min,,10 min,10 мин.,,10分钟,
-OPTION_DISABLED,Disabled,Desactivado,,Deaktiviert,Отключено,,禁用,
-OPTION_ENABLED,Enabled,Activado,,Aktiviert,Включено,,启用,
-OPTION_NEVER,Never,Nunca,,Nie,Никогда,,永不,
-OPTION_NONE,None,Nada,,Keine,Отсутствует,,无,
-OPTION_NO,No,No,,Nein,Нет,,不,
-OPTION_YES,Yes,Sí,,Ja,Да,,是,
-PASSWORD_FIELD_LABEL,Password:,Contraeña:,,Passwort:,Пароль:,,密码：,
-PICKUP_NAME_HEALTH,Health,Salud,,Gesundheit,Здоровье,,健康,
-PLAYER_NAME_PRACTICE,Practice,Práctica,,Übung,Тренировка,,练习,
-PLAYER_PING,%sms,%sms,,%s ms,%sms,,%sms,
-PLAYER_STATUS_CONNECTED,Connected.,Conectado.,,Verbunden.,Подключено.,,已连接。,
-PLAYER_STATUS_CONNECTING,Connecting...,Conectando.,,Verbinden …,Подключение…,,正在连接中......,
-PLAYER_STATUS_READY,READY!,¡Listo!,,BEREIT!,ГОТОВ!,,预备！,
-POINTS_TO_WIN_FIELD_LABEL,Points to win,Puntos para ganar,,Punkte zum Sieg,Очки для победы,,获胜所需积分,
-SESSION_SETUP_TAB_CREATE_ACCOUNT,Create account,Crear cuenta,,Konto erstellen,Создать аккаунт,,创建账户,
-SESSION_SETUP_TAB_FORGOT_PASSWORD,Forgot password?,¿Olvidaste la contraseña?,,Passwort vergessen?,Забыл пароль?,,忘记密码了？,
-SESSION_SETUP_TAB_LOGIN,Login,Acceder,,Anmeldung,Войти,,登录,
-SESSION_SETUP_TAB_STEAM,Steam,Steam,,Steam,Steam,,Steam,
-SESSION_SETUP_TAB_STEAM_MESSAGE,"If you already have a SnopekGames account, use the ""Login"" tab and it'll link your Steam account for the future. Otherwise, you'll end up with two accounts.","Si ya tienes una cuenta de SnopekGames, utiliza la pestaña ""Acceder"" y se vinculará tu cuenta de Steam para el futuro. De lo contrario, acabarás teniendo dos cuentas.",,"Solltest du bereits ein SnopekGames-Konto haben, gehe auf die Registerkarte „Anmelden“, um dein Steam-Konto für die Zukunft zu verknüpfen. Andernfalls hast du am Ende zwei Konten.","Если у тебя уже есть аккаунт SnopekGames, используй вкладку «Вход», и она свяжет твой аккаунт Steam. В противном случае у тебя будет два аккаунта.",,如果你已经有一个SnopekGames账户，请使用“登录”选项卡，它将连接您的Steam账户以备将来使用。否则，您将拥有两个账户。,
-SETTING_ART_STYLE,Art style,Estilo artístico,,Kunststil,Стиль рисунков,,艺术风格,
-SETTING_CONTROL_SCHEME,Control scheme,Esquema de control,,Kontrollschema,Схема управления,,控制方案,
-SETTING_DETAILED_LOGGING,Detailed logging,Acceso detallado,,Detaillierte Aufzeichnung,Подробный журнал,,详细日志记录,
-SETTING_FULL_SCREEN,Full screen,Pantalla completa,,Vollbildschirm,На полный экран,,全屏,
-SETTING_GAMEPAD_DEVICE,Gamepad device,Dispositivo Gamepad,,Gamepad-Gerät,Геймпад,,游戏手柄设备,
-SETTING_LANGUAGE,Language,Idioma,,Sprache,Язык,,语言,
-SETTING_MUSIC,Music,Música,,Musik,Музыка,,音乐,
-SETTING_NETWORK_RELAY,Network relay,Relé de red,,Netzwerk-Relais,Сетевая ретрансляция,,网络中继,
-SETTING_SCREEN_SHAKE,Screen shake,Sacudida de pantalla,,Verwackeln des Bildschirms,Дрожание экрана,,屏幕抖动,
-SETTING_SOUND,Sound,Sonido,,Ton,Звук,,声音,
-SETTING_TANK_ENGINE_SOUNDS,Tank engine sounds,Sonidos del motor del tanque,,Geräusche von Panzermotoren,Звуки танкового двигателя,,坦克引擎音效,
-SETTINGS_TITLE,Settings,Ajustes,,Einstellungen,Настройки,,设置,
-TEAMS_FIELD_LABEL,Teams,Equipos,,Teams,Команды,,战队,
-TIMELIMIT_FIELD_LABEL,Timelimit,Limite de tiempo,,Zeitlimit,Лимит времени,,时间限制,
-TITLE_PRESS_ANY_KEY,Press any key (or click) to start,Presiona cualquier tecla (o click) para empezar,,"Drücke eine beliebige Taste (oder klicke), um zu beginnen","Нажми любую клавишу (или кликни), чтобы начать",,按任意键（或单击）开始,
-USERNAME_FIELD_LABEL,Username:,Nombre de usuario:,,Benutzername:,Имя пользователя:,,用户名：,
-WEAPON_FIELD_LABEL,Weapon,Arma,,Waffe,Оружие,,武器,
-WEAPON_NAME_FOOTBALL,Football,Fútbol,,Fußball,Футбол,,足球,
-WEAPON_NAME_NORMAL,Normal,Normal,,Normal,Обычное,,正常,
-WEAPON_NAME_RAILGUN,Railgun,Cañón de riel,,Railgun,Рейлган,,轨道炮,
-WEAPON_NAME_SPREAD,Spread,Arma de fuego,,Spread,Спред,,散射,
-WEAPON_NAME_TRACER,Tracer,Rastreador,,Tracer,Трейсер,,追踪,
-WEAPON_TIMEOUT_FIELD_LABEL,Weapons last,Últimas armas,,Waffen halten,Оружие доступно,,仅剩的武器,
+ [color=#1ea7e1][url=https://orangefreesounds.com/goal-horn-sound-effect/]得分喇叭音效[/url][/color] 由 [color=black]亚历山大创作[/color]","[b]Team:[/b]
+  [color=black]David Snopek[/color] 來自 [color=#1ea7e1][url=https://www.snopekgames.com]Snopek Games[/url][/color]: [color=black]計畫和設計[/color]
+  [color=black]Ross Klettke[/color] 來自 [color=#1ea7e1][url=https://www.whatnotory.com/]Whatnotory[/url][/color]: [color=black] 添加的藝術風格 [/color]
+  [color=black]Theanyelpes[/color] ([color=#1ea7e1][url=https://twitter.com/Theanyelpes]Twitter[/url][/color]): [color=black] 西班牙文翻譯 [/color]
+
+[b]Free assets:[/b]
+  [color=#1ea7e1][url=https://www.kenney.nl/assets/topdown-tanks-redux]從總體到細節的坦克 Redux[/url][/color] 藉由 [color=black]Kenney.nl[/color]
+  [color=#1ea7e1][url=https://datagoblin.itch.io/monogram]Monogram font[/url][/color] 藉由 [color=black]datagoblin[/color]
+  [color=#1ea7e1][url=https://opengameart.org/content/sfx-the-ultimate-2017-16-bit-mini-pack]The Ultimate 2017 16 bit Mini pack[/url][/color] 藉由 [color=black]phoenix1291[/color]
+  [color=#1ea7e1][url=https://opengameart.org/content/engine-loop-heavy-vehicletank]循環發動機重型車輛/坦克[/url][/color] 藉由 [color=black]Nayckron[/color]
+  [color=#1ea7e1][url=https://www.kenney.nl/assets/interface-sounds/]介面聲音[/url][/color] 藉由 [color=black]Kenney.nl[/color]
+  [color=#1ea7e1][url=https://opengameart.org/content/ciptuned-rock-tune]晶片音樂搖滾曲調[/url][/color] 藉由 [color=black]Bertsz[/color]
+  [color=#1ea7e1][url=https://opengameart.org/content/5-chiptunes-action]5 Action Chiptunes[/url][/color] 藉由 [color=black]Juhani Junkala[/color]
+  [color=#1ea7e1][url=https://sworndevelopment.itch.io/godot-splash-boot-video]Godot Splash Boot 影片[/url][/color] 藉由 [color=black]SwornDevelopment[/color]
+  [color=#1ea7e1][url=https://orangefreesounds.com/goal-horn-sound-effect/]球門喇叭聲效果[/url][/color] 藉由 [color=black]Alexander[/color]"
+CHECKBOX_SAVE_CREDS,Save e-mail and password,Guardar e-mail y contraseña,,E-Mail-Adresse und Passwort speichern,Сохранить эл. почту и пароль,,保存邮箱地址及密码,儲存電子信箱和密碼
+CONTROL_SCHEME_OPTION_MODERN,Modern,Moderno,,Modern,Современная,,现代,現代
+CONTROL_SCHEME_OPTION_RETRO,Retro,Retro,,Retro,Ретро,,复古,復古
+DEBUG_TITLE,Debug,Depuración,,Debug,Отладка,,调试,排除故障
+EMAIL_FIELD_LABEL,E-mail:,E-mail:,,E-Mail-Adresse:,Эл. почта:,,电子邮箱：,電子信箱：
+GAME_ERROR_UNABLE_TO_LOAD_MAP,Unable to load map,Imposible cargar el mapa,,Karte kann nicht geladen werden,Не удалось загрузить карту,,无法加载地图,無法載入地圖
+GAMEPAD_DEVICE_OPTION_DEFAULT,Default,Por defecto,,Standard,По умолчанию,,默认,預設值
+HEALTH_FIELD_LABEL,Health,Salud,,Gesundheit,Здоровье,,健康,生命值
+INVINCIBLE_FIELD_LABEL,Invincible,Invencibilidad,,Unbesiegbar,Непобедимый,,无敌,無敵
+LANGUAGE_OPTION_DEFAULT,Default,Por defecto,,Standard,По умолчанию,,默认,預設值
+LANGUAGE_OPTION_ENGLISH,English,Inglés,,Englisch,Английский,,英语,英文
+LANGUAGE_OPTION_SPANISH,Spanish,Español,,Spanisch,Испанский,,西班牙语,西班牙
+MAP_NAME_BATTLEFIELD,Battlefield,Campo de batalla,,Schlachtfeld,Поле битвы,,战场,戰場
+MAP_NAME_DESERT,Desert,Desierto,,Wüste,Пустыня,,沙漠,沙漠
+MAP_NAME_FOOTBALL,Football,Fútbol,,Fußball,Футбол,,足球,橄欖球
+MAP_NAME_MAZE,Maze,Laberinto,,Labyrinth,Лабиринт,,迷宫,迷宮
+MAP_TITLE,Map,Mapa,,Karte,Карта,,地图,地圖
+MATCH_ID_FIELD_LABEL,Match ID:,Match ID:,,Match-ID:,ID матча:,,比赛编号：,對戰 ID
+MATCH_OPTION_CREATE,Create a private match,Crear una partida privada,,Privates Match erstellen,Создать закрытый матч,,创建一场私人比赛,建立私人對戰
+MATCH_OPTION_CREATE_DESCRIPTION,Get a private match ID and send it to your friends.,Obtener un match ID privado y enviarlo a tus amigos,,Erhalte eine private Match-ID und schicke sie an deine Freunde.,Получи ID закрытого матча и отправь его своим друзьям.,,获取一个私人比赛编号并发送给您的朋友们。,取得私人對戰ID，並傳送給你的朋友。
+MATCH_OPTION_JOIN,Join a private match,Unirse a una partida privada,,Privatem Match beitreten,Вступить в закрытый матч,,加入私人比赛,參加私人對戰
+MATCH_OPTION_JOIN_DESCRIPTION,Paste the private match ID that your friend sent you.,Pegar el match ID privado que tus amigos te enviaron.,,"Füge die private Match-ID ein, die dir dein Freund geschickt hat.","Вставь ID закрытого матча, который тебе прислал друг.",,粘贴您朋友发送给您的私人比赛编号,貼上你的朋友傳給你的私人對戰ID。
+MATCH_OPTION_MATCHMAKER,Find a public match,Encontrar una partida pública,,Öffentliches Match finden,Найти открытый матч,,查找公开比赛,搜尋公開對戰
+MATCH_OPTION_MATCHMAKER_DESCRIPTION,"There is matchmaking, but this is a tiny indie game. Don't expect to find randos to battle! It's super cheap - buy a couple copies for your friends!","Hay emparejamiento, pero se trata de un pequeño juego indie. No esperes encontrar a alguien con quien luchar. Es súper barato: ¡compra un par de copias para tus amigos!",,"Es gibt zwar Matchmaking, aber das hier ist ein kleines Indie-Spiel. Erwarte nicht, zufällige Mitspieler zu finden! Das Spiel ist supergünstig – verschenke es an deine Freunde!","Функция подбора матчей существует, но это крошечная инди-игра. Не ожидай найти тут случайных людей, с которыми будешь сражаться! Игра очень дешевая — купи пару копий своим друзьям!",,配对成功，但这仅仅是一个小的独立游戏。别指望能和随机对手去战斗！它超级便宜-给您的朋友们买几套吧！,有配對，但這是一小型獨立製作的遊戲。別期待會有陌生人來戰鬥！這個超便宜 - 買一些給你的朋友吧！
+MATCHMAKER_2_PLAYERS,2 players,2 jugadores,,2 Spieler,2 игрока,,2位玩家,雙人
+MATCHMAKER_3_PLAYERS,3 players,3 jugadores,,3 Spieler,3 игрока,,3位玩家,三人
+MATCHMAKER_4_PLAYERS,4 players,4 jugadores,,4 Spieler,4 игрока,,4位玩家,四人
+MATCHMAKER_PLAYERS_FIELD_LABEL,Find at least:,Encontrar,,Finde mindestens:,Найти хотя бы:,,至少找到：,至少找到：
+MENU_BATTLE,Battle!,¡Batalla!,,Kampf!,Сражаться!,,开战！,戰鬥！
+MENU_CREDITS,Credits,Créditos,,Credits,Авторы,,点数,製作功勞名單
+MENU_EXIT,Exit,Salir,,Beenden,Выход,,退出,離開
+MENU_PRACTICE,Practice,Práctica,,Übung,Тренироваться,,练习,練習
+MENU_SETTINGS,Settings,Ajustes,,Einstellungen,Настройки,,设置,設定
+MESSAGE_CREATE_ACCOUNT_FAILED,Unable to create account,Imposible crear una cuenta,,Konto kann nicht erstellt werden,Не удалось создать аккаунт,,创建账户失败,無法建立帳號
+MESSAGE_CREATING_ACCOUNT,Creating account...,Creando cuenta...,,Konto erstellen …,Создание аккаунта…,,创建账户......,正在建立帳號…
+MESSAGE_EMAIL_REQUIRED,Must provide email,Debes proporcionar un e-mail,,E-Mail-Adresse erforderlich,Необходимо указать эл. почту,,必须提供电子邮箱,必須提供電子信箱
+MESSAGE_EMAIL_TAKEN,E-mail already in use,E-mail ya en uso,,E-Mail-Adresse wird bereits verwendet,Эта эл. почта уже занята,,该电子邮箱已注册,電子信箱已被使用
+MESSAGE_INSTANT_DEATH,INSTANT DEATH!,¡MUERTA INSTANTÁNEA!,,SOFORTIGER TOD!,МГНОВЕННАЯ СМЕРТЬ!,,突然死亡！,驟死！
+MESSAGE_LOGGING_IN,Logging in...,Accediendo,,Anmelden …,Вход в систему…,,读取中,正在登入中 …
+MESSAGE_LOGIN_FAILED,Login failed!,¡Acceso fallido!,,Anmeldung fehlgeschlagen!,Не удалось войти!,,读取失败！,登入失敗！
+MESSAGE_LOGIN_FAILED_STEAM,Unable to connect to Steam. Please try again later.,"Imposible conectar a Steam. Por favor, inténtalo de nuevo más tarde.",,Verbindung zu Steam nicht möglich. Bitte versuche es später erneut.,"Не удается подключиться к Steam. Пожалуйста, попробуй позже.",,无法连接到Steam。请稍后再试。,無法連接到Stream。請稍後再試。
+MESSAGE_LOOKING_FOR_MATCH,Looking for match...,Buscando una partida...,,Suchen nach Match …,Поиск матча…,,查找配对中......,尋找對戰…
+MESSAGE_MATCH_ID_REQUIRED,Need to paste Match ID to join,Se necesita pegar el Match ID para unirse,,"Du musst die Match-ID einfügen, um beizutreten","Чтобы присоединиться, нужно вставить ID матча",,需要粘贴比赛编号以加入,需要貼上對戰ID來參加
+MESSAGE_NETWORK_ISSUES,"If you're having issues, try different ""Network Relay"" settings before starting a match.","Si tienes problemas, prueba diferentes configuraciones de ""Relé de red"" antes de empezar una partida.",,"Wenn du Probleme hast, probiere verschiedene „Netzwerk-Relais“-Einstellungen aus, bevor du ein Match beginnst.","Если у тебя возникли проблемы, попробуй установить другие варианты «Сетевой ретрансляции» перед началом матча.",,如果您遇到问题，请在开始比赛前尝试不同的“网络中继”设置。,如果你遇到困難，請在開始對戰以前，先嘗試「網路中繼」設定。
+MESSAGE_NO_USER_ACCOUNT,No user account found,No se encontró la cuenta de usuario,,Kein Benutzerkonto gefunden,Аккаунт пользователя не найден,,未找到该账户,找不到使用者帳號
+MESSAGE_PASSWORD_REQUIRED,Must provide password,Debes proveer una contraseña,,Passwort erforderlich,Необходимо указать пароль,,必须填写密码,必須提供密碼
+MESSAGE_PASSWORD_RESET_FAILED,Unable to send password reset email! Try again later.,No se ha podido enviar el correo electrónico de restablecimiento de la contraseña. Vuelve a intentarlo más tarde.,,E-Mail zum Zurücksetzen des Passworts kann nicht gesendet werden! Versuche es später erneut.,Не удалось отправить письмо для сброса пароля! Попробуй позже.,,发送重置密码邮件失败！请稍后再试。,無法傳送密碼重設電子郵件！請稍後再試。
+MESSAGE_PASSWORD_RESET_SENDING,Sending password reset e-mail...,Mandando el restablecimiento de la contraseña al e-mail...,,E-Mail zum Zurücksetzen des Passworts senden …,Отправка письма для сброса пароля…,,重置密码邮件发送中......,正在傳送密碼重設電子郵件…
+MESSAGE_PASSWORD_RESET_SENT,Password reset email sent!,¡Email de restablecimiento de la contraseña enviado!,,E-Mail zum Zurücksetzen des Passworts gesendet!,Письмо для сброса пароля отправлено!,,重置密码邮件已发送！,密碼重設電子郵件已傳送！
+MESSAGE_PLAYER_DEAD,Wasted!,¡Muerto!,,Besiegt!,Тебя убили!,,被干掉了！,倒下了！
+MESSAGE_PLAYER_HAS_LEFT,%s has left!,%s se ha ido!,,%s hat das Spiel verlassen!,%s ушел!,,还剩%s！,% 已離開！
+MESSAGE_PLAYER_HAS_LEFT_NOT_ENOUGH_PLAYERS,%s has left - not enough players!,"%s se ha ido, no hay suficientes jugadores!",,%s hat das Spiel verlassen – nicht genügend Spieler!,%s ушел — недостаточно игроков!,,还剩%s - 玩家不足！,% 已離開 - 玩家不足！
+MESSAGE_PLAYER_LOSE,You lose!,¡Perdiste!,,Du verlierst!,Ты проиграл!,,您输了！,你輸了！
+MESSAGE_PLAYER_WINS_DEATHMATCH,%s WINS THIS DEATH MATCH!,%s GANA ESTE COMBATE A MUERTE!,,%s GEWINNT DIESES DEATHMATCH!,%s ВЫИГРАЛ ЭТУ СМЕРТЕЛЬНУЮ СХВАТКУ!,,%s赢得了这场死亡比赛！,% 贏得了這場死鬥！
+MESSAGE_PLAYER_WINS_MATCH,%s WINS THE MATCH!,%s GANA LA PARTIDA!,,%s GEWINNT DIESES MATCH!,%s ВЫИГРАЛ ЭТОТ МАТЧ!,,%s 赢得了比赛!,% 贏得了這場比賽！
+MESSAGE_PLAYER_WINS_ROUND,%s wins this round!,%s gana esta ronda!,,%s GEWINNT DIESE RUNDE!,%s победил в этом раунде!,,%s这一轮获得了胜利！,% 贏得了這回合！
+MESSAGE_SESSION_EXPIRED,Session expired! Reconnecting...,¡Sesión caducada! Reconectando...,,Sitzung abgelaufen! Neu verbinden …,Сессия истекла! Повторное подключение…,,会话已过期！正在重新连接......,已過期！重新連線…
+MESSAGE_SESSION_EXPIRED_STEAM,Session expired! Reconnecting via Steam...,¡Sesión caducada! Reconectando vía Steam...,,Sitzung abgelaufen! Neu verbinden über Steam …,Сессия истекла! Повторное подключение через Steam…,,会话已过期！正在通过Steam重新连接......,已過期！透過Steam重新連線…
+MESSAGE_SESSION_LOGGING_IN_STEAM,Logging in via Steam...,Conectando vía Steam...,,Anmelden über Steam …,Вход через Steam…,,正在通过Steam登录......,透過Stream登入
+MESSAGE_SETUP_CLIENT,The host is configuring the match...,El anfitrión está configurando la partida...,,Der Host konfiguriert das Match …,Хост настраивает матч…,,房主正在设置比赛......,主人正在安排對戰…
+MESSAGE_SETUP_HOST,You're the host! How you wanna do this?,¡Tú eres el anfitrión! ¿Cómo quieres hacer esto?,,Du bist der Host! Wie möchtest du das machen?,Ты — хост! Как ты хочешь это сделать?,,您是房主！您想怎么玩？,你是主人！你想怎麼做呢？
+MESSAGE_SYNCHRONIZATION_LOST,Synchronization lost,Sincronización perdida,,Synchronisation verloren,Синхронизация потеряна,,同步丢失,同步化遺失
+MESSAGE_TEAM_NEEDS_PLAYERS,Each team must have at least 1 player!,¡Cada equipo debe tener al menos 1 jugador!,,Jedes Team muss mindestens einen Spieler haben!,В каждой команде должен быть хотя бы 1 игрок!,,每支队伍至少要有一位玩家！,每一隊至少要有一名玩家！
+MESSAGE_USERNAME_REQUIRED,Must provide username,Debes proveer un nombre de usuario,,Benutzername erforderlich,Нужно указать имя пользователя,,必须提供用户名,必須提供使用者名稱
+MESSAGE_USERNAME_TAKEN,Username already taken,Nombre de usuario ya ocupado,,Benutzername bereits vergeben,Имя пользователя уже занято,,用户名已被占用,使用者名稱已被使用
+MODE_DESCRIPTION_BATTLE_ROYALE,The last tank standing wins the round.,El último tanque en pie gana la ronda.,,Der letzte verbliebene Panzer gewinnt die Runde.,Последний оставшийся танк побеждает в раунде.,,最后存活的坦克获得本轮的胜利。,最後一個還活著的坦克獲勝。
+MODE_DESCRIPTION_DEATHMATCH,The tank with the most kills wins.,El tanque con más muertes gana.,,Der Panzer mit den meisten Kills gewinnt.,Побеждает танк с наибольшим количеством убийств.,,击杀数最高的坦克获胜。,殺敵最多的坦克獲勝。
+MODE_DESCRIPTION_FOOTBALL,Carry the ball to the goal to score points.,Lleva el balón a la portería para conseguir puntos.,,"Trage den Ball ins Tor, um zu punkten.","Принеси мяч к воротам, чтобы набрать очки.",,将球带到球门得分。,帶著球到球門以得分。
+MODE_NAME_BATTLE_ROYALE,Battle Royale,Battle Royale,,Battle Royale,Королевская битва,,大逃杀,大逃殺
+MODE_NAME_DEATHMATCH,Deathmatch,Partida a muerte,,Deathmatch,Смертельная схватка,,死亡比赛,死鬥
+MODE_NAME_FOOTBALL,Football,Fútbol,,Fußball,Футбол,,足球,橄欖球
+NETWORK_RELAY_OPTION_AUTO,Auto,Auto,,Automatisch,Авто,,自动,自動
+NETWORK_RELAY_OPTION_DISABLED,Disabled,Desactivado,,Deaktiviert,Отключено,,禁用,關閉
+NETWORK_RELAY_OPTION_FALLBACK_AUTO,Fallback (Auto),Retroceso (Auto),,Fallback (automatisch),Резервный (авто),,回退（自动）,備用（自動）
+NETWORK_RELAY_OPTION_FALLBACK_FORCED,Fallback,Retroceso (Auto),,Fallback,Резервный,,回退,備用
+NETWORK_RELAY_OPTION_FORCED,Forced,Forzado,,Erzwungen,Принудительно,,强制,強制
+ONLINE_MATCH_ERROR_CLIENT_JOIN_ERROR,Client not allowed to join,Cliente no permitido para unirse,,Client darf nicht beitreten,Клиент не может присоединиться,,客户机被禁止加入,客人不被允許加入
+ONLINE_MATCH_ERROR_CLIENT_VERSION_ERROR,Client version doesn't match host,La versión del cliente no coincide con el host,,Client-Version stimmt nicht mit Host überein,Версия клиента не соответствует версии хоста,,客户机版本与房主的不匹配,客人的版本和主人不同
+ONLINE_MATCH_ERROR_JOIN_MATCH_FAILED,Unable to join match,Imposible unirse a la partida,,Match-Beitritt nicht möglich,Не удалось присоединиться к матчу,,无法加入比赛,無法參與對戰
+ONLINE_MATCH_ERROR_MATCH_CREATE_FAILED,Failed to create match,No se ha podido crear la partida,,Match-Erstellung fehlgeschlagen,Не удалось создать матч,,创建比赛失败,建立對戰失敗
+ONLINE_MATCH_ERROR_MATCH_HAS_ALREADY_BEGUN,Sorry! The match has already begun.,¡Lo siento! La partida ya empezó.,,Leider hat das Match bereits begonnen.,Извини! Матч уже начался.,,抱歉！比赛已经开始了。,抱歉！對戰已經開始了。
+ONLINE_MATCH_ERROR_MATCH_IS_FULL,Sorry! The match is full.,¡Lo siento! La partida está completa.,,Leider ist das Match voll.,Извини! В матче нет места.,,抱歉！比赛已经满员。,抱歉！對戰已經滿人了。
+ONLINE_MATCH_ERROR_MATCHMAKER_ERROR,Matchmaker error,Error de emparejamiento,,Matchmaker-Fehler,Ошибка поиска матчей,,匹配错误,配對安排錯誤
+ONLINE_MATCH_ERROR_START_MATCHMAKING_FAILED,Unable to join match making pool,Imposible unirse al grupo de emparejamiento,,Beitritt zum Matchmaking-Pool nicht möglich,Не удалось присоединиться к пулу подбора игроков,,无法加入配对池,無法加入配對池
+ONLINE_MATCH_ERROR_WEBSOCKET_CONNECTION_ERROR,WebSocket connection error,Error de conexión WebSocket,,WebSocket-Verbindungsfehler,Ошибка подключения через веб-сокет,,WebSocket连接错误,WebSoclet 連線錯誤
+OPTION_10_SECOND,10 sec,10 seg,,10 s,10 сек.,,10秒,10 秒
+OPTION_20_SECOND,20 sec,20 seg,,20 s,20 сек.,,20秒,20 秒
+OPTION_30_SECOND,30 sec,30 seg,,30 s,30 сек.,,30秒,30 秒
+OPTION_40_SECOND,40 sec,40 seg,,40 s,40 сек.,,40秒,40 秒
+OPTION_50_SECOND,50 sec,50 seg,,50 s,50 сек.,,50秒,50 秒
+OPTION_60_SECOND,60 sec,60 seg,,60 s,60 сек.,,60秒,60 秒
+OPTION_1_MINUTE,1 min,2 min,,1 min,1 мин.,,1分钟,1 分鐘
+OPTION_2_MINUTE,2 min,3 min,,2 min,2 мин.,,2分钟,2 分鐘
+OPTION_3_MINUTE,3 min,4 min,,3 min,3 мин.,,3分钟,3 分鐘
+OPTION_4_MINUTE,4 min,5 min,,4 min,4 мин.,,4分钟,4 分鐘
+OPTION_5_MINUTE,5 min,6 min,,5 min,5 мин.,,5分钟,5 分鐘
+OPTION_6_MINUTE,6 min,7 min,,6 min,6 мин.,,6分钟,6 分鐘
+OPTION_7_MINUTE,7 min,8 min,,7 min,7 мин.,,7分钟,7 分鐘
+OPTION_8_MINUTE,8 min,9 min,,8 min,8 мин.,,8分钟,8 分鐘
+OPTION_9_MINUTE,9 min,10 min,,9 min,9 мин.,,9分钟,9 分鐘
+OPTION_10_MINUTE,10 min,11 min,,10 min,10 мин.,,10分钟,10 分鐘
+OPTION_DISABLED,Disabled,Desactivado,,Deaktiviert,Отключено,,禁用,關閉使用
+OPTION_ENABLED,Enabled,Activado,,Aktiviert,Включено,,启用,開啟使用
+OPTION_NEVER,Never,Nunca,,Nie,Никогда,,永不,從不
+OPTION_NONE,None,Nada,,Keine,Отсутствует,,无,沒有
+OPTION_NO,No,No,,Nein,Нет,,不,否
+OPTION_YES,Yes,Sí,,Ja,Да,,是,是
+PASSWORD_FIELD_LABEL,Password:,Contraeña:,,Passwort:,Пароль:,,密码：,密碼：
+PICKUP_NAME_HEALTH,Health,Salud,,Gesundheit,Здоровье,,健康,生命值
+PLAYER_NAME_PRACTICE,Practice,Práctica,,Übung,Тренировка,,练习,練習
+PLAYER_PING,%sms,%sms,,%s ms,%sms,,%sms,% 簡訊
+PLAYER_STATUS_CONNECTED,Connected.,Conectado.,,Verbunden.,Подключено.,,已连接。,已連線
+PLAYER_STATUS_CONNECTING,Connecting...,Conectando.,,Verbinden …,Подключение…,,正在连接中......,正在連線…
+PLAYER_STATUS_READY,READY!,¡Listo!,,BEREIT!,ГОТОВ!,,预备！,準備！
+POINTS_TO_WIN_FIELD_LABEL,Points to win,Puntos para ganar,,Punkte zum Sieg,Очки для победы,,获胜所需积分,得分以贏得勝利
+SESSION_SETUP_TAB_CREATE_ACCOUNT,Create account,Crear cuenta,,Konto erstellen,Создать аккаунт,,创建账户,建立帳號
+SESSION_SETUP_TAB_FORGOT_PASSWORD,Forgot password?,¿Olvidaste la contraseña?,,Passwort vergessen?,Забыл пароль?,,忘记密码了？,忘記密碼？
+SESSION_SETUP_TAB_LOGIN,Login,Acceder,,Anmeldung,Войти,,登录,登入
+SESSION_SETUP_TAB_STEAM,Steam,Steam,,Steam,Steam,,Steam,Steam
+SESSION_SETUP_TAB_STEAM_MESSAGE,"If you already have a SnopekGames account, use the ""Login"" tab and it'll link your Steam account for the future. Otherwise, you'll end up with two accounts.","Si ya tienes una cuenta de SnopekGames, utiliza la pestaña ""Acceder"" y se vinculará tu cuenta de Steam para el futuro. De lo contrario, acabarás teniendo dos cuentas.",,"Solltest du bereits ein SnopekGames-Konto haben, gehe auf die Registerkarte „Anmelden“, um dein Steam-Konto für die Zukunft zu verknüpfen. Andernfalls hast du am Ende zwei Konten.","Если у тебя уже есть аккаунт SnopekGames, используй вкладку «Вход», и она свяжет твой аккаунт Steam. В противном случае у тебя будет два аккаунта.",,如果你已经有一个SnopekGames账户，请使用“登录”选项卡，它将连接您的Steam账户以备将来使用。否则，您将拥有两个账户。,如果你已經擁有 SnopekGames 的帳號，請使用「登入」鍵，以後都會連結到你的 Steam 帳號。否則，你最後會變成有兩個帳號。
+SETTING_ART_STYLE,Art style,Estilo artístico,,Kunststil,Стиль рисунков,,艺术风格,藝術風格
+SETTING_CONTROL_SCHEME,Control scheme,Esquema de control,,Kontrollschema,Схема управления,,控制方案,控制系統
+SETTING_DETAILED_LOGGING,Detailed logging,Acceso detallado,,Detaillierte Aufzeichnung,Подробный журнал,,详细日志记录,詳細的日誌紀錄
+SETTING_FULL_SCREEN,Full screen,Pantalla completa,,Vollbildschirm,На полный экран,,全屏,全螢幕
+SETTING_GAMEPAD_DEVICE,Gamepad device,Dispositivo Gamepad,,Gamepad-Gerät,Геймпад,,游戏手柄设备,遊戲把手裝置
+SETTING_LANGUAGE,Language,Idioma,,Sprache,Язык,,语言,語言
+SETTING_MUSIC,Music,Música,,Musik,Музыка,,音乐,音樂
+SETTING_NETWORK_RELAY,Network relay,Relé de red,,Netzwerk-Relais,Сетевая ретрансляция,,网络中继,網路中繼
+SETTING_SCREEN_SHAKE,Screen shake,Sacudida de pantalla,,Verwackeln des Bildschirms,Дрожание экрана,,屏幕抖动,畫面晃動
+SETTING_SOUND,Sound,Sonido,,Ton,Звук,,声音,音效
+SETTING_TANK_ENGINE_SOUNDS,Tank engine sounds,Sonidos del motor del tanque,,Geräusche von Panzermotoren,Звуки танкового двигателя,,坦克引擎音效,坦克引擎音效
+SETTINGS_TITLE,Settings,Ajustes,,Einstellungen,Настройки,,设置,設定
+TEAMS_FIELD_LABEL,Teams,Equipos,,Teams,Команды,,战队,團隊
+TIMELIMIT_FIELD_LABEL,Timelimit,Limite de tiempo,,Zeitlimit,Лимит времени,,时间限制,時間限制
+TITLE_PRESS_ANY_KEY,Press any key (or click) to start,Presiona cualquier tecla (o click) para empezar,,"Drücke eine beliebige Taste (oder klicke), um zu beginnen","Нажми любую клавишу (или кликни), чтобы начать",,按任意键（或单击）开始,按住任何鍵（或點擊）來開始
+USERNAME_FIELD_LABEL,Username:,Nombre de usuario:,,Benutzername:,Имя пользователя:,,用户名：,使用者名稱：
+WEAPON_FIELD_LABEL,Weapon,Arma,,Waffe,Оружие,,武器,武器
+WEAPON_NAME_FOOTBALL,Football,Fútbol,,Fußball,Футбол,,足球,橄欖球
+WEAPON_NAME_NORMAL,Normal,Normal,,Normal,Обычное,,正常,正常
+WEAPON_NAME_RAILGUN,Railgun,Cañón de riel,,Railgun,Рейлган,,轨道炮,磁軌砲
+WEAPON_NAME_SPREAD,Spread,Arma de fuego,,Spread,Спред,,散射,散射槍
+WEAPON_NAME_TRACER,Tracer,Rastreador,,Tracer,Трейсер,,追踪,曳光彈
+WEAPON_TIMEOUT_FIELD_LABEL,Weapons last,Últimas armas,,Waffen halten,Оружие доступно,,仅剩的武器,武器延續
