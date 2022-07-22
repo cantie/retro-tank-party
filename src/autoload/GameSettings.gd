@@ -136,6 +136,16 @@ func update_language() -> void:
 					locale = "es"
 				"russian":
 					locale = "ru"
+				"german":
+					locale = "de"
+				"polish":
+					locale = "pl"
+				"ukrainian":
+					locale = "uk"
+				"schinese":
+					locale = "zh_CN"
+				"tchinese":
+					locale = "zh_TW"
 				_:
 					locale = OS.get_locale_language()
 		else:

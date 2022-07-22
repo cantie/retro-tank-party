@@ -374,7 +374,7 @@ sync_debug={
 
 [locale]
 
-translations=PoolStringArray( "res://assets/translation/main.en.translation", "res://assets/translation/main.es.translation", "res://assets/translation/main.ru.translation" )
+translations=PoolStringArray( "res://assets/translation/main.en.translation", "res://assets/translation/main.es.translation", "res://assets/translation/main.ru.translation", "res://assets/translation/main.de.translation", "res://assets/translation/main.pl.translation", "res://assets/translation/main.uk.translation", "res://assets/translation/main.zh_CN.translation", "res://assets/translation/main.zh_TW.translation" )
 
 [network]
 

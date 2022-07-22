@@ -35,6 +35,7 @@ func _ready() -> void:
 	language_field.add_item("LANGUAGE_OPTION_ENGLISH", "en")
 	language_field.add_item("LANGUAGE_OPTION_SPANISH", "es")
 	language_field.add_item("LANGUAGE_OPTION_RUSSIAN", "ru")
+	language_field.add_item("LANGUAGE_OPTION_GERMAN", "de")
 	language_field.set_value(GameSettings.language, false)
 
 	screenshake_field.add_item("OPTION_DISABLED", false)
