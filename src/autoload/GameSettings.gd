@@ -134,14 +134,16 @@ func update_language() -> void:
 					locale = "en"
 				"spanish", "latam":
 					locale = "es"
-				"russian":
-					locale = "ru"
 				"german":
 					locale = "de"
 				"polish":
 					locale = "pl"
 				"ukrainian":
 					locale = "uk"
+				"russian":
+					locale = "ru"
+				"japanese":
+					locale = "ja"
 				"schinese":
 					locale = "zh_CN"
 				"tchinese":
