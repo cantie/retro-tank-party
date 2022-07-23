@@ -11,14 +11,14 @@ ART_STYLE_NAME_ATARI,Atari 2600,Atari 2600,Atari 2600,Atari 2600,Atari 2600,Ко
 ART_STYLE_NAME_CLASSIC,Classic,Clásico,Klasyczny,Klassisch,Классика,Класична,クラシック,经典,經典
 ART_STYLE_NAME_SNES,SNES,SNES,SNES,SNES,SNES,Ігрова приставка SNES,スーパーファミコン,超级任天堂,超級任天堂
 ART_STYLE_NAME_VECTOR,Vector,Vector,Wektorowy,Vektor,Векторная,Вектор,ベクトル,矢量,矢量跑酷
-BUTTON_MATCHMAKER,Match,Coincidir,Szukaj,Match,Подобрать,Матч,マッチ,比赛,對戰
+BUTTON_MATCHMAKER,Match,Coincidir,Szukaj,Match,Подобрать,Шукати гравців,マッチ,比赛,對戰
 BUTTON_CANCEL,Cancel,Cancelar,Anuluj,Abbrechen,Отмена,Скасувати,キャンセル,取消,取消
 BUTTON_COPY,Copy,Copiar,Kopiuj,Kopieren,Копировать,Копіювати,コピー,复制,複製
 BUTTON_CREATE_ACCOUNT,Create Account,Crear cuenta,Załóż konto,Konto erstellen,Создать аккаунт,Створити акаунт,アカウント作成,创建账户,建立帳號
 BUTTON_CREATE_MATCH,Create,Crear,Utwórz,Erstellen,Создать,Створити,作成,创建,建立
 BUTTON_DONE,Done,Donar,Gotowe,Fertig,Готово,Зроблено,完了,完成,完成
 BUTTON_JOIN_MATCH,Join,Unirse,Dołącz,Beitreten,Вступить,Приєднатися,参加,加入,參加
-BUTTON_LOGIN,Login,Acceso,Zaloguj się,Anmelden,Войти,Логін,ログイン,登录,登入
+BUTTON_LOGIN,Login,Acceso,Zaloguj się,Anmelden,Войти,Увійти,ログイン,登录,登入
 BUTTON_NEXT,Next,Siguiente,Dalej,Weiter,Далее,Наступне,次,下一个,下一個
 BUTTON_OK,OK,OK,OK,Okay,ОК,ГАРАЗД,OK,好的,OK
 BUTTON_PASTE,Paste,Pegar,Wklej,Einfügen,Вставить,Вставити,ペースト,粘贴,貼上
@@ -170,7 +170,7 @@ MAP_NAME_DESERT,Desert,Desierto,Pustynia,Wüste,Пустыня,Пустеля,�
 MAP_NAME_FOOTBALL,Football,Fútbol,Boisko,Fußball,Футбол,Футбол,フットボール,足球,橄欖球
 MAP_NAME_MAZE,Maze,Laberinto,Labirynt,Labyrinth,Лабиринт,Лабіринт,迷路,迷宫,迷宮
 MAP_TITLE,Map,Mapa,Mapa,Karte,Карта,Карта,マップ,地图,地圖
-MATCH_ID_FIELD_LABEL,Match ID:,Match ID:,ID meczu:,Match-ID:,ID матча:,Ідентифікатор матчу:,マッチID：,比赛编号：,對戰 ID
+MATCH_ID_FIELD_LABEL,Match ID:,Match ID:,ID meczu:,Match-ID:,ID матча:,Ід. матчу:,マッチID：,比赛编号：,對戰 ID
 MATCH_OPTION_CREATE,Create a private match,Crear una partida privada,Stwórz mecz prywatny,Privates Match erstellen,Создать закрытый матч,Створення приватного матчу,プライベートマッチを作成,创建一场私人比赛,建立私人對戰
 MATCH_OPTION_CREATE_DESCRIPTION,Get a private match ID and send it to your friends.,Obtener un match ID privado y enviarlo a tus amigos,Uzyskaj ID meczu prywatnego i wyślij go do swoich znajomych.,Erhalte eine private Match-ID und schicke sie an deine Freunde.,Получи ID закрытого матча и отправь его своим друзьям.,Отримай ідентифікатор приватного матчу та надішли його своїм друзям.,プライベートマッチIDを入手して友人たちに送信しよう,获取一个私人比赛编号并发送给您的朋友们。,取得私人對戰ID，並傳送給你的朋友。
 MATCH_OPTION_JOIN,Join a private match,Unirse a una partida privada,Dołącz do meczu prywatnego,Privatem Match beitreten,Вступить в закрытый матч,Приєднайся до приватного матчу,プライベートマッチに参加,加入私人比赛,參加私人對戰
@@ -204,7 +204,7 @@ MESSAGE_PASSWORD_RESET_SENDING,Sending password reset e-mail...,Mandando el rest
 MESSAGE_PASSWORD_RESET_SENT,Password reset email sent!,¡Email de restablecimiento de la contraseña enviado!,Wysłano wiadomość e-mail z resetem hasła!,E-Mail zum Zurücksetzen des Passworts gesendet!,Письмо для сброса пароля отправлено!,Електронного листа для скидання пароля надіслано!,パスワード再設定メールの送信完了！,重置密码邮件已发送！,密碼重設電子郵件已傳送！
 MESSAGE_PLAYER_DEAD,Wasted!,¡Muerto!,Zgon!,Besiegt!,Тебя убили!,Втрата!,死亡！,被干掉了！,倒下了！
 MESSAGE_PLAYER_HAS_LEFT,%s has left!,%s se ha ido!,Gracz %s wyszedł!,%s hat das Spiel verlassen!,%s ушел!,%s вийшов!,%s はいなくなりました！,还剩%s！,%s 已離開！
-MESSAGE_PLAYER_HAS_LEFT_NOT_ENOUGH_PLAYERS,%s has left - not enough players!,"%s se ha ido, no hay suficientes jugadores!",Gracz %s wyszedł – za mało graczy!,%s hat das Spiel verlassen – nicht genügend Spieler!,%s ушел — недостаточно игроков!,%s вийшов — не вистачає гравців!,%s がいなくなりプレイヤー数不足です！,还剩%s - 玩家不足！,%s 已離開 - 玩家不足！
+MESSAGE_PLAYER_HAS_LEFT_NOT_ENOUGH_PLAYERS,%s has left - not enough players!,"%s se ha ido, no hay suficientes jugadores!",Gracz %s wyszedł - za mało graczy!,%s hat das Spiel verlassen – nicht genügend Spieler!,%s ушел — недостаточно игроков!,%s вийшов — не вистачає гравців!,%s がいなくなりプレイヤー数不足です！,还剩%s - 玩家不足！,%s 已離開 - 玩家不足！
 MESSAGE_PLAYER_LOSE,You lose!,¡Perdiste!,Przegrywasz!,Du verlierst!,Ты проиграл!,Ви програли!,敗退！,您输了！,你輸了！
 MESSAGE_PLAYER_WINS_DEATHMATCH,%s WINS THIS DEATH MATCH!,%s GANA ESTE COMBATE A MUERTE!,%s WYGRYWA TEN DEATHMATCH!,%s GEWINNT DIESES DEATHMATCH!,%s ВЫИГРАЛ ЭТУ СМЕРТЕЛЬНУЮ СХВАТКУ!,%s ВИГРАЄ ЦЕЙ СМЕРТЕЛЬНИЙ МАТЧ!,%s がこのデスマッチを勝利！,%s 赢得了这场死亡比赛！,%s 贏得了這場死鬥！
 MESSAGE_PLAYER_WINS_MATCH,%s WINS THE MATCH!,%s GANA LA PARTIDA!,%s WYGRYWA MECZ!,%s GEWINNT DIESES MATCH!,%s ВЫИГРАЛ ЭТОТ МАТЧ!,%s ВИГРАЄ МАТЧ!,%s がマッチを勝利！,%s 赢得了比赛!,%s 贏得了這場比賽！
