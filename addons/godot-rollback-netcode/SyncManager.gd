@@ -393,6 +393,12 @@ func has_peer(peer_id: int) -> bool:
 func get_peer(peer_id: int) -> Peer:
 	return peers.get(peer_id)
 
+func get_player_peer_ids() -> Array:
+	return _player_peers.keys()
+
+func get_player_peer_count() -> int:
+	return _player_peers.size()
+
 func remove_peer(peer_id: int) -> void:
 	if peers.has(peer_id):
 		_remove_peer(peer_id)
@@ -407,7 +413,7 @@ func _remove_peer(peer_id: int) -> void:
 
 func update_peer(peer_id: int, options: Dictionary = {}) -> void:
 	assert(peers.has(peer_id), "No peer with given id already exists")
-	
+
 	if peers.has(peer_id):
 		_remove_peer(peer_id)
 		_add_peer(peer_id, options)

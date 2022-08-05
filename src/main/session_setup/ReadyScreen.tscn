@@ -84,19 +84,19 @@ margin_bottom = -58.0001
 
 [node name="SpectatorCheckbox" type="CheckBox" parent="Panel/ButtonContainer"]
 margin_right = 269.0
-margin_bottom = 67.0
+margin_bottom = 66.0
 text = "Spectator"
 
 [node name="Control" type="Control" parent="Panel/ButtonContainer"]
 margin_left = 273.0
 margin_right = 426.0
-margin_bottom = 67.0
+margin_bottom = 66.0
 size_flags_horizontal = 3
 
 [node name="ReadyButton" type="Button" parent="Panel/ButtonContainer"]
 margin_left = 430.0
 margin_right = 930.0
-margin_bottom = 67.0
+margin_bottom = 66.5339
 rect_min_size = Vector2( 500, 0 )
 disabled = true
 text = "BUTTON_READY"

@@ -1,6 +1,6 @@
 extends "res://src/ui/Screen.gd"
 
-var PlayerStatus = preload("res://src/ui/PlayerStatus.tscn");
+var PlayerStatus = preload("res://src/ui/PlayerStatus.tscn")
 
 onready var ready_button := $Panel/ButtonContainer/ReadyButton
 onready var match_id_container := $Panel/MatchIDContainer

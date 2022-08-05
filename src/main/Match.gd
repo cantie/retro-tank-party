@@ -178,7 +178,7 @@ func _on_OnlineMatch_player_left(player) -> void:
 	# in all the other signal handlers.
 	game.call_deferred("remove_player", player.peer_id)
 
-	if not _remove_from_team(player.peer_id) or OnlineMatch.players.size() < 2:
+	if not _remove_from_team(player.peer_id) or SyncManager.get_player_peer_count() < 2:
 		_error(tr("MESSAGE_PLAYER_HAS_LEFT_NOT_ENOUGH_PLAYERS") % player.username)
 	else:
 		ui_layer.show_message(tr("MESSAGE_PLAYER_HAS_LEFT") % player.username)
