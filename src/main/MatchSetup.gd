@@ -8,7 +8,7 @@ onready var team_screen = $UILayer/Screens/TeamScreen
 onready var map_parent = $MapParent
 
 func _ready() -> void:
-	if SyncManager.get_player_peer_count() < 2:
+	if OnlineMatch.get_active_player_count() < 2:
 		get_tree().change_scene("res://src/main/SessionSetup.tscn")
 		return
 
@@ -137,7 +137,7 @@ func _on_OnlineMatch_disconnected():
 
 func _on_OnlineMatch_player_left(player) -> void:
 	SyncManager.remove_peer(player.peer_id)
-	if SyncManager.get_player_peer_count() < 2:
+	if OnlineMatch.get_active_player_count() < 2:
 		_error(tr("MESSAGE_PLAYER_HAS_LEFT_NOT_ENOUGH_PLAYERS") % player.username)
 	else:
 		ui_layer.show_message(tr("MESSAGE_PLAYER_HAS_LEFT") % player.username)

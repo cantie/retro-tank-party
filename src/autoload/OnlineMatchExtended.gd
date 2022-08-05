@@ -6,9 +6,17 @@ func get_active_players() -> Dictionary:
 	var active_players := {}
 	for session_id in players:
 		var player = players[session_id]
-		if not SyncManager.get_peer(player.peer_id).spectator:
-			active_players[session_id] = player
+		if session_id == my_session_id:
+			if not SyncManager.spectating:
+				active_players[session_id] = player
+		else:
+			var peer = SyncManager.get_peer(player.peer_id)
+			if peer and not peer.spectator:
+				active_players[session_id] = player
 	return active_players
+
+func get_active_player_count() -> int:
+	return get_active_players().size()
 
 func get_active_players_by_peer_id() -> Dictionary:
 	var result := {}
