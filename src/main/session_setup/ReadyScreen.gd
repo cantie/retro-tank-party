@@ -2,12 +2,13 @@ extends "res://src/ui/Screen.gd"
 
 var PlayerStatus = preload("res://src/ui/PlayerStatus.tscn");
 
-onready var ready_button := $Panel/ReadyButton
+onready var ready_button := $Panel/ButtonContainer/ReadyButton
 onready var match_id_container := $Panel/MatchIDContainer
 onready var match_id_label := $Panel/MatchIDContainer/MatchID
 onready var status_container := $Panel/StatusContainer
+onready var spectator_checkbox := $Panel/ButtonContainer/SpectatorCheckbox
 
-signal ready_pressed ()
+signal ready_pressed (is_spectator)
 
 func _ready() -> void:
 	clear_players()
@@ -81,8 +82,12 @@ func set_ready_button_enabled(enabled: bool = true) -> void:
 	if enabled:
 		ready_button.focus.grab_without_sound()
 
+func _on_SpectatorCheckbox_toggled(button_pressed: bool) -> void:
+	pass # Replace with function body.
+
 func _on_ReadyButton_pressed() -> void:
-	emit_signal("ready_pressed")
+	spectator_checkbox.disabled = true
+	emit_signal("ready_pressed", spectator_checkbox.pressed)
 
 func _on_MatchCopyButton_pressed() -> void:
 	OS.clipboard = match_id_label.text
@@ -130,3 +135,5 @@ func _on_SyncManager_peer_pinged_back(peer: SyncManager.Peer) -> void:
 	var status_node = status_container.get_node(player.session_id)
 	if status_node:
 		status_node.set_ping_time(peer.rtt)
+
+

@@ -55,7 +55,7 @@ editable = false
 
 [node name="MatchCopyButton" type="Button" parent="Panel/MatchIDContainer"]
 margin_left = 666.0
-margin_right = 942.324
+margin_right = 960.0
 margin_bottom = 66.5339
 text = "BUTTON_COPY"
 script = ExtResource( 4 )
@@ -73,17 +73,35 @@ margin_bottom = 24.0
 [node name="PlayerStatus" parent="Panel/StatusContainer" instance=ExtResource( 3 )]
 margin_bottom = 52.0
 
-[node name="ReadyButton" type="Button" parent="Panel"]
+[node name="ButtonContainer" type="HBoxContainer" parent="Panel"]
 anchor_top = 1.0
 anchor_right = 1.0
 anchor_bottom = 1.0
-margin_left = 300.0
-margin_top = -100.0
-margin_right = -300.0
-margin_bottom = -50.0
+margin_left = 75.0
+margin_top = -125.0
+margin_right = -75.0
+margin_bottom = -58.0001
+
+[node name="SpectatorCheckbox" type="CheckBox" parent="Panel/ButtonContainer"]
+margin_right = 269.0
+margin_bottom = 67.0
+text = "Spectator"
+
+[node name="Control" type="Control" parent="Panel/ButtonContainer"]
+margin_left = 273.0
+margin_right = 426.0
+margin_bottom = 67.0
+size_flags_horizontal = 3
+
+[node name="ReadyButton" type="Button" parent="Panel/ButtonContainer"]
+margin_left = 430.0
+margin_right = 930.0
+margin_bottom = 67.0
+rect_min_size = Vector2( 500, 0 )
 disabled = true
 text = "BUTTON_READY"
 script = ExtResource( 4 )
 
 [connection signal="pressed" from="Panel/MatchIDContainer/MatchCopyButton" to="." method="_on_MatchCopyButton_pressed"]
-[connection signal="pressed" from="Panel/ReadyButton" to="." method="_on_ReadyButton_pressed"]
+[connection signal="toggled" from="Panel/ButtonContainer/SpectatorCheckbox" to="." method="_on_SpectatorCheckbox_toggled"]
+[connection signal="pressed" from="Panel/ButtonContainer/ReadyButton" to="." method="_on_ReadyButton_pressed"]

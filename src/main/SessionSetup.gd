@@ -51,10 +51,17 @@ func _on_UILayer_back_button() -> void:
 	else:
 		_return_to_match_screen()
 
-func _on_ReadyScreen_ready_pressed() -> void:
-	rpc("player_ready", OnlineMatch.get_my_session_id())
+func _on_ReadyScreen_ready_pressed(is_spectator: bool) -> void:
+	rpc("player_ready", OnlineMatch.get_my_session_id(), is_spectator)
 
-remotesync func player_ready(session_id: String) -> void:
+remotesync func player_ready(session_id: String, is_spectator: bool) -> void:
+	var peer_id = get_tree().get_rpc_sender_id()
+	
+	if peer_id == get_tree().get_network_unique_id():
+		SyncManager.spectating = is_spectator
+	else:
+		SyncManager.update_peer(peer_id, {spectator = is_spectator})
+	
 	ready_screen.set_status(session_id, "PLAYER_STATUS_READY")
 
 	if SyncManager.network_adaptor.is_network_host() and not players_ready.has(session_id):
