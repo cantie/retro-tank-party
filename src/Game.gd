@@ -48,7 +48,9 @@ class Player:
 		return Player.new(data['peer_id'], data['name'], data['index'], data['team'])
 
 func _ready() -> void:
+	hud.spectator_camera_switcher.connect("item_selected", self, "_on_spectator_camera_switcher_item_selected")
 	SyncManager.connect("scene_spawned", self, "_on_SyncManager_scene_spawned")
+	SyncManager.connect("scene_despawned", self, "_on_SyncManager_scene_despawned")
 
 # Initializes the game so that it is ready to really start.
 func game_setup(_players: Dictionary, map_path: String, random_seed: int, _player_start_transforms = null) -> void:
@@ -81,24 +83,20 @@ func game_setup(_players: Dictionary, map_path: String, random_seed: int, _playe
 		for i in range(pickup.rarity):
 			possible_pickups.append(pickup)
 
-	hud.clear_spectator_controls()
 	if SyncManager.spectating:
+		hud.spectator_controls.visible = true
 		enable_watch_camera(true)
 
-		var watch_camera_button = Button.new()
-		watch_camera_button.text = 'All'
-		watch_camera_button.connect("pressed", self, "enable_watch_camera", [true])
-		hud.add_spectator_control('WatchCamera', watch_camera_button)
+		hud.spectator_camera_switcher.clear_items()
+		hud.spectator_camera_switcher.add_item('All', 0)
+		hud.spectator_camera_switcher.grab_focus()
 
 	_game_setup()
 
-func _create_spectator_player_camera_button(player_id: int) -> void:
-	if players.has(player_id):
+func _add_spectator_camera_option(player_id: int) -> void:
+	if players.has(player_id) and not hud.spectator_camera_switcher.has_item(player_id):
 		var player = players[player_id]
-		var player_camera_button = Button.new()
-		player_camera_button.text = player.name
-		player_camera_button.connect("pressed", self, "_on_spectator_player_camera_button_pressed", [player_id])
-		hud.add_spectator_control('Player_' + str(player_id), player_camera_button)
+		hud.spectator_camera_switcher.add_item(player.name, player_id)
 
 func _game_setup() -> void:
 	hud.clear_all_labels()
@@ -142,9 +140,21 @@ func _on_SyncManager_scene_spawned(name: String, spawned_node: Node, scene: Pack
 			_attach_player_camera(spawned_node)
 
 		if SyncManager.spectating:
-			_create_spectator_player_camera_button(peer_id)
+			_add_spectator_camera_option(peer_id)
 
 		emit_signal("player_spawned", spawned_node)
+
+func _on_SyncManager_scene_despawned(signal_name: String, despawned_node: Node) -> void:
+	if signal_name == 'Tank':
+		if despawned_node.player_controlled:
+			_teardown_player_listener()
+			hud.clear_all_labels()
+
+		if SyncManager.spectating:
+			if despawned_node.camera == player_camera:
+				_teardown_player_listener()
+				enable_watch_camera(true)
+			hud.spectator_camera_switcher.remove_item(despawned_node.get_network_master())
 
 func _clear_player_camera() -> void:
 	for child in players_node.get_children():
@@ -283,22 +293,15 @@ func _on_player_dead(killer_id, tank) -> void:
 	if players_alive.has(peer_id):
 		players_alive.erase(peer_id)
 
-		if tank.player_controlled:
-			_teardown_player_listener()
-			hud.clear_all_labels()
-
-		if SyncManager.spectating:
-			if tank.camera == player_camera:
-				_teardown_player_listener()
-				enable_watch_camera(true)
-			hud.remove_spectator_control('Player_' + str(peer_id))
-
 		emit_signal("player_dead", peer_id, killer_id)
 
-func _on_spectator_player_camera_button_pressed(player_id: int) -> void:
-	var player_node = get_tank(player_id)
-	if player_node:
-		_attach_player_camera(player_node)
+func _on_spectator_camera_switcher_item_selected(value, index) -> void:
+	if value == 0:
+		enable_watch_camera(true)
+	else:
+		var player_node = get_tank(value)
+		if player_node:
+			_attach_player_camera(player_node)
 
 # From https://stackoverflow.com/a/12996028/364763
 #

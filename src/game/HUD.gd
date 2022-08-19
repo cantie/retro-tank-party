@@ -3,8 +3,7 @@ extends Control
 onready var weapon_label = $HBoxContainer/WeaponLabel
 onready var ability_label = $HBoxContainer/AbilityLabel
 onready var spectator_controls = $SpectatorControls
-
-var _spectator_controls_list := {}
+onready var spectator_camera_switcher = $SpectatorControls/SpectatorCameraSwitcher
 
 func _ready() -> void:
 	ability_label.set_message_translation(false)
@@ -32,22 +31,3 @@ func clear_ability_label() -> void:
 func clear_all_labels() -> void:
 	clear_weapon_label()
 	clear_ability_label()
-
-func add_spectator_control(name: String, control: Control) -> void:
-	if not _spectator_controls_list.has(name):
-		_spectator_controls_list[name] = control
-		spectator_controls.add_child(control)
-
-func remove_spectator_control(name: String) -> void:
-	if _spectator_controls_list.has(name):
-		var control = _spectator_controls_list[name]
-		_spectator_controls_list.erase(name)
-
-		spectator_controls.remove_child(control)
-		control.queue_free()
-
-func clear_spectator_controls() -> void:
-	for child in _spectator_controls_list.values():
-		spectator_controls.remove_child(child)
-		child.queue_free()
-	_spectator_controls_list.clear()
