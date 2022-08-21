@@ -153,7 +153,7 @@ func _on_SyncManager_scene_despawned(signal_name: String, despawned_node: Node) 
 		if SyncManager.spectating:
 			if despawned_node.camera == player_camera:
 				_teardown_player_listener()
-				enable_watch_camera(true)
+				hud.spectator_camera_switcher.set_value(0)
 			hud.spectator_camera_switcher.remove_item(despawned_node.get_network_master())
 
 func _clear_player_camera() -> void:

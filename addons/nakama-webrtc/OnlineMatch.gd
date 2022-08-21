@@ -331,7 +331,7 @@ func get_active_players() -> Dictionary:
 	var active_players := {}
 	for session_id in players:
 		var player = players[session_id]
-		if player.spectator:
+		if not player.spectator:
 			active_players[session_id] = player
 	return active_players
 
@@ -532,28 +532,32 @@ func _on_nakama_match_state(data: NakamaRTAPI.MatchData) -> void:
 		# Tell this player (and the others) about all the players peer ids.
 		nakama_socket.send_match_state_async(match_id, MatchOpCode.JOIN_SUCCESS, JSON.print({
 				players = serialize_players(players),
-				client_version = client_version,
 		}))
 
 		_webrtc_connect_peer(new_player)
 
 	if data.op_code == MatchOpCode.JOIN_SUCCESS && match_mode == MatchMode.JOIN:
 		var content_players = unserialize_players(content['players'])
+
+		if not players.has(my_session_id):
+			var player = content_players[my_session_id]
+			players[my_session_id] = player
+			_webrtc_multiplayer.initialize(player.peer_id)
+			get_tree().set_network_peer(_webrtc_multiplayer)
+			emit_signal("player_joined", player)
+			emit_signal("player_status_changed", player, PlayerStatus.CONNECTED)
+
 		for session_id in content_players:
 			if not players.has(session_id):
-				players[session_id] = content_players[session_id]
-				_webrtc_connect_peer(players[session_id])
-				emit_signal("player_joined", players[session_id])
-				if session_id == my_session_id:
-					_webrtc_multiplayer.initialize(players[session_id].peer_id)
-					get_tree().set_network_peer(_webrtc_multiplayer)
-
-					emit_signal("player_status_changed", players[session_id], PlayerStatus.CONNECTED)
+				var player = content_players[session_id]
+				players[session_id] = player
+				_webrtc_connect_peer(player)
+				emit_signal("player_joined", player)
 
 	if data.op_code == MatchOpCode.JOIN_ERROR:
 		if content['target'] == my_session_id:
 			leave()
-			_emit_error(ErrorCode.CLIENT_JOIN_ERROR, content['code'])
+			_emit_error(ErrorCode.CLIENT_JOIN_ERROR, int(content['code']))
 			return
 
 func _webrtc_connect_peer(player: Player) -> void:
