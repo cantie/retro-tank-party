@@ -91,9 +91,6 @@ func set_ready_button_enabled(enabled: bool = true) -> void:
 	if enabled:
 		ready_button.focus.grab_without_sound()
 
-func _on_SpectatorCheckbox_toggled(button_pressed: bool) -> void:
-	emit_signal("spectator_state_changed", button_pressed)
-
 func _on_ReadyButton_pressed() -> void:
 	emit_signal("ready_pressed")
 
@@ -143,5 +140,3 @@ func _on_SyncManager_peer_pinged_back(peer: SyncManager.Peer) -> void:
 	var status_node = status_container.get_node(player.session_id)
 	if status_node:
 		status_node.set_ping_time(peer.rtt)
-
-

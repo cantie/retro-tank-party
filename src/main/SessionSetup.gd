@@ -17,7 +17,6 @@ func _ready() -> void:
 
 	OnlineMatch.connect("error_code", self, "_on_OnlineMatch_error")
 	OnlineMatch.connect("disconnected", self, "_on_OnlineMatch_disconnected")
-	OnlineMatch.connect("match_joined", self, "_on_OnlineMatch_match_joined")
 	OnlineMatch.connect("player_status_changed", self, "_on_OnlineMatch_player_status_changed")
 	OnlineMatch.connect("player_left", self, "_on_OnlineMatch_player_left")
 
