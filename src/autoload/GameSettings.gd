@@ -7,8 +7,8 @@ enum ControlScheme {
 
 enum NetworkRelay {
 	AUTO = 0, # OnlineMatch.NetworkRelay.AUTO
-	FORCED = 1, # OnlineMatch.NetworkRelay.FORCED,
-	DISABLED = 2, # OnlineMatch.NetworkRelay.DISABLED,
+	FORCED = 1, # OnlineMatch.NetworkRelay.FORCED
+	DISABLED = 2, # OnlineMatch.NetworkRelay.DISABLED
 	FALLBACK,
 	FORCED_FALLBACK,
 }
