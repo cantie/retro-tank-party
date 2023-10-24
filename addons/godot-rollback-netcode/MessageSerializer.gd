@@ -1,5 +1,11 @@
 extends Reference
 
+static func is_type(obj: Object):
+	return obj.has_method("serialize_input") \
+		and obj.has_method("serialize_message") \
+		and obj.has_method("unserialize_input") \
+		and obj.has_method("unserialize_message")
+
 const DEFAULT_MESSAGE_BUFFER_SIZE = 1280
 
 enum InputMessageKey {
@@ -20,7 +26,7 @@ func serialize_message(msg: Dictionary) -> PoolByteArray:
 	buffer.resize(DEFAULT_MESSAGE_BUFFER_SIZE)
 
 	buffer.put_u32(msg[InputMessageKey.NEXT_INPUT_TICK_REQUESTED])
-	
+
 	if msg.has(InputMessageKey.INPUT):
 		var input_ticks = msg[InputMessageKey.INPUT]
 		buffer.put_u8(input_ticks.size())
@@ -34,9 +40,9 @@ func serialize_message(msg: Dictionary) -> PoolByteArray:
 				buffer.put_data(input)
 	else:
 		buffer.put_u8(0)
-	
+
 	buffer.put_u32(msg[InputMessageKey.NEXT_HASH_TICK_REQUESTED])
-	
+
 	if msg.has(InputMessageKey.STATE_HASHES):
 		var state_hashes = msg[InputMessageKey.STATE_HASHES]
 		buffer.put_u8(state_hashes.size())
@@ -48,7 +54,7 @@ func serialize_message(msg: Dictionary) -> PoolByteArray:
 				buffer.put_u32(state_hashes[state_hash_key])
 	else:
 		buffer.put_u8(0)
-	
+
 	buffer.resize(buffer.get_position())
 	return buffer.data_array
 
@@ -56,14 +62,14 @@ func unserialize_message(serialized) -> Dictionary:
 	var buffer := StreamPeerBuffer.new()
 	buffer.put_data(serialized)
 	buffer.seek(0)
-	
+
 	var msg := {
 		InputMessageKey.INPUT: {},
 		InputMessageKey.STATE_HASHES: {},
 	}
-	
+
 	msg[InputMessageKey.NEXT_INPUT_TICK_REQUESTED] = buffer.get_u32()
-	
+
 	var input_tick_count = buffer.get_u8()
 	if input_tick_count > 0:
 		var input_tick = buffer.get_u32()
@@ -71,14 +77,14 @@ func unserialize_message(serialized) -> Dictionary:
 			var input_size = buffer.get_u16()
 			msg[InputMessageKey.INPUT][input_tick] = buffer.get_data(input_size)[1]
 			input_tick += 1
-	
+
 	msg[InputMessageKey.NEXT_HASH_TICK_REQUESTED] = buffer.get_u32()
-	
+
 	var hash_tick_count = buffer.get_u8()
 	if hash_tick_count > 0:
 		var hash_tick = buffer.get_u32()
 		for hash_tick_index in range(hash_tick_count):
 			msg[InputMessageKey.STATE_HASHES][hash_tick] = buffer.get_u32()
 			hash_tick += 1
-	
+
 	return msg
