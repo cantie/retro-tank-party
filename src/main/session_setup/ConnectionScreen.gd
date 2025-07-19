@@ -17,7 +17,7 @@ onready var steam_login_button := $TabContainer/Steam/SteamLoginButton
 const CREDENTIALS_FILENAME = 'user://credentials.json.enc'
 const CREDENTIALS_FILENAME_OLD = 'user://credentials.json'
 
-const FORGOT_PASSWORD_URL = 'https://www.snopekgames.com/player/forgot-password'
+const FORGOT_PASSWORD_URL = 'https://galaxy.snopekgames.com/legacy/player/forgot-password'
 
 var email: String = ''
 var password: String = ''
