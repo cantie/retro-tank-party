@@ -1,8 +1,8 @@
 /build/
 /.import/
 
-/webrtc_debug/lib/
-/webrtc/lib/
+/webrtc/
+/webrtc_debug/
 /steam_appid.txt
 /steam_build_output/
 /rtp.code-workspace
@@ -16,4 +16,4 @@
 *.pyc
 *.bc
 *.obj
-
+.DS_Store
