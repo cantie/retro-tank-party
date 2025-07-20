@@ -250,13 +250,19 @@ pages:
    - devel
 
 itch:
-  image: barichello/godot-ci:3.6
+  image: ubuntu:24.04
   stage: deploy
   dependencies:
     - web
     - linux
     - windows-signed
     - macosx-signed
+  before_script:
+    # Install Itch.io's butler CLI tool
+    - curl -L -o butler.zip https://broth.itch.ovh/butler/linux-amd64/LATEST/archive/default
+    - unzip -a butler.zip
+    - mv butler /usr/local/bin/
+    - chmod +x /usr/local/bin/butler
   script:
     - butler push build/web $ITCHIO_NAME:web-stable
     - butler push build/linux $ITCHIO_NAME:linux-stable
