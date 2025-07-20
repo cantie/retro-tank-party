@@ -250,7 +250,7 @@ pages:
    - devel
 
 itch:
-  image: barichello/godot-ci:3.4.2
+  image: barichello/godot-ci:3.6
   stage: deploy
   dependencies:
     - web
@@ -502,7 +502,7 @@ steam:
       [ ! -d ./steam_cache ] && mkdir ./steam_cache;
       cp ./steam_cache/config.vdf /home/steam/Steam/config/ 2>/dev/null || echo "No cached config file";
       cp ./steam_cache/ssfn* /home/steam/Steam/ 2>/dev/null || echo "No cached sentry file";
-    
+
     # Update the build VDF with correct branch information.
     - >
       case "$CI_COMMIT_REF_NAME" in
@@ -519,7 +519,8 @@ steam:
     - /home/steam/steamcmd/steamcmd.sh +set_steam_guard_code "$STEAM_GUARD_CODE" +login "$STEAM_BUILD_USERNAME" "$STEAM_BUILD_PASSWORD" +run_app_build "$PWD/scripts/steam/app_build_1568570.vdf" +quit
 
     # Copy config and setry files into the cache
-    - cp /home/steam/Steam/config/config.vdf /home/steam/Steam/ssfn* ./steam_cache/
+    - cp /home/steam/Steam/config/config.vdf ./steam_cache/ || echo "Unable to cache config"
+    - cp /home/steam/Steam/ssfn* ./steam_cache/ || echo "Unable to cache sentry file"
   cache:
     paths:
       - ./steam_cache/
