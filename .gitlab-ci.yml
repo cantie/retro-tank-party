@@ -258,6 +258,9 @@ itch:
     - windows-signed
     - macosx-signed
   before_script:
+    - apt update
+    - apt install -yyq curl unzip
+
     # Install Itch.io's butler CLI tool
     - curl -L -o butler.zip https://broth.itch.ovh/butler/linux-amd64/LATEST/archive/default
     - unzip -a butler.zip
