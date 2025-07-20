@@ -24,7 +24,7 @@ else
 fi
 
 cd "$WORKDIR"
-rm -f /tmp/notarize-*.xml
+rm -f /tmp/notarize-*.plist
 
 echo "Signing..."
 codesign -vvv --force --deep --strict --sign "$MACOSX_SIGNATURE_IDENTITY" --options runtime $ENTITLEMENTS --timestamp "$NAME" \
@@ -32,31 +32,34 @@ codesign -vvv --force --deep --strict --sign "$MACOSX_SIGNATURE_IDENTITY" --opti
 
 echo "Uploading for notarization..."
 zip -r "$NAME.zip" "$NAME"
-xcrun altool --notarize-app -t osx -f "$NAME.zip" --primary-bundle-id "$MACOSX_BUNDLE_ID" -u "$MACOSX_APPLE_ID" -p "$MACOSX_APPLE_PASSWORD" $XCRUN_NOTARIZE_PROVIDER_ID --output-format xml > /tmp/notarize-app.xml
+xcrun notarytool submit "$NAME.zip" --apple-id "$MACOSX_APPLE_ID" --password "$MACOSX_APPLE_PASSWORD" --team-id "$MACOSX_APPLE_PROVIDER_ID" --output-format plist > /tmp/notarize-app.plist
+
+
 rm -f "$NAME.zip"
-NUUID=`/usr/libexec/PlistBuddy -c 'Print :notarization-upload:RequestUUID' /tmp/notarize-app.xml`
+NUUID=`/usr/libexec/PlistBuddy -c 'Print id' /tmp/notarize-app.plist`
 if [ -z "${NUUID}" ]; then
-    cat /tmp/notarize-app.xml
+    cat /tmp/notarize-app.plist
     die "* error: no RequestUUID found in upload response"
 fi
 echo "RequestUUID: ${NUUID}"
 
 echo "Waiting for notarization to complete..."
 while true; do
-    xcrun altool --notarization-info ${NUUID} -u "$MACOSX_APPLE_ID" -p "$MACOSX_APPLE_PASSWORD" --output-format xml > /tmp/notarize-info.xml
-    NSTAT=`/usr/libexec/PlistBuddy -c 'Print :notarization-info:Status' /tmp/notarize-info.xml`
+    xcrun notarytool info ${NUUID} --apple-id "$MACOSX_APPLE_ID" --password "$MACOSX_APPLE_PASSWORD" --team-id "$MACOSX_APPLE_PROVIDER_ID" --output-format plist > /tmp/notarize-info.plist
+
+    NSTAT=`/usr/libexec/PlistBuddy -c 'Print status' /tmp/notarize-info.plist`
     echo "  `date "+%H:%M:%S"` ${NSTAT}"
     if [ -z "${NUUID}" ]; then
-        cat /tmp/notarize-info.xml
+        cat /tmp/notarize-info.plist
         die "* error: no Status found in info response"
     fi
 
-    if [ "${NSTAT}" == "invalid" ]; then
-        cat /tmp/notarize-info.xml
+    if [ "${NSTAT}" == "Invalid" ]; then
+        cat /tmp/notarize-info.plist
         die "* error: error notarizing app"
     fi
 
-    if [ "${NSTAT}" == "success" ]; then
+    if [ "${NSTAT}" == "Accepted" ]; then
         break
     fi
     sleep 30s
@@ -65,5 +68,5 @@ done
 echo "Stapling ticket to app..."
 xcrun stapler staple "$NAME"
 
-rm /tmp/notarize-*.xml
+rm /tmp/notarize-*.plist
 
