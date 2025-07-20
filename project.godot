@@ -251,7 +251,7 @@ enabled=PoolStringArray( "res://addons/godot-rollback-netcode/plugin.cfg", "res:
 
 [gdnative]
 
-singletons=[ "res://webrtc/webrtc.gdnlib", "res://webrtc_debug/webrtc_debug.gdnlib" ]
+singletons=[ "res://webrtc/webrtc.tres" ]
 singletons_disabled=[  ]
 
 [importer_defaults]
