@@ -17,7 +17,7 @@ var players := {}
 var players_alive := {}
 var possible_pickups := []
 var player_start_transforms
-var player_listener: Listener2D
+var player_listener: AudioListener2D
 
 signal game_error (message)
 signal match_started ()
@@ -218,7 +218,7 @@ func _setup_player_camera(camera_position: Vector2) -> void:
 func _setup_player_listener(my_player) -> void:
 	_teardown_player_listener()
 
-	player_listener = Listener2D.new()
+	player_listener = AudioListener2D.new()
 	my_player.add_child(player_listener)
 	player_listener.make_current()
 
