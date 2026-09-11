@@ -6,9 +6,9 @@ extends Control
 @onready var _forward_texture = _forward_button.texture_normal
 @onready var _back_texture = _back_button.texture_normal
 
-@export_Color) var modulate_normal = Color(0.6, 0.6, 0.6, 1.0)
-@export_Color) var modulate_disabled = Color(0.8, 0.8, 0.8, 0.7)
-@export_Color) var modulate_pressed = Color(1.0, 1.0, 1.0, 1.0)
+@export var modulate_normal: Color = Color(0.6, 0.6, 0.6, 1.0)
+@export var modulate_disabled: Color = Color(0.8, 0.8, 0.8, 0.7)
+@export var modulate_pressed: Color = Color(1.0, 1.0, 1.0, 1.0)
 
 class Option:
 	var label: String
@@ -22,16 +22,16 @@ class Option:
 
 var _options := []
 var selected := 0:
-	set = set_selected
+	set = _set_selected
 var disabled := false:
-	set = set_disabled
+	set = _set_disabled
 var value:
-	set = set_value, get = get_value
+	set = _set_value, get = get_value
 
 var focus: ControlFocusComponent
 
-@onready var _label_default_color = _label.get_color("font_color")
-@onready var _label_normal_style_box = _label.get_stylebox("normal")
+@onready var _label_default_color = _label.get_theme_color("font_color")
+@onready var _label_normal_style_box = _label.get_theme_stylebox("normal")
 var _label_selected_style_box = preload("res://assets/ui/grey_button5_stylebox.tres")
 
 signal item_selected (value, index)
@@ -50,16 +50,20 @@ func _show_buttons(show: bool) -> void:
 		_forward_button.texture_normal = null
 		_back_button.texture_normal = null
 
-func set_selected(_selected, emit_signal: bool = true) -> bool:
+func _set_selected(_selected) -> void:
+	if _selected >= 0 and _selected < _options.size():
+		selected = _selected
+		_update_display()
+
+func update_selected(_selected, emit_signal: bool = true) -> bool:
 	if _selected >= 0 and _selected < _options.size():
 		selected = _selected
 		_update_display()
 		if emit_signal:
 			item_selected.emit(_options[selected].value, selected)
-	
 	return selected == _selected
 
-func set_disabled(_disabled) -> void:
+func _set_disabled(_disabled) -> void:
 	disabled = _disabled
 	focus_mode = Control.FOCUS_NONE if disabled else Control.FOCUS_ALL
 	_reset_button_colors()
@@ -68,18 +72,25 @@ func _update_display() -> void:
 	if selected >= 0 and selected < _options.size():
 		var option = _options[selected]
 		_label.text = option.label
-		_label.add_color_override("font_color", option.color if option.color != null else _label_default_color)
+		_label.add_theme_color_override("font_color", option.color if option.color != null else _label_default_color)
 		_reset_button_colors()
 
 func _reset_button_colors() -> void:
 	_back_button.modulate = modulate_disabled if disabled or selected == 0 else modulate_normal
 	_forward_button.modulate = modulate_disabled if disabled or selected == _options.size() - 1 else modulate_normal
 
-func set_value(_value, emit_signal: bool = true) -> bool:
+func _set_value(_value) -> void:
 	for index in range(_options.size()):
 		var option = _options[index]
 		if option.value == _value:
-			set_selected(index, emit_signal)
+			_set_selected(index)
+			return
+
+func update_value(_value, emit_signal: bool = true) -> bool:
+	for index in range(_options.size()):
+		var option = _options[index]
+		if option.value == _value:
+			update_selected(index, emit_signal)
 			return true
 	return false
 
@@ -105,12 +116,12 @@ func get_item_count() -> int:
 
 func _gui_input(event: InputEvent) -> void:
 	if event.is_action_pressed("ui_left"):
-		if set_selected(selected - 1):
+		if update_selected(selected - 1):
 			Sounds.play("Select")
 			_back_button.modulate = modulate_pressed
 		accept_event()
 	elif event.is_action_pressed("ui_right"):
-		if set_selected(selected + 1):
+		if update_selected(selected + 1):
 			Sounds.play("Select")
 			_forward_button.modulate = modulate_pressed
 		accept_event()
@@ -128,18 +139,18 @@ func _on_OptionSwitcher_mouse_exited() -> void:
 
 func _on_OptionSwitcher_focus_entered() -> void:
 	_show_buttons(true)
-	_label.add_stylebox_override("normal", _label_selected_style_box)
+	_label.add_theme_stylebox_override("normal", _label_selected_style_box)
 
 func _on_OptionSwitcher_focus_exited() -> void:
 	_show_buttons(false)
-	_label.add_stylebox_override("normal", _label_normal_style_box)
+	_label.add_theme_stylebox_override("normal", _label_normal_style_box)
 
 func _on_BackButton_button_down() -> void:
 	if not disabled and selected > 0:
 		_back_button.modulate = modulate_pressed
 
 func _on_BackButton_button_up() -> void:
-	if not disabled and set_selected(selected - 1):
+	if not disabled and update_selected(selected - 1):
 		Sounds.play("Select")
 		_reset_button_colors()
 
@@ -148,6 +159,6 @@ func _on_ForwardButton_button_down() -> void:
 		_forward_button.modulate = modulate_pressed
 
 func _on_ForwardButton_button_up() -> void:
-	if not disabled and set_selected(selected + 1):
+	if not disabled and update_selected(selected + 1):
 		Sounds.play("Select")
 		_reset_button_colors()

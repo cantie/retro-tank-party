@@ -25,11 +25,11 @@ func _ready() -> void:
 
 	tank_engine_sounds_field.add_item("OPTION_DISABLED", false)
 	tank_engine_sounds_field.add_item("OPTION_ENABLED", true)
-	tank_engine_sounds_field.set_value(GameSettings.tank_engine_sounds, false)
+	tank_engine_sounds_field.update_value(GameSettings.tank_engine_sounds, false)
 
 	full_screen_field.add_item("OPTION_DISABLED", false)
 	full_screen_field.add_item("OPTION_ENABLED", true)
-	full_screen_field.set_value(GameSettings.use_full_screen, false)
+	full_screen_field.update_value(GameSettings.use_full_screen, false)
 
 	language_field.add_item("LANGUAGE_OPTION_DEFAULT", "default")
 	language_field.add_item("English", "en")
@@ -41,37 +41,32 @@ func _ready() -> void:
 	language_field.add_item("日本語", "ja")
 	language_field.add_item("简体中文", "zh_CN")
 	language_field.add_item("繁體中文", "zh_TW")
-	language_field.set_value(GameSettings.language, false)
+	language_field.update_value(GameSettings.language, false)
 
 	screenshake_field.add_item("OPTION_DISABLED", false)
 	screenshake_field.add_item("OPTION_ENABLED", true)
-	screenshake_field.set_value(GameSettings.use_screenshake, false)
+	screenshake_field.update_value(GameSettings.use_screenshake, false)
 
 	var art_styles = Modding.find_resources("art")
 	for art_style_path in art_styles:
 		var art_style = load(art_style_path)
 		art_style_field.add_item(art_style.name, art_style_path)
-	art_style_field.set_value(GameSettings.art_style, false)
+	art_style_field.update_value(GameSettings.art_style, false)
 
 	control_scheme_field.add_item("CONTROL_SCHEME_OPTION_MODERN", GameSettings.ControlScheme.MODERN)
 	control_scheme_field.add_item("CONTROL_SCHEME_OPTION_RETRO", GameSettings.ControlScheme.RETRO)
-	control_scheme_field.set_value(GameSettings.control_scheme, false)
+	control_scheme_field.update_value(GameSettings.control_scheme, false)
 
 	network_relay_field.add_item("NETWORK_RELAY_OPTION_DISABLED", GameSettings.NetworkRelay.DISABLED)
 	network_relay_field.add_item("NETWORK_RELAY_OPTION_AUTO", GameSettings.NetworkRelay.AUTO)
 	network_relay_field.add_item("NETWORK_RELAY_OPTION_FORCED", GameSettings.NetworkRelay.FORCED)
 	#network_relay_field.add_item("NETWORK_RELAY_OPTION_FALLBACK_AUTO", GameSettings.NetworkRelay.FALLBACK)
 	network_relay_field.add_item("NETWORK_RELAY_OPTION_FALLBACK_FORCED", GameSettings.NetworkRelay.FORCED_FALLBACK)
-	network_relay_field.set_value(GameSettings.use_network_relay, false)
+	network_relay_field.update_value(GameSettings.use_network_relay, false)
 
-	if OS.can_use_threads():
-		detailed_logging_field.add_item("OPTION_DISABLED", false)
-		detailed_logging_field.add_item("OPTION_ENABLED", true)
-		detailed_logging_field.set_value(GameSettings.use_detailed_logging, false)
-	else:
-		# Detailed logs only work if we have threads, so hide option otherwise.
-		detailed_logging_label.visible = false
-		detailed_logging_field.visible = false
+	detailed_logging_field.add_item("OPTION_DISABLED", false)
+	detailed_logging_field.add_item("OPTION_ENABLED", true)
+	detailed_logging_field.update_value(GameSettings.use_detailed_logging, false)
 
 	_update_gamepad_options()
 	Input.joy_connection_changed.connect(self._on_joy_connection_changed)
@@ -99,9 +94,8 @@ func _show_screen(info: Dictionary = {}) -> void:
 	network_relay_label.visible = not SyncManager.started
 	network_relay_field.visible = not SyncManager.started
 
-	if OS.can_use_threads():
-		detailed_logging_label.visible = not SyncManager.started
-		detailed_logging_field.visible = not SyncManager.started
+	detailed_logging_label.visible = not SyncManager.started
+	detailed_logging_field.visible = not SyncManager.started
 
 	scroll_container.scroll_vertical = 0
 	language_field.focus.grab_without_sound()
@@ -159,7 +153,7 @@ func _update_gamepad_options() -> void:
 		gamepad_device_field.add_item("%s: %s" % [joy_id + 1, Input.get_joy_name(joy_id)], joy_id)
 	if gamepad_device_field.get_item_count() == 0:
 		gamepad_device_field.add_item("%s: %s" % [1, tr("GAMEPAD_DEVICE_OPTION_DEFAULT")], 0)
-	gamepad_device_field.set_value(GameSettings.joy_id, false)
+	gamepad_device_field.update_value(GameSettings.joy_id, false)
 
 func _on_joy_connection_changed(device: int, connected: bool) -> void:
 	_update_gamepad_options()

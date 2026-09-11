@@ -8,7 +8,7 @@ class_name UILayer
 @onready var alert = $Overlay/Alert
 
 signal change_screen (name, screen, info)
-signal back_button ()
+signal back_requested ()
 signal alert_completed (result)
 
 var current_screen: Control = null:
@@ -57,7 +57,8 @@ func get_current_screen_name() -> String:
 		return current_screen.name
 	return ''
 
-remote func show_screen(name: String, info: Dictionary = {}) -> void:
+@rpc("any_peer")
+func show_screen(name: String, info: Dictionary = {}) -> void:
 	var screen = screens.get_node(name)
 	if not screen:
 		return
@@ -122,7 +123,7 @@ func go_back() -> void:
 	if alert.visible:
 		hide_alert()
 	else:
-		back_button.emit()
+		back_requested.emit()
 
 func _on_BackButton_pressed() -> void:
 	go_back()

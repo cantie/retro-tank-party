@@ -14,7 +14,7 @@ func _ready() -> void:
 	
 	for map_id in maps:
 		map_field.add_item(maps[map_id].name, map_id)
-	map_field.set_value(DEFAULT_MAP, false)
+	map_field.update_value(DEFAULT_MAP, false)
 
 func _show_screen(info: Dictionary = {}) -> void:
 	var mode_screen = ui_layer.get_screen("ModeScreen")
@@ -42,9 +42,9 @@ func _update_map_field_for_mode(mode: MatchMode) -> void:
 			if not maps[map_id].has_goals:
 				map_field.add_item(maps[map_id].name, map_id)
 	
-	if not map_field.set_value(old_value, false):
-		if not map_field.set_value(DEFAULT_MAP, false):
-			map_field.set_selected(0, false)
+	if not map_field.update_value(old_value, false):
+		if not map_field.update_value(DEFAULT_MAP, false):
+			map_field.update_selected(0, false)
 
 func change_map(map: GameMap) -> void:
 	map_changed.emit(map.map_scene)
@@ -71,7 +71,8 @@ func send_remote_update() -> void:
 	if SyncManager.network_adaptor.is_network_host():
 		rpc("_remote_update", map_field.value)
 
-puppet func _remote_update(map_id: String) -> void:
+@rpc("authority")
+func _remote_update(map_id: String) -> void:
 	map_field.value = map_id
 	change_map(maps[map_id])
 

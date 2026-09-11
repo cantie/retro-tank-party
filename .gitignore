@@ -1,5 +1,6 @@
 /build/
 /.import/
+/.godot/
 
 /webrtc_debug/lib/
 /webrtc/lib/

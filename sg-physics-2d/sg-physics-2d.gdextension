@@ -22,8 +22,9 @@ SGStaticBody2D = "res://sg-physics-2d/icons/icon_s_g_static_body_2_d.svg"
 
 [libraries]
 
-;linux.debug.x86_64 = "lib/libsgphysics2d.linux.template_debug.dev.x86_64.so"
+linux.editor.x86_64 = "lib/libsgphysics2d.linux.template_debug.x86_64.so"
 linux.debug.x86_64 = "lib/libsgphysics2d.linux.template_debug.x86_64.so"
 linux.release.x86_64 = "lib/libsgphysics2d.linux.template_release.x86_64.so"
+windows.editor.x86_64 = "lib/libsgphysics2d.windows.template_debug.x86_64.dll"
 windows.debug.x86_64 = "lib/libsgphysics2d.windows.template_debug.x86_64.dll"
 windows.release.x86_64 = "lib/libsgphysics2d.windows.template_release.x86_64.dll"

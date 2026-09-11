@@ -5,7 +5,7 @@ enum ButtonType {
 	OK,
 	CANCEL,
 }
-@export_ButtonType) var button_type := ButtonType.OK
+@export var button_type: ButtonType = ButtonType.OK
 
 var focus: ControlFocusComponent
 
