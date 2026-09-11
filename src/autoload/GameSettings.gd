@@ -6,11 +6,11 @@ enum ControlScheme {
 }
 
 enum NetworkRelay {
-	AUTO = OnlineMatch.NetworkRelay.AUTO,
-	FORCED = OnlineMatch.NetworkRelay.FORCED,
-	DISABLED = OnlineMatch.NetworkRelay.DISABLED,
-	FALLBACK,
-	FORCED_FALLBACK,
+	AUTO = 0,
+	FORCED = 1,
+	DISABLED = 2,
+	FALLBACK = 3,
+	FORCED_FALLBACK = 4,
 }
 
 var art_style := "res://mods/core/art/classic.tres":

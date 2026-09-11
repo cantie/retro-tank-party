@@ -1,9 +1,9 @@
-[gd_resource type="Resource" load_steps=2 format=2]
+[gd_resource type="Resource" load_steps=2 format=3 uid="uid://c222b81ed57b"]
 
-[ext_resource path="res://src/components/pickups/HealthPickup.gd" type="Script" id=1]
+[ext_resource type="Script" path="res://src/components/pickups/HealthPickup.gd" id="1"]
 
 [resource]
-script = ExtResource( 1 )
+script = ExtResource("1")
 name = "PICKUP_NAME_HEALTH"
 letter = "H"
 rarity = 60

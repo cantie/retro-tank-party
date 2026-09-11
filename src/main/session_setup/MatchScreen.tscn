@@ -1,11 +1,11 @@
-[gd_scene load_steps=7 format=2]
+[gd_scene load_steps=7 format=3 uid="uid://78717e66e910"]
 
-[ext_resource path="res://assets/theme.tres" type="Theme" id=1]
-[ext_resource path="res://src/main/session_setup/MatchScreen.gd" type="Script" id=2]
-[ext_resource path="res://src/ui/MyButton.gd" type="Script" id=3]
-[ext_resource path="res://src/ui/OptionSwitcher.tscn" type="PackedScene" id=4]
-[ext_resource path="res://assets/fonts/monogram_small.tres" type="FontFile" id=5]
-[ext_resource path="res://assets/ui/gray_panel_screws_stylebox.tres" type="StyleBox" id=6]
+[ext_resource type="Theme" path="res://assets/theme.tres" id="1"]
+[ext_resource type="Script" path="res://src/main/session_setup/MatchScreen.gd" id="2"]
+[ext_resource type="Script" path="res://src/ui/MyButton.gd" id="3"]
+[ext_resource type="PackedScene" path="res://src/ui/OptionSwitcher.tscn" id="4"]
+[ext_resource type="FontFile" path="res://assets/fonts/monogram_small.tres" id="5"]
+[ext_resource type="StyleBox" path="res://assets/ui/gray_panel_screws_stylebox.tres" id="6"]
 
 [node name="MatchScreen" type="Control"]
 anchor_right = 1.0
@@ -14,8 +14,8 @@ margin_left = 3.0
 margin_top = -1.0
 margin_right = 3.0
 margin_bottom = -1.0
-theme = ExtResource( 1 )
-script = ExtResource( 2 )
+theme = ExtResource("1")
+script = ExtResource("2")
 __meta__ = {
 "_edit_use_anchors_": false
 }
@@ -30,7 +30,7 @@ margin_top = -227.0
 margin_right = 475.0
 margin_bottom = 227.0
 grow_horizontal = 2
-custom_styles/panel = ExtResource( 6 )
+custom_styles/panel = ExtResource("6")
 
 [node name="VBoxContainer" type="VBoxContainer" parent="PanelContainer"]
 margin_left = 50.0
@@ -41,7 +41,7 @@ size_flags_horizontal = 3
 size_flags_vertical = 3
 custom_constants/separation = 10
 
-[node name="OptionSwitcher" parent="PanelContainer/VBoxContainer" instance=ExtResource( 4 )]
+[node name="OptionSwitcher" parent="PanelContainer/VBoxContainer" instance=ExtResource("4")]
 anchor_right = 0.0
 margin_right = 850.0
 margin_bottom = 66.0
@@ -68,7 +68,7 @@ size_flags_vertical = 3
 margin_right = 800.0
 margin_bottom = 29.0
 size_flags_vertical = 2
-custom_fonts/font = ExtResource( 5 )
+custom_fonts/font = ExtResource("5")
 text = "MATCH_OPTION_CREATE_DESCRIPTION"
 align = 1
 __meta__ = {
@@ -81,10 +81,10 @@ margin_top = 203.0
 margin_right = 633.324
 margin_bottom = 268.534
 grow_horizontal = 2
-rect_min_size = Vector2( 200, 0 )
+rect_min_size = Vector2(200, 0 )
 size_flags_horizontal = 4
 text = "BUTTON_CREATE_MATCH"
-script = ExtResource( 3 )
+script = ExtResource("3")
 
 [node name="JoinPanel" type="VBoxContainer" parent="PanelContainer/VBoxContainer/MarginContainer"]
 visible = false
@@ -98,8 +98,8 @@ size_flags_vertical = 3
 [node name="Label" type="Label" parent="PanelContainer/VBoxContainer/MarginContainer/JoinPanel"]
 margin_right = 974.0
 margin_bottom = 75.0
-rect_min_size = Vector2( 0, 75 )
-custom_fonts/font = ExtResource( 5 )
+rect_min_size = Vector2(0, 75 )
+custom_fonts/font = ExtResource("5")
 text = "MATCH_OPTION_JOIN_DESCRIPTION"
 align = 1
 
@@ -125,7 +125,7 @@ margin_bottom = 65.0
 focus_neighbour_bottom = NodePath("../PasteButton")
 focus_next = NodePath("../PasteButton")
 size_flags_horizontal = 3
-custom_fonts/font = ExtResource( 5 )
+custom_fonts/font = ExtResource("5")
 __meta__ = {
 "_edit_use_anchors_": false
 }
@@ -137,7 +137,7 @@ margin_bottom = 65.5339
 focus_neighbour_top = NodePath("../LineEdit")
 focus_previous = NodePath("../LineEdit")
 text = "BUTTON_PASTE"
-script = ExtResource( 3 )
+script = ExtResource("3")
 
 [node name="Spacer" type="Control" parent="PanelContainer/VBoxContainer/MarginContainer/JoinPanel"]
 margin_top = 148.0
@@ -150,12 +150,12 @@ margin_left = 276.0
 margin_top = 203.0
 margin_right = 696.324
 margin_bottom = 268.534
-rect_min_size = Vector2( 200, 0 )
+rect_min_size = Vector2(200, 0 )
 focus_neighbour_top = NodePath("../Fields/PasteButton")
 focus_previous = NodePath("../Fields/PasteButton")
 size_flags_horizontal = 4
 text = "BUTTON_JOIN_MATCH"
-script = ExtResource( 3 )
+script = ExtResource("3")
 
 [node name="MatchPanel" type="VBoxContainer" parent="PanelContainer/VBoxContainer/MarginContainer"]
 visible = false
@@ -169,9 +169,9 @@ size_flags_vertical = 3
 [node name="Label" type="Label" parent="PanelContainer/VBoxContainer/MarginContainer/MatchPanel"]
 margin_right = 800.0
 margin_bottom = 100.0
-rect_min_size = Vector2( 800, 100 )
+rect_min_size = Vector2(800, 100 )
 size_flags_horizontal = 4
-custom_fonts/font = ExtResource( 5 )
+custom_fonts/font = ExtResource("5")
 text = "MATCH_OPTION_MATCHMAKER_DESCRIPTION"
 autowrap = true
 
@@ -194,7 +194,7 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="PlayerCount" parent="PanelContainer/VBoxContainer/MarginContainer/MatchPanel/Fields" instance=ExtResource( 4 )]
+[node name="PlayerCount" parent="PanelContainer/VBoxContainer/MarginContainer/MatchPanel/Fields" instance=ExtResource("4")]
 anchor_right = 0.0
 margin_left = 724.0
 margin_right = 800.0
@@ -206,10 +206,10 @@ margin_left = 249.0
 margin_top = 203.0
 margin_right = 549.324
 margin_bottom = 268.534
-rect_min_size = Vector2( 200, 0 )
+rect_min_size = Vector2(200, 0 )
 size_flags_horizontal = 4
 text = "BUTTON_MATCHMAKER"
-script = ExtResource( 3 )
+script = ExtResource("3")
 __meta__ = {
 "_edit_use_anchors_": false
 }
@@ -219,7 +219,7 @@ anchor_top = 1.0
 anchor_right = 1.0
 anchor_bottom = 1.0
 margin_top = -100.0
-color = Color( 0, 0, 0, 0.25098 )
+color = Color(0, 0, 0, 0.25098 )
 __meta__ = {
 "_edit_use_anchors_": false
 }
@@ -237,8 +237,8 @@ margin_left = 20.0
 margin_top = 35.0
 margin_right = 1260.0
 margin_bottom = 64.0
-custom_colors/font_color = Color( 1, 1, 1, 1 )
-custom_fonts/font = ExtResource( 5 )
+custom_colors/font_color = Color(1, 1, 1, 1 )
+custom_fonts/font = ExtResource("5")
 text = "MESSAGE_NETWORK_ISSUES"
 align = 1
 valign = 1

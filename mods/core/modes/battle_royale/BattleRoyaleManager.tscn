@@ -1,29 +1,29 @@
-[gd_scene load_steps=3 format=2]
+[gd_scene load_steps=3 format=3 uid="uid://12bc16224099"]
 
-[ext_resource path="res://mods/core/modes/battle_royale/BattleRoyaleManager.gd" type="Script" id=1]
-[ext_resource path="res://addons/godot-rollback-netcode/NetworkTimer.gd" type="Script" id=2]
+[ext_resource type="Script" path="res://mods/core/modes/battle_royale/BattleRoyaleManager.gd" id="1"]
+[ext_resource type="Script" path="res://addons/godot-rollback-netcode/NetworkTimer.gd" id="2"]
 
 [node name="BattleRoyaleManager" type="Node" groups=["network_sync"]]
-script = ExtResource( 1 )
+script = ExtResource("1")
 
 [node name="YouLoseTimer" type="Node" parent="."]
-script = ExtResource( 2 )
+script = ExtResource("2")
 one_shot = true
 wait_ticks = 30
 hash_state = false
 
 [node name="ShowWinnerTimer" type="Node" parent="."]
-script = ExtResource( 2 )
+script = ExtResource("2")
 one_shot = true
 wait_ticks = 15
 
 [node name="ShowScoreTimer" type="Node" parent="."]
-script = ExtResource( 2 )
+script = ExtResource("2")
 one_shot = true
 wait_ticks = 60
 
 [node name="NextRoundTimer" type="Node" parent="."]
-script = ExtResource( 2 )
+script = ExtResource("2")
 one_shot = true
 wait_ticks = 60
 

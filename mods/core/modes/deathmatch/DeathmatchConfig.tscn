@@ -1,15 +1,15 @@
-[gd_scene load_steps=4 format=2]
+[gd_scene load_steps=4 format=3 uid="uid://940b8f47d3ad"]
 
-[ext_resource path="res://assets/theme.tres" type="Theme" id=1]
-[ext_resource path="res://mods/core/modes/deathmatch/DeathmatchConfig.gd" type="Script" id=2]
-[ext_resource path="res://src/ui/OptionSwitcher.tscn" type="PackedScene" id=3]
+[ext_resource type="Theme" path="res://assets/theme.tres" id="1"]
+[ext_resource type="Script" path="res://mods/core/modes/deathmatch/DeathmatchConfig.gd" id="2"]
+[ext_resource type="PackedScene" path="res://src/ui/OptionSwitcher.tscn" id="3"]
 
 [node name="DeathmatchConfig" type="GridContainer"]
 anchor_right = 1.0
 anchor_bottom = 1.0
-theme = ExtResource( 1 )
+theme = ExtResource("1")
 columns = 2
-script = ExtResource( 2 )
+script = ExtResource("2")
 
 [node name="TimelimitLabel" type="Label" parent="."]
 margin_top = 7.0
@@ -18,7 +18,7 @@ margin_bottom = 58.0
 size_flags_horizontal = 3
 text = "TIMELIMIT_FIELD_LABEL"
 
-[node name="Timelimit" parent="." instance=ExtResource( 3 )]
+[node name="Timelimit" parent="." instance=ExtResource("3")]
 anchor_right = 0.0
 margin_left = 642.0
 margin_right = 1280.0
@@ -31,7 +31,7 @@ margin_right = 638.0
 margin_bottom = 128.0
 text = "TEAMS_FIELD_LABEL"
 
-[node name="Teams" parent="." instance=ExtResource( 3 )]
+[node name="Teams" parent="." instance=ExtResource("3")]
 anchor_right = 0.0
 margin_left = 642.0
 margin_top = 70.0
@@ -45,7 +45,7 @@ margin_right = 638.0
 margin_bottom = 198.0
 text = "WEAPON_TIMEOUT_FIELD_LABEL"
 
-[node name="WeaponTimeout" parent="." instance=ExtResource( 3 )]
+[node name="WeaponTimeout" parent="." instance=ExtResource("3")]
 anchor_right = 0.0
 margin_left = 642.0
 margin_top = 140.0

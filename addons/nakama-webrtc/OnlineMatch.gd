@@ -192,7 +192,7 @@ func create_match(_nakama_socket: NakamaSocket) -> void:
 	_set_nakama_socket(_nakama_socket)
 	match_mode = MatchMode.CREATE
 
-	var data = await nakama_socket.create_match_async().completed
+	var data = await nakama_socket.create_match_async()
 	if data.is_exception():
 		leave()
 		_emit_error(ErrorCode.MATCH_CREATE_FAILED, data.get_exception())
@@ -204,7 +204,7 @@ func join_match(_nakama_socket: NakamaSocket, _match_id: String) -> void:
 	_set_nakama_socket(_nakama_socket)
 	match_mode = MatchMode.JOIN
 
-	var data = await nakama_socket.join_match_async(_match_id).completed
+	var data = await nakama_socket.join_match_async(_match_id)
 	if data.is_exception():
 		leave()
 		_emit_error(ErrorCode.JOIN_MATCH_FAILED, data.get_exception())
@@ -238,7 +238,7 @@ func start_matchmaking(_nakama_socket: NakamaSocket, data: Dictionary = {}) -> v
 			data['query'] = query
 
 	match_state = MatchState.MATCHING
-	var result = await nakama_socket.add_matchmaker_async(data.get('query', '*'), data['min_count'], data['max_count'], data.get('string_properties', {}), data.get('numeric_properties', {})).completed
+	var result = await nakama_socket.add_matchmaker_async(data.get('query', '*'), data['min_count'], data['max_count'], data.get('string_properties', {}), data.get('numeric_properties', {}))
 	if result.is_exception():
 		leave()
 		_emit_error(ErrorCode.START_MATCHMAKING_FAILED, result.get_exception())
@@ -258,9 +258,9 @@ func leave(close_socket: bool = false) -> void:
 	# Nakama disconnect.
 	if nakama_socket:
 		if match_id:
-			await nakama_socket.leave_match_async(match_id).completed
+			await nakama_socket.leave_match_async(match_id)
 		elif matchmaker_ticket:
-			await nakama_socket.remove_matchmaker_async(matchmaker_ticket).completed
+			await nakama_socket.remove_matchmaker_async(matchmaker_ticket)
 		if close_socket:
 			nakama_socket.close()
 			_set_nakama_socket(null)
@@ -454,7 +454,7 @@ func _on_nakama_matchmaker_matched(data: NakamaRTAPI.MatchmakerMatched) -> void:
 	matchmaker_matched.emit(players)
 	player_status_changed.emit(players[my_session_id], PlayerStatus.CONNECTED)
 
-	var result = await nakama_socket.join_matched_async(data).completed
+	var result = await nakama_socket.join_matched_async(data)
 	if result.is_exception():
 		leave()
 		_emit_error(ErrorCode.JOIN_MATCH_FAILED, result.get_exception())

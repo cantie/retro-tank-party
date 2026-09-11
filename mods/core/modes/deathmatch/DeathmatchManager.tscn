@@ -1,40 +1,40 @@
-[gd_scene load_steps=5 format=2]
+[gd_scene load_steps=5 format=3 uid="uid://bc1dd3164dcb"]
 
-[ext_resource path="res://mods/core/modes/deathmatch/DeathmatchManager.gd" type="Script" id=1]
-[ext_resource path="res://src/ui/TimedMatchHUD.tscn" type="PackedScene" id=2]
-[ext_resource path="res://addons/godot-rollback-netcode/NetworkTimer.gd" type="Script" id=3]
-[ext_resource path="res://addons/godot-rollback-netcode/NetworkRandomNumberGenerator.gd" type="Script" id=4]
+[ext_resource type="Script" path="res://mods/core/modes/deathmatch/DeathmatchManager.gd" id="1"]
+[ext_resource type="PackedScene" path="res://src/ui/TimedMatchHUD.tscn" id="2"]
+[ext_resource type="Script" path="res://addons/godot-rollback-netcode/NetworkTimer.gd" id="3"]
+[ext_resource type="Script" path="res://addons/godot-rollback-netcode/NetworkRandomNumberGenerator.gd" id="4"]
 
 [node name="DeathmatchManager" type="Node" groups=["network_sync"]]
-script = ExtResource( 1 )
+script = ExtResource("1")
 
 [node name="CanvasLayer" type="CanvasLayer" parent="."]
 
-[node name="TimedMatchHUD" parent="CanvasLayer" instance=ExtResource( 2 )]
+[node name="TimedMatchHUD" parent="CanvasLayer" instance=ExtResource("2")]
 
 [node name="PlayerManagers" type="Node" parent="."]
 
 [node name="RandomNumberGenerator" type="Node" parent="."]
-script = ExtResource( 4 )
+script = ExtResource("4")
 
 [node name="YouLoseTimer" type="Node" parent="."]
-script = ExtResource( 3 )
+script = ExtResource("3")
 one_shot = true
 wait_ticks = 30
 hash_state = false
 
 [node name="ShowWinnerTimer" type="Node" parent="."]
-script = ExtResource( 3 )
+script = ExtResource("3")
 one_shot = true
 wait_ticks = 15
 
 [node name="ShowScoreTimer" type="Node" parent="."]
-script = ExtResource( 3 )
+script = ExtResource("3")
 one_shot = true
 wait_ticks = 60
 
 [node name="MatchFinishedTimer" type="Node" parent="."]
-script = ExtResource( 3 )
+script = ExtResource("3")
 one_shot = true
 wait_ticks = 60
 

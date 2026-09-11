@@ -1,7 +1,7 @@
-[gd_scene load_steps=3 format=2]
+[gd_scene load_steps=3 format=3 uid="uid://f8594ce50f1c"]
 
-[ext_resource path="res://src/ui/ScoreHUD.gd" type="Script" id=2]
-[ext_resource path="res://src/ui/EntityScore.tscn" type="PackedScene" id=4]
+[ext_resource type="Script" path="res://src/ui/ScoreHUD.gd" id="2"]
+[ext_resource type="PackedScene" path="res://src/ui/EntityScore.tscn" id="4"]
 
 [node name="ScoreHUD" type="HBoxContainer"]
 anchor_top = 1.0
@@ -9,9 +9,9 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 margin_top = -90.0
 margin_bottom = 10.0
-rect_min_size = Vector2( 0, 100 )
+rect_min_size = Vector2(0, 100 )
 mouse_filter = 2
-script = ExtResource( 2 )
+script = ExtResource("2")
 __meta__ = {
 "_edit_use_anchors_": false
 }
@@ -22,7 +22,7 @@ margin_bottom = 100.0
 mouse_filter = 2
 size_flags_horizontal = 3
 
-[node name="EntityScore" parent="Entity1" instance=ExtResource( 4 )]
+[node name="EntityScore" parent="Entity1" instance=ExtResource("4")]
 anchor_left = 0.5
 anchor_right = 0.5
 margin_left = -100.0
@@ -36,7 +36,7 @@ margin_bottom = 100.0
 mouse_filter = 2
 size_flags_horizontal = 3
 
-[node name="EntityScore" parent="Entity2" instance=ExtResource( 4 )]
+[node name="EntityScore" parent="Entity2" instance=ExtResource("4")]
 anchor_left = 0.5
 anchor_right = 0.5
 margin_left = -100.0
@@ -50,7 +50,7 @@ margin_bottom = 100.0
 mouse_filter = 2
 size_flags_horizontal = 3
 
-[node name="EntityScore" parent="Entity3" instance=ExtResource( 4 )]
+[node name="EntityScore" parent="Entity3" instance=ExtResource("4")]
 anchor_left = 0.5
 anchor_right = 0.5
 margin_left = -100.0
@@ -64,7 +64,7 @@ margin_bottom = 100.0
 mouse_filter = 2
 size_flags_horizontal = 3
 
-[node name="EntityScore" parent="Entity4" instance=ExtResource( 4 )]
+[node name="EntityScore" parent="Entity4" instance=ExtResource("4")]
 anchor_left = 0.5
 anchor_right = 0.5
 margin_left = -100.0

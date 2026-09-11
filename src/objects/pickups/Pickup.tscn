@@ -1,13 +1,13 @@
-[gd_scene load_steps=5 format=2]
+[gd_scene load_steps=5 format=3 uid="uid://7de8ee18b789"]
 
-[ext_resource path="res://src/objects/pickups/PickupGenericVisual.tscn" type="PackedScene" id=1]
-[ext_resource path="res://src/objects/pickups/Pickup.gd" type="Script" id=3]
+[ext_resource type="PackedScene" path="res://src/objects/pickups/PickupGenericVisual.tscn" id="1"]
+[ext_resource type="Script" path="res://src/objects/pickups/Pickup.gd" id="3"]
 
-[sub_resource type="SGRectangleShape2D" id=1]
+[sub_resource type="SGRectangleShape2D" id="1"]
 extents_x = 1179648
 extents_y = 1179648
 
-[sub_resource type="Animation" id=2]
+[sub_resource type="Animation" id="2"]
 resource_name = "shine"
 length = 2.0
 loop = true
@@ -21,18 +21,18 @@ tracks/0/keys = {
 "times": PoolRealArray( 0, 0.5, 1, 1.5 ),
 "transitions": PoolRealArray( 1, 1, 1, 1 ),
 "update": 0,
-"values": [ Vector2( 0, 0 ), Vector2( 0, -16 ), Vector2( 0, 0 ), Vector2( 0, -16 ) ]
+"values": [ Vector2(0, 0 ), Vector2(0, -16 ), Vector2(0, 0 ), Vector2(0, -16 ) ]
 }
 
 [node name="Pickup" type="SGArea2D" groups=["network_sync"]]
 collision_layer = 8
 collision_mask = 2
-script = ExtResource( 3 )
+script = ExtResource("3")
 
-[node name="Visual" parent="." instance=ExtResource( 1 )]
+[node name="Visual" parent="." instance=ExtResource("1")]
 
 [node name="CollisionShape2D" type="SGCollisionShape2D" parent="."]
-shape = SubResource( 1 )
+shape = SubResource("1")
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="."]
-anims/shine = SubResource( 2 )
+anims/shine = SubResource("2")

@@ -1,4 +1,4 @@
-extends SGKinematicBody2D
+extends SGCharacterBody2D
 
 @onready var body_visual := $BodyVisual
 @onready var turret_visual := $TurretPivot/TurretVisual

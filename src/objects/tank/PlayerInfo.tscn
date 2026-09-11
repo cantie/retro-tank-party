@@ -1,22 +1,22 @@
-[gd_scene load_steps=5 format=2]
+[gd_scene load_steps=5 format=3 uid="uid://bc918476b156"]
 
-[ext_resource path="res://assets/fonts/monogram_extended.ttf" type="FontFileData" id=1]
-[ext_resource path="res://src/objects/tank/PlayerInfo.gd" type="Script" id=2]
-[ext_resource path="res://assets/fonts/monogram_mini.tres" type="FontFile" id=3]
+[ext_resource type="FontFileData" path="res://assets/fonts/monogram_extended.ttf" id="1"]
+[ext_resource type="Script" path="res://src/objects/tank/PlayerInfo.gd" id="2"]
+[ext_resource type="FontFile" path="res://assets/fonts/monogram_mini.tres" id="3"]
 
-[sub_resource type="FontFile" id=2]
+[sub_resource type="FontFile" id="2"]
 size = 32
-font_data = ExtResource( 1 )
+font_data = ExtResource("1")
 
 [node name="PlayerInfo" type="Node2D"]
-script = ExtResource( 2 )
+script = ExtResource("2")
 
 [node name="Background" type="ColorRect" parent="."]
 margin_left = -75.0
 margin_right = 75.0
 margin_bottom = 30.0
 mouse_filter = 2
-color = Color( 0, 0, 0, 0.443137 )
+color = Color(0, 0, 0, 0.443137 )
 __meta__ = {
 "_edit_use_anchors_": false
 }
@@ -47,7 +47,7 @@ margin_right = 150.0
 margin_bottom = 25.0
 size_flags_horizontal = 3
 size_flags_vertical = 3
-custom_fonts/font = ExtResource( 3 )
+custom_fonts/font = ExtResource("3")
 text = "Player name"
 align = 1
 clip_text = true
@@ -60,9 +60,9 @@ visible = false
 margin_left = 124.0
 margin_right = 150.0
 margin_bottom = 26.0
-rect_min_size = Vector2( 26, 26 )
+rect_min_size = Vector2(26, 26 )
 mouse_filter = 2
-color = Color( 0.905882, 0.298039, 0.235294, 1 )
+color = Color(0.905882, 0.298039, 0.235294, 1 )
 __meta__ = {
 "_edit_use_anchors_": false
 }
@@ -72,7 +72,7 @@ margin_left = 6.98569
 margin_top = -2.30183
 margin_right = 24.9857
 margin_bottom = 36.6982
-custom_fonts/font = SubResource( 2 )
+custom_fonts/font = SubResource("2")
 text = "R"
 __meta__ = {
 "_edit_use_anchors_": false
@@ -82,15 +82,15 @@ __meta__ = {
 margin_top = 25.0
 margin_right = 150.0
 margin_bottom = 30.0
-rect_min_size = Vector2( 0, 5 )
+rect_min_size = Vector2(0, 5 )
 mouse_filter = 2
 
 [node name="Health" type="ColorRect" parent="Background/VBoxContainer/Control"]
 margin_right = 150.0
 margin_bottom = 5.0
-rect_min_size = Vector2( 0, 5 )
+rect_min_size = Vector2(0, 5 )
 mouse_filter = 2
-color = Color( 0, 1, 0.0392157, 1 )
+color = Color(0, 1, 0.0392157, 1 )
 __meta__ = {
 "_edit_use_anchors_": false
 }

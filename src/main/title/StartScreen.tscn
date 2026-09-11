@@ -1,13 +1,13 @@
-[gd_scene load_steps=3 format=2]
+[gd_scene load_steps=3 format=3 uid="uid://c7fea0dcbb4d"]
 
-[ext_resource path="res://assets/theme.tres" type="Theme" id=1]
-[ext_resource path="res://src/main/title/StartScreen.gd" type="Script" id=2]
+[ext_resource type="Theme" path="res://assets/theme.tres" id="1"]
+[ext_resource type="Script" path="res://src/main/title/StartScreen.gd" id="2"]
 
 [node name="StartScreen" type="Control"]
 anchor_right = 1.0
 anchor_bottom = 1.0
-theme = ExtResource( 1 )
-script = ExtResource( 2 )
+theme = ExtResource("1")
+script = ExtResource("2")
 
 [node name="Label" type="Label" parent="."]
 anchor_top = 0.5
@@ -17,7 +17,7 @@ margin_left = 50.0
 margin_top = 108.0
 margin_right = -50.0
 margin_bottom = 159.0
-custom_colors/font_color = Color( 1, 1, 1, 1 )
+custom_colors/font_color = Color(1, 1, 1, 1 )
 text = "TITLE_PRESS_ANY_KEY"
 align = 1
 autowrap = true

@@ -1,10 +1,10 @@
-[gd_scene load_steps=6 format=2]
+[gd_scene load_steps=6 format=3 uid="uid://d1c78e7bf90b"]
 
-[ext_resource path="res://assets/theme.tres" type="Theme" id=1]
-[ext_resource path="res://assets/fonts/monogram.tres" type="FontFile" id=3]
-[ext_resource path="res://src/main/session_setup/ConnectionScreen.gd" type="Script" id=4]
-[ext_resource path="res://assets/fonts/monogram_small.tres" type="FontFile" id=5]
-[ext_resource path="res://src/ui/MyButton.gd" type="Script" id=6]
+[ext_resource type="Theme" path="res://assets/theme.tres" id="1"]
+[ext_resource type="FontFile" path="res://assets/fonts/monogram.tres" id="3"]
+[ext_resource type="Script" path="res://src/main/session_setup/ConnectionScreen.gd" id="4"]
+[ext_resource type="FontFile" path="res://assets/fonts/monogram_small.tres" id="5"]
+[ext_resource type="Script" path="res://src/ui/MyButton.gd" id="6"]
 
 [node name="ConnectionScreen" type="Control"]
 anchor_right = 1.0
@@ -13,8 +13,8 @@ margin_left = -1.0
 margin_top = -2.0
 margin_right = -1.0
 margin_bottom = -2.0
-theme = ExtResource( 1 )
-script = ExtResource( 4 )
+theme = ExtResource("1")
+script = ExtResource("4")
 
 [node name="TabContainer" type="TabContainer" parent="."]
 anchor_left = 0.5
@@ -41,7 +41,7 @@ margin_left = -483.125
 margin_top = 65.8919
 margin_right = 453.875
 margin_bottom = 130.892
-custom_fonts/font = ExtResource( 5 )
+custom_fonts/font = ExtResource("5")
 text = "SESSION_SETUP_TAB_STEAM_MESSAGE"
 autowrap = true
 
@@ -60,7 +60,7 @@ margin_top = 7.0
 margin_right = 504.0
 margin_bottom = 59.0
 size_flags_horizontal = 9
-custom_fonts/font = ExtResource( 3 )
+custom_fonts/font = ExtResource("3")
 text = "USERNAME_FIELD_LABEL:"
 align = 2
 
@@ -69,7 +69,7 @@ margin_left = 508.0
 margin_right = 976.0
 margin_bottom = 67.0
 size_flags_horizontal = 3
-custom_fonts/font = ExtResource( 3 )
+custom_fonts/font = ExtResource("3")
 caret_blink = true
 
 [node name="SteamLoginButton" type="Button" parent="TabContainer/Steam"]
@@ -81,9 +81,9 @@ margin_top = -75.4679
 margin_right = -229.249
 margin_bottom = -8.93393
 grow_horizontal = 2
-rect_min_size = Vector2( 584, 0 )
+rect_min_size = Vector2(584, 0 )
 text = "BUTTON_CREATE_ACCOUNT"
-script = ExtResource( 6 )
+script = ExtResource("6")
 
 [node name="Login" type="Control" parent="TabContainer"]
 visible = false
@@ -112,7 +112,7 @@ margin_top = 7.0
 margin_right = 480.0
 margin_bottom = 59.0
 size_flags_horizontal = 9
-custom_fonts/font = ExtResource( 3 )
+custom_fonts/font = ExtResource("3")
 text = "EMAIL_FIELD_LABEL"
 
 [node name="Email" type="LineEdit" parent="TabContainer/Login/GridContainer"]
@@ -120,14 +120,14 @@ margin_left = 484.0
 margin_right = 803.0
 margin_bottom = 67.0
 size_flags_horizontal = 3
-custom_fonts/font = ExtResource( 3 )
+custom_fonts/font = ExtResource("3")
 caret_blink = true
 
 [node name="PasswordLabel" type="Label" parent="TabContainer/Login/GridContainer"]
 margin_top = 78.0
 margin_right = 480.0
 margin_bottom = 130.0
-custom_fonts/font = ExtResource( 3 )
+custom_fonts/font = ExtResource("3")
 text = "PASSWORD_FIELD_LABEL"
 
 [node name="Password" type="LineEdit" parent="TabContainer/Login/GridContainer"]
@@ -136,7 +136,7 @@ margin_top = 71.0
 margin_right = 803.0
 margin_bottom = 138.0
 size_flags_horizontal = 3
-custom_fonts/font = ExtResource( 3 )
+custom_fonts/font = ExtResource("3")
 secret = true
 caret_blink = true
 
@@ -153,7 +153,7 @@ margin_left = 484.0
 margin_top = 142.0
 margin_right = 803.0
 margin_bottom = 178.0
-custom_fonts/font = ExtResource( 5 )
+custom_fonts/font = ExtResource("5")
 pressed = true
 text = "CHECKBOX_SAVE_CREDS"
 
@@ -166,9 +166,9 @@ margin_top = -76.4679
 margin_right = -229.249
 margin_bottom = -9.93396
 grow_horizontal = 2
-rect_min_size = Vector2( 584, 0 )
+rect_min_size = Vector2(584, 0 )
 text = "BUTTON_LOGIN"
-script = ExtResource( 6 )
+script = ExtResource("6")
 
 [node name="Create Account" type="Control" parent="TabContainer"]
 visible = false
@@ -197,7 +197,7 @@ margin_top = 7.0
 margin_right = 480.0
 margin_bottom = 59.0
 size_flags_horizontal = 9
-custom_fonts/font = ExtResource( 3 )
+custom_fonts/font = ExtResource("3")
 text = "USERNAME_FIELD_LABEL"
 
 [node name="Username" type="LineEdit" parent="TabContainer/Create Account/GridContainer"]
@@ -205,14 +205,14 @@ margin_left = 484.0
 margin_right = 803.0
 margin_bottom = 67.0
 size_flags_horizontal = 3
-custom_fonts/font = ExtResource( 3 )
+custom_fonts/font = ExtResource("3")
 caret_blink = true
 
 [node name="EmailLabel" type="Label" parent="TabContainer/Create Account/GridContainer"]
 margin_top = 78.0
 margin_right = 480.0
 margin_bottom = 130.0
-custom_fonts/font = ExtResource( 3 )
+custom_fonts/font = ExtResource("3")
 text = "EMAIL_FIELD_LABEL"
 
 [node name="Email" type="LineEdit" parent="TabContainer/Create Account/GridContainer"]
@@ -221,14 +221,14 @@ margin_top = 71.0
 margin_right = 803.0
 margin_bottom = 138.0
 size_flags_horizontal = 3
-custom_fonts/font = ExtResource( 3 )
+custom_fonts/font = ExtResource("3")
 caret_blink = true
 
 [node name="PasswordLabel" type="Label" parent="TabContainer/Create Account/GridContainer"]
 margin_top = 149.0
 margin_right = 480.0
 margin_bottom = 201.0
-custom_fonts/font = ExtResource( 3 )
+custom_fonts/font = ExtResource("3")
 text = "PASSWORD_FIELD_LABEL"
 
 [node name="Password" type="LineEdit" parent="TabContainer/Create Account/GridContainer"]
@@ -237,7 +237,7 @@ margin_top = 142.0
 margin_right = 803.0
 margin_bottom = 209.0
 size_flags_horizontal = 3
-custom_fonts/font = ExtResource( 3 )
+custom_fonts/font = ExtResource("3")
 secret = true
 caret_blink = true
 
@@ -254,7 +254,7 @@ margin_left = 484.0
 margin_top = 213.0
 margin_right = 803.0
 margin_bottom = 249.0
-custom_fonts/font = ExtResource( 5 )
+custom_fonts/font = ExtResource("5")
 pressed = true
 text = "CHECKBOX_SAVE_CREDS"
 
@@ -266,9 +266,9 @@ margin_left = 253.0
 margin_top = -76.4679
 margin_right = -229.249
 margin_bottom = -9.93396
-rect_min_size = Vector2( 584, 0 )
+rect_min_size = Vector2(584, 0 )
 text = "BUTTON_CREATE_ACCOUNT"
-script = ExtResource( 6 )
+script = ExtResource("6")
 
 [node name="Forgot password\?" type="Control" parent="TabContainer"]
 visible = false
@@ -313,9 +313,9 @@ margin_left = 253.263
 margin_top = -76.0002
 margin_right = -228.737
 margin_bottom = -10.4662
-rect_min_size = Vector2( 584, 0 )
+rect_min_size = Vector2(584, 0 )
 text = "BUTTON_RESET_PASSWORD"
-script = ExtResource( 6 )
+script = ExtResource("6")
 
 [connection signal="pressed" from="TabContainer/Steam/SteamLoginButton" to="." method="_on_SteamLoginButton_pressed"]
 [connection signal="pressed" from="TabContainer/Login/LoginButton" to="." method="_on_LoginButton_pressed"]

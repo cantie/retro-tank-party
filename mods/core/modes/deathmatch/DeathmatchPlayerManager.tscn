@@ -1,23 +1,23 @@
-[gd_scene load_steps=3 format=2]
+[gd_scene load_steps=3 format=3 uid="uid://525a4466eb54"]
 
-[ext_resource path="res://addons/godot-rollback-netcode/NetworkTimer.gd" type="Script" id=1]
-[ext_resource path="res://mods/core/modes/deathmatch/DeathmatchPlayerManager.gd" type="Script" id=2]
+[ext_resource type="Script" path="res://addons/godot-rollback-netcode/NetworkTimer.gd" id="1"]
+[ext_resource type="Script" path="res://mods/core/modes/deathmatch/DeathmatchPlayerManager.gd" id="2"]
 
 [node name="DeathmatchPlayerManager" type="Node"]
-script = ExtResource( 2 )
+script = ExtResource("2")
 
 [node name="RespawnTimer" type="Node" parent="."]
-script = ExtResource( 1 )
+script = ExtResource("1")
 one_shot = true
 wait_ticks = 60
 
 [node name="WeaponTimeoutTimer" type="Node" parent="."]
-script = ExtResource( 1 )
+script = ExtResource("1")
 one_shot = true
 wait_ticks = 30
 
 [node name="WeaponWarningTimer" type="Node" parent="."]
-script = ExtResource( 1 )
+script = ExtResource("1")
 one_shot = true
 wait_ticks = 30
 

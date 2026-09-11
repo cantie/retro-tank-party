@@ -1,15 +1,15 @@
-[gd_scene load_steps=3 format=2]
+[gd_scene load_steps=3 format=3 uid="uid://b278188f00ed"]
 
-[ext_resource path="res://assets/fonts/monogram_small.tres" type="FontFile" id=1]
-[ext_resource path="res://src/game/PowerupLabel.gd" type="Script" id=2]
+[ext_resource type="FontFile" path="res://assets/fonts/monogram_small.tres" id="1"]
+[ext_resource type="Script" path="res://src/game/PowerupLabel.gd" id="2"]
 
 [node name="PowerupLabel" type="Label"]
-modulate = Color( 1, 1, 1, 0.752941 )
+modulate = Color(1, 1, 1, 0.752941 )
 margin_right = 36.0
 margin_bottom = 13.0
-custom_fonts/font = ExtResource( 1 )
+custom_fonts/font = ExtResource("1")
 text = "Weapon"
-script = ExtResource( 2 )
+script = ExtResource("2")
 
 [node name="ColorRect" type="ColorRect" parent="."]
 show_behind_parent = true
@@ -19,7 +19,7 @@ margin_left = -3.0
 margin_right = 3.0
 margin_bottom = 3.0
 mouse_filter = 2
-color = Color( 0.905882, 0.298039, 0.235294, 1 )
+color = Color(0.905882, 0.298039, 0.235294, 1 )
 __meta__ = {
 "_edit_use_anchors_": false
 }

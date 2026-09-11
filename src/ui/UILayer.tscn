@@ -1,14 +1,14 @@
-[gd_scene load_steps=7 format=2]
+[gd_scene load_steps=7 format=3 uid="uid://bae258094deb"]
 
-[ext_resource path="res://assets/fonts/monogram.tres" type="FontFile" id=1]
-[ext_resource path="res://src/ui/UILayer.gd" type="Script" id=2]
-[ext_resource path="res://assets/ui/return.png" type="Texture" id=3]
-[ext_resource path="res://src/ui/TransparentButton.gd" type="Script" id=4]
-[ext_resource path="res://assets/theme.tres" type="Theme" id=5]
-[ext_resource path="res://src/ui/Alert.tscn" type="PackedScene" id=6]
+[ext_resource type="FontFile" path="res://assets/fonts/monogram.tres" id="1"]
+[ext_resource type="Script" path="res://src/ui/UILayer.gd" id="2"]
+[ext_resource type="Texture" path="res://assets/ui/return.png" id="3"]
+[ext_resource type="Script" path="res://src/ui/TransparentButton.gd" id="4"]
+[ext_resource type="Theme" path="res://assets/theme.tres" id="5"]
+[ext_resource type="PackedScene" path="res://src/ui/Alert.tscn" id="6"]
 
 [node name="UILayer" type="CanvasLayer" groups=["network_sync"]]
-script = ExtResource( 2 )
+script = ExtResource("2")
 
 [node name="Screens" type="Control" parent="."]
 process_mode = 1
@@ -24,7 +24,7 @@ process_mode = 1
 anchor_right = 1.0
 anchor_bottom = 1.0
 mouse_filter = 2
-theme = ExtResource( 5 )
+theme = ExtResource("5")
 __meta__ = {
 "_edit_use_anchors_": false
 }
@@ -33,7 +33,7 @@ __meta__ = {
 visible = false
 anchor_right = 1.0
 anchor_bottom = 1.0
-color = Color( 0, 0, 0, 0.501961 )
+color = Color(0, 0, 0, 0.501961 )
 __meta__ = {
 "_edit_use_anchors_": false
 }
@@ -45,8 +45,8 @@ margin_left = 100.0
 margin_top = 50.0
 margin_right = -100.0
 margin_bottom = 120.0
-custom_colors/font_color = Color( 1, 1, 1, 1 )
-custom_fonts/font = ExtResource( 1 )
+custom_colors/font_color = Color(1, 1, 1, 1 )
+custom_fonts/font = ExtResource("1")
 text = "Waiting for players..."
 align = 1
 autowrap = true
@@ -63,15 +63,15 @@ margin_left = -85.0
 margin_top = 5.0
 margin_right = -5.0
 margin_bottom = 85.0
-custom_fonts/font = ExtResource( 1 )
-icon = ExtResource( 3 )
-script = ExtResource( 4 )
+custom_fonts/font = ExtResource("1")
+icon = ExtResource("3")
+script = ExtResource("4")
 __meta__ = {
 "_edit_use_anchors_": false
 }
 button_type = 1
 
-[node name="Alert" parent="Overlay" instance=ExtResource( 6 )]
+[node name="Alert" parent="Overlay" instance=ExtResource("6")]
 visible = false
 
 [connection signal="pressed" from="Overlay/BackButton" to="." method="_on_BackButton_pressed"]
