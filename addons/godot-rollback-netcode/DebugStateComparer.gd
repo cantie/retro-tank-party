@@ -106,7 +106,7 @@ func _find_mismatches_recursive(local_state: Dictionary, remote_state: Dictionar
 
 static func _get_diff_path_string(path: Array, key) -> String:
 	if path.size() > 0:
-		return PackedStringArray(path).join(" -> ") + " -> " + str(key)
+		return " -> ".join(PackedStringArray(path)) + " -> " + str(key)
 	return str(key)
 
 static func _extend_diff_path(path: Array, key) -> Array:
@@ -155,4 +155,4 @@ func print_mismatches() -> String:
 				data.append("REMOTE: %s" % JSON.stringify(mismatch.remote_state, JSON_INDENT))
 				data.append('')
 	
-	return data.join("\n")
+	return "\n".join(data)

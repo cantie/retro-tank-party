@@ -1,149 +1,120 @@
-[gd_scene load_steps=2 format=2]
+[gd_scene format=3 uid="uid://cx6npxpg84d41"]
 
-[ext_resource path="res://addons/godot-rollback-netcode/log_inspector/StateInputViewer.gd" type="Script" id=1]
+[ext_resource type="Script" uid="uid://cwk53tqwycy5q" path="res://addons/godot-rollback-netcode/log_inspector/StateInputViewer.gd" id="1"]
 
-[node name="StateInputViewer" type="VBoxContainer"]
+[node name="StateInputViewer" type="VBoxContainer" unique_id=2123213764]
+anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 size_flags_vertical = 3
-script = ExtResource( 1 )
-__meta__ = {
-"_edit_use_anchors_": false
-}
+script = ExtResource("1")
 
-[node name="HBoxContainer" type="HBoxContainer" parent="."]
-margin_right = 1024.0
-margin_bottom = 24.0
+[node name="HBoxContainer" type="HBoxContainer" parent="." unique_id=1606322670]
+layout_mode = 2
 
-[node name="TickNumberLabel" type="Label" parent="HBoxContainer"]
-margin_top = 5.0
-margin_right = 29.0
-margin_bottom = 19.0
+[node name="TickNumberLabel" type="Label" parent="HBoxContainer" unique_id=1349731204]
+layout_mode = 2
 text = "Tick:"
 
-[node name="TickNumber" type="SpinBox" parent="HBoxContainer"]
-margin_left = 33.0
-margin_right = 107.0
-margin_bottom = 24.0
+[node name="TickNumber" type="SpinBox" parent="HBoxContainer" unique_id=431879237]
+layout_mode = 2
 max_value = 0.0
 rounded = true
 
-[node name="StartButton" type="Button" parent="HBoxContainer"]
-margin_left = 111.0
-margin_right = 152.0
-margin_bottom = 24.0
+[node name="StartButton" type="Button" parent="HBoxContainer" unique_id=588570032]
+layout_mode = 2
 text = "Start"
 
-[node name="PreviousMismatchButton" type="Button" parent="HBoxContainer"]
-margin_left = 156.0
-margin_right = 310.0
-margin_bottom = 24.0
+[node name="PreviousMismatchButton" type="Button" parent="HBoxContainer" unique_id=1019520355]
+layout_mode = 2
 text = "<< Previous Mismatch"
 
-[node name="NextMismatchButton" type="Button" parent="HBoxContainer"]
-margin_left = 314.0
-margin_right = 443.0
-margin_bottom = 24.0
+[node name="NextMismatchButton" type="Button" parent="HBoxContainer" unique_id=460396538]
+layout_mode = 2
 text = "Next Mismatch >>"
 
-[node name="EndButton" type="Button" parent="HBoxContainer"]
-margin_left = 447.0
-margin_right = 482.0
-margin_bottom = 24.0
+[node name="EndButton" type="Button" parent="HBoxContainer" unique_id=663388761]
+layout_mode = 2
 text = "End"
 
-[node name="GridContainer" type="GridContainer" parent="."]
-margin_top = 28.0
-margin_right = 1024.0
-margin_bottom = 600.0
+[node name="GridContainer" type="GridContainer" parent="." unique_id=1337925632]
+layout_mode = 2
 size_flags_vertical = 3
-custom_constants/vseparation = 5
-custom_constants/hseparation = 5
+theme_override_constants/h_separation = 5
+theme_override_constants/v_separation = 5
 columns = 2
 
-[node name="InputLabel" type="Label" parent="GridContainer"]
-margin_right = 509.0
-margin_bottom = 14.0
+[node name="InputLabel" type="Label" parent="GridContainer" unique_id=1091619386]
+layout_mode = 2
 size_flags_horizontal = 3
 text = "Input:"
 
-[node name="InputMismatchesLabel" type="Label" parent="GridContainer"]
-margin_left = 514.0
-margin_right = 1023.0
-margin_bottom = 14.0
+[node name="InputMismatchesLabel" type="Label" parent="GridContainer" unique_id=923751317]
+layout_mode = 2
 size_flags_horizontal = 3
 text = "Input Mismatches:"
 
-[node name="InputPanel" type="Panel" parent="GridContainer"]
-margin_top = 19.0
-margin_right = 509.0
-margin_bottom = 283.0
+[node name="InputPanel" type="Panel" parent="GridContainer" unique_id=2067603729]
+layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
 
-[node name="InputDataTree" type="Tree" parent="GridContainer/InputPanel"]
+[node name="InputDataTree" type="Tree" parent="GridContainer/InputPanel" unique_id=483041960]
+layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
 columns = 2
 hide_root = true
 select_mode = 1
 
-[node name="InputMismatchesPanel" type="Panel" parent="GridContainer"]
-margin_left = 514.0
-margin_top = 19.0
-margin_right = 1023.0
-margin_bottom = 283.0
+[node name="InputMismatchesPanel" type="Panel" parent="GridContainer" unique_id=1208340141]
+layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
 
-[node name="InputMismatchesDataTree" type="Tree" parent="GridContainer/InputMismatchesPanel"]
+[node name="InputMismatchesDataTree" type="Tree" parent="GridContainer/InputMismatchesPanel" unique_id=1150981833]
+layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
 columns = 3
+column_titles_visible = true
 hide_root = true
 select_mode = 1
 
-[node name="StateLabel" type="Label" parent="GridContainer"]
-margin_top = 288.0
-margin_right = 509.0
-margin_bottom = 302.0
+[node name="StateLabel" type="Label" parent="GridContainer" unique_id=1143474770]
+layout_mode = 2
 size_flags_horizontal = 3
 text = "State:"
 
-[node name="StateMismatchesLabel" type="Label" parent="GridContainer"]
-margin_left = 514.0
-margin_top = 288.0
-margin_right = 1023.0
-margin_bottom = 302.0
+[node name="StateMismatchesLabel" type="Label" parent="GridContainer" unique_id=1754673756]
+layout_mode = 2
 size_flags_horizontal = 3
 text = "State Mismatches:"
 
-[node name="StatePanel" type="Panel" parent="GridContainer"]
-margin_top = 307.0
-margin_right = 509.0
-margin_bottom = 571.0
+[node name="StatePanel" type="Panel" parent="GridContainer" unique_id=579980449]
+layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
 
-[node name="StateDataTree" type="Tree" parent="GridContainer/StatePanel"]
+[node name="StateDataTree" type="Tree" parent="GridContainer/StatePanel" unique_id=566383186]
+layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
 columns = 2
 hide_root = true
 select_mode = 1
 
-[node name="StateMismatchesPanel" type="Panel" parent="GridContainer"]
-margin_left = 514.0
-margin_top = 307.0
-margin_right = 1023.0
-margin_bottom = 571.0
+[node name="StateMismatchesPanel" type="Panel" parent="GridContainer" unique_id=115067305]
+layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
 
-[node name="StateMismatchesDataTree" type="Tree" parent="GridContainer/StateMismatchesPanel"]
+[node name="StateMismatchesDataTree" type="Tree" parent="GridContainer/StateMismatchesPanel" unique_id=731371975]
+layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
 columns = 3
+column_titles_visible = true
 hide_root = true
 select_mode = 1
 

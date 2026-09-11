@@ -19,14 +19,14 @@ func _remote_ping_back(msg: Dictionary) -> void:
 func send_remote_start(peer_id: int) -> void:
 	_remote_start.rpc_id(peer_id)
 
-@rpc("any_peer", "reliable")
+@rpc("any_peer")
 func _remote_start() -> void:
 	received_remote_start.emit()
 
 func send_remote_stop(peer_id: int) -> void:
 	_remote_stop.rpc_id(peer_id)
 
-@rpc("any_peer", "reliable")
+@rpc("any_peer")
 func _remote_stop() -> void:
 	received_remote_stop.emit()
 
@@ -38,10 +38,12 @@ func is_network_host() -> bool:
 
 func is_network_master_for_node(node: Node) -> bool:
 	return node.is_multiplayer_authority()
-	
-func get_network_unique_id() -> int:
+
+func get_unique_id() -> int:
 	return multiplayer.get_unique_id()
 
+# _rit is short for _receive_input_tick. The method name ends up in each message
+# so, we're trying to keep it short.
 @rpc("any_peer", "unreliable")
 func _rit(msg: PackedByteArray) -> void:
 	received_input_tick.emit(multiplayer.get_remote_sender_id(), msg)

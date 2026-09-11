@@ -17,11 +17,11 @@ func _create_or_get_peer_status(peer_id: int):
 	var peer_status = get_node_or_null(peer_id_str)
 	if peer_status:
 		return get_node(peer_id_str)
-	
+
 	peer_status = PeerStatus.instantiate()
 	peer_status.name = peer_id_str
 	add_child(peer_status)
-	
+
 	return peer_status
 
 func update_peer(peer: SyncManager.Peer) -> void:

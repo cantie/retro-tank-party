@@ -19,32 +19,32 @@ func setup_sound_manager(_sync_manager) -> void:
 func play_sound(identifier: String, sound: AudioStream, info: Dictionary = {}) -> void:
 	if SyncManager.is_respawning():
 		return
-	
+
 	if ticks.has(SyncManager.current_tick):
 		if ticks[SyncManager.current_tick].has(identifier):
 			return
 	else:
 		ticks[SyncManager.current_tick] = {}
 	ticks[SyncManager.current_tick][identifier] = true
-	
+
 	var node
 	if info.has('position'):
 		node = AudioStreamPlayer2D.new()
 	else:
 		node = AudioStreamPlayer.new()
-	
+
 	node.stream = sound
 	node.volume_db = info.get('volume_db', 0.0)
 	node.pitch_scale = info.get('pitch_scale', 1.0)
 	node.bus = info.get('bus', default_bus)
-	
+
 	add_child(node)
 	if info.has('position'):
 		node.global_position = info['position']
-	
+
 	node.play()
-	
-	node.connect("finished", self, "_on_audio_finished", [node])
+
+	node.finished.connect(self._on_audio_finished.bind(node))
 
 func _on_audio_finished(node: Node) -> void:
 	remove_child(node)

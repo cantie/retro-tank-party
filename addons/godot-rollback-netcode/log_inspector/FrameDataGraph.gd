@@ -6,8 +6,7 @@ const LogData = preload("res://addons/godot-rollback-netcode/log_inspector/LogDa
 @onready var canvas = $Canvas
 @onready var scroll_bar = $ScrollBar
 
-var cursor_time: int = -1:
-	set = set_cursor_time
+var cursor_time: int = -1: set = set_cursor_time
 
 var log_data: LogData
 
@@ -20,7 +19,7 @@ func set_log_data(_log_data: LogData) -> void:
 func refresh_from_log_data() -> void:
 	if log_data.is_loading():
 		return
-	
+
 	scroll_bar.max_value = log_data.end_time - log_data.start_time
 	canvas.refresh_from_log_data()
 

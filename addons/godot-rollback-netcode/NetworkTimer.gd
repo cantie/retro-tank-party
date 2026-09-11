@@ -1,10 +1,10 @@
 extends Node
 class_name NetworkTimer
 
-@export_bool) var autostart := false
-@export_bool) var one_shot := false
-@export_int) var wait_ticks := 0
-@export_bool) var hash_state := true
+@export var autostart := false
+@export var one_shot := false
+@export var wait_ticks := 0
+@export var hash_state := true
 
 var ticks_left := 0
 
@@ -40,9 +40,9 @@ func _network_process(_input: Dictionary) -> void:
 	if ticks_left <= 0:
 		_running = false
 		return
-	
+
 	ticks_left -= 1
-	
+
 	if ticks_left == 0:
 		if not one_shot:
 			ticks_left = wait_ticks

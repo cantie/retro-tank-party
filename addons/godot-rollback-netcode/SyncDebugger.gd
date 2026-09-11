@@ -24,13 +24,13 @@ func create_debug_overlay(overlay_instance = null) -> void:
 	if _debug_overlay != null:
 		_debug_overlay.queue_free()
 		_canvas_layer.remove_child(_debug_overlay)
-	
+
 	if overlay_instance == null:
 		overlay_instance = DebugOverlay.instantiate()
 	if _canvas_layer == null:
 		_canvas_layer = CanvasLayer.new()
 		add_child(_canvas_layer)
-	
+
 	_debug_overlay = overlay_instance
 	_canvas_layer.add_child(_debug_overlay)
 
@@ -58,7 +58,7 @@ func _on_SyncManager_prediction_missed(tick: int, peer_id: int, local_input: Dic
 	print ("Prediction missed on tick %s for peer %s" % [tick, peer_id])
 	print ("Received input: %s" % SyncManager.hash_serializer.serialize(remote_input))
 	print ("Predicted input: %s" % SyncManager.hash_serializer.serialize(local_input))
-	
+
 	if _debug_overlay:
 		_debug_overlay.add_message(peer_id, "%s: Rollback %s ticks" % [tick, SyncManager.rollback_ticks])
 
@@ -69,7 +69,7 @@ func _on_SyncManager_rollback_flagged(tick: int) -> void:
 func _on_SyncManager_remote_state_mismatch(tick: int, peer_id: int, local_hash: int, remote_hash: int) -> void:
 	print ("-----")
 	print ("On tick %s, remote state (%s) from %s doesn't match local state (%s)" % [tick, remote_hash, peer_id, local_hash])
-	
+
 	if _debug_overlay:
 		_debug_overlay.add_message(peer_id, "%s: State mismatch" % tick)
 
