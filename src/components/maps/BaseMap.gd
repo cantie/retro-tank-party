@@ -14,13 +14,12 @@ func get_map_rect() -> Rect2:
 	if _map_rect != null:
 		return _map_rect
 	
-	var tilemap = get_node_or_null(^"TileMap")
+	var tilemap := get_node_or_null(^"TileMap") as TileMap
 	if not tilemap:
 		_map_rect = Rect2()
 		return _map_rect
 	
-	var used_rect := tilemap.get_used_rect()
-	_map_rect = Rect2(used_rect)
+	_map_rect = Rect2(tilemap.get_used_rect())
 	if _map_rect.size.x > 0 and _map_rect.size.y > 0:
 		# Leave a margin of 1 tile all the way around the map to account for camera
 		# shake, so remove those from the rect.
