@@ -80,7 +80,7 @@ func _do_match_setup() -> void:
 	OnlineMatch.player_left.connect(_on_OnlineMatch_player_left)
 
 	game.player_dead.connect(self._on_game_player_dead)
-	game.game_started.connect(self._on_game_started)
+	game.match_started.connect(self._on_game_started)
 
 	hud.countdown_timer.start_countdown(config['timelimit'] * 60)
 	hud.countdown_timer.countdown_finished.connect(self._on_countdown_finished)

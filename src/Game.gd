@@ -20,7 +20,7 @@ var player_start_transforms
 var player_listener: Listener2D
 
 signal game_error (message)
-signal game_started ()
+signal match_started ()
 signal player_spawned (tank)
 signal player_dead (player_id, killer_id)
 
@@ -152,7 +152,7 @@ func game_start() -> void:
 
 		get_tree().paused = false
 
-		game_started.emit()
+		match_started.emit()
 
 func game_stop() -> void:
 	if game_started:
