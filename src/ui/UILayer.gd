@@ -131,6 +131,6 @@ func _on_BackButton_pressed() -> void:
 func _unhandled_input(event: InputEvent) -> void:
 	if event.is_action('ui_cancel') and back_button_node.visible and event.is_pressed():
 		Sounds.play("Back")
-		get_tree().set_input_as_handled()
+		get_viewport().set_input_as_handled()
 		go_back()
 

@@ -145,7 +145,7 @@ func _unhandled_input(event: InputEvent) -> void:
 		return
 
 	if event.is_action_pressed("ui_accept"):
-		get_tree().set_input_as_handled()
+		get_viewport().set_input_as_handled()
 		_ui_accept_pressed()
 
 func _ui_accept_pressed() -> void:
