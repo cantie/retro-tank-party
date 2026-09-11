@@ -59,7 +59,7 @@ var ability
 
 var player_index: int
 
-class TankEvent extends EventDispatcher.Event:
+class TankEvent extends EventDispatcher.RTPEvent:
 	var tank
 	
 	func _init(_tank) -> void:

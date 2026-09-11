@@ -136,12 +136,12 @@ func _on_OnlineMatch_joined(match_id: String):
 	ui_layer.show_screen("ReadyScreen", { match_id = match_id, clear = true })
 
 func _on_PasteButton_pressed() -> void:
-	join_match_id_control.text = OS.clipboard
+	join_match_id_control.text = DisplayServer.clipboard_get()
 
 func _unhandled_input(event: InputEvent) -> void:
 	if not visible:
 		return
-	if get_focus_owner() is Button:
+	if get_viewport().gui_get_focus_owner() is Button:
 		return
 
 	if event.is_action_pressed("ui_accept"):

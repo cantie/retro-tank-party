@@ -14,7 +14,7 @@ enum GoalColor {
 	BLUE,
 }
 
-@onready var sprite: Sprite = $Sprite
+@onready var sprite: Sprite2D = $Sprite
 @onready var collision_shape: SGCollisionShape2D = $CollisionShape2D
 @onready var goal_horn: AudioStreamPlayer = $GoalHorn
 

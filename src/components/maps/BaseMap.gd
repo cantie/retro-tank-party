@@ -5,10 +5,10 @@ var _map_rect
 const ONE_NINETY_SIX = 196 * SGFixed.ONE
 
 func map_start(game) -> void:
-	get_tree().call_group_flags(SceneTree.GROUP_CALL_REALTIME, "map_object", "map_object_start", self, game)
+	get_tree().call_group("map_object", "map_object_start", self, game)
 
 func map_stop(game) -> void:
-	get_tree().call_group_flags(SceneTree.GROUP_CALL_REALTIME, "map_object", "map_object_stop", self, game)
+	get_tree().call_group("map_object", "map_object_stop", self, game)
 
 func get_map_rect() -> Rect2:
 	if _map_rect != null:
@@ -27,8 +27,9 @@ func get_map_rect() -> Rect2:
 		_map_rect.size -= Vector2(2.0, 2.0)
 	
 	# Convert tile space to pixel space
-	_map_rect.position = (_map_rect.position * tilemap.cell_size) + tilemap.global_position
-	_map_rect.size *= tilemap.cell_size
+	var tile_size := Vector2(tilemap.tile_set.tile_size)
+	_map_rect.position = (_map_rect.position * tile_size) + tilemap.global_position
+	_map_rect.size *= tile_size
 	
 	return _map_rect
 

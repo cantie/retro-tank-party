@@ -124,7 +124,7 @@ func _on_OnlineMatch_player_left(online_player) -> void:
 	player_manager.queue_free()
 
 func _on_game_started() -> void:
-	get_tree().call_group_flags(SceneTree.GROUP_CALL_REALTIME, "drop_crate_spawn_area", "spawn_drop_crate")
+	get_tree().call_group("drop_crate_spawn_area", "spawn_drop_crate")
 
 func _on_football_out_of_bounds() -> void:
 	if not round_over:

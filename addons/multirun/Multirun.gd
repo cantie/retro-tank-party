@@ -30,13 +30,13 @@ func _multirun_pressed():
 	if first_args && add_custom_args:
 		for arg in first_args.split(" "):
 			commands.push_front(arg)
-	OS.execute(OS.get_executable_path(), commands, false)
+	OS.create_process(OS.get_executable_path(), commands)
 	for i in range(window_count-1):
 		commands = ["--position", str(50 + (i+1) * window_dist) + ",10"]
 		if other_args && add_custom_args:
 			for arg in other_args.split(" "):
 				commands.push_front(arg)
-		OS.execute(OS.get_executable_path(), commands, false)
+		OS.create_process(OS.get_executable_path(), commands)
 
 func _loaddir_pressed():
 	OS.shell_open(OS.get_user_data_dir())

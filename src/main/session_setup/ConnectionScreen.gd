@@ -288,7 +288,7 @@ func _on_ResetPasswordButton_pressed() -> void:
 	var query_string: String = http_client.query_string_from_dict(data)
 
 	var headers := ["Content-Type: application/x-www-form-urlencoded"]
-	if http_request.request(FORGOT_PASSWORD_URL, headers, true, HTTPClient.METHOD_POST, query_string) != OK:
+	if http_request.request(FORGOT_PASSWORD_URL, headers, HTTPClient.METHOD_POST, query_string) != OK:
 		http_request.queue_free()
 		ui_layer.show_message("MESSAGE_PASSWORD_RESET_FAILED")
 		return

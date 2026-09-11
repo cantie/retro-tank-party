@@ -2,13 +2,13 @@ extends RefCounted
 
 var listeners := {}
 
-class Event:
+class RTPEvent:
 	var propagating := true
 	
 	func stop_propagation() -> void:
 		propagating = false
 
-class EventListener:
+class RTPEventListener:
 	var object: WeakRef
 	var method: String
 	var args: Array
@@ -20,7 +20,7 @@ class EventListener:
 		args = _args
 		priority = _priority
 	
-	func dispatch_event(event: Event) -> bool:
+	func dispatch_event(event: RTPEvent) -> bool:
 		var real_object = object.get_ref()
 		if not real_object:
 			return false
@@ -32,7 +32,7 @@ class EventListener:
 		return true
 
 func subscribe(event_name: String, object: Object, method: String, priority: int, args: Array = []) -> void:
-	var listener = EventListener.new(object, method, priority, args)
+	var listener = RTPEventListener.new(object, method, priority, args)
 	if not listeners.has(event_name):
 		listeners[event_name] = []
 	listeners[event_name].append(listener)
@@ -40,14 +40,14 @@ func subscribe(event_name: String, object: Object, method: String, priority: int
 
 func unsubscribe(event_name: String, object: Object, method: String) -> void:
 	if not listeners.has(event_name):
-		assert ("Cannot unsubscribe - no listeners on event %s" % event_name)
+		assert(false, "Cannot unsubscribe - no listeners on event %s" % event_name)
 		return
 	for i in range(listeners[event_name].size()):
 		var listener = listeners[event_name][i]
 		if listener.object.get_ref() == object and listener.method == method:
 			listeners[event_name].remove_at(i)
 			return
-	assert ("Cannot unsubscribe - no matching listeners on event %s" % event_name)
+	assert(false, "Cannot unsubscribe - no matching listeners on event %s" % event_name)
 
 func has_subscriber(event_name: String, object: Object, method: String) -> bool:
 	if not listeners.has(event_name):
@@ -63,10 +63,10 @@ func has_subscriber(event_name: String, object: Object, method: String) -> bool:
 func clear() -> void:
 	listeners.clear()
 
-func _sort_listener(a: EventListener, b: EventListener) -> bool:
+func _sort_listener(a: RTPEventListener, b: RTPEventListener) -> bool:
 	return a.priority < b.priority
 
-func dispatch_event(event_name: String, event: Event) -> void:
+func dispatch_event(event_name: String, event: RTPEvent) -> void:
 	if not listeners.has(event_name):
 		return
 		
