@@ -114,6 +114,7 @@ signal player_status_changed (player, status)
 
 signal match_ready (players)
 signal match_not_ready ()
+signal match_left ()
 
 signal webrtc_peer_added (webrtc_peer, player)
 signal webrtc_peer_removed (webrtc_peer, player)
