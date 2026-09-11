@@ -4,7 +4,7 @@ extends Camera2D
 @export var max_offset := Vector2(100, 75)
 @export var max_roll: float = 0.1
 
-var noise: OpenSimplexNoise
+var noise: FastNoiseLite
 var noise_y = 0
 
 var trauma: float = 0.0
@@ -13,10 +13,11 @@ var trauma_power: int = 2
 var ticks := {}
 
 func _ready() -> void:
-	noise = OpenSimplexNoise.new()
+	noise = FastNoiseLite.new()
 	noise.seed = randi()
-	noise.period = 4
-	noise.octaves = 2
+	noise.noise_type = FastNoiseLite.TYPE_SIMPLEX
+	noise.frequency = 0.25
+	noise.fractal_octaves = 2
 	
 	SyncManager.tick_retired.connect(self._on_SyncManager_tick_retired)
 	SyncManager.sync_stopped.connect(self._on_SyncManager_sync_stopped)
