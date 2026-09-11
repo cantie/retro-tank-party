@@ -14,9 +14,9 @@ func _ready() -> void:
 	matchmaker_player_count_control.add_item("MATCHMAKER_3_PLAYERS", 3)
 	matchmaker_player_count_control.add_item("MATCHMAKER_4_PLAYERS", 4)
 
-	$PanelContainer/VBoxContainer/MarginContainer/MatchPanel/MatchButton.connect("pressed", self, "_on_match_button_pressed", [OnlineMatch.MatchMode.MATCHMAKER])
-	$PanelContainer/VBoxContainer/MarginContainer/CreatePanel/CreateButton.connect("pressed", self, "_on_match_button_pressed", [OnlineMatch.MatchMode.CREATE])
-	$PanelContainer/VBoxContainer/MarginContainer/JoinPanel/JoinButton.connect("pressed", self, "_on_match_button_pressed", [OnlineMatch.MatchMode.JOIN])
+	$PanelContainer/VBoxContainer/MarginContainer/MatchPanel/MatchButton.pressed.connect(_on_match_button_pressed.bind(OnlineMatch.MatchMode.MATCHMAKER))
+	$PanelContainer/VBoxContainer/MarginContainer/CreatePanel/CreateButton.pressed.connect(_on_match_button_pressed.bind(OnlineMatch.MatchMode.CREATE))
+	$PanelContainer/VBoxContainer/MarginContainer/JoinPanel/JoinButton.pressed.connect(_on_match_button_pressed.bind(OnlineMatch.MatchMode.JOIN))
 
 	OnlineMatch.matchmaker_matched.connect(self._on_OnlineMatch_matchmaker_matched)
 	OnlineMatch.match_created.connect(self._on_OnlineMatch_created)
@@ -63,7 +63,7 @@ func _on_match_button_pressed(mode) -> void:
 		OnlineMatch.ice_servers = Build.fallback_ice_servers
 	else:
 		# Ask Nakma for the ICE servers via RPC.
-		var ice_servers_result: NakamaAPI.ApiRpc = yield(Online.nakama_client.rpc_async(Online.nakama_session, 'get_ice_servers'), "completed")
+		var ice_servers_result: NakamaAPI.ApiRpc = await Online.nakama_client.rpc_async(Online.nakama_session, 'get_ice_servers')
 		if not ice_servers_result.is_exception():
 			var json_result = JSON.parse_string(ice_servers_result.payload)
 			if json_result.error == OK:

@@ -9,12 +9,10 @@ var nakama_port: int = 7350
 var nakama_scheme: String = 'http'
 
 # For other scripts to access:
-var nakama_client: NakamaClient:
-	set = _set_readonly_variable, get = get_nakama_client
-var nakama_session: NakamaSession:
+var nakama_client = null
+var nakama_session = null:
 	set = set_nakama_session
-var nakama_socket: NakamaSocket:
-	set = _set_readonly_variable
+var nakama_socket = null
 
 # Internal variable for initializing the socket.
 var _nakama_socket_connecting := false
@@ -23,26 +21,24 @@ signal session_changed (nakama_session)
 signal session_connected (nakama_session)
 signal socket_connected (nakama_socket)
 
-func _set_readonly_variable(_value) -> void:
-	pass
-
 func _ready() -> void:
 	# Don't stop processing messages from Nakama when the game is paused.
-	Nakama.process_mode = Node.PROCESS_MODE_ALWAYS
+	if Nakama:
+		Nakama.process_mode = Node.PROCESS_MODE_ALWAYS
 
-func get_nakama_client() -> NakamaClient:
-	if nakama_client == null:
+func get_nakama_client():
+	if nakama_client == null and Nakama:
 		nakama_client = Nakama.create_client(
 			nakama_server_key,
 			nakama_host,
 			nakama_port,
 			nakama_scheme,
 			Nakama.DEFAULT_TIMEOUT,
-			NakamaLogger.LOG_LEVEL.ERROR)
+			5)  # LOG_LEVEL.DEBUG
 	
 	return nakama_client
 
-func set_nakama_session(_nakama_session: NakamaSession) -> void:
+func set_nakama_session(_nakama_session) -> void:
 	# Close out the old socket.
 	if nakama_socket:
 		nakama_socket.close()

@@ -17,7 +17,7 @@ func _ready() -> void:
 	OnlineMatch.player_left.connect(self._on_OnlineMatch_player_left)
 
 	# Make the host in charge of this scene.
-	set_network_master(1)
+	set_multiplayer_authority(1)
 	show_default_message()
 	if not SyncManager.network_adaptor.is_network_host():
 		ui_layer.show_cover()

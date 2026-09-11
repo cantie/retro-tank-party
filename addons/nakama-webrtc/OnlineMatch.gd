@@ -18,7 +18,7 @@ enum NetworkRelay {
 var use_network_relay: int = NetworkRelay.AUTO
 
 # Nakama variables:
-var nakama_socket: NakamaSocket:
+var nakama_socket:
 	set = _set_readonly_variable
 var my_session_id: String:
 	set = _set_readonly_variable, get = get_my_session_id
@@ -128,7 +128,7 @@ class Player:
 		username = _username
 		peer_id = _peer_id
 
-	static func from_presence(presence: NakamaRTAPI.UserPresence, _peer_id: int) -> Player:
+	static func from_presence(presence, _peer_id: int) -> Player:
 		return Player.new(presence.session_id, presence.username, _peer_id)
 
 	static func from_dict(data: Dictionary) -> Player:
@@ -156,7 +156,7 @@ static func unserialize_players(_players: Dictionary) -> Dictionary:
 func _set_readonly_variable(_value) -> void:
 	pass
 
-func _set_nakama_socket(_nakama_socket: NakamaSocket) -> void:
+func _set_nakama_socket(_nakama_socket) -> void:
 	if nakama_socket == _nakama_socket:
 		return
 
@@ -187,7 +187,7 @@ func _emit_error(code: int, extra = null):
 	error.emit(message)
 	error_code.emit(code, message, extra)
 
-func create_match(_nakama_socket: NakamaSocket) -> void:
+func create_match(_nakama_socket) -> void:
 	leave()
 	_set_nakama_socket(_nakama_socket)
 	match_mode = MatchMode.CREATE
@@ -199,7 +199,7 @@ func create_match(_nakama_socket: NakamaSocket) -> void:
 	else:
 		_on_nakama_match_created(data)
 
-func join_match(_nakama_socket: NakamaSocket, _match_id: String) -> void:
+func join_match(_nakama_socket, _match_id: String) -> void:
 	leave()
 	_set_nakama_socket(_nakama_socket)
 	match_mode = MatchMode.JOIN
@@ -211,7 +211,7 @@ func join_match(_nakama_socket: NakamaSocket, _match_id: String) -> void:
 	else:
 		_on_nakama_match_join(data)
 
-func start_matchmaking(_nakama_socket: NakamaSocket, data: Dictionary = {}) -> void:
+func start_matchmaking(_nakama_socket, data: Dictionary = {}) -> void:
 	leave()
 	_set_nakama_socket(_nakama_socket)
 	match_mode = MatchMode.MATCHMAKER
@@ -346,7 +346,7 @@ func _on_nakama_closed() -> void:
 	leave()
 	disconnected.emit()
 
-func _on_nakama_match_created(data: NakamaRTAPI.Match) -> void:
+func _on_nakama_match_created(data) -> void:
 	match_id = data.match_id
 	my_session_id = data.self_user.session_id
 	var my_player = Player.from_presence(data.self_user, 1)
@@ -360,7 +360,7 @@ func _on_nakama_match_created(data: NakamaRTAPI.Match) -> void:
 	player_joined.emit(my_player)
 	player_status_changed.emit(my_player, PlayerStatus.CONNECTED)
 
-func _on_nakama_match_presence(data: NakamaRTAPI.MatchPresenceEvent) -> void:
+func _on_nakama_match_presence(data) -> void:
 	for u in data.joins:
 		if u.session_id == my_session_id:
 			continue
@@ -420,7 +420,7 @@ func _on_nakama_match_presence(data: NakamaRTAPI.MatchPresenceEvent) -> void:
 					match_state = MatchState.READY;
 					match_ready.emit(players)
 
-func _on_nakama_match_join(data: NakamaRTAPI.Match) -> void:
+func _on_nakama_match_join(data) -> void:
 	match_id = data.match_id
 	my_session_id = data.self_user.session_id
 
@@ -432,7 +432,7 @@ func _on_nakama_match_join(data: NakamaRTAPI.Match) -> void:
 					continue
 			_webrtc_connect_peer(players[u.session_id])
 
-func _on_nakama_matchmaker_matched(data: NakamaRTAPI.MatchmakerMatched) -> void:
+func _on_nakama_matchmaker_matched(data) -> void:
 	if data.is_exception():
 		leave()
 		_emit_error(ErrorCode.MATCHMAKER_ERROR, data.get_exception())
@@ -461,7 +461,7 @@ func _on_nakama_matchmaker_matched(data: NakamaRTAPI.MatchmakerMatched) -> void:
 	else:
 		_on_nakama_match_join(result)
 
-func _on_nakama_match_state(data: NakamaRTAPI.MatchData) -> void:
+func _on_nakama_match_state(data) -> void:
 	var content = JSON.parse_string(data.data)
 	if content == null:
 		return

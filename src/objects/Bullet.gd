@@ -5,18 +5,18 @@ extends "res://src/components/weapons/BaseBullet.gd"
 var speed = 1529173 # ~23.33
 
 func _network_spawn(data: Dictionary) -> void:
-	._network_spawn(data)
+	super._network_spawn(data)
 	visual = Globals.art.replace_visual("TankBullet", visual, {
 		player_index = player_index,
 	})
 
 func explode(type: String) -> void:
-	.explode(type)
+	super.explode(type)
 	SyncManager.despawn(self)
 	lifetime_timer.stop()
 
 func _network_process(_input: Dictionary) -> void:
-	._network_process(_input)
+	super._network_process(_input)
 	
 	# If we've already exploded, then we don't bother moving.
 	if not is_inside_tree():

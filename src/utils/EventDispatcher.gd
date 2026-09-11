@@ -36,7 +36,7 @@ func subscribe(event_name: String, object: Object, method: String, priority: int
 	if not listeners.has(event_name):
 		listeners[event_name] = []
 	listeners[event_name].append(listener)
-	listeners[event_name].sort_custom(self, "_sort_listener")
+	listeners[event_name].sort_custom(_sort_listener)
 
 func unsubscribe(event_name: String, object: Object, method: String) -> void:
 	if not listeners.has(event_name):

@@ -33,7 +33,7 @@ func _do_match_setup() -> void:
 		player_managers[player_id] = player_manager
 	game.player_spawned.connect(self._on_game_player_spawned)
 
-	._do_match_setup()
+	super._do_match_setup()
 
 	if use_teams:
 		hud.score.set_entity_count(score.entities.size())
@@ -50,7 +50,7 @@ func _do_match_setup() -> void:
 		SGFixed.vector2(TANK_DIMENSION, TANK_DIMENSION),
 		rng)
 
-	OnlineMatch.connect("player_left", self, '_on_OnlineMatch_player_left')
+	OnlineMatch.player_left.connect(_on_OnlineMatch_player_left)
 
 	game.player_dead.connect(self._on_game_player_dead)
 
@@ -58,14 +58,14 @@ func _do_match_setup() -> void:
 	hud.countdown_timer.countdown_finished.connect(self._on_countdown_finished)
 
 func _save_state() -> Dictionary:
-	var state = ._save_state()
+	var state = super._save_state()
 	state['instant_death'] = instant_death
 	state['winners'] = winners.duplicate()
 	state['game_over'] = game_over
 	return state
 
 func _load_state(state: Dictionary) -> void:
-	._load_state(state)
+	super._load_state(state)
 	instant_death = state['instant_death']
 	winners = state['winners'].duplicate()
 	game_over = state['game_over']
@@ -81,7 +81,7 @@ func _on_OnlineMatch_player_left(online_player) -> void:
 	player_manager.queue_free()
 
 func _on_game_player_spawned(tank) -> void:
-	var player_manager = player_managers[tank.get_network_master()]
+	var player_manager = player_managers[tank.get_multiplayer_authority()]
 	player_manager.set_player_tank(tank)
 
 func _on_player_manager_weapon_warning() -> void:

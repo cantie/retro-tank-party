@@ -112,7 +112,7 @@ func _on_OnlineMatch_match_ready(_players: Dictionary) -> void:
 
 	# Automatically click ready button during debugging.
 	if Globals.arguments.has('join'):
-		yield(get_tree().create_timer(0.5), 'timeout')
+		await get_tree().create_timer(0.5).timeout
 		_on_ReadyButton_pressed()
 
 func _on_OnlineMatch_match_not_ready() -> void:

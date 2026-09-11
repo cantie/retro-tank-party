@@ -1,7 +1,7 @@
 extends Resource
 class_name AbilityType
 
-@export_String) var name := ""
-@export_PackedScene) var ability_scene: PackedScene
-@export_int) var charges := 1
+@export var name: String = ""
+@export var ability_scene: PackedScene
+@export var charges: int = 1
 

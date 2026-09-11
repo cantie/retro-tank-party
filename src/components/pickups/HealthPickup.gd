@@ -1,7 +1,7 @@
 extends "res://src/components/pickups/Pickup.gd"
 class_name HealthPickup
 
-@export_int) var health := 0
+@export var health: int = 0
 
 func pickup(tank) -> void:
 	if tank.has_method("restore_health"):

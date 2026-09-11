@@ -9,7 +9,7 @@ const ShootSound = preload("res://assets/sounds/Bass Drum__003.wav")
 
 const ONE_POINT_FIVE = 98304
 
-@export_bool) var player_controlled = false
+@export var player_controlled: bool = false
 
 signal player_dead (killer_id)
 signal shoot ()
@@ -68,13 +68,15 @@ class TankEvent extends EventDispatcher.Event:
 class PickupWeaponEvent extends TankEvent:
 	var weapon_type: WeaponType
 	
-	func _init(_tank, _weapon_type: WeaponType).(_tank) -> void:
+	func _init(_tank, _weapon_type: WeaponType) -> void:
+		super(_tank)
 		weapon_type = _weapon_type
 
 class PickupAbilityEvent extends TankEvent:
 	var ability_type: AbilityType
 	
-	func _init(_tank, _ability_type: AbilityType).(_tank) -> void:
+	func _init(_tank, _ability_type: AbilityType) -> void:
+		super(_tank)
 		ability_type = _ability_type
 
 class TakeDamageEvent extends TankEvent:
@@ -82,7 +84,8 @@ class TakeDamageEvent extends TankEvent:
 	var attacker_id: int
 	var attack_vector: SGFixedVector2
 	
-	func _init(_tank, _damage: int, _attacker_id: int, _attack_vector: SGFixedVector2).(_tank) -> void:
+	func _init(_tank, _damage: int, _attacker_id: int, _attack_vector: SGFixedVector2) -> void:
+		super(_tank)
 		damage = _damage
 		attacker_id = _attacker_id
 		attack_vector = _attack_vector
@@ -90,26 +93,30 @@ class TakeDamageEvent extends TankEvent:
 class RestoreHealthEvent extends TankEvent:
 	var health: int
 	
-	func _init(_tank, _health: int).(_tank) -> void:
+	func _init(_tank, _health: int) -> void:
+		super(_tank)
 		health = _health
 
 class DieEvent extends TankEvent:
 	var killer_id: int
 	
-	func _init(_tank, _killer_id: int).(_tank) -> void:
+	func _init(_tank, _killer_id: int) -> void:
+		super(_tank)
 		killer_id = _killer_id
 
 class GatherInputEvent extends TankEvent:
 	var input: Dictionary
 	
-	func _init(_tank, _input: Dictionary).(_tank) -> void:
+	func _init(_tank, _input: Dictionary) -> void:
+		super(_tank)
 		input = _input
 
 class CalculateMovementVectorEvent extends TankEvent:
 	var input: Dictionary
 	var movement_vector: SGFixedVector2
 	
-	func _init(_tank, _input: Dictionary, _movement_vector: SGFixedVector2).(_tank) -> void:
+	func _init(_tank, _input: Dictionary, _movement_vector: SGFixedVector2) -> void:
+		super(_tank)
 		input = _input
 		movement_vector = _movement_vector
 
@@ -133,7 +140,7 @@ func _ready():
 	hooks.subscribe("gather_input", self, "_hook_default_gather_input", 0)
 	hooks.subscribe("calculate_movement_vector", self, "_hook_default_calculate_movement_vector", 0)
 	
-	player_info_node.set_as_toplevel(true)
+	player_info_node.top_level = true
 	player_info_node.position = global_position + player_info_offset
 	
 	set_weapon_type(BaseWeaponType)
@@ -169,7 +176,7 @@ func _network_spawn(data: Dictionary) -> void:
 	set_global_fixed_transform(data['start_transform'])
 	
 	player_index = data['player_index']
-	set_network_master(data['peer_id'])
+	set_multiplayer_authority(data['peer_id'])
 	player_info_node.set_player_name(data['player_name'])
 	set_tank_color(data['player_index'])
 	
@@ -179,7 +186,7 @@ func _network_spawn(data: Dictionary) -> void:
 	sync_to_physics_engine()
 
 func set_tank_color(player_index: int) -> void:
-	.set_tank_color(player_index)
+	super.set_tank_color(player_index)
 	var visual_material = TankMaterial.duplicate()
 	body_visual.material = visual_material
 	turret_visual.material = visual_material
@@ -523,7 +530,7 @@ func _setup_ability(new_ability, new_ability_type):
 	# the ability spawned by the SpawnManager due to a rollback.
 	ability = new_ability
 	
-	ability.connect("finished", self, "_on_ability_finished", [ability])
+	ability.finished.connect(_on_ability_finished.bind(ability))
 	ability.setup_ability(self, new_ability_type)
 	ability.attach_ability()
 

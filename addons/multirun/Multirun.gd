@@ -55,7 +55,7 @@ func _remove_panels():
 
 func _unhandled_input(event):	
 	if event is InputEventKey:
-		if event.pressed and event.scancode == KEY_F8:
+		if event.pressed and event.keycode == KEY_F8:
 			_multirun_pressed()
 
 func _add_tooblar_button(action:String, icon_normal, icon_pressed):
@@ -63,7 +63,7 @@ func _add_tooblar_button(action:String, icon_normal, icon_pressed):
 	var b = TextureButton.new();
 	b.texture_normal = icon_normal
 	b.texture_pressed = icon_pressed
-	b.connect("pressed", self, action)
+	b.pressed.connect(Callable(self, action))
 	panel.add_child(b)
 	add_control_to_container(CONTAINER_TOOLBAR, panel)
 	return panel

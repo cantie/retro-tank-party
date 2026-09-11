@@ -10,8 +10,8 @@ const COLOR_NAMES = {
 	TreeColors.BROWN: "brown",
 }
 
-@export_String) var visual_id := ""
-@export_TreeColors) var tree_color: int = TreeColors.GREEN:
+@export var visual_id: String = ""
+@export var tree_color: int = TreeColors.GREEN:
 	set = set_tree_color
 
 @onready var visual = $Visual

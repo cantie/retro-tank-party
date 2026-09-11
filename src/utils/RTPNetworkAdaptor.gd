@@ -1,7 +1,7 @@
 extends "res://addons/godot-rollback-netcode/NakamaWebRTCNetworkAdaptor.gd"
 
 func _init() -> void:
-	._init()
+	super()
 	
 	#.max_buffered_amount = 200
 	max_skipped_input_in_a_row = 3

@@ -4,11 +4,11 @@ class_name UILayer
 @onready var screens = $Screens
 @onready var cover = $Overlay/Cover
 @onready var message_label = $Overlay/Message
-@onready var back_button = $Overlay/BackButton
+@onready var back_button_node = $Overlay/BackButton
 @onready var alert = $Overlay/Alert
 
 signal change_screen (name, screen, info)
-signal back_requested ()
+signal back_button ()
 signal alert_completed (result)
 
 var current_screen: Control = null:
@@ -94,10 +94,10 @@ func hide_cover() -> void:
 	cover.visible = false
 
 func show_back_button() -> void:
-	back_button.visible = true
+	back_button_node.visible = true
 
 func hide_back_button() -> void:
-	back_button.visible = false
+	back_button_node.visible = false
 
 func show_alert(title: String, content: String, ok_text: String = 'BUTTON_OK', cancel_text: String = 'BUTTON_CANCEL') -> void:
 	alert.setup(title, content, ok_text, cancel_text)
@@ -123,13 +123,13 @@ func go_back() -> void:
 	if alert.visible:
 		hide_alert()
 	else:
-		back_requested.emit()
+		back_button.emit()
 
 func _on_BackButton_pressed() -> void:
 	go_back()
 
 func _unhandled_input(event: InputEvent) -> void:
-	if event.is_action('ui_cancel') and back_button.visible and event.is_pressed():
+	if event.is_action('ui_cancel') and back_button_node.visible and event.is_pressed():
 		Sounds.play("Back")
 		get_tree().set_input_as_handled()
 		go_back()

@@ -1,7 +1,7 @@
 extends "res://src/components/pickups/Pickup.gd"
 class_name WeaponPickup
 
-@export_Resource) var weapon_type
+@export var weapon_type: Resource
 
 func get_default_pickup_scene() -> PackedScene:
 	return preload("res://src/objects/pickups/WeaponPickup.tscn")

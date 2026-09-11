@@ -117,8 +117,8 @@ func _on_SyncManager_scene_spawned(name: String, spawned_node: Node, scene: Pack
 		if players.has(peer_id):
 			players_alive[peer_id] = players[peer_id]
 
-		if not spawned_node.player_dead.is_connected(self._on_player_dead):
-			spawned_node.connect("player_dead", self, "_on_player_dead", [spawned_node])
+		if not spawned_node.player_dead.is_connected(_on_player_dead):
+			spawned_node.player_dead.connect(_on_player_dead.bind(spawned_node))
 
 		if peer_id == SyncManager.network_adaptor.get_network_unique_id():
 			spawned_node.player_controlled = true
@@ -248,7 +248,7 @@ func enable_watch_camera(enable: bool = true) -> void:
 	watch_camera.current = enable
 
 func _on_player_dead(killer_id, tank) -> void:
-	var peer_id = tank.get_network_master()
+	var peer_id = tank.get_multiplayer_authority()
 	# Ensure this will only ever be called once per player
 	if players_alive.has(peer_id):
 		players_alive.erase(peer_id)

@@ -18,7 +18,7 @@ enum GoalColor {
 @onready var collision_shape: SGCollisionShape2D = $CollisionShape2D
 @onready var goal_horn: AudioStreamPlayer = $GoalHorn
 
-@export_GoalColor) var goal_color: int = GoalColor.RED:
+@export var goal_color: int = GoalColor.RED:
 	set = set_goal_color
 
 signal tank_present (tank, area)
@@ -40,7 +40,7 @@ func check_for_tanks() -> void:
 func celebrate() -> void:
 	goal_horn.play()
 	for i in range(6):
-		get_tree().create_timer(randf()).connect("timeout", self, "_launch_fireworks")
+		get_tree().create_timer(randf()).timeout.connect(_launch_fireworks)
 
 func _launch_fireworks() -> void:
 	var shape_float_extents = collision_shape.shape.extents.to_float()

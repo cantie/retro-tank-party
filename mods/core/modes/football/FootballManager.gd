@@ -77,7 +77,7 @@ func _do_match_setup() -> void:
 	for team_id in score.entities:
 		hud.score.set_entity_name(team_id + 1, score.entities[team_id].name)
 
-	OnlineMatch.connect("player_left", self, '_on_OnlineMatch_player_left')
+	OnlineMatch.player_left.connect(_on_OnlineMatch_player_left)
 
 	game.player_dead.connect(self._on_game_player_dead)
 	game.game_started.connect(self._on_game_started)
@@ -96,26 +96,26 @@ func _get_player_start_transforms() -> Array:
 	return player_start_transforms
 
 func _save_state() -> Dictionary:
-	var state = ._save_state()
+	var state = super._save_state()
 	state['instant_death'] = instant_death
 	state['round_over'] = round_over
 	state['next_team_with_ball'] = next_team_with_ball
 	return state
 
 func _load_state(state: Dictionary) -> void:
-	._load_state(state)
+	super._load_state(state)
 	instant_death = state['instant_death']
 	round_over = state['round_over']
 	next_team_with_ball = state['next_team_with_ball']
 
 func _on_game_player_spawned(tank) -> void:
-	var player_id = tank.get_network_master()
+	var player_id = tank.get_multiplayer_authority()
 	if player_managers.has(player_id):
 		var player_manager = player_managers[player_id]
 		player_manager.set_player_tank(tank)
 
-	tank.connect("player_dead", self, "_on_tank_player_dead", [tank])
-	tank.connect("hurt", self, "_on_tank_hurt", [tank])
+	tank.player_dead.connect(_on_tank_player_dead.bind(tank))
+	tank.hurt.connect(_on_tank_hurt.bind(tank))
 
 func _on_OnlineMatch_player_left(online_player) -> void:
 	var player_manager = player_managers[online_player.peer_id]
@@ -141,7 +141,7 @@ func grab_football(tank) -> void:
 
 func pass_football(_position: SGFixedVector2, _vector: SGFixedVector2) -> void:
 	if football.held:
-		var player_id = football.held.get_network_master()
+		var player_id = football.held.get_multiplayer_authority()
 		if player_managers.has(player_id):
 			var player_manager = player_managers[player_id]
 			player_manager.restore_previous_weapon()
@@ -152,7 +152,7 @@ func _on_goal_tank_present(tank, goal) -> void:
 	if round_over:
 		return
 	if football.held == tank:
-		var player_team = get_player_team(tank.get_network_master())
+		var player_team = get_player_team(tank.get_multiplayer_authority())
 		if player_team != goal.goal_color:
 			round_over = true
 			score.increment_score(player_team)
@@ -209,10 +209,10 @@ func _on_NextRoundTimer_timeout() -> void:
 	game.game_start()
 
 func _on_tank_player_dead(killer_id: int, tank) -> void:
-	var player_id = tank.get_network_master()
+	var player_id = tank.get_multiplayer_authority()
 
 	var my_id = SyncManager.network_adaptor.get_network_unique_id()
-	if my_id == tank.get_network_master():
+	if my_id == tank.get_multiplayer_authority():
 		ui_layer.show_message("MESSAGE_PLAYER_DEAD")
 
 	if tank == football.held:

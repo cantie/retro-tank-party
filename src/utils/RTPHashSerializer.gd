@@ -10,7 +10,7 @@ func serialize_object(value: Object):
 			y = {x = value.y.x, y = value.y.y},
 			origin = {x = value.origin.x, y = value.origin.y},
 		}
-	return .serialize_object(value)
+	return super.serialize_object(value)
 
 func unserialize_object(value: Dictionary):
 	match value['_']:
@@ -26,4 +26,4 @@ func unserialize_object(value: Dictionary):
 			transform.origin.y = value['origin']['y']
 			return transform
 	
-	return .unserialize_object(value)
+	return super.unserialize_object(value)

@@ -16,7 +16,7 @@ func _network_spawn_preprocess(data: Dictionary) -> Dictionary:
 	var global_fixed_transform: SGFixedTransform2D = _tank.bullet_start_position.get_global_fixed_transform()
 	return {
 		tank = _tank.get_path(),
-		player_id = _tank.get_network_master(),
+		player_id = _tank.get_multiplayer_authority(),
 		player_index = _tank.player_index,
 		fixed_position = global_fixed_transform.origin,
 		fixed_rotation = global_fixed_transform.get_rotation(),
