@@ -10,11 +10,11 @@ const TANK_DIMENSION = 128 * SGFixed.ONE
 const THIRTY_TWO = 32 * SGFixed.ONE
 const SIXTY_FOUR = 64 * SGFixed.ONE
 
-onready var hud := $CanvasLayer/TimedMatchHUD
-onready var player_managers_node := $PlayerManagers
-onready var next_round_timer := $NextRoundTimer
-onready var show_score_timer := $ShowScoreTimer
-onready var match_finished_timer := $MatchFinishedTimer
+@onready var hud := $CanvasLayer/TimedMatchHUD
+@onready var player_managers_node := $PlayerManagers
+@onready var next_round_timer := $NextRoundTimer
+@onready var show_score_timer := $ShowScoreTimer
+@onready var match_finished_timer := $MatchFinishedTimer
 
 var football
 
@@ -34,15 +34,15 @@ var ball_start_position: SGFixedVector2
 
 func _do_match_setup() -> void:
 	for player_id in players:
-		var player_manager = PlayerManager.instance()
+		var player_manager = PlayerManager.instantiate()
 		player_manager.name = str(player_id)
 		player_managers_node.add_child(player_manager)
 		player_manager.setup_player_manager(players[player_id], config, game)
-		player_manager.connect("respawn_player", self, "_on_player_manager_respawn_player")
+		player_manager.respawn_player.connect(self._on_player_manager_respawn_player)
 		player_managers[player_id] = player_manager
-	game.connect("player_spawned", self, "_on_game_player_spawned")
+	game.player_spawned.connect(self._on_game_player_spawned)
 
-	var map_temp = load(map_path).instance()
+	var map_temp = load(map_path).instantiate()
 	team_start_transforms.resize(2)
 	for i in range(2):
 		team_start_transforms[i] = map_temp.get_team_start_transforms(i)
@@ -52,24 +52,24 @@ func _do_match_setup() -> void:
 	bounds_rect = SGFixed.rect2(map_rect.position.sub(THIRTY_TWO), map_rect.size.sub(SIXTY_FOUR))
 	ball_start_position = game.map.get_ball_start_position()
 
-	football = FootballScene.instance()
+	football = FootballScene.instantiate()
 	football.name = 'Football'
 	game.add_child(football)
 	football.setup_football(bounds_rect)
 	football.set_global_fixed_position(ball_start_position)
 	football.sync_to_physics_engine()
-	football.connect("out_of_bounds", self, "_on_football_out_of_bounds")
-	football.connect("grabbed", self, "grab_football")
+	football.out_of_bounds.connect(self._on_football_out_of_bounds)
+	football.grabbed.connect(self.grab_football)
 
 	var goal_transforms = game.map.get_goal_transforms()
 	for i in range(2):
-		var goal = GoalScene.instance()
+		var goal = GoalScene.instantiate()
 		goal.name = 'Goal%s' % (i + 1)
 		goal.goal_color = i
 		game.add_child_below_node(game.map, goal)
 		goal.set_global_fixed_transform(goal_transforms[i])
 		goal.sync_to_physics_engine()
-		goal.connect("tank_present", self, "_on_goal_tank_present")
+		goal.tank_present.connect(self._on_goal_tank_present)
 		goals.append(goal)
 
 	hud.set_instant_death_text("OVERTIME!")
@@ -79,11 +79,11 @@ func _do_match_setup() -> void:
 
 	OnlineMatch.connect("player_left", self, '_on_OnlineMatch_player_left')
 
-	game.connect("player_dead", self, "_on_game_player_dead")
-	game.connect("game_started", self, "_on_game_started")
+	game.player_dead.connect(self._on_game_player_dead)
+	game.game_started.connect(self._on_game_started)
 
 	hud.countdown_timer.start_countdown(config['timelimit'] * 60)
-	hud.countdown_timer.connect("countdown_finished", self, "_on_countdown_finished")
+	hud.countdown_timer.countdown_finished.connect(self._on_countdown_finished)
 
 func _get_player_start_transforms() -> Array:
 	var player_start_transforms := []
@@ -216,7 +216,7 @@ func _on_tank_player_dead(killer_id: int, tank) -> void:
 		ui_layer.show_message("MESSAGE_PLAYER_DEAD")
 
 	if tank == football.held:
-		emit_signal("dropped_football", tank.get_global_fixed_position(), SGFixed.vector2(0, 0))
+		dropped_football.emit(tank.get_global_fixed_position(), SGFixed.vector2(0, 0))
 
 	if player_managers.has(player_id):
 		var player_manager = player_managers[player_id]

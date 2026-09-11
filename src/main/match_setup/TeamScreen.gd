@@ -1,7 +1,7 @@
 extends "res://src/ui/Screen.gd"
 
-onready var field_container = $Panel/VBoxContainer/GridContainer
-onready var next_button = $Panel/VBoxContainer/NextButton
+@onready var field_container = $Panel/VBoxContainer/GridContainer
+@onready var next_button = $Panel/VBoxContainer/NextButton
 
 var fields := []
 var player_ids := []

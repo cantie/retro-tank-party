@@ -1,7 +1,10 @@
-[gd_resource type="DynamicFont" load_steps=2 format=2]
-
-[ext_resource path="res://assets/fonts/silver.ttf" type="DynamicFontData" id=1]
+[gd_resource type="FontFile" format=3 uid="uid://e2jvkn4a8mxkh"]
 
 [resource]
-size = 76
-font_data = ExtResource( 1 )
+fallbacks = []
+font_name = "silver"
+subpixel_positioning = 0
+msdf_pixel_range = 8
+msdf_size = 64
+fixed_size = 64
+force_autohinter = true

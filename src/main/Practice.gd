@@ -3,9 +3,9 @@ extends Node2D
 const Game = preload("res://src/Game.gd")
 const DummyNetworkAdaptor = preload("res://addons/godot-rollback-netcode/DummyNetworkAdaptor.gd")
 
-onready var game := $Game
-onready var respawn_timer := $RespawnTimer
-onready var ui_layer := $UILayer
+@onready var game := $Game
+@onready var respawn_timer := $RespawnTimer
+@onready var ui_layer := $UILayer
 
 func _ready() -> void:
 	SyncManager.network_adaptor = DummyNetworkAdaptor.new(1)
@@ -19,7 +19,7 @@ func _ready() -> void:
 
 	game.game_setup(players, "res://mods/core/maps/Battlefield.tscn", rng.seed)
 	SyncManager.start()
-	yield(SyncManager, "sync_started")
+	await SyncManager.sync_started
 	game.game_start()
 
 	ui_layer.show_back_button()
@@ -28,7 +28,7 @@ func _ready() -> void:
 	Music.play(songs[randi() % songs.size()])
 
 	if OS.has_feature('editor'):
-		ui_layer.add_screen(load("res://src/ui/DebugScreen.tscn").instance())
+		ui_layer.add_screen(load("res://src/ui/DebugScreen.tscn").instantiate())
 
 func _unhandled_input(event: InputEvent) -> void:
 	if OS.has_feature('editor') and event.is_action_pressed('special_debug'):
@@ -41,11 +41,11 @@ func _on_UILayer_back_button() -> void:
 		ui_layer.hide_screen()
 	else:
 		SyncManager.stop()
-		get_tree().change_scene("res://src/main/Title.tscn")
+		get_tree().change_scene_to_file("res://src/main/Title.tscn")
 
 func _on_Game_game_error(message) -> void:
 	ui_layer.show_message(message)
-	yield(get_tree().create_timer(2.0), "timeout")
+	await get_tree().create_timer(2.0).timeout
 	_on_UILayer_back_button()
 
 func _on_Game_player_dead(player_id, killer_id) -> void:
@@ -55,5 +55,5 @@ func _on_RespawnTimer_timeout() -> void:
 	SyncManager.stop()
 	game.game_reset()
 	SyncManager.start()
-	yield(SyncManager, "sync_started")
+	await SyncManager.sync_started
 	game.game_start()

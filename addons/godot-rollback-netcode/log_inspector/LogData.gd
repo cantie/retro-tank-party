@@ -1,5 +1,5 @@
-tool
-extends Reference
+@tool
+extends RefCounted
 
 const Logger = preload("res://addons/godot-rollback-netcode/Logger.gd")
 
@@ -127,9 +127,9 @@ func load_log_file(path: String) -> void:
 		push_error("Attempting to load log file when one is already loading")
 		return
 	
-	var file = File.new()
-	if file.open_compressed(path, File.READ, File.COMPRESSION_ZSTD) != OK:
-		emit_signal("load_error", "Unable to open file for reading: %s" % path)
+	var file = FileAccess
+	if file.open_compressed(path, FileAccess.READ, File.COMPRESSION_ZSTD) != OK:
+		load_error.emit("Unable to open file for reading: %s" % path)
 		return
 	
 	if _loader_thread:

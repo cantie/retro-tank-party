@@ -8,7 +8,7 @@ const HashSerializer = preload("res://addons/godot-rollback-netcode/HashSerializ
 const Logger = preload("res://addons/godot-rollback-netcode/Logger.gd")
 const DebugStateComparer = preload("res://addons/godot-rollback-netcode/DebugStateComparer.gd")
 
-class Peer extends Reference:
+class Peer extends RefCounted:
 	var peer_id: int
 	
 	var rtt: int
@@ -138,22 +138,27 @@ const DEFAULT_NETWORK_ADAPTOR_PATH := "res://addons/godot-rollback-netcode/RPCNe
 const DEFAULT_MESSAGE_SERIALIZER_PATH := "res://addons/godot-rollback-netcode/MessageSerializer.gd"
 const DEFAULT_HASH_SERIALIZER_PATH := "res://addons/godot-rollback-netcode/HashSerializer.gd"
 
-var network_adaptor: NetworkAdaptor setget set_network_adaptor
-var message_serializer: MessageSerializer setget set_message_serializer
-var hash_serializer: HashSerializer setget set_hash_serializer
+var network_adaptor: NetworkAdaptor:
+	set = set_network_adaptor
+var message_serializer: MessageSerializer:
+	set = set_message_serializer
+var hash_serializer: HashSerializer:
+	set = set_hash_serializer
 
 var peers := {}
 var input_buffer := []
 var state_buffer := []
 var state_hashes := []
 
-var mechanized := false setget set_mechanized
+var mechanized := false:
+	set = set_mechanized
 var mechanized_input_received := {}
 var mechanized_rollback_ticks := 0
 
 var max_buffer_size := 20
 var ticks_to_calculate_advantage := 60
-var input_delay := 2 setget set_input_delay
+var input_delay := 2:
+	set = set_input_delay
 var max_input_frames_per_message := 5
 var max_messages_at_once := 2
 var max_ticks_to_regain_sync := 300
@@ -171,15 +176,23 @@ var debug_check_message_serializer_roundtrip := false
 var debug_check_local_state_consistency := false
 
 # In seconds, because we don't want it to be dependent on the network tick.
-var ping_frequency := 1.0 setget set_ping_frequency
+var ping_frequency := 1.0:
+	set = set_ping_frequency
 
-var input_tick: int = 0 setget _set_readonly_variable
-var current_tick: int = 0 setget _set_readonly_variable
-var skip_ticks: int = 0 setget _set_readonly_variable
-var rollback_ticks: int = 0 setget _set_readonly_variable
-var requested_input_complete_tick: int = 0 setget _set_readonly_variable
-var started := false setget _set_readonly_variable
-var tick_time: float setget _set_readonly_variable
+var input_tick: int = 0:
+	set = _set_readonly_variable
+var current_tick: int = 0:
+	set = _set_readonly_variable
+var skip_ticks: int = 0:
+	set = _set_readonly_variable
+var rollback_ticks: int = 0:
+	set = _set_readonly_variable
+var requested_input_complete_tick: int = 0:
+	set = _set_readonly_variable
+var started := false:
+	set = _set_readonly_variable
+var tick_time: float:
+	set = _set_readonly_variable
 
 var _host_starting := false
 var _ping_timer: Timer
@@ -269,15 +282,15 @@ func _ready() -> void:
 	_ping_timer.wait_time = ping_frequency
 	_ping_timer.autostart = true
 	_ping_timer.one_shot = false
-	_ping_timer.pause_mode = Node.PAUSE_MODE_PROCESS
-	_ping_timer.connect("timeout", self, "_on_ping_timer_timeout")
+	_ping_timer.process_mode = Node.PROCESS_MODE_ALWAYS
+	_ping_timer.timeout.connect(self._on_ping_timer_timeout)
 	add_child(_ping_timer)
 	
 	_spawn_manager = SpawnManager.new()
 	_spawn_manager.name = "SpawnManager"
 	add_child(_spawn_manager)
-	_spawn_manager.connect("scene_spawned", self, "_on_SpawnManager_scene_spawned")
-	_spawn_manager.connect("scene_despawned", self, "_on_SpawnManager_scene_despawned")
+	_spawn_manager.scene_spawned.connect(self._on_SpawnManager_scene_spawned)
+	_spawn_manager.scene_despawned.connect(self._on_SpawnManager_scene_despawned)
 	
 	_sound_manager = SoundManager.new()
 	_sound_manager.name = "SoundManager"
@@ -307,11 +320,11 @@ func set_network_adaptor(_network_adaptor: NetworkAdaptor) -> void:
 	
 	if network_adaptor != null:
 		network_adaptor.detach_network_adaptor(self)
-		network_adaptor.disconnect("received_ping", self, "_on_received_ping")
-		network_adaptor.disconnect("received_ping_back", self, "_on_received_ping_back")
-		network_adaptor.disconnect("received_remote_start", self, "_on_received_remote_start")
-		network_adaptor.disconnect("received_remote_stop", self, "_on_received_remote_stop")
-		network_adaptor.disconnect("received_input_tick", self, "_on_received_input_tick")
+		network_adaptor.received_ping.disconnect(self._on_received_ping)
+		network_adaptor.received_ping_back.disconnect(self._on_received_ping_back)
+		network_adaptor.received_remote_start.disconnect(self._on_received_remote_start)
+		network_adaptor.received_remote_stop.disconnect(self._on_received_remote_stop)
+		network_adaptor.received_input_tick.disconnect(self._on_received_input_tick)
 		
 		remove_child(network_adaptor)
 		network_adaptor.queue_free()
@@ -319,11 +332,11 @@ func set_network_adaptor(_network_adaptor: NetworkAdaptor) -> void:
 	network_adaptor = _network_adaptor
 	network_adaptor.name = 'NetworkAdaptor'
 	add_child(network_adaptor)
-	network_adaptor.connect("received_ping", self, "_on_received_ping")
-	network_adaptor.connect("received_ping_back", self, "_on_received_ping_back")
-	network_adaptor.connect("received_remote_start", self, "_on_received_remote_start")
-	network_adaptor.connect("received_remote_stop", self, "_on_received_remote_stop")
-	network_adaptor.connect("received_input_tick", self, "_on_received_input_tick")
+	network_adaptor.received_ping.connect(self._on_received_ping)
+	network_adaptor.received_ping_back.connect(self._on_received_ping_back)
+	network_adaptor.received_remote_start.connect(self._on_received_remote_start)
+	network_adaptor.received_remote_stop.connect(self._on_received_remote_stop)
+	network_adaptor.received_input_tick.connect(self._on_received_input_tick)
 	network_adaptor.attach_network_adaptor(self)
 
 func reset_network_adaptor() -> void:
@@ -368,7 +381,7 @@ func add_peer(peer_id: int) -> void:
 		return
 	
 	peers[peer_id] = Peer.new(peer_id)
-	emit_signal("peer_added", peer_id)
+	peer_added.emit(peer_id)
 
 func has_peer(peer_id: int) -> bool:
 	return peers.has(peer_id)
@@ -379,7 +392,7 @@ func get_peer(peer_id: int) -> Peer:
 func remove_peer(peer_id: int) -> void:
 	if peers.has(peer_id):
 		peers.erase(peer_id)
-		emit_signal("peer_removed", peer_id)
+		peer_removed.emit(peer_id)
 	if peers.size() == 0:
 		stop()
 
@@ -391,7 +404,7 @@ func _on_ping_timer_timeout() -> void:
 	if peers.size() == 0:
 		return
 	var msg = {
-		local_time = OS.get_system_time_msecs(),
+		local_time = Time.get_ticks_msec(),
 	}
 	for peer_id in peers:
 		assert(peer_id != network_adaptor.get_network_unique_id(), "Cannot ping ourselves")
@@ -399,16 +412,16 @@ func _on_ping_timer_timeout() -> void:
 
 func _on_received_ping(peer_id: int, msg: Dictionary) -> void:
 	assert(peer_id != network_adaptor.get_network_unique_id(), "Cannot ping back ourselves")
-	msg['remote_time'] = OS.get_system_time_msecs()
+	msg['remote_time'] = Time.get_ticks_msec()
 	network_adaptor.send_ping_back(peer_id, msg)
 
 func _on_received_ping_back(peer_id: int, msg: Dictionary) -> void:
-	var system_time = OS.get_system_time_msecs()
+	var system_time = Time.get_ticks_msec()
 	var peer = peers[peer_id]
 	peer.last_ping_received = system_time
 	peer.rtt = system_time - msg['local_time']
 	peer.time_delta = msg['remote_time'] - msg['local_time'] - (peer.rtt / 2.0)
-	emit_signal("peer_pinged_back", peer)
+	peer_pinged_back.emit(peer)
 
 func start_logging(log_file_path: String, match_info: Dictionary = {}) -> void:
 	# Our logger needs threads!
@@ -451,7 +464,7 @@ func start() -> void:
 		
 		# Wait for half the highest RTT to start locally.
 		print ("Delaying host start by %sms" % (highest_rtt / 2))
-		yield(get_tree().create_timer(highest_rtt / 2000.0), 'timeout')
+		await get_tree().create_timer(highest_rtt / 2000.0).timeout
 		
 		_on_received_remote_start()
 		_host_starting = false
@@ -483,11 +496,11 @@ func _reset() -> void:
 
 func _on_received_remote_start() -> void:
 	_reset()
-	tick_time = (1.0 / Engine.iterations_per_second)
+	tick_time = (1.0 / Engine.physics_ticks_per_second)
 	started = true
 	network_adaptor.start_network_adaptor(self)
 	_spawn_manager.reset()
-	emit_signal("sync_started")
+	sync_started.emit()
 
 func stop() -> void:
 	if network_adaptor.is_network_host() and not mechanized:
@@ -508,11 +521,11 @@ func _on_received_remote_stop() -> void:
 	for peer in peers.values():
 		peer.clear()
 	
-	emit_signal("sync_stopped")
+	sync_stopped.emit()
 	_spawn_manager.reset()
 
 func _handle_fatal_error(msg: String):
-	emit_signal("sync_error", msg)
+	sync_error.emit(msg)
 	push_error("NETWORK SYNC LOST: " + msg)
 	stop()
 	if _logger:
@@ -559,7 +572,7 @@ func _call_network_process(input_frame: InputBufferFrame) -> void:
 		var node = nodes[i]
 		if node.is_inside_tree() and not node.is_queued_for_deletion():
 			if node.has_method('_network_preprocess'):
-				var player_input = input_frame.get_player_input(node.get_network_master())
+				var player_input = input_frame.get_player_input(node.get_multiplayer_authority())
 				node._network_preprocess(player_input.get(str(node.get_path()), {}))
 			if node.has_method('_network_process'):
 				process_nodes.append(node)
@@ -569,13 +582,13 @@ func _call_network_process(input_frame: InputBufferFrame) -> void:
 	# Call _network_process().
 	for node in process_nodes:
 		if node.is_inside_tree() and not node.is_queued_for_deletion():
-			var player_input = input_frame.get_player_input(node.get_network_master())
+			var player_input = input_frame.get_player_input(node.get_multiplayer_authority())
 			node._network_process(player_input.get(str(node.get_path()), {}))
 	
 	# Call _network_postprocess().
 	for node in postprocess_nodes:
 		if node.is_inside_tree() and not node.is_queued_for_deletion():
-			var player_input = input_frame.get_player_input(node.get_network_master())
+			var player_input = input_frame.get_player_input(node.get_multiplayer_authority())
 			node._network_postprocess(player_input.get(str(node.get_path()), {}))
 
 func _call_save_state() -> Dictionary:
@@ -640,9 +653,9 @@ func _update_input_complete_tick() -> void:
 			var tick_delta = current_tick - _input_complete_tick
 			if tick_delta >= 0 and rollback_ticks <= tick_delta:
 				rollback_ticks = tick_delta + 1
-				emit_signal("rollback_flagged", _input_complete_tick)
+				rollback_flagged.emit(_input_complete_tick)
 		
-		emit_signal("tick_input_complete", _input_complete_tick)
+		tick_input_complete.emit(_input_complete_tick)
 
 func _update_state_hashes() -> void:
 	while _state_complete_tick > _last_state_hashed_tick:
@@ -693,7 +706,7 @@ func _do_tick(is_rollback: bool = false) -> bool:
 	if debug_check_local_state_consistency and _last_state_hashed_tick >= current_tick:
 		_debug_check_consistent_local_state(state_buffer[-1], "Recomputed")
 	
-	emit_signal("tick_finished", is_rollback)
+	tick_finished.emit(is_rollback)
 	return true
 
 func _get_or_create_input_frame(tick: int) -> InputBufferFrame:
@@ -751,7 +764,7 @@ func _cleanup_buffers() -> bool:
 		state_buffer.pop_front()
 		_state_buffer_start_tick += 1
 		
-		emit_signal("tick_retired", state_frame_to_retire.tick)
+		tick_retired.emit(state_frame_to_retire.tick)
 	
 	# Clean-up old input buffer frames. Unlike state frames, we can have many
 	# frames from the future if we are running behind. We don't want having too
@@ -803,7 +816,7 @@ func get_latest_input_from_peer(peer_id: int) -> Dictionary:
 	return {}
 
 func get_latest_input_for_node(node: Node) -> Dictionary:
-	return get_latest_input_from_peer_for_path(node.get_network_master(), str(node.get_path()))
+	return get_latest_input_from_peer_for_path(node.get_multiplayer_authority(), str(node.get_path()))
 
 func get_latest_input_from_peer_for_path(peer_id: int, path: String) -> Dictionary:
 	return get_latest_input_from_peer(peer_id).get(path, {})
@@ -895,7 +908,7 @@ func _calculate_skip_ticks() -> bool:
 	
 	if max_advantage >= 2.0 and skip_ticks == 0:
 		skip_ticks = int(max_advantage / 2)
-		emit_signal("skip_ticks_flagged", skip_ticks)
+		skip_ticks_flagged.emit(skip_ticks)
 		return true
 	
 	return false
@@ -970,7 +983,7 @@ func _physics_process(_delta: float) -> void:
 		_logger.data['input_complete_tick'] = _input_complete_tick
 		_logger.data['state_complete_tick'] = _state_complete_tick
 	
-	var start_time := OS.get_ticks_usec()
+	var start_time := Time.get_ticks_usec()
 	
 	# @todo Is there a way we can move this to _remote_start()?
 	# Store an initial state before any ticks.
@@ -1029,7 +1042,7 @@ func _physics_process(_delta: float) -> void:
 		if requested_input_complete_tick > 0 and current_tick >= requested_input_complete_tick:
 			requested_input_complete_tick = 0
 		
-		emit_signal("state_loaded", rollback_ticks)
+		state_loaded.emit(rollback_ticks)
 		
 		_in_rollback = true
 		
@@ -1081,7 +1094,7 @@ func _physics_process(_delta: float) -> void:
 			
 			# If we've reach this point, that means we've regained sync!
 			_ticks_spent_regaining_sync = 0
-			emit_signal("sync_regained")
+			sync_regained.emit()
 			
 			# We don't want to skip ticks through the normal mechanism, because
 			# any skips that were previously calculated don't apply anymore.
@@ -1092,7 +1105,7 @@ func _physics_process(_delta: float) -> void:
 			# This can happen if there's a fatal error in _cleanup_buffers().
 			if not started:
 				return
-			emit_signal("sync_lost")
+			sync_lost.emit()
 			_ticks_spent_regaining_sync = 1
 			# Even when we're skipping ticks, still send input.
 			_send_input_messages_to_all_peers()
@@ -1183,7 +1196,7 @@ func _physics_process(_delta: float) -> void:
 	_ran_physics_process = true
 	_ticks_since_last_interpolation_frame += 1
 	
-	var total_time_msecs = float(OS.get_ticks_usec() - start_time) / 1000.0
+	var total_time_msecs = float(Time.get_ticks_usec() - start_time) / 1000.0
 	if debug_physics_process_msecs > 0 and total_time_msecs > debug_physics_process_msecs:
 		push_error("[%s] SyncManager._physics_process() took %.02fms" % [current_tick, total_time_msecs])
 	
@@ -1194,7 +1207,7 @@ func _process(delta: float) -> void:
 	if not started:
 		return
 	
-	var start_time = OS.get_ticks_usec()
+	var start_time = Time.get_ticks_usec()
 	
 	# These are things that we want to run during "interpolation frames", in
 	# order to slim down the normal frames. Or, if interpolation is disabled,
@@ -1222,7 +1235,7 @@ func _process(delta: float) -> void:
 		_update_state_hashes()
 		
 		if interpolation:
-			emit_signal("interpolation_frame")
+			interpolation_frame.emit()
 		
 		# Do this last to catch any data that came in late.
 		network_adaptor.poll()
@@ -1237,7 +1250,7 @@ func _process(delta: float) -> void:
 	# preceeded by _physics_process().
 	_ran_physics_process = false
 	
-	var total_time_msecs = float(OS.get_ticks_usec() - start_time) / 1000.0
+	var total_time_msecs = float(Time.get_ticks_usec() - start_time) / 1000.0
 	if debug_process_msecs > 0 and total_time_msecs > debug_process_msecs:
 		push_error("[%s] SyncManager._process() took %.02fms" % [current_tick, total_time_msecs])
 
@@ -1275,7 +1288,7 @@ func _calculate_data_hash(input: Dictionary) -> int:
 	input['$'] = serialized_hash
 	return serialized_hash
 
-func _on_received_input_tick(peer_id: int, serialized_msg: PoolByteArray) -> void:
+func _on_received_input_tick(peer_id: int, serialized_msg: PackedByteArray) -> void:
 	if not started:
 		return
 	
@@ -1344,8 +1357,8 @@ func _on_received_input_tick(peer_id: int, serialized_msg: PoolByteArray) -> voi
 				# flag that we need to rollback.
 				if local_input['$'] != remote_input['$']:
 					rollback_ticks = tick_delta + 1
-					emit_signal("prediction_missed", remote_tick, peer_id, local_input, remote_input)
-					emit_signal("rollback_flagged", remote_tick)
+					prediction_missed.emit(remote_tick, peer_id, local_input, remote_input)
+					rollback_flagged.emit(remote_tick)
 			else:
 				# Otherwise, just store it.
 				input_frame.players[peer_id] = InputForPlayer.new(remote_input, false)
@@ -1371,7 +1384,7 @@ func _on_received_input_tick(peer_id: int, serialized_msg: PoolByteArray) -> voi
 		var state_hash_frame := _get_state_hash_frame(remote_tick)
 		if state_hash_frame and not state_hash_frame.has_peer_hash(peer_id):
 			if not state_hash_frame.record_peer_hash(peer_id, remote_state_hashes[remote_tick]):
-				emit_signal("remote_state_mismatch", remote_tick, peer_id, state_hash_frame.state_hash, remote_state_hashes[remote_tick])
+				remote_state_mismatch.emit(remote_tick, peer_id, state_hash_frame.state_hash, remote_state_hashes[remote_tick])
 	
 	# Find what the last remote state hash we received was after filling these in.
 	var index = (peer.last_remote_hash_tick_received - _state_hashes_start_tick) + 1
@@ -1431,10 +1444,10 @@ func despawn(node: Node) -> void:
 	_spawn_manager.despawn(node)
 
 func _on_SpawnManager_scene_spawned(name: String, spawned_node: Node, scene: PackedScene, data: Dictionary) -> void:
-	emit_signal("scene_spawned", name, spawned_node, scene, data)
+	scene_spawned.emit(name, spawned_node, scene, data)
 
 func _on_SpawnManager_scene_despawned(name: String, node: Node) -> void:
-	emit_signal("scene_despawned", name, node)
+	scene_despawned.emit(name, node)
 
 func is_in_rollback() -> bool:
 	return _in_rollback
@@ -1444,7 +1457,7 @@ func is_respawning() -> bool:
 
 func set_default_sound_bus(bus: String) -> void:
 	if _sound_manager == null:
-		yield(self, "ready")
+		await self.ready
 	_sound_manager.default_bus = bus
 
 func play_sound(identifier: String, sound: AudioStream, info: Dictionary = {}) -> void:

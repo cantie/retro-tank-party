@@ -1,6 +1,6 @@
 extends "res://src/objects/tank/BaseTank.gd"
 
-onready var timer := $Timer
+@onready var timer := $Timer
 
 func _network_spawn_preprocess(data: Dictionary) -> Dictionary:
 	var tank = data['tank']

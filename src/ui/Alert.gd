@@ -1,9 +1,9 @@
 extends PanelContainer
 
-onready var title_label := $VBoxContainer/TitleLabel
-onready var content_label := $VBoxContainer/ContentLabel
-onready var ok_button := $VBoxContainer/HBoxContainer/OkButton
-onready var cancel_button := $VBoxContainer/HBoxContainer/CancelButton
+@onready var title_label := $VBoxContainer/TitleLabel
+@onready var content_label := $VBoxContainer/ContentLabel
+@onready var ok_button := $VBoxContainer/HBoxContainer/OkButton
+@onready var cancel_button := $VBoxContainer/HBoxContainer/CancelButton
 
 signal completed (result)
 
@@ -19,7 +19,7 @@ func setup(title: String, content: String, ok_text: String = 'BUTTON_OK', cancel
 		cancel_button.visible = false
 
 func _on_OkButton_pressed() -> void:
-	emit_signal("completed", true)
+	completed.emit(true)
 
 func _on_CancelButton_pressed() -> void:
-	emit_signal("completed", false)
+	completed.emit(false)

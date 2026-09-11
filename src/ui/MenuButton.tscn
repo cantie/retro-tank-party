@@ -1,7 +1,7 @@
 [gd_scene load_steps=9 format=2]
 
 [ext_resource path="res://src/ui/MenuButton.gd" type="Script" id=1]
-[ext_resource path="res://assets/fonts/monogram.tres" type="DynamicFont" id=2]
+[ext_resource path="res://assets/fonts/monogram.tres" type="FontFile" id=2]
 [ext_resource path="res://assets/ui/blue_arrowRight.png" type="Texture" id=3]
 
 [sub_resource type="StyleBoxEmpty" id=1]

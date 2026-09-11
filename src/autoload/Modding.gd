@@ -13,8 +13,8 @@ func list_pcks() -> Array:
 	var file_paths = []
 	var mods_path = OS.get_executable_path().get_base_dir() + '/mods/'
 	
-	var dir = Directory.new()
-	if dir.open(mods_path) == OK:
+	var dir = DirAccess
+	if DirAccess.open(mods_path) == OK:
 		dir.list_dir_begin()
 		var file_name = dir.get_next()
 		while file_name != "":
@@ -28,8 +28,8 @@ func list_pcks() -> Array:
 func list_mods() -> Array:
 	var mods := []
 	
-	var dir = Directory.new()
-	if dir.open('res://mods/') == OK:
+	var dir = DirAccess
+	if DirAccess.open('res://mods/') == OK:
 		dir.list_dir_begin()
 		var file_name = dir.get_next()
 		while file_name != "":
@@ -42,8 +42,8 @@ func list_mods() -> Array:
 func _list_resources(path) -> Array:
 	var file_paths = []
 	
-	var dir = Directory.new()
-	if dir.open(path) == OK:
+	var dir = DirAccess
+	if DirAccess.open(path) == OK:
 		dir.list_dir_begin()
 		var file_name = dir.get_next()
 		while file_name != "":

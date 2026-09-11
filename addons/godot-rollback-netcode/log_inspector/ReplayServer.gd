@@ -1,4 +1,4 @@
-tool
+@tool
 extends Node
 
 const LogData = preload("res://addons/godot-rollback-netcode/log_inspector/LogData.gd")
@@ -34,18 +34,18 @@ func start_listening() -> void:
 		
 		server = TCP_Server.new()
 		server.listen(port, "127.0.0.1")
-		emit_signal("started_listening")
+		started_listening.emit()
 
 func stop_listening() -> void:
 	if server:
 		server.stop()
 		server = null
-		emit_signal("stopped_listening")
+		stopped_listening.emit()
 
 func disconnect_from_game(restart_listening: bool = true) -> void:
 	if connection:
 		connection.disconnect_from_host()
-		emit_signal("game_disconnected")
+		game_disconnected.emit()
 		connection = null
 	stop_game()
 	if restart_listening:
@@ -130,7 +130,7 @@ func poll() -> void:
 	if server and not connection and server.is_connection_available():
 		connection = server.take_connection()
 		stop_listening()
-		emit_signal("game_connected")
+		game_connected.emit()
 
 func _process(delta: float) -> void:
 	poll()

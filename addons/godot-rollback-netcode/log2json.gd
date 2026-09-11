@@ -24,23 +24,23 @@ func main(arguments: Dictionary) -> bool:
 	return log2json(arguments['input'], arguments['output'])
 
 func log2json(input_filename: String, output_filename: String) -> bool:
-	var infile := File.new()
-	if not infile.file_exists(input_filename):
+	var infile := FileAccess
+	if not inFileAccess.file_exists(input_filename):
 		print ("No such input file: %s" % input_filename)
 		return false
-	if infile.open_compressed(input_filename, File.READ, File.COMPRESSION_ZSTD) != OK:
+	if infile.open_compressed(input_filename, FileAccess.READ, File.COMPRESSION_ZSTD) != OK:
 		print ("Unable to open input file: %s" % input_filename)
 		return false
 	
-	var outfile := File.new()
-	if outfile.open(output_filename, File.WRITE) != OK:
+	var outfile := FileAccess
+	if outFileAccess.open(output_filename, FileAccess.WRITE) != OK:
 		infile.close()
 		print ("Unable to open output file: %s" % output_filename)
 		return false
 	
 	while not infile.eof_reached():
 		var data = infile.get_var()
-		outfile.store_line(JSON.print(data))
+		outfile.store_line(JSON.stringify(data))
 	
 	infile.close()
 	outfile.close()

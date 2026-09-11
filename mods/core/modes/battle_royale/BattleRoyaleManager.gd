@@ -1,9 +1,9 @@
 extends "res://src/components/modes/BaseManager.gd"
 
-onready var you_lose_timer := $YouLoseTimer
-onready var show_winner_timer := $ShowWinnerTimer
-onready var show_score_timer := $ShowScoreTimer
-onready var next_round_timer := $NextRoundTimer
+@onready var you_lose_timer := $YouLoseTimer
+@onready var show_winner_timer := $ShowWinnerTimer
+@onready var show_score_timer := $ShowScoreTimer
+@onready var next_round_timer := $NextRoundTimer
 
 var round_over := false
 var match_over := false
@@ -12,7 +12,7 @@ var winner_id := -1
 func _do_match_setup() -> void:
 	._do_match_setup()
 
-	game.connect("player_dead", self, "_on_game_player_dead")
+	game.player_dead.connect(self._on_game_player_dead)
 
 func start_new_round() -> void:
 	game.game_reset()

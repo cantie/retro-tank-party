@@ -1,4 +1,4 @@
-extends Reference
+extends RefCounted
 
 func serialize(value):
 	if value is Dictionary:
@@ -47,7 +47,8 @@ func serialize_other(value):
 		return {
 			_ = 'Vector3',
 			x = value.x,
-			y = value.y
+			y = value.y,
+			z = value.z,
 		}
 	elif value is Transform2D:
 		return {
@@ -56,12 +57,12 @@ func serialize_other(value):
 			y = {x = value.y.x, y = value.y.y},
 			origin = {x = value.origin.x, y = value.origin.y},
 		}
-	elif value is Transform:
+	elif value is Transform3D:
 		return {
-			_ = 'Transform',
-			x = {x = value.x.x, y = value.x.y, z = value.x.z},
-			y = {x = value.y.x, y = value.y.y, z = value.y.z},
-			z = {x = value.z.x, y = value.z.y, z = value.z.z},
+			_ = 'Transform3D',
+			x = {x = value.basis.x.x, y = value.basis.x.y, z = value.basis.x.z},
+			y = {x = value.basis.y.x, y = value.basis.y.y, z = value.basis.y.z},
+			z = {x = value.basis.z.x, y = value.basis.z.y, z = value.basis.z.z},
 			origin = {x = value.origin.x, y = value.origin.y, z = value.origin.z},
 		}
 	
@@ -74,7 +75,7 @@ func unserialize(value):
 		
 		if value['_'] == 'resource':
 			return unserialize_resource(value)
-		elif value['_'] in ['Vector2', 'Vector3', 'Transform2D', 'Transform']:
+		elif value['_'] in ['Vector2', 'Vector3', 'Transform2D', 'Transform3D']:
 			return unserialize_other(value)
 		
 		return unserialize_object(value)
@@ -114,11 +115,13 @@ func unserialize_other(value: Dictionary):
 				Vector2(value.y.x, value.y.y),
 				Vector2(value.origin.x, value.origin.y)
 			)
-		'Transform':
-			return Transform(
-				Vector3(value.x.x, value.x.y, value.x.z),
-				Vector3(value.y.x, value.y.y, value.y.z),
-				Vector3(value.z.x, value.z.y, value.z.z),
+		'Transform3D':
+			return Transform3D(
+				Basis(
+					Vector3(value.x.x, value.x.y, value.x.z),
+					Vector3(value.y.x, value.y.y, value.y.z),
+					Vector3(value.z.x, value.z.y, value.z.z)
+				),
 				Vector3(value.origin.x, value.origin.y, value.origin.z)
 			)
 	

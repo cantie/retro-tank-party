@@ -2,7 +2,7 @@ extends Node2D
 
 const Tank = preload("res://src/objects/Tank.gd")
 
-onready var animation_player = $AnimationPlayer
+@onready var animation_player = $AnimationPlayer
 
 func attach_visual(info: Dictionary) -> void:
 	var tank = get_parent()

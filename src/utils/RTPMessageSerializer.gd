@@ -19,7 +19,7 @@ enum HeaderFlags {
 	USING_ABILITY = 0x10,
 }
 
-func serialize_input(all_input: Dictionary) -> PoolByteArray:
+func serialize_input(all_input: Dictionary) -> PackedByteArray:
 	var buffer := StreamPeerBuffer.new()
 	buffer.resize(32)
 	
@@ -58,7 +58,7 @@ func serialize_input(all_input: Dictionary) -> PoolByteArray:
 	buffer.resize(buffer.get_position())
 	return buffer.data_array
 
-func unserialize_input(serialized: PoolByteArray) -> Dictionary:
+func unserialize_input(serialized: PackedByteArray) -> Dictionary:
 	var buffer := StreamPeerBuffer.new()
 	buffer.put_data(serialized)
 	buffer.seek(0)

@@ -1,6 +1,6 @@
 [gd_resource type="Theme" load_steps=25 format=2]
 
-[ext_resource path="res://assets/fonts/monogram.tres" type="DynamicFont" id=1]
+[ext_resource path="res://assets/fonts/monogram.tres" type="FontFile" id=1]
 [ext_resource path="res://assets/ui/grey_button5_stylebox.tres" type="StyleBox" id=2]
 [ext_resource path="res://assets/ui/gray_panel_stylebox.tres" type="StyleBox" id=3]
 [ext_resource path="res://assets/ui/blue_button2_stylebox.tres" type="StyleBox" id=4]

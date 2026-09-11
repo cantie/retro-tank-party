@@ -1,7 +1,7 @@
 extends "res://src/ui/Screen.gd"
 
-onready var map_field = $Panel/VBoxContainer/MapSwitcher
-onready var next_button = $Panel/VBoxContainer/NextButton
+@onready var map_field = $Panel/VBoxContainer/MapSwitcher
+@onready var next_button = $Panel/VBoxContainer/NextButton
 
 const DEFAULT_MAP = "res://mods/core/maps/battlefield.tres"
 
@@ -47,7 +47,7 @@ func _update_map_field_for_mode(mode: MatchMode) -> void:
 			map_field.set_selected(0, false)
 
 func change_map(map: GameMap) -> void:
-	emit_signal("map_changed", map.map_scene)
+	map_changed.emit(map.map_scene)
 
 func disable_screen() -> void:
 	map_field.disabled = true

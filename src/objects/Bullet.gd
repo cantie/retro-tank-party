@@ -1,6 +1,6 @@
 extends "res://src/components/weapons/BaseBullet.gd"
 
-onready var visual = $BulletPivot/Visual
+@onready var visual = $BulletPivot/Visual
 
 var speed = 1529173 # ~23.33
 

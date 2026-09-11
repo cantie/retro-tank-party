@@ -1,8 +1,8 @@
 extends "res://src/components/weapons/BaseBullet.gd"
 
-onready var ray_cast: SGRayCast2D = $RayCast2D
-onready var collision_shape: SGCollisionShape2D = $CollisionShape2D
-onready var line: Line2D = $Line2D
+@onready var ray_cast: SGRayCast2D = $RayCast2D
+@onready var collision_shape: SGCollisionShape2D = $CollisionShape2D
+@onready var line: Line2D = $Line2D
 
 var speed = 6116693
 var growing := true

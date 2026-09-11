@@ -1,6 +1,6 @@
 extends "res://src/components/modes/BaseConfig.gd"
 
-onready var timelimit_field = $Timelimit
+@onready var timelimit_field = $Timelimit
 
 func _ready() -> void:
 	for i in range(1, 11):
@@ -21,4 +21,4 @@ func set_config_values(values: Dictionary) -> void:
 	timelimit_field.value = values['timelimit']
 
 func _on_OptionSwitcher_item_selected(_value, _index) -> void:
-	emit_signal("changed")
+	changed.emit()

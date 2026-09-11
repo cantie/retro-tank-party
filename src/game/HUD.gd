@@ -1,7 +1,7 @@
 extends Control
 
-onready var weapon_label = $HBoxContainer/WeaponLabel
-onready var ability_label = $HBoxContainer/AbilityLabel
+@onready var weapon_label = $HBoxContainer/WeaponLabel
+@onready var ability_label = $HBoxContainer/AbilityLabel
 
 func _ready() -> void:
 	ability_label.set_message_translation(false)

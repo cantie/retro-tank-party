@@ -1,4 +1,4 @@
-tool
+@tool
 extends EditorPlugin
 
 const LogInspector = preload("res://addons/godot-rollback-netcode/log_inspector/LogInspector.tscn")
@@ -12,14 +12,14 @@ func _enter_tree() -> void:
 	
 	add_autoload_singleton("SyncManager", "res://addons/godot-rollback-netcode/SyncManager.gd")
 	
-	log_inspector = LogInspector.instance()
+	log_inspector = LogInspector.instantiate()
 	get_editor_interface().get_base_control().add_child(log_inspector)
 	log_inspector.set_editor_interface(get_editor_interface())
-	add_tool_menu_item("Log inspector...", self, "open_log_inspector")
+	add_tool_menu_item("Log inspector...", open_log_inspector)
 	
 	if not ProjectSettings.has_setting("input/sync_debug"):
 		var sync_debug = InputEventKey.new()
-		sync_debug.scancode = KEY_F11
+		sync_debug.keycode = KEY_F11
 		
 		ProjectSettings.set_setting("input/sync_debug", {
 			deadzone = 0.5,
@@ -28,11 +28,9 @@ func _enter_tree() -> void:
 			],
 		})
 		
-		# Cause the ProjectSettingsEditor to reload the input map from the
-		# ProjectSettings.
 		get_tree().root.get_child(0).propagate_notification(EditorSettings.NOTIFICATION_EDITOR_SETTINGS_CHANGED)
 
-func open_log_inspector(ud) -> void:
+func open_log_inspector() -> void:
 	log_inspector.popup_centered_ratio()
 
 func _exit_tree() -> void:

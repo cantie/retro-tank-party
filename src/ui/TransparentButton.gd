@@ -1,8 +1,8 @@
 extends MyButton
 
-onready var original_modulate = modulate
+@onready var original_modulate = modulate
 
-export (float) var transparency := 0.75
+@export_float) var transparency := 0.75
 
 func _ready() -> void:
 	_show_transparent(false)

@@ -52,13 +52,13 @@ var _host_operations := {}
 var _next_id := 0
 
 func _ready() -> void:
-	OnlineMatch.connect("player_left", self, "_on_OnlineMatch_player_left")
+	OnlineMatch.player_left.connect(self._on_OnlineMatch_player_left)
 	
-	pause_mode = Node.PAUSE_MODE_PROCESS
+	process_mode = Node.PROCESS_MODE_ALWAYS
 	
 	var timer = Timer.new()
 	timer.autostart = true
-	timer.connect("timeout", self, "_on_timer_timeout")
+	timer.timeout.connect(self._on_timer_timeout)
 	add_child(timer)
 
 func _notification(what: int) -> void:
@@ -105,7 +105,7 @@ master func _mark_done(id: int, success: bool) -> void:
 
 func _complete_operation(operation: HostOperation, success: bool) -> void:
 	_host_operations.erase(operation.id)
-	operation.emit_signal("completed", success)
+	operation.completed.emit(success)
 
 func _on_OnlineMatch_player_left(player: OnlineMatch.Player) -> void:
 	# Re-check our list of operation to see if they are now completed, now that
@@ -149,7 +149,7 @@ func _op_change_scene(operation: ClientOperation, full_info: Dictionary) -> void
 	var path = full_info['path']
 	var info = full_info['info']
 	
-	if get_tree().change_scene(path) != OK:
+	if get_tree().change_scene_to_file(path) != OK:
 		operation.mark_done(false)
 		return
 	
@@ -166,7 +166,7 @@ func _finish_op_change_scene(operation: ClientOperation, info: Dictionary) -> vo
 
 func _change_scene_host_operation_completed(success: bool, path: String) -> void:
 	if not success:
-		if get_tree().change_scene(FALLBACK_SCENE) != OK:
+		if get_tree().change_scene_to_file(FALLBACK_SCENE) != OK:
 			OS.alert("Unable to change scene!")
 			get_tree().quit(1)
 		

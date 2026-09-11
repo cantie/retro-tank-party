@@ -13,8 +13,8 @@ func _ready() -> void:
 
 func setup_sound_manager(_sync_manager) -> void:
 	SyncManager = _sync_manager
-	SyncManager.connect("tick_retired", self, "_on_SyncManager_tick_retired")
-	SyncManager.connect("sync_stopped", self, "_on_SyncManager_sync_stopped")
+	SyncManager.tick_retired.connect(self._on_SyncManager_tick_retired)
+	SyncManager.sync_stopped.connect(self._on_SyncManager_sync_stopped)
 
 func play_sound(identifier: String, sound: AudioStream, info: Dictionary = {}) -> void:
 	if SyncManager.is_respawning():

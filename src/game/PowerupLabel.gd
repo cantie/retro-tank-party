@@ -1,13 +1,14 @@
 extends Label
 
-onready var blink_timer = $BlinkTimer
-onready var default_modulate_a = modulate.a
+@onready var blink_timer = $BlinkTimer
+@onready var default_modulate_a = modulate.a
 
-var blinking := false setget set_blinking
+var blinking := false:
+	set = set_blinking
 
 func set_blinking(_blinking: bool) -> void:
 	if blink_timer == null:
-		yield(self, "ready")
+		await self.ready
 	if blinking != _blinking:
 		blinking = _blinking
 		if blinking:

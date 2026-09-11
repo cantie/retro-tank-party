@@ -11,8 +11,8 @@ var rumble_duration := 0.017
 var ticks := {}
 
 func _ready() -> void:
-	SyncManager.connect("tick_retired", self, "_on_SyncManager_tick_retired")
-	SyncManager.connect("sync_stopped", self, "_on_SyncManager_sync_stopped")
+	SyncManager.tick_retired.connect(self._on_SyncManager_tick_retired)
+	SyncManager.sync_stopped.connect(self._on_SyncManager_sync_stopped)
 
 func _physics_process(delta: float) -> void:
 	if rumble > 0.0:

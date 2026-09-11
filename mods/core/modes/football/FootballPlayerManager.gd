@@ -3,7 +3,7 @@ extends Node
 const Tank := preload("res://src/objects/Tank.gd")
 const FootballWeaponType = preload("res://mods/core/weapons/football.tres")
 
-onready var respawn_timer := $RespawnTimer
+@onready var respawn_timer := $RespawnTimer
 
 var player
 var config: Dictionary
@@ -33,8 +33,8 @@ func _load_state(state: Dictionary) -> void:
 func set_player_tank(_tank) -> void:
 	if tank != null && is_instance_valid(tank):
 		tank.hooks.unsubscribe("pickup_weapon", self, "_hook_tank_pickup_weapon")
-		tank.disconnect("weapon_type_changed", self, "_on_tank_weapon_type_changed")
-		tank.disconnect("player_dead", self, "_on_tank_player_dead")
+		tank.weapon_type_changed.disconnect(self._on_tank_weapon_type_changed)
+		tank.player_dead.disconnect(self._on_tank_player_dead)
 	
 	if tank != _tank:
 		previous_weapon_type = null
@@ -43,8 +43,8 @@ func set_player_tank(_tank) -> void:
 	
 	if tank:
 		tank.hooks.subscribe("pickup_weapon", self, "_hook_tank_pickup_weapon", -10)
-		tank.connect("weapon_type_changed", self, "_on_tank_weapon_type_changed")
-		tank.connect("player_dead", self, "_on_tank_player_dead")
+		tank.weapon_type_changed.connect(self._on_tank_weapon_type_changed)
+		tank.player_dead.connect(self._on_tank_player_dead)
 
 func _on_tank_player_dead(killer_id: int) -> void:
 	set_player_tank(null)
@@ -70,4 +70,4 @@ func start_respawn_timer() -> void:
 	respawn_timer.start()
 
 func _on_RespawnTimer_timeout() -> void:
-	emit_signal("respawn_player", player.peer_id)
+	respawn_player.emit(player.peer_id)

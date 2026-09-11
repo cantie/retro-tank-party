@@ -9,12 +9,12 @@ var _has_mouse_focus := false
 func _ready() -> void:
 	_parent = get_parent()
 	
-	yield(_parent, "ready")
+	await _parent.ready
 	_is_parent_ready = true
 	
-	_parent.connect("mouse_entered", self, "_on_mouse_entered")
-	_parent.connect("mouse_exited", self, "_on_mouse_exited")
-	_parent.connect("focus_entered", self, "_on_focus_entered")
+	_parent.mouse_entered.connect(self._on_mouse_entered)
+	_parent.mouse_exited.connect(self._on_mouse_exited)
+	_parent.focus_entered.connect(self._on_focus_entered)
 
 func grab_without_sound() -> void:
 	_play_focus_sound = false

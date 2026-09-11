@@ -19,7 +19,7 @@ func detach_ability() -> void:
 	pass
 
 func mark_finished() -> void:
-	emit_signal("finished")
+	finished.emit()
 
 func use_ability() -> void:
 	pass

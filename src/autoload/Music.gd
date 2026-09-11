@@ -1,6 +1,6 @@
 extends Node
 
-onready var tween = $Tween
+@onready var tween = $Tween
 
 var current_song
 var initial_volume_dbs := {}

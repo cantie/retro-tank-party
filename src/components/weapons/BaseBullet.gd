@@ -2,7 +2,7 @@ extends SGArea2D
 
 var Explosion = preload("res://src/objects/Explosion.tscn")
 
-onready var lifetime_timer = $LifetimeTimer
+@onready var lifetime_timer = $LifetimeTimer
 
 var tank
 var player_id: int

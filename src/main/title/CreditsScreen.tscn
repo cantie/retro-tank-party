@@ -2,8 +2,8 @@
 
 [ext_resource path="res://src/main/title/CreditsScreen.gd" type="Script" id=1]
 [ext_resource path="res://assets/theme.tres" type="Theme" id=2]
-[ext_resource path="res://assets/fonts/monogram.tres" type="DynamicFont" id=3]
-[ext_resource path="res://assets/fonts/monogram_credits.tres" type="DynamicFont" id=4]
+[ext_resource path="res://assets/fonts/monogram.tres" type="FontFile" id=3]
+[ext_resource path="res://assets/fonts/monogram_credits.tres" type="FontFile" id=4]
 [ext_resource path="res://assets/ui/gray_panel_screws_stylebox.tres" type="StyleBox" id=5]
 
 [node name="CreditsScreen" type="Control"]

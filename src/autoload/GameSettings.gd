@@ -13,18 +13,27 @@ enum NetworkRelay {
 	FORCED_FALLBACK,
 }
 
-var art_style := "res://mods/core/art/classic.tres" setget set_art_style
-var sound_volume := 1.0 setget set_sound_volume
-var music_volume := 1.0 setget set_music_volume
-var tank_engine_sounds := true setget set_tank_engine_sounds
-var use_full_screen := false setget set_use_full_screen
+var art_style := "res://mods/core/art/classic.tres":
+	set = set_art_style
+var sound_volume := 1.0:
+	set = set_sound_volume
+var music_volume := 1.0:
+	set = set_music_volume
+var tank_engine_sounds := true:
+	set = set_tank_engine_sounds
+var use_full_screen := false:
+	set = set_use_full_screen
 var use_screenshake := true
-var use_network_relay := 0 setget set_use_network_relay
+var use_network_relay := 0:
+	set = set_use_network_relay
 var use_detailed_logging := false
 var control_scheme: int = ControlScheme.MODERN
-var joy_id := 0 setget set_joy_id
-var joy_name := "" setget set_joy_name
-var language := "" setget set_language
+var joy_id := 0:
+	set = set_joy_id
+var joy_name := "":
+	set = set_joy_name
+var language := "":
+	set = set_language
 
 const SETTINGS_KEYS = [
 	'art_style',
@@ -43,15 +52,13 @@ const SETTINGS_KEYS = [
 const SETTINGS_FILENAME = 'user://settings.json'
 
 func _ready() -> void:
-	Input.connect("joy_connection_changed", self, "_on_joy_connection_changed")
+	Input.joy_connection_changed.connect(_on_joy_connection_changed)
 	joy_name = Input.get_joy_name(joy_id)
 	load_settings()
 
 	if language == '':
-		# Set language to default for players that upgrade from older versions.
 		set_language('default')
 	elif language == 'default':
-		# Determine the default language and enable it.
 		update_language()
 
 func set_art_style(_art_style: String) -> void:
@@ -66,7 +73,7 @@ func set_music_volume(_music_volume: float) -> void:
 		AudioServer.set_bus_mute(bus_index, true)
 	else:
 		AudioServer.set_bus_mute(bus_index, false)
-		AudioServer.set_bus_volume_db(bus_index, linear2db(music_volume))
+		AudioServer.set_bus_volume_db(bus_index, linear_to_db(music_volume))
 
 func set_sound_volume(_sound_volume: float) -> void:
 	sound_volume = _sound_volume
@@ -76,7 +83,7 @@ func set_sound_volume(_sound_volume: float) -> void:
 		AudioServer.set_bus_mute(bus_index, true)
 	else:
 		AudioServer.set_bus_mute(bus_index, false)
-		AudioServer.set_bus_volume_db(bus_index, linear2db(sound_volume))
+		AudioServer.set_bus_volume_db(bus_index, linear_to_db(sound_volume))
 
 func set_tank_engine_sounds(_tank_engine_sounds: bool) -> void:
 	tank_engine_sounds = _tank_engine_sounds
@@ -85,7 +92,10 @@ func set_tank_engine_sounds(_tank_engine_sounds: bool) -> void:
 
 func set_use_full_screen(_use_full_screen: bool) -> void:
 	use_full_screen = _use_full_screen
-	OS.window_fullscreen = use_full_screen
+	if use_full_screen:
+		DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_FULLSCREEN)
+	else:
+		DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_WINDOWED)
 
 func set_use_network_relay(_use_network_relay: int) -> void:
 	use_network_relay = _use_network_relay
@@ -101,9 +111,8 @@ func set_joy_id(_joy_id: int) -> void:
 	if joy_id != _joy_id:
 		joy_id = _joy_id
 
-		# Remap all the events
 		for action in InputMap.get_actions():
-			for event in InputMap.get_action_list(action):
+			for event in InputMap.action_get_events(action):
 				if event is InputEventJoypadButton or event is InputEventJoypadMotion:
 					event.device = joy_id
 
@@ -111,12 +120,11 @@ func set_joy_id(_joy_id: int) -> void:
 
 func set_joy_name(_joy_name: String) -> void:
 	if joy_name != _joy_name:
-		for joy_id in Input.get_connected_joypads():
-			if Input.get_joy_name(joy_id) == _joy_name:
-				set_joy_id(joy_id)
+		for jid in Input.get_connected_joypads():
+			if Input.get_joy_name(jid) == _joy_name:
+				set_joy_id(jid)
 				return
 
-		# If no matching joystick is found, then set the device id to 0.
 		set_joy_id(0)
 
 func set_language(_lang_code: String) -> void:
@@ -159,34 +167,31 @@ func update_language() -> void:
 
 func _on_joy_connection_changed(device: int, connected: bool) -> void:
 	if connected:
-		# Switch to whatever the newly connected joystick is.
 		set_joy_id(device)
 	elif joy_id == device:
-		# Our current gamepad has just been disconnected, so switch back to 0.
 		set_joy_id(0)
 
 func load_settings() -> void:
-	var file = File.new()
-	if file.file_exists(SETTINGS_FILENAME):
-		file.open(SETTINGS_FILENAME, File.READ)
-		var result := JSON.parse(file.get_as_text())
-		if result.result is Dictionary:
-			# For existing players, we want to default the control scheme to
-			# retro, and only default to modern for new players.
-			if not result.result.has("control_scheme"):
-				result.result['control_scheme'] = ControlScheme.RETRO
+	if FileAccess.file_exists(SETTINGS_FILENAME):
+		var file = FileAccess.open(SETTINGS_FILENAME, FileAccess.READ)
+		if file:
+			var json_text = file.get_as_text()
+			file.close()
+			var result = JSON.parse_string(json_text)
+			if result is Dictionary:
+				if not result.has("control_scheme"):
+					result['control_scheme'] = ControlScheme.RETRO
 
-			for k in result.result:
-				if k in SETTINGS_KEYS:
-					set(k, result.result[k])
-		file.close()
+				for k in result:
+					if k in SETTINGS_KEYS:
+						set(k, result[k])
 
 func save_settings() -> void:
 	var settings := {}
 	for k in SETTINGS_KEYS:
 		settings[k] = get(k)
 
-	var file = File.new()
-	file.open(SETTINGS_FILENAME, File.WRITE)
-	file.store_line(JSON.print(settings))
-	file.close()
+	var file = FileAccess.open(SETTINGS_FILENAME, FileAccess.WRITE)
+	if file:
+		file.store_line(JSON.stringify(settings))
+		file.close()

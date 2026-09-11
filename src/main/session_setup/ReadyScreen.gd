@@ -2,22 +2,22 @@ extends "res://src/ui/Screen.gd"
 
 var PlayerStatus = preload("res://src/ui/PlayerStatus.tscn");
 
-onready var ready_button := $Panel/ReadyButton
-onready var match_id_container := $Panel/MatchIDContainer
-onready var match_id_label := $Panel/MatchIDContainer/MatchID
-onready var status_container := $Panel/StatusContainer
+@onready var ready_button := $Panel/ReadyButton
+@onready var match_id_container := $Panel/MatchIDContainer
+@onready var match_id_label := $Panel/MatchIDContainer/MatchID
+@onready var status_container := $Panel/StatusContainer
 
 signal ready_pressed ()
 
 func _ready() -> void:
 	clear_players()
 
-	OnlineMatch.connect("player_joined", self, "_on_OnlineMatch_player_joined")
-	OnlineMatch.connect("player_left", self, "_on_OnlineMatch_player_left")
-	OnlineMatch.connect("player_status_changed", self, "_on_OnlineMatch_player_status_changed")
-	OnlineMatch.connect("match_ready", self, "_on_OnlineMatch_match_ready")
-	OnlineMatch.connect("match_not_ready", self, "_on_OnlineMatch_match_not_ready")
-	SyncManager.connect("peer_pinged_back", self, "_on_SyncManager_peer_pinged_back")
+	OnlineMatch.player_joined.connect(self._on_OnlineMatch_player_joined)
+	OnlineMatch.player_left.connect(self._on_OnlineMatch_player_left)
+	OnlineMatch.player_status_changed.connect(self._on_OnlineMatch_player_status_changed)
+	OnlineMatch.match_ready.connect(self._on_OnlineMatch_match_ready)
+	OnlineMatch.match_not_ready.connect(self._on_OnlineMatch_match_not_ready)
+	SyncManager.peer_pinged_back.connect(self._on_SyncManager_peer_pinged_back)
 
 func _show_screen(info: Dictionary = {}) -> void:
 	var players: Dictionary = info.get("players", {})
@@ -50,7 +50,7 @@ func hide_match_id() -> void:
 
 func add_player(session_id: String, username: String, is_host: bool = false) -> void:
 	if not status_container.has_node(session_id):
-		var status = PlayerStatus.instance()
+		var status = PlayerStatus.instantiate()
 		status_container.add_child(status)
 		status.initialize(username, "Connecting...")
 		status.name = session_id
@@ -82,7 +82,7 @@ func set_ready_button_enabled(enabled: bool = true) -> void:
 		ready_button.focus.grab_without_sound()
 
 func _on_ReadyButton_pressed() -> void:
-	emit_signal("ready_pressed")
+	ready_pressed.emit()
 
 func _on_MatchCopyButton_pressed() -> void:
 	OS.clipboard = match_id_label.text

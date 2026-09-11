@@ -1,9 +1,9 @@
 extends "res://src/ui/Screen.gd"
 
-onready var option_switcher := $PanelContainer/VBoxContainer/OptionSwitcher
-onready var panel_parent := $PanelContainer/VBoxContainer/MarginContainer
-onready var matchmaker_player_count_control := $PanelContainer/VBoxContainer/MarginContainer/MatchPanel/Fields/PlayerCount
-onready var join_match_id_control := $PanelContainer/VBoxContainer/MarginContainer/JoinPanel/Fields/LineEdit
+@onready var option_switcher := $PanelContainer/VBoxContainer/OptionSwitcher
+@onready var panel_parent := $PanelContainer/VBoxContainer/MarginContainer
+@onready var matchmaker_player_count_control := $PanelContainer/VBoxContainer/MarginContainer/MatchPanel/Fields/PlayerCount
+@onready var join_match_id_control := $PanelContainer/VBoxContainer/MarginContainer/JoinPanel/Fields/LineEdit
 
 func _ready() -> void:
 	option_switcher.add_item("MATCH_OPTION_CREATE", "CreatePanel")
@@ -18,9 +18,9 @@ func _ready() -> void:
 	$PanelContainer/VBoxContainer/MarginContainer/CreatePanel/CreateButton.connect("pressed", self, "_on_match_button_pressed", [OnlineMatch.MatchMode.CREATE])
 	$PanelContainer/VBoxContainer/MarginContainer/JoinPanel/JoinButton.connect("pressed", self, "_on_match_button_pressed", [OnlineMatch.MatchMode.JOIN])
 
-	OnlineMatch.connect("matchmaker_matched", self, "_on_OnlineMatch_matchmaker_matched")
-	OnlineMatch.connect("match_created", self, "_on_OnlineMatch_created")
-	OnlineMatch.connect("match_joined", self, "_on_OnlineMatch_joined")
+	OnlineMatch.matchmaker_matched.connect(self._on_OnlineMatch_matchmaker_matched)
+	OnlineMatch.match_created.connect(self._on_OnlineMatch_created)
+	OnlineMatch.match_joined.connect(self._on_OnlineMatch_joined)
 
 func _show_screen(_info: Dictionary = {}) -> void:
 	option_switcher.value = "CreatePanel"
@@ -48,14 +48,14 @@ func _on_match_button_pressed(mode) -> void:
 		ui_layer.show_screen("ConnectionScreen", { next_screen = null, reconnect = true })
 
 		# Wait to see if we get a new valid session.
-		yield(Online, "session_changed")
+		await Online.session_changed
 		if Online.nakama_session == null:
 			return
 
 	# Connect socket to realtime Nakama API if not connected.
 	if not Online.is_nakama_socket_connected():
 		Online.connect_nakama_socket()
-		yield(Online, "socket_connected")
+		await Online.socket_connected
 
 	ui_layer.hide_message()
 
@@ -65,7 +65,7 @@ func _on_match_button_pressed(mode) -> void:
 		# Ask Nakma for the ICE servers via RPC.
 		var ice_servers_result: NakamaAPI.ApiRpc = yield(Online.nakama_client.rpc_async(Online.nakama_session, 'get_ice_servers'), "completed")
 		if not ice_servers_result.is_exception():
-			var json_result = JSON.parse(ice_servers_result.payload)
+			var json_result = JSON.parse_string(ice_servers_result.payload)
 			if json_result.error == OK:
 				if json_result.result["success"]:
 					var ice_servers = json_result.result["response"]["ice_servers"]

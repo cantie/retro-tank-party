@@ -1,4 +1,4 @@
-extends Reference
+extends RefCounted
 
 const DEFAULT_MESSAGE_BUFFER_SIZE = 1280
 
@@ -9,13 +9,13 @@ enum InputMessageKey {
 	STATE_HASHES,
 }
 
-func serialize_input(input: Dictionary) -> PoolByteArray:
+func serialize_input(input: Dictionary) -> PackedByteArray:
 	return var2bytes(input)
 
-func unserialize_input(serialized: PoolByteArray) -> Dictionary:
+func unserialize_input(serialized: PackedByteArray) -> Dictionary:
 	return bytes2var(serialized)
 
-func serialize_message(msg: Dictionary) -> PoolByteArray:
+func serialize_message(msg: Dictionary) -> PackedByteArray:
 	var buffer := StreamPeerBuffer.new()
 	buffer.resize(DEFAULT_MESSAGE_BUFFER_SIZE)
 

@@ -1,9 +1,9 @@
 extends Node2D
 
-onready var health_node := $Background/VBoxContainer/Control/Health
-onready var player_name_label := $Background/VBoxContainer/HBoxContainer/PlayerName
-onready var team_parent := $Background/VBoxContainer/HBoxContainer/Team
-onready var team_label := $Background/VBoxContainer/HBoxContainer/Team/Label
+@onready var health_node := $Background/VBoxContainer/Control/Health
+@onready var player_name_label := $Background/VBoxContainer/HBoxContainer/PlayerName
+@onready var team_parent := $Background/VBoxContainer/HBoxContainer/Team
+@onready var team_label := $Background/VBoxContainer/HBoxContainer/Team/Label
 
 var health_bar_max: int
 

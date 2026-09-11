@@ -1,4 +1,4 @@
-extends Reference
+extends RefCounted
 
 # A socket to interact with Nakama server.
 class_name NakamaSocket
@@ -96,10 +96,10 @@ func _init(p_adapter : NakamaSocketAdapter,
 		port = ":%d" % p_port
 	_base_uri = "%s://%s%s" % [p_scheme, p_host, port]
 	_free_adapter = p_free_adapter
-	_adapter.connect("closed", self, "_closed")
-	_adapter.connect("connected", self, "_connected")
-	_adapter.connect("received_error", self, "_error")
-	_adapter.connect("received", self, "_received")
+	_adapter.closed.connect(self._closed)
+	_adapter.connected.connect(self._connected)
+	_adapter.received_error.connect(self._error)
+	_adapter.received.connect(self._received)
 
 func _notification(what):
 	if what == NOTIFICATION_PREDELETE:
@@ -120,22 +120,22 @@ func _notification(what):
 			_adapter.queue_free()
 
 func _closed(p_error = null):
-	emit_signal("closed")
+	closed.emit()
 	_resume_conn(ERR_CANT_CONNECT)
 	_clear_responses()
 
 func _error(p_error):
-	emit_signal("received_error", p_error)
+	received_error.emit(p_error)
 	_resume_conn(p_error)
 	_clear_responses()
 
 func _connected():
-	emit_signal("connected")
+	connected.emit()
 	_resume_conn(OK)
 
-func _received(p_bytes : PoolByteArray):
+func _received(p_bytes : PackedByteArray):
 	var json_str = p_bytes.get_string_from_utf8()
-	var json := JSON.parse(json_str)
+	var json := JSON.parse_string(json_str)
 	if json.error != OK or typeof(json.result) != TYPE_DICTIONARY:
 		logger.error("Unable to parse response: %s" % json_str)
 		return
@@ -149,53 +149,53 @@ func _received(p_bytes : PoolByteArray):
 	else:
 		if dict.has("channel_message"):
 			var res = NakamaAPI.ApiChannelMessage.create(NakamaAPI, dict["channel_message"])
-			emit_signal("received_channel_message", res)
+			received_channel_message.emit(res)
 		elif dict.has("channel_presence_event"):
 			var res = NakamaRTAPI.ChannelPresenceEvent.create(NakamaRTAPI, dict["channel_presence_event"])
-			emit_signal("received_channel_presence", res)
+			received_channel_presence.emit(res)
 		elif dict.has("match_data"):
 			var res = NakamaRTAPI.MatchData.create(NakamaRTAPI, dict["match_data"])
-			emit_signal("received_match_state", res)
+			received_match_state.emit(res)
 		elif dict.has("match_presence_event"):
 			var res = NakamaRTAPI.MatchPresenceEvent.create(NakamaRTAPI, dict["match_presence_event"])
-			emit_signal("received_match_presence", res)
+			received_match_presence.emit(res)
 		elif dict.has("matchmaker_matched"):
 			var res = NakamaRTAPI.MatchmakerMatched.create(NakamaRTAPI, dict["matchmaker_matched"])
-			emit_signal("received_matchmaker_matched", res)
+			received_matchmaker_matched.emit(res)
 		elif dict.has("notifications"):
 			var res = NakamaAPI.ApiNotificationList.create(NakamaAPI, dict["notifications"])
 			for n in res.notifications:
-				emit_signal("received_notification", n)
+				received_notification.emit(n)
 		elif dict.has("status_presence_event"):
 			var res = NakamaRTAPI.StatusPresenceEvent.create(NakamaRTAPI, dict["status_presence_event"])
-			emit_signal("received_status_presence", res)
+			received_status_presence.emit(res)
 		elif dict.has("stream_presence_event"):
 			var res = NakamaRTAPI.StreamPresenceEvent.create(NakamaRTAPI, dict["stream_presence_event"])
-			emit_signal("received_stream_presence", res)
+			received_stream_presence.emit(res)
 		elif dict.has("stream_data"):
 			var res = NakamaRTAPI.StreamData.create(NakamaRTAPI, dict["stream_data"])
-			emit_signal("received_stream_state", res)
+			received_stream_state.emit(res)
 		elif dict.has("party"):
 			var res = NakamaRTAPI.Party.create(NakamaRTAPI, dict["party"])
-			emit_signal("received_party", res)
+			received_party.emit(res)
 		elif dict.has("party_close"):
 			var res = NakamaRTAPI.PartyClose.create(NakamaRTAPI, dict["party_close"])
-			emit_signal("received_party_close", res)
+			received_party_close.emit(res)
 		elif dict.has("party_data"):
 			var res = NakamaRTAPI.PartyData.create(NakamaRTAPI, dict["party_data"])
-			emit_signal("received_party_data", res)
+			received_party_data.emit(res)
 		elif dict.has("party_join_request"):
 			var res = NakamaRTAPI.PartyJoinRequest.create(NakamaRTAPI, dict["party_join_request"])
-			emit_signal("received_party_join_request", res)
+			received_party_join_request.emit(res)
 		elif dict.has("party_leader"):
 			var res = NakamaRTAPI.PartyLeader.create(NakamaRTAPI, dict["party_leader"])
-			emit_signal("received_party_leader", res)
+			received_party_leader.emit(res)
 		elif dict.has("party_matchmaker_ticket"):
 			var res = NakamaRTAPI.PartyMatchmakerTicket.create(NakamaRTAPI, dict["party_matchmaker_ticket"])
-			emit_signal("received_party_matchmaker_ticket", res)
+			received_party_matchmaker_ticket.emit(res)
 		elif dict.has("party_presence_event"):
 			var res = NakamaRTAPI.PartyPresenceEvent.create(NakamaRTAPI, dict["party_presence_event"])
-			emit_signal("received_party_presence", res)
+			received_party_presence.emit(res)
 		else:
 			logger.warning("Unhandled response: %s" % dict)
 
@@ -264,7 +264,7 @@ func _send_async(p_message, p_parse_type = NakamaAsyncResult, p_ns = NakamaRTAPI
 	var id = str(_last_id)
 	_last_id += 1
 	_responses[id] = _parse_result(_responses, id, p_parse_type, p_ns, p_result_key)
-	var json := JSON.print({
+	var json := JSON.stringify({
 		"cid": id,
 		msg: p_message.serialize()
 	})
@@ -325,7 +325,7 @@ func create_match_async():
 # @param p_user_ids - The IDs of users.
 # @param p_usernames - The usernames of the users.
 # Returns a task which resolves to the current statuses for the users.
-func follow_users_async(p_ids : PoolStringArray, p_usernames : PoolStringArray = []) -> NakamaRTAPI.Status:
+func follow_users_async(p_ids : PackedStringArray, p_usernames : PackedStringArray = []) -> NakamaRTAPI.Status:
 	return _send_async(NakamaRTMessage.StatusFollow.new(p_ids, p_usernames), NakamaRTAPI.Status)
 
 # Join a chat channel on the server.
@@ -399,7 +399,7 @@ func rpc_async(p_func_id : String, p_payload = null) -> NakamaAPI.ApiRpc:
 		TYPE_NIL, TYPE_STRING:
 			pass
 		_:
-			payload = JSON.print(p_payload)
+			payload = JSON.stringify(p_payload)
 	return _send_async(NakamaAPI.ApiRpc.create(NakamaAPI, {
 		"id": p_func_id,
 		"payload": payload
@@ -431,7 +431,7 @@ func send_match_state_async(p_match_id, p_op_code : int, p_data : String, p_pres
 # @param p_data - The input data to send.
 # @param p_presences - The presences in the match who should receive the input.
 # Returns a task which represents the asynchronous operation.
-func send_match_state_raw_async(p_match_id, p_op_code : int, p_data : PoolByteArray, p_presences = null):
+func send_match_state_raw_async(p_match_id, p_op_code : int, p_data : PackedByteArray, p_presences = null):
 	var req = _send_async(NakamaRTMessage.MatchDataSend.new(
 		p_match_id,
 		p_op_code,
@@ -446,7 +446,7 @@ func send_match_state_raw_async(p_match_id, p_op_code : int, p_data : PoolByteAr
 # Unfollow one or more users from their status updates.
 # @param p_user_ids - An array of user ids to unfollow.
 # Returns a task which represents the asynchronous operation.
-func unfollow_users_async(p_ids : PoolStringArray):
+func unfollow_users_async(p_ids : PackedStringArray):
 	return _send_async(NakamaRTMessage.StatusUnfollow.new(p_ids))
 
 # Update a chat message on a chat channel in the server.
@@ -456,7 +456,7 @@ func unfollow_users_async(p_ids : PoolStringArray):
 # Returns a task which resolves to an acknowledgement of the updated message.
 func update_chat_message_async(p_channel_id : String, p_message_id : String, p_content : Dictionary):
 	return _send_async(
-		NakamaRTMessage.ChannelMessageUpdate.new(p_channel_id, p_message_id, JSON.print(p_content)),
+		NakamaRTMessage.ChannelMessageUpdate.new(p_channel_id, p_message_id, JSON.stringify(p_content)),
 		NakamaRTAPI.ChannelMessageAck
 	)
 
@@ -472,7 +472,7 @@ func update_status_async(p_status : String):
 # Returns a task which resolves to the acknowledgement of the chat message write.
 func write_chat_message_async(p_channel_id : String, p_content : Dictionary):
 	return _send_async(
-		NakamaRTMessage.ChannelMessageSend.new(p_channel_id, JSON.print(p_content)),
+		NakamaRTMessage.ChannelMessageSend.new(p_channel_id, JSON.stringify(p_content)),
 		NakamaRTAPI.ChannelMessageAck
 	)
 

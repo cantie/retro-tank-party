@@ -1,11 +1,11 @@
 extends "res://src/ui/Screen.gd"
 
-onready var scroll_container := $Panel/VBoxContainer/ScrollContainer
-onready var field_container := $Panel/VBoxContainer/ScrollContainer/GridContainer
-onready var health_slider := $Panel/VBoxContainer/ScrollContainer/GridContainer/HealthSlider
-onready var invincible_field := $Panel/VBoxContainer/ScrollContainer/GridContainer/InvincibleOptions
-onready var weapon_field := $Panel/VBoxContainer/ScrollContainer/GridContainer/WeaponOptions
-onready var ability_field := $Panel/VBoxContainer/ScrollContainer/GridContainer/AbilityOptions
+@onready var scroll_container := $Panel/VBoxContainer/ScrollContainer
+@onready var field_container := $Panel/VBoxContainer/ScrollContainer/GridContainer
+@onready var health_slider := $Panel/VBoxContainer/ScrollContainer/GridContainer/HealthSlider
+@onready var invincible_field := $Panel/VBoxContainer/ScrollContainer/GridContainer/InvincibleOptions
+@onready var weapon_field := $Panel/VBoxContainer/ScrollContainer/GridContainer/WeaponOptions
+@onready var ability_field := $Panel/VBoxContainer/ScrollContainer/GridContainer/AbilityOptions
 
 var tank
 var _is_ready := false

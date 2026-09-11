@@ -1,9 +1,9 @@
 extends "res://src/components/modes/BaseConfig.gd"
 
-onready var timelimit_field = $Timelimit
-onready var teams_label = $TeamsLabel
-onready var teams_field = $Teams
-onready var weapon_timeout_field = $WeaponTimeout
+@onready var timelimit_field = $Timelimit
+@onready var teams_label = $TeamsLabel
+@onready var teams_field = $Teams
+@onready var weapon_timeout_field = $WeaponTimeout
 
 func _ready() -> void:
 	for i in range(1, 11):
@@ -42,4 +42,4 @@ func set_config_values(values: Dictionary) -> void:
 	weapon_timeout_field.value = values['weapon_timeout']
 
 func _on_OptionSwitcher_item_selected(_value, _index) -> void:
-	emit_signal("changed")
+	changed.emit()

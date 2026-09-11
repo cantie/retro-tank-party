@@ -1,6 +1,6 @@
 extends SGFixedNode2D
 
-onready var animation_player = $AnimationPlayer
+@onready var animation_player = $AnimationPlayer
 
 const MissSound = preload("res://assets/sounds/Snare__001.wav")
 const HitSound = preload("res://assets/sounds/Explosion3__004.wav")
@@ -17,7 +17,7 @@ func _network_spawn(data: Dictionary) -> void:
 	animation_player.play("fire")
 	
 	# @todo Can we do something like this with rollback?
-	#yield(get_tree().create_timer(randf() * 0.150), "timeout")
+	#await get_tree().create_timer(randf() * 0.150).timeout
 	
 	var sound_id = str(get_path())
 	if type == 'Smoke':

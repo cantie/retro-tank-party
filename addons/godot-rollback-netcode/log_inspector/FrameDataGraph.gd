@@ -1,12 +1,13 @@
-tool
+@tool
 extends VBoxContainer
 
 const LogData = preload("res://addons/godot-rollback-netcode/log_inspector/LogData.gd")
 
-onready var canvas = $Canvas
-onready var scroll_bar = $ScrollBar
+@onready var canvas = $Canvas
+@onready var scroll_bar = $ScrollBar
 
-var cursor_time: int = -1 setget set_cursor_time
+var cursor_time: int = -1:
+	set = set_cursor_time
 
 var log_data: LogData
 
@@ -27,7 +28,7 @@ func set_cursor_time(_cursor_time: int) -> void:
 	if cursor_time != _cursor_time:
 		cursor_time = _cursor_time
 		canvas.cursor_time = cursor_time
-		emit_signal("cursor_time_changed", cursor_time)
+		cursor_time_changed.emit(cursor_time)
 
 func _on_ScrollBar_value_changed(value: float) -> void:
 	canvas.start_time = int(value)

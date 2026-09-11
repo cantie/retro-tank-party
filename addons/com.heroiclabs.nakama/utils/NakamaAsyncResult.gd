@@ -1,7 +1,8 @@
-extends Reference
+extends RefCounted
 class_name NakamaAsyncResult
 
-var exception : NakamaException setget _no_set, get_exception
+var exception : NakamaException:
+	set = _no_set, get = get_exception
 var _ex = null
 
 func _no_set(v):

@@ -1,11 +1,13 @@
-tool
+@tool
 extends Control
 
 const Logger = preload("res://addons/godot-rollback-netcode/Logger.gd")
 const LogData = preload("res://addons/godot-rollback-netcode/log_inspector/LogData.gd")
 
-var start_time := 0 setget set_start_time
-var cursor_time := -1 setget set_cursor_time
+var start_time := 0:
+	set = set_start_time
+var cursor_time := -1:
+	set = set_cursor_time
 
 var show_network_arrows := true
 var network_arrow_peers := []
@@ -60,13 +62,13 @@ func set_start_time(_start_time: int) -> void:
 	if start_time != _start_time:
 		start_time = _start_time
 		update()
-		emit_signal("start_time_changed", start_time)
+		start_time_changed.emit(start_time)
 
 func set_cursor_time(_cursor_time: int) -> void:
 	if cursor_time != _cursor_time:
 		cursor_time = _cursor_time
 		update()
-		emit_signal("cursor_time_changed", cursor_time)
+		cursor_time_changed.emit(cursor_time)
 		
 		var relative_cursor_time = cursor_time - start_time
 		if relative_cursor_time < 0:
@@ -214,17 +216,17 @@ func _draw_network_arrows(start_positions: Dictionary, end_positions: Dictionary
 		var sqrt12 = sqrt(0.5)
 		var vector: Vector2 = end_position - start_position
 		var t := Transform2D(vector.angle(), end_position)
-		var points := PoolVector2Array([
+		var points := PackedVector2Array([
 			t.xform(Vector2(0, 0)),
 			t.xform(Vector2(-NETWORK_ARROW_SIZE, sqrt12 * NETWORK_ARROW_SIZE)),
 			t.xform(Vector2(-NETWORK_ARROW_SIZE, sqrt12 * -NETWORK_ARROW_SIZE)),
 		])
-		var colors := PoolColorArray([
+		var colors := PackedColorArray([
 			color,
 			color,
 			color,
 		])
-		draw_primitive(points, colors, PoolVector2Array())
+		draw_primitive(points, colors, PackedVector2Array())
 
 func _draw() -> void:
 	if log_data == null or log_data.is_loading():

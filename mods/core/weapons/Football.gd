@@ -6,7 +6,7 @@ const FootballSprite = preload("res://mods/core/modes/football/FootballSprite.ts
 var sprite
 
 func attach_weapon() -> void:
-	sprite = FootballSprite.instance()
+	sprite = FootballSprite.instantiate()
 	sprite.name = 'Football'
 	tank.bullet_start_position.add_child(sprite)
 

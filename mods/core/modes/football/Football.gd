@@ -1,7 +1,7 @@
 extends SGArea2D
 
-onready var pass_timer = $PassTimer
-onready var ray_cast = $RayCast2D
+@onready var pass_timer = $PassTimer
+@onready var ray_cast = $RayCast2D
 
 const SIXTEEN = 1048576
 
@@ -112,7 +112,7 @@ func _network_process(input: Dictionary) -> void:
 	if in_bounds:
 		in_bounds = bounds_rect.has_point(get_global_fixed_position())
 		if not in_bounds:
-			emit_signal("out_of_bounds")
+			out_of_bounds.emit()
 
 func _interpolate_state(old_state: Dictionary, new_state: Dictionary, weight: float) -> void:
 	position = lerp(old_state['fixed_transform'].get_origin().to_float(), new_state['fixed_transform'].get_origin().to_float(), weight)
@@ -134,7 +134,7 @@ func _on_Football_body_entered(body: SGCollisionObject2D) -> bool:
 	if frames_countdown > 0:
 		return false
 	
-	emit_signal("grabbed", body)
+	grabbed.emit(body)
 	return true
 
 func _on_PassTimer_timeout() -> void:

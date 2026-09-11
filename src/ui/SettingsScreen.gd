@@ -1,21 +1,21 @@
 extends "res://src/ui/Screen.gd"
 
-onready var scroll_container := $Panel/VBoxContainer/ScrollContainer
-onready var field_container := $Panel/VBoxContainer/ScrollContainer/MarginContainer/GridContainer
-onready var music_slider := $Panel/VBoxContainer/ScrollContainer/MarginContainer/GridContainer/MusicSlider
-onready var sound_slider := $Panel/VBoxContainer/ScrollContainer/MarginContainer/GridContainer/SoundSlider
-onready var tank_engine_sounds_field = $Panel/VBoxContainer/ScrollContainer/MarginContainer/GridContainer/TankEngineSoundsOptions
-onready var full_screen_field = $Panel/VBoxContainer/ScrollContainer/MarginContainer/GridContainer/FullScreenOptions
-onready var language_field = $Panel/VBoxContainer/ScrollContainer/MarginContainer/GridContainer/LanguageOptions
-onready var screenshake_field := $Panel/VBoxContainer/ScrollContainer/MarginContainer/GridContainer/ScreenshakeOptions
-onready var art_style_label := $Panel/VBoxContainer/ScrollContainer/MarginContainer/GridContainer/ArtStyleLabel
-onready var art_style_field := $Panel/VBoxContainer/ScrollContainer/MarginContainer/GridContainer/ArtStyleOptions
-onready var network_relay_label := $Panel/VBoxContainer/ScrollContainer/MarginContainer/GridContainer/NetworkRelayLabel
-onready var network_relay_field := $Panel/VBoxContainer/ScrollContainer/MarginContainer/GridContainer/NetworkRelayOptions
-onready var detailed_logging_label := $Panel/VBoxContainer/ScrollContainer/MarginContainer/GridContainer/DetailedLoggingLabel
-onready var detailed_logging_field := $Panel/VBoxContainer/ScrollContainer/MarginContainer/GridContainer/DetailedLoggingOptions
-onready var control_scheme_field := $Panel/VBoxContainer/ScrollContainer/MarginContainer/GridContainer/ControlScheme
-onready var gamepad_device_field = $Panel/VBoxContainer/ScrollContainer/MarginContainer/GridContainer/GamepadDeviceOptions
+@onready var scroll_container := $Panel/VBoxContainer/ScrollContainer
+@onready var field_container := $Panel/VBoxContainer/ScrollContainer/MarginContainer/GridContainer
+@onready var music_slider := $Panel/VBoxContainer/ScrollContainer/MarginContainer/GridContainer/MusicSlider
+@onready var sound_slider := $Panel/VBoxContainer/ScrollContainer/MarginContainer/GridContainer/SoundSlider
+@onready var tank_engine_sounds_field = $Panel/VBoxContainer/ScrollContainer/MarginContainer/GridContainer/TankEngineSoundsOptions
+@onready var full_screen_field = $Panel/VBoxContainer/ScrollContainer/MarginContainer/GridContainer/FullScreenOptions
+@onready var language_field = $Panel/VBoxContainer/ScrollContainer/MarginContainer/GridContainer/LanguageOptions
+@onready var screenshake_field := $Panel/VBoxContainer/ScrollContainer/MarginContainer/GridContainer/ScreenshakeOptions
+@onready var art_style_label := $Panel/VBoxContainer/ScrollContainer/MarginContainer/GridContainer/ArtStyleLabel
+@onready var art_style_field := $Panel/VBoxContainer/ScrollContainer/MarginContainer/GridContainer/ArtStyleOptions
+@onready var network_relay_label := $Panel/VBoxContainer/ScrollContainer/MarginContainer/GridContainer/NetworkRelayLabel
+@onready var network_relay_field := $Panel/VBoxContainer/ScrollContainer/MarginContainer/GridContainer/NetworkRelayOptions
+@onready var detailed_logging_label := $Panel/VBoxContainer/ScrollContainer/MarginContainer/GridContainer/DetailedLoggingLabel
+@onready var detailed_logging_field := $Panel/VBoxContainer/ScrollContainer/MarginContainer/GridContainer/DetailedLoggingOptions
+@onready var control_scheme_field := $Panel/VBoxContainer/ScrollContainer/MarginContainer/GridContainer/ControlScheme
+@onready var gamepad_device_field = $Panel/VBoxContainer/ScrollContainer/MarginContainer/GridContainer/GamepadDeviceOptions
 
 var _is_ready := false
 
@@ -74,7 +74,7 @@ func _ready() -> void:
 		detailed_logging_field.visible = false
 
 	_update_gamepad_options()
-	Input.connect("joy_connection_changed", self, "_on_joy_connection_changed")
+	Input.joy_connection_changed.connect(self._on_joy_connection_changed)
 
 	_setup_field_neighbors()
 

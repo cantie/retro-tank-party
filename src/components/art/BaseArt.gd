@@ -1,4 +1,4 @@
-extends Reference
+extends RefCounted
 
 const PickupGenericVisual = preload("res://src/objects/pickups/PickupGenericVisual.tscn")
 const PickupSpriteVisual = preload("res://src/objects/pickups/PickupSpriteVisual.tscn")
@@ -62,9 +62,9 @@ func replace_visual(id: String, node: Node, info: Dictionary = {}) -> Node:
 		if id == 'Pickup':
 			var texture = get_texture(texture_name)
 			if texture:
-				node = PickupSpriteVisual.instance()
+				node = PickupSpriteVisual.instantiate()
 			else:
-				node = PickupGenericVisual.instance()
+				node = PickupGenericVisual.instantiate()
 				return node
 		
 		replace_sprite_texture(texture_name, node)

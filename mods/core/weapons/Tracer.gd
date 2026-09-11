@@ -5,7 +5,7 @@ const TracerDetector = preload("res://mods/core/weapons/TracerDetector.tscn")
 var detector
 
 func attach_weapon() -> void:
-	detector = TracerDetector.instance()
+	detector = TracerDetector.instantiate()
 	detector.name = 'TracerDetector'
 	tank.bullet_start_position.add_child(detector)
 	detector.setup_tracer_detector(tank)

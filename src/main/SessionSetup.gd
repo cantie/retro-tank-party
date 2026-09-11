@@ -1,7 +1,7 @@
 extends Node2D
 
-onready var ui_layer: UILayer = $UILayer
-onready var ready_screen = $UILayer/Screens/ReadyScreen
+@onready var ui_layer: UILayer = $UILayer
+@onready var ready_screen = $UILayer/Screens/ReadyScreen
 
 var players_ready := {}
 
@@ -14,10 +14,10 @@ func _ready() -> void:
 	# Reset the network adaptor if it has been changed by Practice mode.
 	SyncManager.reset_network_adaptor()
 
-	OnlineMatch.connect("error_code", self, "_on_OnlineMatch_error")
-	OnlineMatch.connect("disconnected", self, "_on_OnlineMatch_disconnected")
-	OnlineMatch.connect("player_status_changed", self, "_on_OnlineMatch_player_status_changed")
-	OnlineMatch.connect("player_left", self, "_on_OnlineMatch_player_left")
+	OnlineMatch.error_code.connect(self._on_OnlineMatch_error)
+	OnlineMatch.disconnected.connect(self._on_OnlineMatch_disconnected)
+	OnlineMatch.player_status_changed.connect(self._on_OnlineMatch_player_status_changed)
+	OnlineMatch.player_left.connect(self._on_OnlineMatch_player_left)
 
 	ui_layer.show_screen("ConnectionScreen")
 	ui_layer.show_back_button()
@@ -40,14 +40,14 @@ func _on_UILayer_back_button() -> void:
 			alert_content = 'ALERT_LEAVE_MATCH'
 
 		ui_layer.show_alert('ALERT_LEAVE_MATCH_TITLE', alert_content)
-		var result: bool = yield(ui_layer, "alert_completed")
+		var result: bool = await ui_layer.alert_completed
 		if not result:
 			return
 
 	OnlineMatch.leave()
 
 	if ui_layer.current_screen_name in ['ConnectionScreen', 'MatchScreen']:
-		get_tree().change_scene("res://src/main/Title.tscn")
+		get_tree().change_scene_to_file("res://src/main/Title.tscn")
 	else:
 		_return_to_match_screen()
 

@@ -1,7 +1,7 @@
 extends SGFixedNode2D
 
-onready var animation_player := $AnimationPlayer
-onready var timer := $Timer
+@onready var animation_player := $AnimationPlayer
+@onready var timer := $Timer
 
 func _ready() -> void:
 	Globals.art.replace_visual('GreenTwigs', $Visual)

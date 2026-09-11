@@ -1,8 +1,8 @@
 extends Node
 
-onready var idle_sound := $Idle
-onready var fast_sound := $Fast
-onready var tween := $Tween
+@onready var idle_sound := $Idle
+@onready var fast_sound := $Fast
+@onready var tween := $Tween
 
 enum EngineState {
 	IDLE = 0,

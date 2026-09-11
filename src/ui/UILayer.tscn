@@ -1,6 +1,6 @@
 [gd_scene load_steps=7 format=2]
 
-[ext_resource path="res://assets/fonts/monogram.tres" type="DynamicFont" id=1]
+[ext_resource path="res://assets/fonts/monogram.tres" type="FontFile" id=1]
 [ext_resource path="res://src/ui/UILayer.gd" type="Script" id=2]
 [ext_resource path="res://assets/ui/return.png" type="Texture" id=3]
 [ext_resource path="res://src/ui/TransparentButton.gd" type="Script" id=4]
@@ -11,7 +11,7 @@
 script = ExtResource( 2 )
 
 [node name="Screens" type="Control" parent="."]
-pause_mode = 2
+process_mode = 1
 anchor_right = 1.0
 anchor_bottom = 1.0
 mouse_filter = 2
@@ -20,7 +20,7 @@ __meta__ = {
 }
 
 [node name="Overlay" type="Control" parent="."]
-pause_mode = 2
+process_mode = 1
 anchor_right = 1.0
 anchor_bottom = 1.0
 mouse_filter = 2

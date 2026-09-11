@@ -1,13 +1,13 @@
 extends Node2D
 
-onready var ui_layer = $UILayer
+@onready var ui_layer = $UILayer
 
 func _ready() -> void:
 	if "replay" in OS.get_cmdline_args():
-		get_tree().change_scene("res://src/main/Match.tscn")
+		get_tree().change_scene_to_file("res://src/main/Match.tscn")
 		return
 	if Globals.arguments.has('join'):
-		get_tree().change_scene("res://src/main/SessionSetup.tscn")
+		get_tree().change_scene_to_file("res://src/main/SessionSetup.tscn")
 		return
 
 	if not Globals.title_shown:

@@ -3,7 +3,7 @@ extends "res://src/ui/Screen.gd"
 var ScoreCounter = preload("res://src/components/modes/ScoreCounter.gd")
 var PlayerStatus = preload("res://src/ui/PlayerStatus.tscn")
 
-onready var status_container := $Panel/StatusContainer
+@onready var status_container := $Panel/StatusContainer
 
 func _show_screen(info: Dictionary = {}) -> void:
 	clear_players()
@@ -20,7 +20,7 @@ func clear_players() -> void:
 		child.queue_free()
 
 func add_player(username: String, score: int) -> void:
-	var status = PlayerStatus.instance()
+	var status = PlayerStatus.instantiate()
 	status_container.add_child(status)
 	status.initialize(username, str(score))
 

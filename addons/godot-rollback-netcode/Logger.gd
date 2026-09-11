@@ -1,4 +1,4 @@
-extends Reference
+extends RefCounted
 
 enum LogType {
 	HEADER,
@@ -39,13 +39,13 @@ func _init(_sync_manager) -> void:
 	_writer_thread_mutex = Mutex.new()
 	_writer_thread_semaphore = Semaphore.new()
 	_writer_thread = Thread.new()
-	_log_file = File.new()
+	_log_file = FileAccess
 
 func start(log_file_name: String, peer_id: int, match_info: Dictionary = {}) -> int:
 	if not _started:
 		var err: int
 		
-		err = _log_file.open_compressed(log_file_name, File.WRITE, File.COMPRESSION_ZSTD)
+		err = _log_file.open_compressed(log_file_name, FileAccess.WRITE, File.COMPRESSION_ZSTD)
 		if err != OK:
 			return err
 		
@@ -169,7 +169,7 @@ func begin_tick(tick: int) -> void:
 
 func end_tick(start_ticks_usecs: int) -> void:
 	data['end_time'] = OS.get_system_time_msecs()
-	data['duration'] = float(OS.get_ticks_usec() - start_ticks_usecs) / 1000.0
+	data['duration'] = float(Time.get_ticks_usec() - start_ticks_usecs) / 1000.0
 	write_current_data()
 
 func skip_tick(skip_reason: int, start_ticks_usecs: int) -> void:
@@ -187,7 +187,7 @@ func begin_interpolation_frame(tick: int) -> void:
 
 func end_interpolation_frame(start_ticks_usecs: int) -> void:
 	data['end_time'] = OS.get_system_time_msecs()
-	data['duration'] = float(OS.get_ticks_usec() - start_ticks_usecs) / 1000.0
+	data['duration'] = float(Time.get_ticks_usec() - start_ticks_usecs) / 1000.0
 	write_current_data()
 
 func log_fatal_error(msg: String) -> void:
@@ -219,12 +219,12 @@ func increment_value(key: String, amount: int = 1) -> void:
 
 func start_timing(timer: String) -> void:
 	assert(not _start_times.has(timer), "Timer already exists: %s" % timer)
-	_start_times[timer] = OS.get_ticks_usec()
+	_start_times[timer] = Time.get_ticks_usec()
 
 func stop_timing(timer: String, accumulate: bool = false) -> void:
 	assert(_start_times.has(timer), "No such timer: %s" % timer)
 	if _start_times.has(timer):
-		add_timing(timer, float(OS.get_ticks_usec() - _start_times[timer]) / 1000.0, accumulate)
+		add_timing(timer, float(Time.get_ticks_usec() - _start_times[timer]) / 1000.0, accumulate)
 		_start_times.erase(timer)
 
 func add_timing(timer: String, msecs: float, accumulate: bool = false) -> void:

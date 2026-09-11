@@ -1,7 +1,7 @@
 extends Control
 
-onready var label := $Label
-onready var timer := $Timer
+@onready var label := $Label
+@onready var timer := $Timer
 
 signal countdown_finished ()
 
@@ -31,7 +31,7 @@ func _update_countdown():
 	if seconds_remaining < 0:
 		label.visible = false
 		timer.stop()
-		emit_signal("countdown_finished")
+		countdown_finished.emit()
 	else:
 		label.visible = true
 	

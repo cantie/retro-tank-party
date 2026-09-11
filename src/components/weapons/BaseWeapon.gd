@@ -1,4 +1,4 @@
-extends Reference
+extends RefCounted
 
 var tank
 var weapon_type

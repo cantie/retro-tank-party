@@ -1,6 +1,6 @@
 extends MyButton
 
-onready var selected_sprite := $SelectedSprite
+@onready var selected_sprite := $SelectedSprite
 
 func _on_MenuButton_focus_entered() -> void:
 	selected_sprite.visible = true
