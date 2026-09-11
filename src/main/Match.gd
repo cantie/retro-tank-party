@@ -73,7 +73,7 @@ func scene_setup(operation: RemoteOperations.ClientOperation, info: Dictionary) 
 			datetime['minute'],
 			datetime['second'],
 			match_id,
-			SyncManager.network_adaptor.get_network_unique_id(),
+			SyncManager.network_adaptor.get_unique_id(),
 		]
 
 		SyncManager.start_logging(LOG_FILE_DIRECTORY + '/' + log_file_name, match_info)

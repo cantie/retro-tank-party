@@ -211,7 +211,7 @@ func _on_NextRoundTimer_timeout() -> void:
 func _on_tank_player_dead(killer_id: int, tank) -> void:
 	var player_id = tank.get_multiplayer_authority()
 
-	var my_id = SyncManager.network_adaptor.get_network_unique_id()
+	var my_id = SyncManager.network_adaptor.get_unique_id()
 	if my_id == tank.get_multiplayer_authority():
 		ui_layer.show_message("MESSAGE_PLAYER_DEAD")
 
@@ -231,7 +231,7 @@ func _on_player_manager_respawn_player(player_id: int) -> void:
 	var player_start_transforms = _get_player_start_transforms()
 	game.respawn_player(player_id, player_start_transforms[player.index - 1])
 
-	if player_id == SyncManager.network_adaptor.get_network_unique_id():
+	if player_id == SyncManager.network_adaptor.get_unique_id():
 		ui_layer.hide_message()
 
 func _on_countdown_finished() -> void:
