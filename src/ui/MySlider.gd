@@ -1,8 +1,10 @@
 extends HSlider
 class_name MySlider
 
-var focus: ControlFocusComponent
+const ControlFocusComponentClass = preload("res://src/ui/ControlFocusComponent.gd")
+
+var focus
 
 func _ready() -> void:
-	focus = ControlFocusComponent.new()
+	focus = ControlFocusComponentClass.new()
 	add_child(focus)

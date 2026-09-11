@@ -3,7 +3,8 @@ extends RefCounted
 # A client for the API in Nakama server.
 class_name NakamaClient
 
-const ChannelType = NakamaRTMessage.ChannelJoin.ChannelType
+const NakamaRTMessageClass = preload("res://addons/com.heroiclabs.nakama/api/NakamaRTMessage.gd")
+var ChannelType = NakamaRTMessageClass.ChannelJoin.ChannelType
 
 # The host address of the server. Defaults to "127.0.0.1".
 var _host

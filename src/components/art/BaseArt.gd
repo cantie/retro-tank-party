@@ -32,7 +32,7 @@ func get_texture(texture_name: String):
 		return texture
 
 func replace_sprite_texture(texture_name: String, node: Node) -> void:
-	var sprite = node.get_node_or_null(@"Sprite")
+	var sprite = node.get_node_or_null(^"Sprite")
 	if sprite:
 		var texture = get_texture(texture_name)
 		if texture != null and sprite.texture != texture:

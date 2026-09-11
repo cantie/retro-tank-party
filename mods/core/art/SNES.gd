@@ -26,4 +26,4 @@ func replace_visual(id: String, node: Node, info: Dictionary = {}) -> Node:
 		replace_sprite_texture(get_texture_name_for_visual(id, info), visual)
 		return visual
 	
-	return .replace_visual(id, node, info)
+	return super.replace_visual(id, node, info)

@@ -1,5 +1,7 @@
 extends Control
 
+const ControlFocusComponentClass = preload("res://src/ui/ControlFocusComponent.gd")
+
 @onready var _forward_button = $VBoxContainer/ForwardButton
 @onready var _back_button = $VBoxContainer/BackButton
 @onready var _label = $VBoxContainer/Label
@@ -28,7 +30,7 @@ var disabled := false:
 var value:
 	set = _set_value, get = get_value
 
-var focus: ControlFocusComponent
+var focus
 
 @onready var _label_default_color = _label.get_theme_color("font_color")
 @onready var _label_normal_style_box = _label.get_theme_stylebox("normal")
@@ -37,7 +39,7 @@ var _label_selected_style_box = preload("res://assets/ui/grey_button5_stylebox.t
 signal item_selected (value, index)
 
 func _ready() -> void:
-	focus = ControlFocusComponent.new()
+	focus = ControlFocusComponentClass.new()
 	add_child(focus)
 	
 	_show_buttons(false)

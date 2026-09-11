@@ -14,7 +14,7 @@ func get_map_rect() -> Rect2:
 	if _map_rect != null:
 		return _map_rect
 	
-	var tilemap = get_node_or_null(@"TileMap")
+	var tilemap = get_node_or_null(^"TileMap")
 	if not tilemap:
 		_map_rect = Rect2()
 		return _map_rect
@@ -45,13 +45,13 @@ func _get_child_transforms(parent: Node2D) -> Array:
 	return transforms
 
 func get_player_start_transforms() -> Array:
-	var player_start_positions = get_node_or_null(@"PlayerStartPositions")
+	var player_start_positions = get_node_or_null(^"PlayerStartPositions")
 	if not player_start_positions:
 		return []
 	return _get_child_transforms(player_start_positions)
 
 func get_ball_start_position() -> SGFixedVector2:
-	var ball_start_position = get_node_or_null(@"BallStartPosition")
+	var ball_start_position = get_node_or_null(^"BallStartPosition")
 	if not ball_start_position:
 		var map_rect = get_map_rect()
 		return SGFixed.from_float_vector2(map_rect.position + (map_rect.size / 2))
@@ -59,7 +59,7 @@ func get_ball_start_position() -> SGFixedVector2:
 	return ball_start_position.get_global_fixed_position()
 
 func get_team_start_transforms(team: int) -> Array:
-	var team_start_positions_parent = get_node_or_null(@"TeamStartPositions")
+	var team_start_positions_parent = get_node_or_null(^"TeamStartPositions")
 	if not team_start_positions_parent:
 		return []
 	if team >= team_start_positions_parent.get_child_count():
@@ -67,7 +67,7 @@ func get_team_start_transforms(team: int) -> Array:
 	return _get_child_transforms(team_start_positions_parent.get_child(team))
 
 func get_goal_transforms() -> Array:
-	var goal_positions_parent: Node2D = get_node_or_null(@"GoalPositions")
+	var goal_positions_parent: Node2D = get_node_or_null(^"GoalPositions")
 	
 	var goal_transforms := []
 	var fixed_map_rect = get_map_fixed_rect()
