@@ -11,7 +11,7 @@ const INVISIBLE_COLOR := Color(1.0, 1.0, 1.0, 0.38)
 @onready var blink_timer := $BlinkTimer
 
 func attach_ability() -> void:
-	tank.shoot.connect(self._on_tank_shoot)
+	tank.shot.connect(self._on_tank_shoot)
 	tank.hurt.connect(self._on_tank_hurt)
 	tank.weapon_type_changed.connect(self._on_tank_weapon_type_changed)
 	tank.hooks.subscribe("pickup_weapon", self, "_hook_tank_pickup", -10)
@@ -24,7 +24,7 @@ func detach_ability() -> void:
 	warning_timer.stop()
 	visible_timer.stop()
 	blink_timer.stop()
-	tank.shoot.disconnect(self._on_tank_shoot)
+	tank.shot.disconnect(self._on_tank_shoot)
 	tank.hurt.disconnect(self._on_tank_hurt)
 	tank.weapon_type_changed.disconnect(self._on_tank_weapon_type_changed)
 	tank.hooks.unsubscribe("pickup_weapon", self, "_hook_tank_pickup")

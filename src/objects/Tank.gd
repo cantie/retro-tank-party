@@ -12,7 +12,7 @@ const ONE_POINT_FIVE = 98304
 @export var player_controlled: bool = false
 
 signal player_dead (killer_id)
-signal shoot ()
+signal shot ()
 signal hurt (damage, attacker_id, attack_vector)
 signal weapon_type_changed (weapon_type, old_weapon_type)
 signal ability_type_changed (ability_type, old_ability_type)
@@ -495,7 +495,7 @@ func _hook_default_shoot(event: TankEvent) -> void:
 	if not get_parent():
 		return
 	
-	shoot.emit()
+	shot.emit()
 	SyncManager.play_sound(str(get_path()) + ':Shoot', ShootSound, {
 		volume_db = 10.0,
 		position = global_position,
