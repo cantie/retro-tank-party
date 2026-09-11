@@ -80,6 +80,8 @@ func _setup_field_neighbors() -> void:
 	for child in field_container.get_children():
 		if not child.visible:
 			continue
+		if not child is Control or child.focus_mode == Control.FOCUS_NONE:
+			continue
 		if previous_neighbor:
 			previous_neighbor.focus_neighbour_bottom = child.get_path()
 			previous_neighbor.focus_next = child.get_path()
