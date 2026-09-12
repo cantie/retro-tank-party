@@ -14,7 +14,7 @@ visual_id = "BarricadeWood"
 
 [node name="Visual" type="Node2D" parent="."]
 
-[node name="Sprite" type="Sprite" parent="Visual"]
+[node name="Sprite" type="Sprite2D" parent="Visual"]
 texture = ExtResource("1")
 
 [node name="CollisionShape2D" type="SGCollisionShape2D" parent="."]

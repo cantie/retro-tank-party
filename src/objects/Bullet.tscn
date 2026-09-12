@@ -10,7 +10,7 @@ radius = 524288
 [node name="Bullet" instance=ExtResource("2")]
 script = ExtResource("3")
 
-[node name="BulletPivot" type="Position2D" parent="." index="1"]
+[node name="BulletPivot" type="Marker2D" parent="." index="1"]
 
 [node name="Visual" parent="BulletPivot" index="0" instance=ExtResource("1")]
 

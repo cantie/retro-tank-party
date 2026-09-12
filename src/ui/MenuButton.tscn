@@ -34,7 +34,7 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="SelectedSprite" type="Sprite" parent="."]
+[node name="SelectedSprite" type="Sprite2D" parent="."]
 visible = false
 position = Vector2(-44, 15 )
 texture = ExtResource("3")

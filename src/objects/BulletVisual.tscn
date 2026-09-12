@@ -4,7 +4,7 @@
 
 [node name="BulletVisual" type="Node2D"]
 
-[node name="Sprite" type="Sprite" parent="."]
+[node name="Sprite" type="Sprite2D" parent="."]
 position = Vector2(2, 0 )
 rotation = 1.5708
 texture = ExtResource("1")

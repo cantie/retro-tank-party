@@ -15,7 +15,7 @@ script = ExtResource("1")
 modulate = Color(0.6, 0.6, 0.6, 1 )
 margin_right = 50.0
 margin_bottom = 51.0
-rect_min_size = Vector2(50, 50 )
+custom_minimum_size = Vector2(50, 50 )
 
 [node name="NameLabel" type="Label" parent="."]
 margin_left = 70.0

@@ -81,7 +81,7 @@ margin_top = -75.4679
 margin_right = -229.249
 margin_bottom = -8.93393
 grow_horizontal = 2
-rect_min_size = Vector2(584, 0 )
+custom_minimum_size = Vector2(584, 0 )
 text = "BUTTON_CREATE_ACCOUNT"
 script = ExtResource("6")
 
@@ -166,7 +166,7 @@ margin_top = -76.4679
 margin_right = -229.249
 margin_bottom = -9.93396
 grow_horizontal = 2
-rect_min_size = Vector2(584, 0 )
+custom_minimum_size = Vector2(584, 0 )
 text = "BUTTON_LOGIN"
 script = ExtResource("6")
 
@@ -266,7 +266,7 @@ margin_left = 253.0
 margin_top = -76.4679
 margin_right = -229.249
 margin_bottom = -9.93396
-rect_min_size = Vector2(584, 0 )
+custom_minimum_size = Vector2(584, 0 )
 text = "BUTTON_CREATE_ACCOUNT"
 script = ExtResource("6")
 
@@ -313,7 +313,7 @@ margin_left = 253.263
 margin_top = -76.0002
 margin_right = -228.737
 margin_bottom = -10.4662
-rect_min_size = Vector2(584, 0 )
+custom_minimum_size = Vector2(584, 0 )
 text = "BUTTON_RESET_PASSWORD"
 script = ExtResource("6")
 

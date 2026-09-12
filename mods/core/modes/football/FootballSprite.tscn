@@ -2,5 +2,5 @@
 
 [ext_resource type="Texture" path="res://mods/core/modes/football/football.png" id="1"]
 
-[node name="FootballSprite" type="Sprite"]
+[node name="FootballSprite" type="Sprite2D"]
 texture = ExtResource("1")
