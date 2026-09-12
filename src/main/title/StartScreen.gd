@@ -10,4 +10,4 @@ func _input(event: InputEvent) -> void:
 	if event is InputEventKey or (event is InputEventJoypadButton and event.device == GameSettings.joy_id) or event is InputEventMouseButton:
 		Sounds.play("Select")
 		ui_layer.show_screen("MenuScreen")
-		get_tree().set_input_as_handled()
+		get_viewport().set_input_as_handled()

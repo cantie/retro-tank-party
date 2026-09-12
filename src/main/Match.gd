@@ -2,24 +2,24 @@ extends Node2D
 
 const LOG_FILE_DIRECTORY = 'user://detailed_logs'
 
-onready var game := $Game
-onready var ui_layer := $UILayer
+@onready var game := $Game
+@onready var ui_layer := $UILayer
 
-onready var regaining_sync_message := $UILayer2/RegainingSyncMessage
-onready var regaining_sync_animation_player := $UILayer2/RegainingSyncMessage/AnimationPlayer
+@onready var regaining_sync_message := $UILayer2/RegainingSyncMessage
+@onready var regaining_sync_animation_player := $UILayer2/RegainingSyncMessage/AnimationPlayer
 
 var match_manager
 var match_info: Dictionary
 
 func _ready() -> void:
-	OnlineMatch.connect("error_code", self, "_on_OnlineMatch_error")
-	OnlineMatch.connect("disconnected", self, "_on_OnlineMatch_disconnected")
-	OnlineMatch.connect("player_left", self, "_on_OnlineMatch_player_left")
+	OnlineMatch.error_code.connect(self._on_OnlineMatch_error)
+	OnlineMatch.disconnected.connect(self._on_OnlineMatch_disconnected)
+	OnlineMatch.player_left.connect(self._on_OnlineMatch_player_left)
 
-	SyncManager.connect("sync_started", self, "_on_SyncManager_sync_started")
-	SyncManager.connect("sync_lost", self, "_on_SyncManager_sync_lost")
-	SyncManager.connect("sync_regained", self, "_on_SyncManager_sync_regained")
-	SyncManager.connect("sync_error", self, "_on_SyncManager_sync_error")
+	SyncManager.sync_started.connect(self._on_SyncManager_sync_started)
+	SyncManager.sync_lost.connect(self._on_SyncManager_sync_lost)
+	SyncManager.sync_regained.connect(self._on_SyncManager_sync_regained)
+	SyncManager.sync_error.connect(self._on_SyncManager_sync_error)
 
 	randomize()
 
@@ -45,7 +45,7 @@ func scene_setup(operation: RemoteOperations.ClientOperation, info: Dictionary) 
 	# Store the match info for when we return to the match setup screen.
 	match_info = info
 
-	match_manager = load(info['manager_path']).instance()
+	match_manager = load(info['manager_path']).instantiate()
 	match_manager.name = "MatchManager"
 	add_child(match_manager)
 	match_manager.match_setup(info, self, game, ui_layer)
@@ -57,11 +57,11 @@ func scene_setup(operation: RemoteOperations.ClientOperation, info: Dictionary) 
 		operation.mark_done()
 
 	if GameSettings.use_detailed_logging and not SyncReplay.active:
-		var dir = Directory.new()
-		if not dir.dir_exists(LOG_FILE_DIRECTORY):
+		var dir = DirAccess
+		if not DirAccess.dir_exists_absolute(LOG_FILE_DIRECTORY):
 			dir.make_dir(LOG_FILE_DIRECTORY)
 
-		var datetime = OS.get_datetime(true)
+		var datetime = Time.get_datetime_dict_from_system(true)
 		var match_id = OnlineMatch.match_id
 		match_id.erase(match_id.length() - 1, 1)
 
@@ -73,7 +73,7 @@ func scene_setup(operation: RemoteOperations.ClientOperation, info: Dictionary) 
 			datetime['minute'],
 			datetime['second'],
 			match_id,
-			SyncManager.network_adaptor.get_network_unique_id(),
+			SyncManager.network_adaptor.get_unique_id(),
 		]
 
 		SyncManager.start_logging(LOG_FILE_DIRECTORY + '/' + log_file_name, match_info)
@@ -98,7 +98,7 @@ func quit_match() -> void:
 	# Do this last because it will block until the logging thread stops.
 	SyncManager.stop_logging()
 
-	get_tree().change_scene("res://src/main/SessionSetup.tscn")
+	get_tree().change_scene_to_file("res://src/main/SessionSetup.tscn")
 
 func _on_Game_game_error(message) -> void:
 	_error(message)
@@ -125,7 +125,7 @@ func _on_MenuScreen_exit_pressed() -> void:
 		alert_content = 'ALERT_LEAVE_MATCH'
 
 	ui_layer.show_alert('ALERT_LEAVE_MATCH_TITLE', alert_content)
-	var result: bool = yield(ui_layer, "alert_completed")
+	var result: bool = await ui_layer.alert_completed
 	if result:
 		if SyncManager.network_adaptor.is_network_host():
 			finish_match()
@@ -149,7 +149,7 @@ func _error(message: String = ''):
 	if message != '':
 		ui_layer.show_message(message)
 	ui_layer.hide_screen()
-	yield(get_tree().create_timer(2.0), "timeout")
+	await get_tree().create_timer(2.0).timeout
 	quit_match()
 
 func _on_OnlineMatch_error(code: int, message: String, extra):

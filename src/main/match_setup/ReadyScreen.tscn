@@ -1,14 +1,14 @@
-[gd_scene load_steps=4 format=2]
+[gd_scene load_steps=4 format=3 uid="uid://49cea41977c2"]
 
-[ext_resource path="res://src/main/match_setup/ReadyScreen.gd" type="Script" id=1]
-[ext_resource path="res://assets/theme.tres" type="Theme" id=2]
-[ext_resource path="res://src/ui/MyButton.gd" type="Script" id=3]
+[ext_resource type="Script" path="res://src/main/match_setup/ReadyScreen.gd" id="1"]
+[ext_resource type="Theme" path="res://assets/theme.tres" id="2"]
+[ext_resource type="Script" path="res://src/ui/MyButton.gd" id="3"]
 
 [node name="ReadyScreen" type="Control"]
 anchor_right = 1.0
 anchor_bottom = 1.0
-theme = ExtResource( 2 )
-script = ExtResource( 1 )
+theme = ExtResource("2")
+script = ExtResource("1")
 
 [node name="ReadyButton" type="Button" parent="."]
 anchor_left = 0.5
@@ -20,8 +20,8 @@ margin_top = -32.767
 margin_right = 175.0
 margin_bottom = 32.767
 grow_horizontal = 2
-rect_min_size = Vector2( 350, 0 )
+custom_minimum_size = Vector2(350, 0 )
 text = "BUTTON_START_MATCH"
-script = ExtResource( 3 )
+script = ExtResource("3")
 
 [connection signal="pressed" from="ReadyButton" to="." method="_on_ReadyButton_pressed"]

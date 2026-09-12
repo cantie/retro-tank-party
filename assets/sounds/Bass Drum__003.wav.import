@@ -1,13 +1,14 @@
 [remap]
 
 importer="wav"
-type="AudioStreamSample"
-path="res://.import/Bass Drum__003.wav-394e81d6b87aff2dba67efb7f1958a1d.sample"
+type="AudioStreamWAV"
+uid="uid://diq7lg3sv5bcg"
+path="res://.godot/imported/Bass Drum__003.wav-394e81d6b87aff2dba67efb7f1958a1d.sample"
 
 [deps]
 
 source_file="res://assets/sounds/Bass Drum__003.wav"
-dest_files=[ "res://.import/Bass Drum__003.wav-394e81d6b87aff2dba67efb7f1958a1d.sample" ]
+dest_files=["res://.godot/imported/Bass Drum__003.wav-394e81d6b87aff2dba67efb7f1958a1d.sample"]
 
 [params]
 
@@ -17,5 +18,7 @@ force/max_rate=false
 force/max_rate_hz=44100
 edit/trim=false
 edit/normalize=false
-edit/loop=false
+edit/loop_mode=0
+edit/loop_begin=0
+edit/loop_end=-1
 compress/mode=0

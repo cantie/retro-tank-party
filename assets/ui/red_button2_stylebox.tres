@@ -1,10 +1,10 @@
-[gd_resource type="StyleBoxTexture" load_steps=2 format=2]
+[gd_resource type="StyleBoxTexture" load_steps=2 format=3 uid="uid://cc8188e4fad8"]
 
-[ext_resource path="res://assets/ui/red_button02.png" type="Texture" id=1]
+[ext_resource type="Texture2D" path="res://assets/ui/red_button02.png" id="1"]
 
 [resource]
-texture = ExtResource( 1 )
-region_rect = Rect2( 0, 0, 190, 45 )
+texture = ExtResource("1")
+region_rect = Rect2(0, 0, 190, 45)
 margin_left = 6.99298
 margin_right = 6.80896
 margin_top = 6.07286

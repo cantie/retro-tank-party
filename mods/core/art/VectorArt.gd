@@ -22,4 +22,4 @@ func get_texture_name_for_visual(id: String, info: Dictionary = {}) -> String:
 	match id:
 		'TreeBig', 'TreeSmall':
 			return id
-	return .get_texture_name_for_visual(id, info)
+	return super.get_texture_name_for_visual(id, info)

@@ -1,7 +1,7 @@
 extends SGArea2D
 
-onready var pass_timer = $PassTimer
-onready var ray_cast = $RayCast2D
+@onready var pass_timer = $PassTimer
+@onready var ray_cast = $RayCast2D
 
 const SIXTEEN = 1048576
 
@@ -92,7 +92,7 @@ func _network_process(input: Dictionary) -> void:
 	ray_cast.cast_to = SGFixed.vector2(speed, 0)
 	ray_cast.update_raycast_collision()
 	# If it collided with things that collide with bullets (2 = bullet).
-	if ray_cast.is_colliding() and ray_cast.get_collider().get_collision_mask_bit(2):
+	if ray_cast.is_colliding() and ray_cast.get_collider().get_collision_mask_value(3):
 		var old_fixed_position = fixed_position.copy()
 		# Move football to stop short of the obstruction.
 		set_global_fixed_position(ray_cast.get_collision_point().sub(vector.mul(SIXTEEN)))
@@ -112,14 +112,14 @@ func _network_process(input: Dictionary) -> void:
 	if in_bounds:
 		in_bounds = bounds_rect.has_point(get_global_fixed_position())
 		if not in_bounds:
-			emit_signal("out_of_bounds")
+			out_of_bounds.emit()
 
 func _interpolate_state(old_state: Dictionary, new_state: Dictionary, weight: float) -> void:
 	position = lerp(old_state['fixed_transform'].get_origin().to_float(), new_state['fixed_transform'].get_origin().to_float(), weight)
 
 func check_on_obstruction() -> bool:
 	for body in get_overlapping_bodies():
-		if body.get_collision_layer_bit(0):
+		if body.get_collision_layer_value(1):
 			return true
 	return false
 
@@ -128,13 +128,13 @@ func _on_Football_body_entered(body: SGCollisionObject2D) -> bool:
 	if held:
 		return true
 	# Only collide with tanks.
-	if not body.get_collision_layer_bit(1):
+	if not body.get_collision_layer_value(2):
 		return false
 	# Prevent hitting self.
 	if frames_countdown > 0:
 		return false
 	
-	emit_signal("grabbed", body)
+	grabbed.emit(body)
 	return true
 
 func _on_PassTimer_timeout() -> void:

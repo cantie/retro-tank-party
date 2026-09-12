@@ -9,21 +9,21 @@ const ShootSound = preload("res://assets/sounds/Bass Drum__003.wav")
 
 const ONE_POINT_FIVE = 98304
 
-export (bool) var player_controlled = false
+@export var player_controlled: bool = false
 
 signal player_dead (killer_id)
-signal shoot ()
+signal shot ()
 signal hurt (damage, attacker_id, attack_vector)
 signal weapon_type_changed (weapon_type, old_weapon_type)
 signal ability_type_changed (ability_type, old_ability_type)
 signal ability_recharged (ability)
 
-onready var player_info_node := $PlayerInfo
-onready var player_info_offset: Vector2 = player_info_node.position
+@onready var player_info_node := $PlayerInfo
+@onready var player_info_offset: Vector2 = player_info_node.position
 
-onready var shoot_cooldown_timer := $ShootCooldownTimer
-onready var animation_player := $AnimationPlayer
-onready var engine_sound := $EngineSound
+@onready var shoot_cooldown_timer := $ShootCooldownTimer
+@onready var animation_player := $AnimationPlayer
+@onready var engine_sound := $EngineSound
 
 const DEFAULT_TURN_SPEED := 10923
 const DEFAULT_SPEED := 873726
@@ -59,7 +59,7 @@ var ability
 
 var player_index: int
 
-class TankEvent extends EventDispatcher.Event:
+class TankEvent extends EventDispatcher.RTPEvent:
 	var tank
 	
 	func _init(_tank) -> void:
@@ -68,13 +68,15 @@ class TankEvent extends EventDispatcher.Event:
 class PickupWeaponEvent extends TankEvent:
 	var weapon_type: WeaponType
 	
-	func _init(_tank, _weapon_type: WeaponType).(_tank) -> void:
+	func _init(_tank, _weapon_type: WeaponType) -> void:
+		super(_tank)
 		weapon_type = _weapon_type
 
 class PickupAbilityEvent extends TankEvent:
 	var ability_type: AbilityType
 	
-	func _init(_tank, _ability_type: AbilityType).(_tank) -> void:
+	func _init(_tank, _ability_type: AbilityType) -> void:
+		super(_tank)
 		ability_type = _ability_type
 
 class TakeDamageEvent extends TankEvent:
@@ -82,7 +84,8 @@ class TakeDamageEvent extends TankEvent:
 	var attacker_id: int
 	var attack_vector: SGFixedVector2
 	
-	func _init(_tank, _damage: int, _attacker_id: int, _attack_vector: SGFixedVector2).(_tank) -> void:
+	func _init(_tank, _damage: int, _attacker_id: int, _attack_vector: SGFixedVector2) -> void:
+		super(_tank)
 		damage = _damage
 		attacker_id = _attacker_id
 		attack_vector = _attack_vector
@@ -90,26 +93,30 @@ class TakeDamageEvent extends TankEvent:
 class RestoreHealthEvent extends TankEvent:
 	var health: int
 	
-	func _init(_tank, _health: int).(_tank) -> void:
+	func _init(_tank, _health: int) -> void:
+		super(_tank)
 		health = _health
 
 class DieEvent extends TankEvent:
 	var killer_id: int
 	
-	func _init(_tank, _killer_id: int).(_tank) -> void:
+	func _init(_tank, _killer_id: int) -> void:
+		super(_tank)
 		killer_id = _killer_id
 
 class GatherInputEvent extends TankEvent:
 	var input: Dictionary
 	
-	func _init(_tank, _input: Dictionary).(_tank) -> void:
+	func _init(_tank, _input: Dictionary) -> void:
+		super(_tank)
 		input = _input
 
 class CalculateMovementVectorEvent extends TankEvent:
 	var input: Dictionary
 	var movement_vector: SGFixedVector2
 	
-	func _init(_tank, _input: Dictionary, _movement_vector: SGFixedVector2).(_tank) -> void:
+	func _init(_tank, _input: Dictionary, _movement_vector: SGFixedVector2) -> void:
+		super(_tank)
 		input = _input
 		movement_vector = _movement_vector
 
@@ -133,12 +140,12 @@ func _ready():
 	hooks.subscribe("gather_input", self, "_hook_default_gather_input", 0)
 	hooks.subscribe("calculate_movement_vector", self, "_hook_default_calculate_movement_vector", 0)
 	
-	player_info_node.set_as_toplevel(true)
+	player_info_node.top_level = true
 	player_info_node.position = global_position + player_info_offset
 	
 	set_weapon_type(BaseWeaponType)
 	
-	SyncManager.connect("scene_spawned", self, "_on_SyncManager_scene_spawned")
+	SyncManager.scene_spawned.connect(self._on_SyncManager_scene_spawned)
 	
 	# If testing tank on its own, make player controlled
 	if get_tree().current_scene == self:
@@ -169,7 +176,7 @@ func _network_spawn(data: Dictionary) -> void:
 	set_global_fixed_transform(data['start_transform'])
 	
 	player_index = data['player_index']
-	set_network_master(data['peer_id'])
+	set_multiplayer_authority(data['peer_id'])
 	player_info_node.set_player_name(data['player_name'])
 	set_tank_color(data['player_index'])
 	
@@ -179,7 +186,7 @@ func _network_spawn(data: Dictionary) -> void:
 	sync_to_physics_engine()
 
 func set_tank_color(player_index: int) -> void:
-	.set_tank_color(player_index)
+	super.set_tank_color(player_index)
 	var visual_material = TankMaterial.duplicate()
 	body_visual.material = visual_material
 	turret_visual.material = visual_material
@@ -231,7 +238,7 @@ func set_weapon_type(_weapon_type: WeaponType) -> void:
 			else:
 				game.hud.set_weapon_label(weapon_type.name)
 		
-		emit_signal("weapon_type_changed", weapon_type, old_weapon_type)
+		weapon_type_changed.emit(weapon_type, old_weapon_type)
 
 func pickup_ability(_ability_type: AbilityType) -> void:
 	hooks.dispatch_event("pickup_ability", PickupAbilityEvent.new(self, _ability_type))
@@ -243,7 +250,7 @@ func set_held_ability_type(_ability_type: AbilityType) -> void:
 	if _ability_type != null and held_ability_type == _ability_type and _ability_type.charges > 1:
 		ability_charges = _ability_type.charges if _ability_type.charges > 0 else 1
 		_update_ability_label()
-		emit_signal("ability_recharged", ability)
+		ability_recharged.emit(ability)
 	else:
 		var old_held_ability_type = held_ability_type
 		held_ability_type = _ability_type
@@ -251,7 +258,7 @@ func set_held_ability_type(_ability_type: AbilityType) -> void:
 			ability_charges = held_ability_type.charges if held_ability_type.charges > 0 else 1
 		
 		_update_ability_label()
-		emit_signal("ability_type_changed", held_ability_type, old_held_ability_type)
+		ability_type_changed.emit(held_ability_type, old_held_ability_type)
 
 func _update_ability_label() -> void:
 	if game and player_controlled:
@@ -400,10 +407,11 @@ func _network_process(input: Dictionary) -> void:
 		rotate_and_slide(SGFixed.mul(movement_vector.y, turn_speed))
 
 	if movement_vector.x != 0:
-		var velocity = fixed_transform.x.copy()
-		velocity.imul(movement_vector.x)
-		velocity.imul(speed)
-		move_and_slide(velocity)
+		var move_velocity = fixed_transform.x.copy()
+		move_velocity.imul(movement_vector.x)
+		move_velocity.imul(speed)
+		velocity = move_velocity
+		move_and_slide()
 	
 	# 6554 = 0.1
 	if movement_vector.x >= 6554 or movement_vector.x <= -6554:
@@ -488,7 +496,7 @@ func _hook_default_shoot(event: TankEvent) -> void:
 	if not get_parent():
 		return
 	
-	emit_signal("shoot")
+	shot.emit()
 	SyncManager.play_sound(str(get_path()) + ':Shoot', ShootSound, {
 		volume_db = 10.0,
 		position = global_position,
@@ -523,12 +531,12 @@ func _setup_ability(new_ability, new_ability_type):
 	# the ability spawned by the SpawnManager due to a rollback.
 	ability = new_ability
 	
-	ability.connect("finished", self, "_on_ability_finished", [ability])
+	ability.finished.connect(_on_ability_finished.bind(ability))
 	ability.setup_ability(self, new_ability_type)
 	ability.attach_ability()
 
 func _on_ability_finished(old_ability) -> void:
-	old_ability.disconnect("finished", self, "_on_ability_finished")
+	old_ability.finished.disconnect(self._on_ability_finished)
 	
 	old_ability.detach_ability()
 	SyncManager.despawn(old_ability)
@@ -554,7 +562,7 @@ func _hook_default_take_damage(event: TakeDamageEvent) -> void:
 	
 	animation_player.play("Flash")
 	
-	emit_signal("hurt", event.damage, event.attacker_id, event.attack_vector)
+	hurt.emit(event.damage, event.attacker_id, event.attack_vector)
 	
 	if not invincible:
 		health -= event.damage
@@ -589,6 +597,6 @@ func _hook_default_die(event: DieEvent) -> void:
 			type = "fire",
 		})
 		
-		emit_signal("player_dead", event.killer_id)
+		player_dead.emit(event.killer_id)
 		
 		SyncManager.despawn(self)

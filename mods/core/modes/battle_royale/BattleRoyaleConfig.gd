@@ -1,8 +1,8 @@
 extends "res://src/components/modes/BaseConfig.gd"
 
-onready var points_to_win_field = $PointsToWin
-onready var teams_label = $TeamsLabel
-onready var teams_field = $Teams
+@onready var points_to_win_field = $PointsToWin
+@onready var teams_label = $TeamsLabel
+@onready var teams_field = $Teams
 
 func _ready() -> void:
 	for i in range(1, 10):
@@ -33,4 +33,4 @@ func set_config_values(values: Dictionary) -> void:
 	teams_field.value = values['teams']
 
 func _on_OptionSwitcher_item_selected(_value, _index) -> void:
-	emit_signal("changed")
+	changed.emit()

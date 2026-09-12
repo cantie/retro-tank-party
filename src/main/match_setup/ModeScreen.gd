@@ -1,8 +1,8 @@
 extends "res://src/ui/Screen.gd"
 
-onready var mode_field = $Panel/VBoxContainer/ModeSwitcher
-onready var description_label = $Panel/VBoxContainer/DescriptionLabel
-onready var config_parent = $Panel/VBoxContainer/ConfigParent
+@onready var mode_field = $Panel/VBoxContainer/ModeSwitcher
+@onready var description_label = $Panel/VBoxContainer/DescriptionLabel
+@onready var config_parent = $Panel/VBoxContainer/ConfigParent
 
 var match_modes := {}
 var current_config
@@ -33,9 +33,9 @@ func change_mode(mode: MatchMode) -> void:
 	description_label.text = mode.description
 	
 	if mode.config_scene:
-		current_config = mode.config_scene.instance()
+		current_config = mode.config_scene.instantiate()
 		config_parent.add_child(current_config)
-		current_config.connect("changed", self, "_on_config_changed")
+		current_config.changed.connect(self._on_config_changed)
 	else:
 		current_config = null
 
@@ -56,7 +56,7 @@ func _on_NextButton_pressed() -> void:
 
 func _unhandled_input(event: InputEvent) -> void:
 	if visible and event.is_action_pressed('ui_accept'):
-		get_tree().set_input_as_handled()
+		get_viewport().set_input_as_handled()
 		_on_NextButton_pressed()
 
 func _on_config_changed() -> void:

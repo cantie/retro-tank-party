@@ -6,7 +6,7 @@ const FootballSprite = preload("res://mods/core/modes/football/FootballSprite.ts
 var sprite
 
 func attach_weapon() -> void:
-	sprite = FootballSprite.instance()
+	sprite = FootballSprite.instantiate()
 	sprite.name = 'Football'
 	tank.bullet_start_position.add_child(sprite)
 
@@ -18,7 +18,7 @@ func detach_weapon() -> void:
 
 func _match_manager_pass_football(position: SGFixedVector2, vector: SGFixedVector2) -> void:
 	var scene = tank.get_tree().get_current_scene()
-	var match_manager = scene.get_node_or_null(@"MatchManager")
+	var match_manager = scene.get_node_or_null(^"MatchManager")
 	if match_manager and match_manager.has_method('pass_football'):
 		match_manager.pass_football(position, vector)
 

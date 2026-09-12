@@ -1,7 +1,7 @@
 extends "res://src/ui/Screen.gd"
 
-onready var field_container = $Panel/VBoxContainer/GridContainer
-onready var next_button = $Panel/VBoxContainer/NextButton
+@onready var field_container = $Panel/VBoxContainer/GridContainer
+@onready var next_button = $Panel/VBoxContainer/NextButton
 
 var fields := []
 var player_ids := []
@@ -19,8 +19,8 @@ func _ready() -> void:
 
 		field.add_item("TEAM_NAME_RED", Globals.Teams.RED, Globals.art.get_team_color(Globals.Teams.RED))
 		field.add_item("TEAM_NAME_BLUE", Globals.Teams.BLUE, Globals.art.get_team_color(Globals.Teams.BLUE))
-		field.set_value(i % 2, false)
-		field.connect("item_selected", self, "_on_team_selected", [i])
+		field.update_value(i % 2, false)
+		field.item_selected.connect(_on_team_selected.bind(i))
 		fields.append(field)
 
 		if player_number > OnlineMatch.players.size():
@@ -43,7 +43,8 @@ func _on_team_selected(value, index, field_index) -> void:
 	if SyncManager.network_adaptor.is_network_host():
 		rpc("_remote_update", field_index, value)
 
-puppet func _remote_update(field_index: int, value: int) -> void:
+@rpc("authority")
+func _remote_update(field_index: int, value: int) -> void:
 	fields[field_index].value = value
 
 func _on_NextButton_pressed() -> void:
@@ -57,7 +58,7 @@ func _on_NextButton_pressed() -> void:
 
 func _unhandled_input(event: InputEvent) -> void:
 	if visible and event.is_action_pressed('ui_accept'):
-		get_tree().set_input_as_handled()
+		get_viewport().set_input_as_handled()
 		_on_NextButton_pressed()
 
 func get_teams() -> Array:

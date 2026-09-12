@@ -3,7 +3,7 @@ extends "res://src/components/abilities/BaseAbility.gd"
 const Tank = preload("res://src/objects/Tank.gd")
 const ShadowTank = preload("res://mods/core/abilities/ShadowTank.tscn")
 
-onready var timer = $Timer
+@onready var timer = $Timer
 
 const BOOST_SPEED := 3495251
 

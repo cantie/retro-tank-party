@@ -1,18 +1,18 @@
 extends "res://src/ui/Screen.gd"
 
-var Steam = Engine.get_singleton("Steam")
+var Steam = Engine.get_singleton("Steam") if Engine.has_singleton("Steam") else null
 
-onready var tab_container := $TabContainer
-onready var login_email_field := $TabContainer/Login/GridContainer/Email
-onready var login_password_field := $TabContainer/Login/GridContainer/Password
-onready var login_save_checkbox := $TabContainer/Login/GridContainer/SaveCheckBox
-onready var create_account_tab := $"TabContainer/Create Account"
-onready var create_account_username_field = $"TabContainer/Create Account/GridContainer/Username"
-onready var create_account_save_checkbox := $"TabContainer/Create Account/GridContainer/SaveCheckBox"
-onready var forgot_password_tab = $"TabContainer/Forgot password?"
-onready var steam_tab = $TabContainer/Steam
-onready var steam_username_field := $TabContainer/Steam/GridContainer/Username
-onready var steam_login_button := $TabContainer/Steam/SteamLoginButton
+@onready var tab_container := $TabContainer
+@onready var login_email_field := $TabContainer/Login/GridContainer/Email
+@onready var login_password_field := $TabContainer/Login/GridContainer/Password
+@onready var login_save_checkbox := $TabContainer/Login/GridContainer/SaveCheckBox
+@onready var create_account_tab := $"TabContainer/Create Account"
+@onready var create_account_username_field = $"TabContainer/Create Account/GridContainer/Username"
+@onready var create_account_save_checkbox := $"TabContainer/Create Account/GridContainer/SaveCheckBox"
+@onready var forgot_password_tab = $"TabContainer/Forgot password?"
+@onready var steam_tab = $TabContainer/Steam
+@onready var steam_username_field := $TabContainer/Steam/GridContainer/Username
+@onready var steam_login_button := $TabContainer/Steam/SteamLoginButton
 
 const CREDENTIALS_FILENAME = 'user://credentials.json.enc'
 const CREDENTIALS_FILENAME_OLD = 'user://credentials.json'
@@ -41,7 +41,7 @@ func _ready() -> void:
 	tab_container.set_tab_title(3, "SESSION_SETUP_TAB_FORGOT_PASSWORD")
 
 	if SteamManager.use_steam:
-		Steam.connect("get_auth_session_ticket_response", self, "_on_steam_auth_session_ticket_response")
+		Steam.get_auth_session_ticket_response.connect(self._on_steam_auth_session_ticket_response)
 
 		create_account_tab.queue_free()
 		tab_container.set_tab_title(0, "SESSION_SETUP_TAB_CREATE_ACCOUNT")
@@ -58,16 +58,18 @@ func _ready() -> void:
 		create_account_save_checkbox.pressed = false
 		create_account_save_checkbox.visible = false
 	else:
-		var file = File.new()
-		if file.file_exists(CREDENTIALS_FILENAME):
-			if file.open_encrypted_with_pass(CREDENTIALS_FILENAME, File.READ, Build.encryption_password) == OK:
+		if FileAccess.file_exists(CREDENTIALS_FILENAME):
+			var file = FileAccess.open_encrypted_with_pass(CREDENTIALS_FILENAME, FileAccess.READ, Build.encryption_password)
+			if file:
 				_load_credentials(file)
-		elif file.file_exists(CREDENTIALS_FILENAME_OLD):
-			if file.open(CREDENTIALS_FILENAME_OLD, File.READ) == OK:
+				file.close()
+		elif FileAccess.file_exists(CREDENTIALS_FILENAME_OLD):
+			var file = FileAccess.open(CREDENTIALS_FILENAME_OLD, FileAccess.READ)
+			if file:
 				_load_credentials(file)
+				file.close()
 				# Remove this file and replace with the new one.
-				var dir = Directory.new()
-				dir.remove(CREDENTIALS_FILENAME_OLD)
+				DirAccess.remove_absolute(CREDENTIALS_FILENAME_OLD)
 				_save_credentials()
 
 func _set_credentials(_email: String, _password: String) -> void:
@@ -77,21 +79,20 @@ func _set_credentials(_email: String, _password: String) -> void:
 	login_email_field.text = email
 	login_password_field.text = password
 
-func _load_credentials(file: File) -> void:
-	var result := JSON.parse(file.get_as_text())
-	if result.result is Dictionary:
-		_set_credentials(result.result['email'], result.result['password'])
-	file.close()
+func _load_credentials(file: FileAccess) -> void:
+	var result = JSON.parse_string(file.get_as_text())
+	if result is Dictionary:
+		_set_credentials(result['email'], result['password'])
 
 func _save_credentials() -> void:
-	var file = File.new()
-	file.open_encrypted_with_pass(CREDENTIALS_FILENAME, File.WRITE, Build.encryption_password)
-	var credentials = {
-		email = email,
-		password = password,
-	}
-	file.store_line(JSON.print(credentials))
-	file.close()
+	var file = FileAccess.open_encrypted_with_pass(CREDENTIALS_FILENAME, FileAccess.WRITE, Build.encryption_password)
+	if file:
+		var credentials = {
+			email = email,
+			password = password,
+		}
+		file.store_line(JSON.stringify(credentials))
+		file.close()
 
 func _show_screen(info: Dictionary = {}) -> void:
 	_reconnect = info.get('reconnect', false)
@@ -119,7 +120,7 @@ func do_login(save_credentials: bool = false) -> void:
 	else:
 		ui_layer.show_message("MESSAGE_SESSION_LOGGING_IN")
 
-	var nakama_session = yield(Online.nakama_client.authenticate_email_async(email, password, null, false), "completed")
+	var nakama_session = await Online.nakama_client.authenticate_email_async(email, password, null, false)
 
 	if nakama_session.is_exception():
 		visible = true
@@ -187,7 +188,7 @@ func _on_steam_auth_session_ticket_response(_auth_ticket_id, _result) -> void:
 		_finish_link_steam()
 
 func _finish_authenticate_steam() -> void:
-	var nakama_session = yield(Online.nakama_client.authenticate_steam_async(_steam_auth_session_ticket, steam_username_field.text.strip_edges(), _steam_create), "completed")
+	var nakama_session = await Online.nakama_client.authenticate_steam_async(_steam_auth_session_ticket, steam_username_field.text.strip_edges(), _steam_create)
 	if nakama_session.is_exception():
 		print (nakama_session.get_exception().message)
 		var exception: NakamaException = nakama_session.get_exception()
@@ -240,7 +241,7 @@ func _on_CreateAccountButton_pressed() -> void:
 	visible = false
 	ui_layer.show_message("MESSAGE_CREATING_ACCOUNT")
 
-	var nakama_session = yield(Online.nakama_client.authenticate_email_async(email, password, username, true), "completed")
+	var nakama_session = await Online.nakama_client.authenticate_email_async(email, password, username, true)
 
 	if nakama_session.is_exception():
 		visible = true
@@ -287,12 +288,12 @@ func _on_ResetPasswordButton_pressed() -> void:
 	var query_string: String = http_client.query_string_from_dict(data)
 
 	var headers := ["Content-Type: application/x-www-form-urlencoded"]
-	if http_request.request(FORGOT_PASSWORD_URL, headers, true, HTTPClient.METHOD_POST, query_string) != OK:
+	if http_request.request(FORGOT_PASSWORD_URL, headers, HTTPClient.METHOD_POST, query_string) != OK:
 		http_request.queue_free()
 		ui_layer.show_message("MESSAGE_PASSWORD_RESET_FAILED")
 		return
 
-	var response = yield(http_request, "request_completed")
+	var response = await http_request.request_completed
 	var result = response[0]
 	var response_code = response[1]
 

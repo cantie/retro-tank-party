@@ -1,8 +1,8 @@
 extends "res://src/components/weapons/BaseBullet.gd"
 
-onready var ray_cast: SGRayCast2D = $RayCast2D
-onready var collision_shape: SGCollisionShape2D = $CollisionShape2D
-onready var line: Line2D = $Line2D
+@onready var ray_cast: SGRayCast2D = $RayCast2D
+@onready var collision_shape: SGCollisionShape2D = $CollisionShape2D
+@onready var line: Line2D = $Line2D
 
 var speed = 6116693
 var growing := true
@@ -10,12 +10,12 @@ var bounces := 0
 var first := true
 
 func _ready():
-	line.set_as_toplevel(true)
+	line.top_level = true
 	line.global_position = Vector2(0, 0)
 	lifetime_timer.wait_ticks = 8
 
 func _network_spawn(data: Dictionary) -> void:
-	._network_spawn(data)
+	super._network_spawn(data)
 	growing = true
 	bounces = 0
 	first = true
@@ -23,7 +23,7 @@ func _network_spawn(data: Dictionary) -> void:
 	line.add_point(fixed_position.to_float())
 
 func _network_despawn() -> void:
-	._network_despawn()
+	super._network_despawn()
 	line.clear_points()
 	ray_cast.clear_exceptions()
 
@@ -32,7 +32,7 @@ func can_hit(body: SGCollisionObject2D) -> bool:
 	return bounces > 0 or body != tank
 
 func _save_state() -> Dictionary:
-	var state = ._save_state()
+	var state = super._save_state()
 	state['growing'] = growing
 	state['bounces'] = bounces
 	state['first'] = first
@@ -61,7 +61,7 @@ func _load_state(state: Dictionary) -> void:
 		if node:
 			ray_cast.add_exception(node)
 	
-	._load_state(state)
+	super._load_state(state)
 
 func _network_process(input: Dictionary) -> void:
 	# Note: We don't call the parent _network_process() on purpose.
@@ -76,7 +76,7 @@ func _network_process(input: Dictionary) -> void:
 		if ray_cast.is_colliding():
 			var collider = ray_cast.get_collider()
 			# bit 2 = bullets
-			if collider.get_collision_mask_bit(2):
+			if collider.get_collision_mask_value(3):
 				set_global_fixed_position(ray_cast.get_collision_point())
 			
 				var collision_normal = ray_cast.get_collision_normal()

@@ -1,9 +1,9 @@
-[gd_scene load_steps=5 format=2]
+[gd_scene load_steps=5 format=3 uid="uid://0fb4e7c2e562"]
 
-[ext_resource path="res://assets/theme.tres" type="Theme" id=1]
-[ext_resource path="res://assets/ui/blue_title_panel.tres" type="StyleBox" id=2]
-[ext_resource path="res://src/ui/MyButton.gd" type="Script" id=3]
-[ext_resource path="res://src/ui/Alert.gd" type="Script" id=4]
+[ext_resource type="Theme" path="res://assets/theme.tres" id="1"]
+[ext_resource type="StyleBox" path="res://assets/ui/blue_title_panel.tres" id="2"]
+[ext_resource type="Script" path="res://src/ui/MyButton.gd" id="3"]
+[ext_resource type="Script" path="res://src/ui/Alert.gd" id="4"]
 
 [node name="Alert" type="PanelContainer"]
 anchor_left = 0.5
@@ -16,9 +16,9 @@ margin_right = 386.5
 margin_bottom = 171.5
 grow_horizontal = 2
 grow_vertical = 2
-theme = ExtResource( 1 )
-custom_styles/panel = ExtResource( 2 )
-script = ExtResource( 4 )
+theme = ExtResource("1")
+custom_styles/panel = ExtResource("2")
+script = ExtResource("4")
 
 [node name="VBoxContainer" type="VBoxContainer" parent="."]
 margin_left = 25.0
@@ -29,8 +29,8 @@ margin_bottom = 318.0
 [node name="TitleLabel" type="Label" parent="VBoxContainer"]
 margin_right = 723.0
 margin_bottom = 64.0
-rect_min_size = Vector2( 0, 64 )
-custom_colors/font_color = Color( 1, 1, 1, 1 )
+custom_minimum_size = Vector2(0, 64 )
+custom_colors/font_color = Color(1, 1, 1, 1 )
 text = "Are you sure you want to exit?"
 autowrap = true
 clip_text = true
@@ -39,7 +39,7 @@ clip_text = true
 margin_top = 68.0
 margin_right = 723.0
 margin_bottom = 243.0
-rect_min_size = Vector2( 0, 175 )
+custom_minimum_size = Vector2(0, 175 )
 text = "This will end the match for everyone and return to the match setup screen."
 autowrap = true
 clip_text = true
@@ -59,17 +59,17 @@ size_flags_horizontal = 3
 margin_left = 159.0
 margin_right = 359.0
 margin_bottom = 65.5339
-rect_min_size = Vector2( 200, 0 )
+custom_minimum_size = Vector2(200, 0 )
 text = "OK"
-script = ExtResource( 3 )
+script = ExtResource("3")
 
 [node name="CancelButton" type="Button" parent="VBoxContainer/HBoxContainer"]
 margin_left = 363.0
 margin_right = 563.0
 margin_bottom = 65.5339
-rect_min_size = Vector2( 200, 0 )
+custom_minimum_size = Vector2(200, 0 )
 text = "Cancel"
-script = ExtResource( 3 )
+script = ExtResource("3")
 
 [node name="Spacer2" type="Control" parent="VBoxContainer/HBoxContainer"]
 margin_left = 567.0

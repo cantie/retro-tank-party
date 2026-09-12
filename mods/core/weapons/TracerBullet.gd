@@ -5,21 +5,21 @@ var target_seek_speed := 21845
 var target_path: String = ''
 
 func _network_spawn_preprocess(info: Dictionary) -> Dictionary:
-	var res := ._network_spawn_preprocess(info)
+	var res := super._network_spawn_preprocess(info)
 	res['target_path'] = str(info['target'].get_path()) if info['target'] != null else ''
 	return res
 
 func _network_spawn(info: Dictionary) -> void:
-	._network_spawn(info)
+	super._network_spawn(info)
 	target_path = info['target_path']
 
 func _save_state() -> Dictionary:
-	var state = ._save_state()
+	var state = super._save_state()
 	state['target_path'] = target_path
 	return state
 
 func _load_state(state: Dictionary) -> void:
-	._load_state(state)
+	super._load_state(state)
 	target_path = state['target_path']
 
 func _network_process(input: Dictionary) -> void:
@@ -30,4 +30,4 @@ func _network_process(input: Dictionary) -> void:
 			vector = vector.linear_interpolate(target_vector, target_seek_speed).normalized()
 			fixed_rotation = vector.angle()
 	
-	._network_process(input)
+	super._network_process(input)

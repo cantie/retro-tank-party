@@ -4,7 +4,7 @@ const Tank = preload("res://src/objects/Tank.gd")
 const HidingSound = preload("res://assets/sounds/Teleport__006.wav")
 const ShowingSound = preload("res://assets/sounds/Teleport__010.wav")
 
-onready var rng := $RandomNumberGenerator
+@onready var rng := $RandomNumberGenerator
 
 const TANK_DIMENSION = SGFixed.ONE * 128
 const SCALE_INCREMENT := 8192

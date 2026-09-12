@@ -1,7 +1,7 @@
 extends "res://src/ui/Screen.gd"
 
-onready var map_field = $Panel/VBoxContainer/MapSwitcher
-onready var next_button = $Panel/VBoxContainer/NextButton
+@onready var map_field = $Panel/VBoxContainer/MapSwitcher
+@onready var next_button = $Panel/VBoxContainer/NextButton
 
 const DEFAULT_MAP = "res://mods/core/maps/battlefield.tres"
 
@@ -14,7 +14,7 @@ func _ready() -> void:
 	
 	for map_id in maps:
 		map_field.add_item(maps[map_id].name, map_id)
-	map_field.set_value(DEFAULT_MAP, false)
+	map_field.update_value(DEFAULT_MAP, false)
 
 func _show_screen(info: Dictionary = {}) -> void:
 	var mode_screen = ui_layer.get_screen("ModeScreen")
@@ -42,12 +42,12 @@ func _update_map_field_for_mode(mode: MatchMode) -> void:
 			if not maps[map_id].has_goals:
 				map_field.add_item(maps[map_id].name, map_id)
 	
-	if not map_field.set_value(old_value, false):
-		if not map_field.set_value(DEFAULT_MAP, false):
-			map_field.set_selected(0, false)
+	if not map_field.update_value(old_value, false):
+		if not map_field.update_value(DEFAULT_MAP, false):
+			map_field.update_selected(0, false)
 
 func change_map(map: GameMap) -> void:
-	emit_signal("map_changed", map.map_scene)
+	map_changed.emit(map.map_scene)
 
 func disable_screen() -> void:
 	map_field.disabled = true
@@ -61,7 +61,7 @@ func _on_NextButton_pressed() -> void:
 
 func _unhandled_input(event: InputEvent) -> void:
 	if visible and event.is_action_pressed('ui_accept'):
-		get_tree().set_input_as_handled()
+		get_viewport().set_input_as_handled()
 		_on_NextButton_pressed()
 
 func _on_config_changed() -> void:
@@ -71,7 +71,8 @@ func send_remote_update() -> void:
 	if SyncManager.network_adaptor.is_network_host():
 		rpc("_remote_update", map_field.value)
 
-puppet func _remote_update(map_id: String) -> void:
+@rpc("authority")
+func _remote_update(map_id: String) -> void:
 	map_field.value = map_id
 	change_map(maps[map_id])
 

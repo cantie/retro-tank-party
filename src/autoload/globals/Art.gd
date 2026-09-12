@@ -1,6 +1,6 @@
 extends Node
 
-var art_style_resource: ArtStyle
+var art_style_resource
 var art_style
 
 var terrain_tiles: TileSet
@@ -15,7 +15,7 @@ func load_art_style(path: String) -> void:
 	art_style.setup_art(art_style_resource)
 	art_style.setup_terrain_tiles(terrain_tiles)
 	
-	var cursor_texture: Texture = art_style_resource.cursor_texture
+	var cursor_texture: Texture2D = art_style_resource.cursor_texture
 	var hotspot = cursor_texture.get_size() / 2
 	Input.set_custom_mouse_cursor(cursor_texture, 0, hotspot)
 

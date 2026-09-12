@@ -1,18 +1,20 @@
 extends CanvasLayer
 class_name UILayer
 
-onready var screens = $Screens
-onready var cover = $Overlay/Cover
-onready var message_label = $Overlay/Message
-onready var back_button = $Overlay/BackButton
-onready var alert = $Overlay/Alert
+@onready var screens = $Screens
+@onready var cover = $Overlay/Cover
+@onready var message_label = $Overlay/Message
+@onready var back_button_node = $Overlay/BackButton
+@onready var alert = $Overlay/Alert
 
 signal change_screen (name, screen, info)
 signal back_button ()
 signal alert_completed (result)
 
-var current_screen: Control = null setget _set_readonly_variable
-var current_screen_name: String = '' setget _set_readonly_variable, get_current_screen_name
+var current_screen: Control = null:
+	set = _set_readonly_variable
+var current_screen_name: String = '':
+	set = _set_readonly_variable, get = get_current_screen_name
 
 var _is_ready := false
 
@@ -55,7 +57,8 @@ func get_current_screen_name() -> String:
 		return current_screen.name
 	return ''
 
-remote func show_screen(name: String, info: Dictionary = {}) -> void:
+@rpc("any_peer")
+func show_screen(name: String, info: Dictionary = {}) -> void:
 	var screen = screens.get_node(name)
 	if not screen:
 		return
@@ -67,7 +70,7 @@ remote func show_screen(name: String, info: Dictionary = {}) -> void:
 	current_screen = screen
 
 	if _is_ready:
-		emit_signal("change_screen", name, screen, info)
+		change_screen.emit(name, screen, info)
 
 func hide_screen() -> void:
 	if current_screen and current_screen.has_method('_hide_screen'):
@@ -91,10 +94,10 @@ func hide_cover() -> void:
 	cover.visible = false
 
 func show_back_button() -> void:
-	back_button.visible = true
+	back_button_node.visible = true
 
 func hide_back_button() -> void:
-	back_button.visible = false
+	back_button_node.visible = false
 
 func show_alert(title: String, content: String, ok_text: String = 'BUTTON_OK', cancel_text: String = 'BUTTON_CANCEL') -> void:
 	alert.setup(title, content, ok_text, cancel_text)
@@ -105,7 +108,7 @@ func show_alert(title: String, content: String, ok_text: String = 'BUTTON_OK', c
 func hide_alert(result: bool = false) -> void:
 	alert.visible = false
 	hide_cover()
-	emit_signal("alert_completed", result)
+	alert_completed.emit(result)
 
 func _on_Alert_completed(result) -> void:
 	hide_alert(result)
@@ -120,14 +123,14 @@ func go_back() -> void:
 	if alert.visible:
 		hide_alert()
 	else:
-		emit_signal("back_button")
+		back_button.emit()
 
 func _on_BackButton_pressed() -> void:
 	go_back()
 
 func _unhandled_input(event: InputEvent) -> void:
-	if event.is_action('ui_cancel') and back_button.visible and event.is_pressed():
+	if event.is_action('ui_cancel') and back_button_node.visible and event.is_pressed():
 		Sounds.play("Back")
-		get_tree().set_input_as_handled()
+		get_viewport().set_input_as_handled()
 		go_back()
 

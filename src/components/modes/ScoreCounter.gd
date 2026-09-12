@@ -1,6 +1,6 @@
-extends Reference
+extends RefCounted
 
-class ScorableEntity extends Reference:
+class ScorableEntity extends RefCounted:
 	var name: String
 	var score: int
 	

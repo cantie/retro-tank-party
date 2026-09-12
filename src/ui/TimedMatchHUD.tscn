@@ -1,21 +1,21 @@
-[gd_scene load_steps=5 format=2]
+[gd_scene load_steps=5 format=3 uid="uid://6f59ffe39e67"]
 
-[ext_resource path="res://assets/theme.tres" type="Theme" id=1]
-[ext_resource path="res://src/ui/TimedMatchHUD.gd" type="Script" id=2]
-[ext_resource path="res://src/ui/CountdownTimer.tscn" type="PackedScene" id=3]
-[ext_resource path="res://src/ui/ScoreHUD.tscn" type="PackedScene" id=5]
+[ext_resource type="Theme" path="res://assets/theme.tres" id="1"]
+[ext_resource type="Script" path="res://src/ui/TimedMatchHUD.gd" id="2"]
+[ext_resource type="PackedScene" path="res://src/ui/CountdownTimer.tscn" id="3"]
+[ext_resource type="PackedScene" path="res://src/ui/ScoreHUD.tscn" id="5"]
 
 [node name="TimedMatchHUD" type="Control"]
 anchor_right = 1.0
 anchor_bottom = 1.0
 mouse_filter = 2
-theme = ExtResource( 1 )
-script = ExtResource( 2 )
+theme = ExtResource("1")
+script = ExtResource("2")
 __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="CountdownTimer" parent="." instance=ExtResource( 3 )]
+[node name="CountdownTimer" parent="." instance=ExtResource("3")]
 anchor_left = 0.5
 anchor_right = 0.5
 margin_left = -60.0
@@ -26,8 +26,8 @@ margin_bottom = 55.0
 visible = false
 anchor_right = 1.0
 margin_bottom = 51.0
-custom_colors/font_color = Color( 1, 1, 1, 1 )
+custom_colors/font_color = Color(1, 1, 1, 1 )
 text = "MESSAGE_INSTANT_DEATH"
 align = 1
 
-[node name="ScoreHUD" parent="." instance=ExtResource( 5 )]
+[node name="ScoreHUD" parent="." instance=ExtResource("5")]

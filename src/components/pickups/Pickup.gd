@@ -1,10 +1,10 @@
 extends Resource
 class_name Pickup
 
-export (String) var name := ''
-export (String) var letter := 'P'
-export (int) var rarity := 20
-export (PackedScene) var pickup_scene
+@export var name: String = ''
+@export var letter: String = 'P'
+@export var rarity: int = 20
+@export var pickup_scene: PackedScene
 
 func get_default_pickup_scene() -> PackedScene:
 	return preload("res://src/objects/pickups/Pickup.tscn")

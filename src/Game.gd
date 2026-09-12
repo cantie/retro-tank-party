@@ -3,13 +3,13 @@ extends Node2D
 const TankScene = preload("res://src/objects/Tank.tscn")
 const FreeSpaceDetector = preload("res://src/game/FreeSpaceDetector.tscn")
 
-onready var map: Node2D = $Map
-onready var players_node := $Players
-onready var player_camera := $PlayerCamera
-onready var watch_camera := $WatchCamera
-onready var hud := $CanvasLayer/HUD
+@onready var map: Node2D = $Map
+@onready var players_node := $Players
+@onready var player_camera := $PlayerCamera
+@onready var watch_camera := $WatchCamera
+@onready var hud := $CanvasLayer/HUD
 # Johnny passes out random seeds!
-onready var johnny := $RandomNumberGenerator
+@onready var johnny := $RandomNumberGenerator
 
 var map_scene: PackedScene
 var game_started := false
@@ -17,10 +17,10 @@ var players := {}
 var players_alive := {}
 var possible_pickups := []
 var player_start_transforms
-var player_listener: Listener2D
+var player_listener: AudioListener2D
 
 signal game_error (message)
-signal game_started ()
+signal match_started ()
 signal player_spawned (tank)
 signal player_dead (player_id, killer_id)
 
@@ -48,7 +48,7 @@ class Player:
 		return Player.new(data['peer_id'], data['name'], data['index'], data['team'])
 
 func _ready() -> void:
-	SyncManager.connect("scene_spawned", self, "_on_SyncManager_scene_spawned")
+	SyncManager.scene_spawned.connect(self._on_SyncManager_scene_spawned)
 
 # Initializes the game so that it is ready to really start.
 func game_setup(_players: Dictionary, map_path: String, random_seed: int, _player_start_transforms = null) -> void:
@@ -61,14 +61,14 @@ func game_setup(_players: Dictionary, map_path: String, random_seed: int, _playe
 	game_stop()
 
 	if not load_map(map_path):
-		emit_signal("game_error", "GAME_ERROR_UNABLE_TO_LOAD_MAP")
+		game_error.emit("GAME_ERROR_UNABLE_TO_LOAD_MAP")
 		return
 
 	players = _players
 	johnny.set_seed(random_seed)
 	player_start_transforms = _player_start_transforms if _player_start_transforms != null else map.get_player_start_transforms()
 
-	var my_id: int = SyncManager.network_adaptor.get_network_unique_id()
+	var my_id: int = SyncManager.network_adaptor.get_unique_id()
 	if players.has(my_id):
 		var player = players[my_id]
 		_setup_player_camera(player_start_transforms[player.index - 1].get_origin().to_float())
@@ -117,16 +117,16 @@ func _on_SyncManager_scene_spawned(name: String, spawned_node: Node, scene: Pack
 		if players.has(peer_id):
 			players_alive[peer_id] = players[peer_id]
 
-		if not spawned_node.is_connected("player_dead", self, "_on_player_dead"):
-			spawned_node.connect("player_dead", self, "_on_player_dead", [spawned_node])
+		if not spawned_node.player_dead.is_connected(_on_player_dead):
+			spawned_node.player_dead.connect(_on_player_dead.bind(spawned_node))
 
-		if peer_id == SyncManager.network_adaptor.get_network_unique_id():
+		if peer_id == SyncManager.network_adaptor.get_unique_id():
 			spawned_node.player_controlled = true
 			_setup_player_camera(spawned_node.global_position)
 			spawned_node.camera = player_camera
 			_setup_player_listener(spawned_node)
 
-		emit_signal("player_spawned", spawned_node)
+		player_spawned.emit(spawned_node)
 
 func get_tank(player_id: int):
 	return players_node.get_node(str(player_id))
@@ -152,7 +152,7 @@ func game_start() -> void:
 
 		get_tree().paused = false
 
-		emit_signal("game_started")
+		match_started.emit()
 
 func game_stop() -> void:
 	if game_started:
@@ -162,7 +162,7 @@ func game_stop() -> void:
 		game_started = false
 
 		players_alive.clear()
-		watch_camera.current = true
+		watch_camera.make_current()
 
 		for child in players_node.get_children():
 			SyncManager.despawn(child)
@@ -185,7 +185,7 @@ func reload_map() -> void:
 	remove_child(map)
 	map.queue_free()
 
-	map = map_scene.instance()
+	map = map_scene.instantiate()
 	map.name = 'Map'
 	add_child(map)
 	move_child(map, map_index)
@@ -204,8 +204,7 @@ func _setup_watch_camera() -> void:
 
 func _setup_player_camera(camera_position: Vector2) -> void:
 	player_camera.global_position = camera_position
-	watch_camera.current = false
-	player_camera.current = true
+	player_camera.make_current()
 
 	if map.has_method('get_map_rect'):
 		var map_rect = map.get_map_rect()
@@ -218,7 +217,7 @@ func _setup_player_camera(camera_position: Vector2) -> void:
 func _setup_player_listener(my_player) -> void:
 	_teardown_player_listener()
 
-	player_listener = Listener2D.new()
+	player_listener = AudioListener2D.new()
 	my_player.add_child(player_listener)
 	player_listener.make_current()
 
@@ -244,11 +243,13 @@ func remove_player(player_id) -> void:
 	kill_player(player_id)
 
 func enable_watch_camera(enable: bool = true) -> void:
-	player_camera.current = not enable
-	watch_camera.current = enable
+	if enable:
+		watch_camera.make_current()
+	else:
+		player_camera.make_current()
 
 func _on_player_dead(killer_id, tank) -> void:
-	var peer_id = tank.get_network_master()
+	var peer_id = tank.get_multiplayer_authority()
 	# Ensure this will only ever be called once per player
 	if players_alive.has(peer_id):
 		players_alive.erase(peer_id)
@@ -258,7 +259,7 @@ func _on_player_dead(killer_id, tank) -> void:
 			_teardown_player_listener()
 			hud.clear_all_labels()
 
-		emit_signal("player_dead", peer_id, killer_id)
+		player_dead.emit(peer_id, killer_id)
 
 # From https://stackoverflow.com/a/12996028/364763
 #
@@ -274,7 +275,7 @@ func generate_random_seed() -> int:
 	return _simple_integer_hash(johnny.randi())
 
 func create_free_space_detector(area: SGFixedRect2, dimensions: SGFixedVector2, rng: NetworkRandomNumberGenerator):
-	var detector = FreeSpaceDetector.instance()
+	var detector = FreeSpaceDetector.instantiate()
 	detector.setup_free_space_detector(area, dimensions, rng)
 	add_child(detector)
 	return detector

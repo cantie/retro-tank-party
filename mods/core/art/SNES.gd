@@ -22,8 +22,8 @@ func get_team_color(index: int) -> Color:
 
 func replace_visual(id: String, node: Node, info: Dictionary = {}) -> Node:
 	if id == 'TankBody':
-		var visual = TankBodyVisual.instance()
+		var visual = TankBodyVisual.instantiate()
 		replace_sprite_texture(get_texture_name_for_visual(id, info), visual)
 		return visual
 	
-	return .replace_visual(id, node, info)
+	return super.replace_visual(id, node, info)

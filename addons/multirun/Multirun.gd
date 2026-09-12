@@ -1,4 +1,4 @@
-tool
+@tool
 extends EditorPlugin
 
 var panel1
@@ -30,13 +30,13 @@ func _multirun_pressed():
 	if first_args && add_custom_args:
 		for arg in first_args.split(" "):
 			commands.push_front(arg)
-	OS.execute(OS.get_executable_path(), commands, false)
+	OS.create_process(OS.get_executable_path(), commands)
 	for i in range(window_count-1):
 		commands = ["--position", str(50 + (i+1) * window_dist) + ",10"]
 		if other_args && add_custom_args:
 			for arg in other_args.split(" "):
 				commands.push_front(arg)
-		OS.execute(OS.get_executable_path(), commands, false)
+		OS.create_process(OS.get_executable_path(), commands)
 
 func _loaddir_pressed():
 	OS.shell_open(OS.get_user_data_dir())
@@ -55,7 +55,7 @@ func _remove_panels():
 
 func _unhandled_input(event):	
 	if event is InputEventKey:
-		if event.pressed and event.scancode == KEY_F8:
+		if event.pressed and event.keycode == KEY_F8:
 			_multirun_pressed()
 
 func _add_tooblar_button(action:String, icon_normal, icon_pressed):
@@ -63,7 +63,7 @@ func _add_tooblar_button(action:String, icon_normal, icon_pressed):
 	var b = TextureButton.new();
 	b.texture_normal = icon_normal
 	b.texture_pressed = icon_pressed
-	b.connect("pressed", self, action)
+	b.pressed.connect(Callable(self, action))
 	panel.add_child(b)
 	add_control_to_container(CONTAINER_TOOLBAR, panel)
 	return panel

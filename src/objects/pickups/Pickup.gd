@@ -2,11 +2,11 @@ extends SGArea2D
 
 const Sound = preload("res://assets/sounds/Pickup__010.wav")
 
-onready var collision_shape := $CollisionShape2D
-onready var visual := $Visual
+@onready var collision_shape := $CollisionShape2D
+@onready var visual := $Visual
 
-export (String) var letter := "P"
-export (Color) var color := Color('#00ff00')
+@export var letter: String = "P"
+@export var color: Color = Color('#00ff00')
 
 var _pickup
 

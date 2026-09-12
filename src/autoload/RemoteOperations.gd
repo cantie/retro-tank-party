@@ -21,7 +21,7 @@ class HostOperation:
 	func _init(_id: int, _name: String, _parent) -> void:
 		id = _id
 		parent = _parent
-		timestamp = OS.get_system_time_secs()
+		timestamp = int(Time.get_unix_time_from_system())
 	
 	func cancel() -> void:
 		parent._complete_operation(self, false)
@@ -52,13 +52,13 @@ var _host_operations := {}
 var _next_id := 0
 
 func _ready() -> void:
-	OnlineMatch.connect("player_left", self, "_on_OnlineMatch_player_left")
+	OnlineMatch.player_left.connect(self._on_OnlineMatch_player_left)
 	
-	pause_mode = Node.PAUSE_MODE_PROCESS
+	process_mode = Node.PROCESS_MODE_ALWAYS
 	
 	var timer = Timer.new()
 	timer.autostart = true
-	timer.connect("timeout", self, "_on_timer_timeout")
+	timer.timeout.connect(self._on_timer_timeout)
 	add_child(timer)
 
 func _notification(what: int) -> void:
@@ -74,7 +74,7 @@ func _validate_operation_name(name: String) -> bool:
 func perform_operation(name: String, info: Dictionary = {}):
 	if not _validate_operation_name(name):
 		return null
-	if not get_tree().is_network_server():
+	if not multiplayer.is_server():
 		return null
 	
 	var operation = HostOperation.new(_next_id, name, self)
@@ -84,28 +84,30 @@ func perform_operation(name: String, info: Dictionary = {}):
 	rpc("_perform_operation", operation.id, name, info)
 	return operation
 
-remotesync func _perform_operation(id: int, name: String, info: Dictionary) -> void:
+@rpc("any_peer", "call_local")
+func _perform_operation(id: int, name: String, info: Dictionary) -> void:
 	if not _validate_operation_name(name):
 		return
-	if get_tree().get_rpc_sender_id() != 1:
+	if multiplayer.get_remote_sender_id() != 1:
 		return
 	
 	var operation = ClientOperation.new(id, self)
 	call(name, operation, info)
 
-master func _mark_done(id: int, success: bool) -> void:
+@rpc("any_peer")
+func _mark_done(id: int, success: bool) -> void:
 	if not _host_operations.has(id):
 		return
 	
 	var operation = _host_operations[id]
 	if success:
-		operation.mark_done(get_tree().get_rpc_sender_id())
+		operation.mark_done(multiplayer.get_remote_sender_id())
 	else:
 		_complete_operation(operation, false)
 
 func _complete_operation(operation: HostOperation, success: bool) -> void:
 	_host_operations.erase(operation.id)
-	operation.emit_signal("completed", success)
+	operation.completed.emit(success)
 
 func _on_OnlineMatch_player_left(player: OnlineMatch.Player) -> void:
 	# Re-check our list of operation to see if they are now completed, now that
@@ -115,7 +117,7 @@ func _on_OnlineMatch_player_left(player: OnlineMatch.Player) -> void:
 			_complete_operation(operation, true)
 
 func _on_timer_timeout() -> void:
-	var threshold = OS.get_system_time_secs() - TIMEOUT_SECONDS
+	var threshold = int(Time.get_unix_time_from_system()) - TIMEOUT_SECONDS
 	for operation in _host_operations.values():
 		if operation.timestamp < threshold:
 			_complete_operation(operation, false)
@@ -125,11 +127,11 @@ func _on_timer_timeout() -> void:
 #
 
 func change_scene(path: String, info: Dictionary = {}) -> HostOperation:
-	if not get_tree().is_network_server():
+	if not multiplayer.is_server():
 		return null
 	
 	# Cancel any other in-progress change scene operations.
-	for other_operation in _host_operations:
+	for other_operation in _host_operations.values():
 		if other_operation.name == '_op_change_scene':
 			other_operation.cancel()
 	
@@ -141,7 +143,7 @@ func change_scene(path: String, info: Dictionary = {}) -> HostOperation:
 	if operation == null:
 		return null
 	
-	operation.connect("completed", self, "_change_scene_host_operation_completed", [path])
+	operation.completed.connect(_change_scene_host_operation_completed.bind(path))
 	
 	return operation
 
@@ -149,7 +151,7 @@ func _op_change_scene(operation: ClientOperation, full_info: Dictionary) -> void
 	var path = full_info['path']
 	var info = full_info['info']
 	
-	if get_tree().change_scene(path) != OK:
+	if get_tree().change_scene_to_file(path) != OK:
 		operation.mark_done(false)
 		return
 	
@@ -166,7 +168,7 @@ func _finish_op_change_scene(operation: ClientOperation, info: Dictionary) -> vo
 
 func _change_scene_host_operation_completed(success: bool, path: String) -> void:
 	if not success:
-		if get_tree().change_scene(FALLBACK_SCENE) != OK:
+		if get_tree().change_scene_to_file(FALLBACK_SCENE) != OK:
 			OS.alert("Unable to change scene!")
 			get_tree().quit(1)
 		

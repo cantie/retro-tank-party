@@ -1,9 +1,9 @@
 extends "res://src/ui/Screen.gd"
 
-onready var panel_container: PanelContainer = $PanelContainer
-onready var margin_container
-onready var online_button = $PanelContainer/MarginContainer/VBoxContainer/OnlineButton
-onready var exit_button = $PanelContainer/MarginContainer/VBoxContainer/ExitButton
+@onready var panel_container: PanelContainer = $PanelContainer
+@onready var margin_container
+@onready var online_button = $PanelContainer/MarginContainer/VBoxContainer/OnlineButton
+@onready var exit_button = $PanelContainer/MarginContainer/VBoxContainer/ExitButton
 
 func _ready() -> void:
 	if OS.has_feature('HTML5'):
@@ -14,10 +14,10 @@ func _show_screen(info: Dictionary = {}) -> void:
 	ui_layer.hide_back_button()
 
 func _on_LocalButton_pressed() -> void:
-	get_tree().change_scene("res://src/main/Practice.tscn")
+	get_tree().change_scene_to_file("res://src/main/Practice.tscn")
 
 func _on_OnlineButton_pressed() -> void:
-	get_tree().change_scene("res://src/main/SessionSetup.tscn")
+	get_tree().change_scene_to_file("res://src/main/SessionSetup.tscn")
 
 func _on_SettingsButton_pressed() -> void:
 	ui_layer.show_screen("SettingsScreen")

@@ -1,13 +1,14 @@
 [remap]
 
 importer="wav"
-type="AudioStreamSample"
-path="res://.import/Teleport__010.wav-bd6c056cd7416672cc258b6ee974560c.sample"
+type="AudioStreamWAV"
+uid="uid://b8u8lyn0muogc"
+path="res://.godot/imported/Teleport__010.wav-bd6c056cd7416672cc258b6ee974560c.sample"
 
 [deps]
 
 source_file="res://assets/sounds/Teleport__010.wav"
-dest_files=[ "res://.import/Teleport__010.wav-bd6c056cd7416672cc258b6ee974560c.sample" ]
+dest_files=["res://.godot/imported/Teleport__010.wav-bd6c056cd7416672cc258b6ee974560c.sample"]
 
 [params]
 
@@ -17,5 +18,7 @@ force/max_rate=false
 force/max_rate_hz=44100
 edit/trim=false
 edit/normalize=false
-edit/loop=false
+edit/loop_mode=0
+edit/loop_begin=0
+edit/loop_end=-1
 compress/mode=0

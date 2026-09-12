@@ -1,23 +1,23 @@
 extends Node2D
 
-onready var ui_layer = $UILayer
-onready var mode_screen = $UILayer/Screens/ModeScreen
-onready var map_screen = $UILayer/Screens/MapScreen
-onready var team_screen = $UILayer/Screens/TeamScreen
+@onready var ui_layer = $UILayer
+@onready var mode_screen = $UILayer/Screens/ModeScreen
+@onready var map_screen = $UILayer/Screens/MapScreen
+@onready var team_screen = $UILayer/Screens/TeamScreen
 
-onready var map_parent = $MapParent
+@onready var map_parent = $MapParent
 
 func _ready() -> void:
 	if OnlineMatch.players.size() < 2:
-		get_tree().change_scene("res://src/main/SessionSetup.tscn")
+		get_tree().change_scene_to_file("res://src/main/SessionSetup.tscn")
 		return
 
-	OnlineMatch.connect("error_code", self, "_on_OnlineMatch_error")
-	OnlineMatch.connect("disconnected", self, "_on_OnlineMatch_disconnected")
-	OnlineMatch.connect("player_left", self, "_on_OnlineMatch_player_left")
+	OnlineMatch.error_code.connect(self._on_OnlineMatch_error)
+	OnlineMatch.disconnected.connect(self._on_OnlineMatch_disconnected)
+	OnlineMatch.player_left.connect(self._on_OnlineMatch_player_left)
 
 	# Make the host in charge of this scene.
-	set_network_master(1)
+	set_multiplayer_authority(1)
 	show_default_message()
 	if not SyncManager.network_adaptor.is_network_host():
 		ui_layer.show_cover()
@@ -53,10 +53,10 @@ func _on_UILayer_back_button() -> void:
 			alert_content = 'ALERT_LEAVE_MATCH'
 
 		ui_layer.show_alert('ALERT_LEAVE_MATCH_TITLE', alert_content)
-		var result: bool = yield(ui_layer, "alert_completed")
+		var result: bool = await ui_layer.alert_completed
 		if result:
 			OnlineMatch.leave()
-			get_tree().change_scene("res://src/main/SessionSetup.tscn")
+			get_tree().change_scene_to_file("res://src/main/SessionSetup.tscn")
 		elif not SyncManager.network_adaptor.is_network_host():
 			ui_layer.show_cover()
 	elif current_screen == 'ReadyScreen':
@@ -74,12 +74,12 @@ func _on_MapScreen_map_changed(map_scene_path) -> void:
 	if not map_parent:
 		return
 
-	var old_map_scene = map_parent.get_node_or_null(@"Map")
+	var old_map_scene = map_parent.get_node_or_null(^"Map")
 	if old_map_scene:
 		map_parent.remove_child(old_map_scene)
 		old_map_scene.queue_free()
 
-	var map_scene = load(map_scene_path).instance()
+	var map_scene = load(map_scene_path).instantiate()
 	map_scene.name = 'Map'
 	map_parent.add_child(map_scene)
 
@@ -125,8 +125,8 @@ func _error(message: String):
 	if message != '':
 		ui_layer.show_message(message)
 	ui_layer.hide_screen()
-	yield(get_tree().create_timer(2.0), "timeout")
-	get_tree().change_scene("res://src/main/SessionSetup.tscn")
+	await get_tree().create_timer(2.0).timeout
+	get_tree().change_scene_to_file("res://src/main/SessionSetup.tscn")
 
 func _on_OnlineMatch_error(code: int, message: String, extra):
 	_error(Utils.translate_online_match_error(code, message, extra))

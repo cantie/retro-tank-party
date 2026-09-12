@@ -1,11 +1,11 @@
 extends "res://src/ui/Screen.gd"
 
-onready var scroll_container := $Panel/VBoxContainer/ScrollContainer
-onready var field_container := $Panel/VBoxContainer/ScrollContainer/GridContainer
-onready var health_slider := $Panel/VBoxContainer/ScrollContainer/GridContainer/HealthSlider
-onready var invincible_field := $Panel/VBoxContainer/ScrollContainer/GridContainer/InvincibleOptions
-onready var weapon_field := $Panel/VBoxContainer/ScrollContainer/GridContainer/WeaponOptions
-onready var ability_field := $Panel/VBoxContainer/ScrollContainer/GridContainer/AbilityOptions
+@onready var scroll_container := $Panel/VBoxContainer/ScrollContainer
+@onready var field_container := $Panel/VBoxContainer/ScrollContainer/GridContainer
+@onready var health_slider := $Panel/VBoxContainer/ScrollContainer/GridContainer/HealthSlider
+@onready var invincible_field := $Panel/VBoxContainer/ScrollContainer/GridContainer/InvincibleOptions
+@onready var weapon_field := $Panel/VBoxContainer/ScrollContainer/GridContainer/WeaponOptions
+@onready var ability_field := $Panel/VBoxContainer/ScrollContainer/GridContainer/AbilityOptions
 
 var tank
 var _is_ready := false
@@ -34,10 +34,12 @@ func _ready() -> void:
 func _setup_field_neighbors() -> void:
 	var previous_neighbor = null;
 	for child in field_container.get_children():
+		if not child is Control or child.focus_mode == Control.FOCUS_NONE:
+			continue
 		if previous_neighbor:
-			previous_neighbor.focus_neighbour_bottom = child.get_path()
+			previous_neighbor.focus_neighbor_bottom = child.get_path()
 			previous_neighbor.focus_next = child.get_path()
-			child.focus_neighbour_top = previous_neighbor.get_path()
+			child.focus_neighbor_top = previous_neighbor.get_path()
 			child.focus_previous = previous_neighbor.get_path()
 		previous_neighbor = child
 
@@ -52,34 +54,34 @@ func _show_screen(info: Dictionary = {}) -> void:
 		return
 
 	health_slider.value = tank.health
-	invincible_field.set_value(tank.invincible, false)
-	weapon_field.set_value(tank.weapon_type.resource_path, false)
-	ability_field.set_value(tank.held_ability_type.resource_path if tank.held_ability_type != null else "None", false)
+	invincible_field.update_value(tank.invincible, false)
+	weapon_field.update_value(tank.weapon_type.resource_path, false)
+	ability_field.update_value(tank.held_ability_type.resource_path if tank.held_ability_type != null else "None", false)
 
 func _network_process(data: Dictionary) -> void:
-	emit_signal('network_process')
+	network_process.emit()
 
 func _on_HealthSlider_value_changed(value: float) -> void:
 	if _is_ready:
 		Sounds.play("Select")
 
 	if tank:
-		yield(self, 'network_process')
+		await self.network_process
 		tank.update_health(value)
 
 func _on_InvincibleOptions_item_selected(value, index) -> void:
 	if tank:
-		yield(self, 'network_process')
+		await self.network_process
 		tank.invincible = value
 
 func _on_WeaponOptions_item_selected(value, index) -> void:
 	if tank:
-		yield(self, 'network_process')
+		await self.network_process
 		tank.set_weapon_type(load(value))
 
 func _on_AbilityOptions_item_selected(value, index) -> void:
 	if tank:
-		yield(self, 'network_process')
+		await self.network_process
 		# For 'None', since we can't have a value null in OptionSwitcher.
 		if index == 0:
 			tank.set_held_ability_type(null)
@@ -92,5 +94,5 @@ func _on_DoneButton_pressed() -> void:
 
 func _unhandled_input(event: InputEvent) -> void:
 	if visible and event.is_action_pressed('ui_accept'):
-		get_tree().set_input_as_handled()
+		get_viewport().set_input_as_handled()
 		_on_DoneButton_pressed()

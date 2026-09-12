@@ -1,9 +1,9 @@
-[gd_resource type="Resource" load_steps=2 format=2]
+[gd_resource type="Resource" load_steps=2 format=3 uid="uid://ef30f7b41f10"]
 
-[ext_resource path="res://src/components/maps/GameMap.gd" type="Script" id=1]
+[ext_resource type="Script" path="res://src/components/maps/GameMap.gd" id="1"]
 
 [resource]
-script = ExtResource( 1 )
+script = ExtResource("1")
 name = "MAP_NAME_FOOTBALL"
 has_goals = true
 map_scene = "res://mods/core/maps/Football.tscn"

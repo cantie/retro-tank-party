@@ -2,13 +2,15 @@ extends HBoxContainer
 
 var MedalTexture = preload("res://assets/medal2.png")
 
-onready var name_label := $NameLabel
-onready var status_label := $StatusLabel
-onready var host_icon := $HostIcon
-onready var ping_label := $PingLabel
+@onready var name_label := $NameLabel
+@onready var status_label := $StatusLabel
+@onready var host_icon := $HostIcon
+@onready var ping_label := $PingLabel
 
-var status := "" setget set_status
-var host := false setget set_host
+var status := "":
+	set = set_status
+var host := false:
+	set = set_host
 
 func _ready() -> void:
 	ping_label.visible = false

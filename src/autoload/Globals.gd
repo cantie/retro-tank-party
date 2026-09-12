@@ -16,8 +16,8 @@ const TEAM_NAMES := [
 	"Blue Team",
 ]
 
-onready var art = $Art
-onready var rumble = $Rumble
+@onready var art = $Art
+@onready var rumble = $Rumble
 
 var title_shown := false
 var arguments := {}

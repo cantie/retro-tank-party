@@ -2,7 +2,8 @@ extends Control
 
 signal changed ()
 
-var disabled := false setget set_disabled
+var disabled := false:
+	set = set_disabled
 
 func set_disabled(_disabled: bool) -> void:
 	disabled = _disabled

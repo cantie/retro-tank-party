@@ -1,7 +1,7 @@
 extends Control
 
-onready var credits_team = $PanelContainer/VBoxContainer/ScrollContainer/VBoxContainer/CreditsTeam
-onready var credits_legal = $PanelContainer/VBoxContainer/ScrollContainer/VBoxContainer/CreditsLegal
+@onready var credits_team = $PanelContainer/VBoxContainer/ScrollContainer/VBoxContainer/CreditsTeam
+@onready var credits_legal = $PanelContainer/VBoxContainer/ScrollContainer/VBoxContainer/CreditsLegal
 
 func _ready() -> void:
 	update_translation()

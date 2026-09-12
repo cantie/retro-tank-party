@@ -1,4 +1,4 @@
-extends Reference
+extends RefCounted
 
 const PickupGenericVisual = preload("res://src/objects/pickups/PickupGenericVisual.tscn")
 const PickupSpriteVisual = preload("res://src/objects/pickups/PickupSpriteVisual.tscn")
@@ -9,13 +9,11 @@ var texture_replace_cache := {}
 func setup_art(_art_style_resource) -> void:
 	art_style_resource = _art_style_resource
 
-func setup_terrain_tiles(terrain_tiles: TileSet) -> void:
-	if art_style_resource.texture_base_path != "":
-		var texture_path = art_style_resource.texture_base_path + '/terraintiles.png'
-		if ResourceLoader.exists(texture_path):
-			var texture = load(texture_path)
-			for tile_id in terrain_tiles.get_tiles_ids():
-				terrain_tiles.tile_set_texture(tile_id, texture)
+func setup_terrain_tiles(_terrain_tiles: TileSet) -> void:
+	# TileSet API changed significantly in Godot 4
+	# Texture replacement for art styles would need to use TileSetAtlasSource
+	# For now, terrain tiles use the default textures
+	pass
 
 func get_texture(texture_name: String):
 	if texture_replace_cache.has(texture_name):
@@ -34,7 +32,7 @@ func get_texture(texture_name: String):
 		return texture
 
 func replace_sprite_texture(texture_name: String, node: Node) -> void:
-	var sprite = node.get_node_or_null(@"Sprite")
+	var sprite = node.get_node_or_null(^"Sprite")
 	if sprite:
 		var texture = get_texture(texture_name)
 		if texture != null and sprite.texture != texture:
@@ -62,9 +60,9 @@ func replace_visual(id: String, node: Node, info: Dictionary = {}) -> Node:
 		if id == 'Pickup':
 			var texture = get_texture(texture_name)
 			if texture:
-				node = PickupSpriteVisual.instance()
+				node = PickupSpriteVisual.instantiate()
 			else:
-				node = PickupGenericVisual.instance()
+				node = PickupGenericVisual.instantiate()
 				return node
 		
 		replace_sprite_texture(texture_name, node)

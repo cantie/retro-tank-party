@@ -1,10 +1,10 @@
-[gd_scene load_steps=5 format=2]
+[gd_scene load_steps=5 format=3 uid="uid://cd27c0a0ccab"]
 
-[ext_resource path="res://assets/SnopekGames.png" type="Texture" id=1]
-[ext_resource path="res://assets/MadeInGodot.webm" type="VideoStream" id=2]
-[ext_resource path="res://src/main/Splash.gd" type="Script" id=3]
+[ext_resource type="Texture2D" path="res://assets/SnopekGames.png" id="1"]
+[ext_resource type="VideoStream" path="res://assets/MadeInGodot.webm" id="2"]
+[ext_resource type="Script" path="res://src/main/Splash.gd" id="3"]
 
-[sub_resource type="Animation" id=1]
+[sub_resource type="Animation" id="1"]
 resource_name = "Splash"
 length = 5.0
 tracks/0/type = "value"
@@ -41,7 +41,7 @@ tracks/2/keys = {
 "times": PoolRealArray( 0, 1, 2.5, 3 ),
 "transitions": PoolRealArray( 1, 0.901249, 0.901249, 1 ),
 "update": 0,
-"values": [ Color( 0, 0, 0, 1 ), Color( 0, 0, 0, 0 ), Color( 0, 0, 0, 0 ), Color( 0, 0, 0, 1 ) ]
+"values": [ Color(0, 0, 0, 1 ), Color(0, 0, 0, 0 ), Color(0, 0, 0, 0 ), Color(0, 0, 0, 1 ) ]
 }
 tracks/3/type = "method"
 tracks/3/path = NodePath("MadeInGodotVideo")
@@ -61,7 +61,7 @@ tracks/3/keys = {
 [node name="Splash" type="Control"]
 anchor_right = 1.0
 anchor_bottom = 1.0
-script = ExtResource( 3 )
+script = ExtResource("3")
 __meta__ = {
 "_edit_use_anchors_": false
 }
@@ -69,7 +69,7 @@ __meta__ = {
 [node name="MadeInGodotVideo" type="VideoPlayer" parent="."]
 anchor_right = 1.0
 anchor_bottom = 1.0
-stream = ExtResource( 2 )
+stream = ExtResource("2")
 __meta__ = {
 "_edit_use_anchors_": false
 }
@@ -77,7 +77,7 @@ __meta__ = {
 [node name="SnopekGamesImage" type="TextureRect" parent="."]
 anchor_right = 1.0
 anchor_bottom = 1.0
-texture = ExtResource( 1 )
+texture = ExtResource("1")
 __meta__ = {
 "_edit_use_anchors_": false
 }
@@ -85,12 +85,12 @@ __meta__ = {
 [node name="Cover" type="ColorRect" parent="."]
 anchor_right = 1.0
 anchor_bottom = 1.0
-color = Color( 0, 0, 0, 1 )
+color = Color(0, 0, 0, 1 )
 __meta__ = {
 "_edit_use_anchors_": false
 }
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="."]
 autoplay = "Splash"
-anims/Splash = SubResource( 1 )
+anims/Splash = SubResource("1")
 [connection signal="finished" from="MadeInGodotVideo" to="." method="_on_MadeInGodotVideo_finished"]

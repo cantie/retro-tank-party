@@ -1,18 +1,18 @@
 extends "res://src/components/modes/BaseManager.gd"
 
-onready var you_lose_timer := $YouLoseTimer
-onready var show_winner_timer := $ShowWinnerTimer
-onready var show_score_timer := $ShowScoreTimer
-onready var next_round_timer := $NextRoundTimer
+@onready var you_lose_timer := $YouLoseTimer
+@onready var show_winner_timer := $ShowWinnerTimer
+@onready var show_score_timer := $ShowScoreTimer
+@onready var next_round_timer := $NextRoundTimer
 
 var round_over := false
 var match_over := false
 var winner_id := -1
 
 func _do_match_setup() -> void:
-	._do_match_setup()
+	super._do_match_setup()
 
-	game.connect("player_dead", self, "_on_game_player_dead")
+	game.player_dead.connect(self._on_game_player_dead)
 
 func start_new_round() -> void:
 	game.game_reset()
@@ -21,20 +21,20 @@ func start_new_round() -> void:
 	winner_id = -1
 
 func _save_state() -> Dictionary:
-	var state = ._save_state()
+	var state = super._save_state()
 	state['round_over'] = round_over
 	state['match_over'] = match_over
 	state['winner_id'] = winner_id
 	return state
 
 func _load_state(state: Dictionary) -> void:
-	._load_state(state)
+	super._load_state(state)
 	round_over = state['round_over']
 	match_over = state['match_over']
 	winner_id = state['winner_id']
 
 func _on_game_player_dead(player_id: int, killer_id: int) -> void:
-	var my_id = SyncManager.network_adaptor.get_network_unique_id()
+	var my_id = SyncManager.network_adaptor.get_unique_id()
 	if player_id == my_id:
 		you_lose_timer.start()
 

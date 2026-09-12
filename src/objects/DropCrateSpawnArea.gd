@@ -6,10 +6,10 @@ const DropCrate = preload("res://src/objects/DropCrate.tscn")
 const CRATE_DIMENSION = 3932160
 const TWO = 131072
 
-onready var collision_shape = $CollisionShape2D
-onready var drop_timer = $DropTimer
-onready var spawns = $Spawns
-onready var rng = $RandomNumberGenerator
+@onready var collision_shape = $CollisionShape2D
+@onready var drop_timer = $DropTimer
+@onready var spawns = $Spawns
+@onready var rng = $RandomNumberGenerator
 
 var possible_contents := []
 var detector

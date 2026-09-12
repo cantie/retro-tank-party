@@ -1,10 +1,10 @@
-[gd_resource type="Resource" load_steps=3 format=2]
+[gd_resource type="Resource" load_steps=3 format=3 uid="uid://08acb8b710ed"]
 
-[ext_resource path="res://mods/core/abilities/Zap.tscn" type="PackedScene" id=1]
-[ext_resource path="res://src/components/abilities/AbilityType.gd" type="Script" id=2]
+[ext_resource type="PackedScene" path="res://mods/core/abilities/Zap.tscn" id="1"]
+[ext_resource type="Script" path="res://src/components/abilities/AbilityType.gd" id="2"]
 
 [resource]
-script = ExtResource( 2 )
+script = ExtResource("2")
 name = "ABILITY_NAME_ZAP"
-ability_scene = ExtResource( 1 )
+ability_scene = ExtResource("1")
 charges = 3

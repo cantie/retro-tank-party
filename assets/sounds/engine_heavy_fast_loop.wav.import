@@ -1,13 +1,14 @@
 [remap]
 
 importer="wav"
-type="AudioStreamSample"
-path="res://.import/engine_heavy_fast_loop.wav-068eec14ed995f003e431041df75ce2d.sample"
+type="AudioStreamWAV"
+uid="uid://cnebkao1cg3lp"
+path="res://.godot/imported/engine_heavy_fast_loop.wav-068eec14ed995f003e431041df75ce2d.sample"
 
 [deps]
 
 source_file="res://assets/sounds/engine_heavy_fast_loop.wav"
-dest_files=[ "res://.import/engine_heavy_fast_loop.wav-068eec14ed995f003e431041df75ce2d.sample" ]
+dest_files=["res://.godot/imported/engine_heavy_fast_loop.wav-068eec14ed995f003e431041df75ce2d.sample"]
 
 [params]
 
@@ -17,5 +18,7 @@ force/max_rate=false
 force/max_rate_hz=44100
 edit/trim=false
 edit/normalize=false
-edit/loop=true
+edit/loop_mode=0
+edit/loop_begin=0
+edit/loop_end=-1
 compress/mode=0
