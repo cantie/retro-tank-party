@@ -410,7 +410,8 @@ func _network_process(input: Dictionary) -> void:
 		var move_velocity = fixed_transform.x.copy()
 		move_velocity.imul(movement_vector.x)
 		move_velocity.imul(speed)
-		call("move_and_slide", move_velocity)
+		velocity = move_velocity
+		move_and_slide()
 	
 	# 6554 = 0.1
 	if movement_vector.x >= 6554 or movement_vector.x <= -6554:
