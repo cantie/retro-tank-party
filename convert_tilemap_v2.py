@@ -63,18 +63,27 @@ TILE_ID_TO_ATLAS = {
     39: (9, 3),   # Rect2(1152, 384, 128, 128)
 }
 
-# Godot 4 alternative tile IDs for transforms
-# 0: no transform
-# 1: flip_h
-# 2: flip_v
-# 3: flip_h + flip_v
-# 4: transpose
-# 5: transpose + flip_h
-# 6: transpose + flip_v
-# 7: transpose + flip_h + flip_v
+# Godot 4 transform flags (bits 12-14 of alternative_tile field)
+# These are OR-ed with the base alternative_id (usually 0)
+TRANSFORM_FLIP_H = 0x1000    # 4096, bit 12
+TRANSFORM_FLIP_V = 0x2000    # 8192, bit 13
+TRANSFORM_TRANSPOSE = 0x4000 # 16384, bit 14
+
 def get_alternative_tile_id(flip_h, flip_v, transpose):
-    """Convert transform flags to Godot 4 alternative tile ID."""
-    return (flip_h * 1) + (flip_v * 2) + (transpose * 4)
+    """Convert transform flags to Godot 4 alternative_tile value.
+    
+    The base alternative_id is 0 (exists in TileSet), and transform
+    flags are OR-ed into bits 12-14.
+    """
+    base_alternative = 0  # Must exist in TileSet
+    flags = 0
+    if flip_h:
+        flags |= TRANSFORM_FLIP_H
+    if flip_v:
+        flags |= TRANSFORM_FLIP_V
+    if transpose:
+        flags |= TRANSFORM_TRANSPOSE
+    return base_alternative | flags
 
 def signed16(val):
     """Convert unsigned 16-bit to signed."""
