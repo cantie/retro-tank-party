@@ -1,6 +1,6 @@
 [gd_scene load_steps=5 format=3 uid="uid://cd27c0a0ccab"]
 
-[ext_resource type="Texture" path="res://assets/SnopekGames.png" id="1"]
+[ext_resource type="Texture2D" path="res://assets/SnopekGames.png" id="1"]
 [ext_resource type="VideoStream" path="res://assets/MadeInGodot.webm" id="2"]
 [ext_resource type="Script" path="res://src/main/Splash.gd" id="3"]
 

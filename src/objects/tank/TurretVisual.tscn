@@ -1,6 +1,6 @@
 [gd_scene load_steps=2 format=3 uid="uid://cadce11309a3"]
 
-[ext_resource type="Texture" path="res://mods/core/art/classic/TankTurret1.png" id="2"]
+[ext_resource type="Texture2D" path="res://mods/core/art/classic/TankTurret1.png" id="2"]
 
 [node name="TurretVisual" type="Node2D"]
 

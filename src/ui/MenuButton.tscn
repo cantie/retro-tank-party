@@ -2,7 +2,7 @@
 
 [ext_resource type="Script" path="res://src/ui/MenuButton.gd" id="1"]
 [ext_resource type="FontFile" path="res://assets/fonts/monogram.tres" id="2"]
-[ext_resource type="Texture" path="res://assets/ui/blue_arrowRight.png" id="3"]
+[ext_resource type="Texture2D" path="res://assets/ui/blue_arrowRight.png" id="3"]
 
 [sub_resource type="StyleBoxEmpty" id="1"]
 

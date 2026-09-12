@@ -1,6 +1,6 @@
 [gd_scene load_steps=5 format=3 uid="uid://f4236ed583d1"]
 
-[ext_resource type="Texture" path="res://mods/core/modes/football/goal_red.png" id="1"]
+[ext_resource type="Texture2D" path="res://mods/core/modes/football/goal_red.png" id="1"]
 [ext_resource type="Script" path="res://mods/core/modes/football/Goal.gd" id="2"]
 [ext_resource type="AudioStream" path="res://assets/goal-horn.ogg" id="3"]
 

@@ -1,7 +1,7 @@
 [gd_scene load_steps=5 format=3 uid="uid://b6b6780a8363"]
 
 [ext_resource type="Script" path="res://mods/core/art/snes/TankBodyVisual.gd" id="2"]
-[ext_resource type="Texture" path="res://mods/core/art/snes/TankBody1.png" id="3"]
+[ext_resource type="Texture2D" path="res://mods/core/art/snes/TankBody1.png" id="3"]
 
 [sub_resource type="Animation" id="1"]
 length = 0.001

@@ -1,6 +1,6 @@
 [gd_scene load_steps=3 format=3 uid="uid://62e59a433f6b"]
 
-[ext_resource type="Texture" path="res://mods/core/art/classic/DropCrate.png" id="1"]
+[ext_resource type="Texture2D" path="res://mods/core/art/classic/DropCrate.png" id="1"]
 
 [sub_resource type="Animation" id="1"]
 resource_name = "glow"

@@ -1,6 +1,6 @@
 [gd_scene load_steps=5 format=3 uid="uid://7e49ceda8bd0"]
 
-[ext_resource type="Texture" path="res://mods/core/art/classic/ExplosionFire.png" id="1"]
+[ext_resource type="Texture2D" path="res://mods/core/art/classic/ExplosionFire.png" id="1"]
 [ext_resource type="Script" path="res://addons/godot-rollback-netcode/NetworkAnimationPlayer.gd" id="2"]
 [ext_resource type="Script" path="res://src/objects/Explosion.gd" id="11"]
 

@@ -1,6 +1,6 @@
 [gd_scene load_steps=2 format=3 uid="uid://5e5d46efd0e0"]
 
-[ext_resource type="Texture" path="res://mods/core/art/classic/TankBullet1.png" id="1"]
+[ext_resource type="Texture2D" path="res://mods/core/art/classic/TankBullet1.png" id="1"]
 
 [node name="BulletVisual" type="Node2D"]
 

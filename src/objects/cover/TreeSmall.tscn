@@ -1,6 +1,6 @@
 [gd_scene load_steps=4 format=3 uid="uid://51c9645ce111"]
 
-[ext_resource type="Texture" path="res://mods/core/art/classic/TreeSmall_green.png" id="1"]
+[ext_resource type="Texture2D" path="res://mods/core/art/classic/TreeSmall_green.png" id="1"]
 [ext_resource type="Script" path="res://src/objects/cover/Tree.gd" id="2"]
 
 [sub_resource type="SGRectangleShape2D" id="1"]

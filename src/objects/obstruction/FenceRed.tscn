@@ -1,6 +1,6 @@
 [gd_scene load_steps=4 format=3 uid="uid://eb58230dd00b"]
 
-[ext_resource type="Texture" path="res://mods/core/art/classic/FenceRed.png" id="1"]
+[ext_resource type="Texture2D" path="res://mods/core/art/classic/FenceRed.png" id="1"]
 [ext_resource type="Script" path="res://src/objects/SimpleVisual.gd" id="2"]
 
 [sub_resource type="SGRectangleShape2D" id="1"]

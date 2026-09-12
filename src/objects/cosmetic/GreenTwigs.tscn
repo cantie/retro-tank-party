@@ -1,6 +1,6 @@
 [gd_scene load_steps=6 format=3 uid="uid://be4f7fbeef29"]
 
-[ext_resource type="Texture" path="res://mods/core/art/classic/GreenTwigs.png" id="1"]
+[ext_resource type="Texture2D" path="res://mods/core/art/classic/GreenTwigs.png" id="1"]
 [ext_resource type="Script" path="res://src/objects/cosmetic/GreenTwigs.gd" id="2"]
 [ext_resource type="Script" path="res://addons/godot-rollback-netcode/NetworkTimer.gd" id="3"]
 

@@ -1,7 +1,7 @@
 [gd_scene load_steps=10 format=3 uid="uid://90fb7ce96d10"]
 
 [ext_resource type="PackedScene" path="res://src/main/title/MenuScreen.tscn" id="1"]
-[ext_resource type="Texture" path="res://assets/TitleText.png" id="2"]
+[ext_resource type="Texture2D" path="res://assets/TitleText.png" id="2"]
 [ext_resource type="Script" path="res://src/main/Title.gd" id="3"]
 [ext_resource type="PackedScene" path="res://src/ui/UILayer.tscn" id="4"]
 [ext_resource type="PackedScene" path="res://src/ui/SettingsScreen.tscn" id="5"]

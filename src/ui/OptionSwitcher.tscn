@@ -1,7 +1,7 @@
 [gd_scene load_steps=6 format=3 uid="uid://db7a9b8f2003"]
 
-[ext_resource type="Texture" path="res://assets/ui/forward.png" id="1"]
-[ext_resource type="Texture" path="res://assets/ui/backward.png" id="2"]
+[ext_resource type="Texture2D" path="res://assets/ui/forward.png" id="1"]
+[ext_resource type="Texture2D" path="res://assets/ui/backward.png" id="2"]
 [ext_resource type="Script" path="res://src/ui/OptionSwitcher.gd" id="3"]
 [ext_resource type="Theme" path="res://assets/theme.tres" id="4"]
 
