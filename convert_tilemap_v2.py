@@ -63,10 +63,18 @@ TILE_ID_TO_ATLAS = {
     39: (9, 3),   # Rect2(1152, 384, 128, 128)
 }
 
-# Godot 4 transform constants
-TRANSFORM_FLIP_H = 4096
-TRANSFORM_FLIP_V = 8192
-TRANSFORM_TRANSPOSE = 16384
+# Godot 4 alternative tile IDs for transforms
+# 0: no transform
+# 1: flip_h
+# 2: flip_v
+# 3: flip_h + flip_v
+# 4: transpose
+# 5: transpose + flip_h
+# 6: transpose + flip_v
+# 7: transpose + flip_h + flip_v
+def get_alternative_tile_id(flip_h, flip_v, transpose):
+    """Convert transform flags to Godot 4 alternative tile ID."""
+    return (flip_h * 1) + (flip_v * 2) + (transpose * 4)
 
 def signed16(val):
     """Convert unsigned 16-bit to signed."""
@@ -149,14 +157,8 @@ def encode_godot4_tile_data(tiles, source_id=0):
         # source_id | (atlas_x << 16) | (atlas_y << 24)
         source_atlas = source_id | (atlas_x << 16) | (atlas_y << 24)
         
-        # Alternative tile with transform flags (using Godot 4 TRANSFORM_ constants)
-        alternative = 0
-        if flip_h:
-            alternative |= TRANSFORM_FLIP_H
-        if flip_v:
-            alternative |= TRANSFORM_FLIP_V
-        if transpose:
-            alternative |= TRANSFORM_TRANSPOSE
+        # Alternative tile ID for transforms (simple index, not bitmask)
+        alternative = get_alternative_tile_id(flip_h, flip_v, transpose)
         
         values.extend([pos, source_atlas, alternative])
     
@@ -167,10 +169,10 @@ def format_packed_int32_array(values):
     return "PackedInt32Array(" + ", ".join(str(v) for v in values) + ")"
 
 def get_original_content(input_path):
-    """Get original file content from git (HEAD~3 has original Godot 3 format)."""
+    """Get original file content from git (d36db94 has original Godot 3 format)."""
     rel_path = input_path.replace('/workspace/', '')
     result = subprocess.run(
-        ['git', 'show', 'HEAD~3:' + rel_path],
+        ['git', 'show', 'd36db94:' + rel_path],
         capture_output=True, text=True, cwd='/workspace'
     )
     if result.returncode == 0:
