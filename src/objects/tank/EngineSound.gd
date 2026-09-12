@@ -2,7 +2,6 @@ extends Node
 
 @onready var idle_sound := $Idle
 @onready var fast_sound := $Fast
-@onready var tween := $Tween
 
 enum EngineState {
 	IDLE = 0,
@@ -21,11 +20,12 @@ const TURNING_MODIFIER := 0.2
 var next_engine_state: int = EngineState.IDLE
 var engine_state: int = EngineState.IDLE
 var turning := false
+var active_tween: Tween
 
 func _ready() -> void:
 	idle_sound.play()
 
-func _on_Tween_tween_all_completed() -> void:
+func _on_tween_finished() -> void:
 	if engine_state == EngineState.IDLE:
 		fast_sound.stop()
 		idle_sound.play()
@@ -33,27 +33,32 @@ func _on_Tween_tween_all_completed() -> void:
 		fast_sound.volume_db = DRIVING_VOLUME_DB
 		fast_sound.pitch_scale = DRIVING_PITCH_SCALE
 
-func _process(delta: float) -> void:
+func _process(_delta: float) -> void:
 	if engine_state != next_engine_state:
 		engine_state = next_engine_state
 		
-		tween.remove_all()
+		if active_tween and active_tween.is_running():
+			active_tween.kill()
 		
 		if engine_state == EngineState.IDLE:
-			tween.interpolate_property(fast_sound, "volume_db", DRIVING_VOLUME_DB, IDLE_VOLUME_DB, TRANSITION_DURATION, Tween.TRANS_LINEAR, Tween.EASE_IN_OUT)
-			tween.interpolate_property(fast_sound, "pitch_scale", DRIVING_PITCH_SCALE, IDLE_PITCH_SCALE, TRANSITION_DURATION, Tween.TRANS_LINEAR, Tween.EASE_IN_OUT)
+			active_tween = create_tween()
+			active_tween.set_trans(Tween.TRANS_LINEAR).set_ease(Tween.EASE_IN_OUT)
+			active_tween.tween_property(fast_sound, "volume_db", IDLE_VOLUME_DB, TRANSITION_DURATION)
+			active_tween.parallel().tween_property(fast_sound, "pitch_scale", IDLE_PITCH_SCALE, TRANSITION_DURATION)
+			active_tween.finished.connect(_on_tween_finished, CONNECT_ONE_SHOT)
 		else:
 			idle_sound.stop()
 			
 			fast_sound.volume_db = IDLE_VOLUME_DB
 			fast_sound.pitch_scale = IDLE_PITCH_SCALE
 			fast_sound.play()
-			tween.interpolate_property(fast_sound, "volume_db", IDLE_VOLUME_DB, DRIVING_VOLUME_DB, TRANSITION_DURATION, Tween.TRANS_LINEAR, Tween.EASE_IN_OUT)
-			tween.interpolate_property(fast_sound, "pitch_scale", IDLE_PITCH_SCALE, DRIVING_PITCH_SCALE, TRANSITION_DURATION, Tween.TRANS_LINEAR, Tween.EASE_IN_OUT)
-		
-		tween.start()
+			active_tween = create_tween()
+			active_tween.set_trans(Tween.TRANS_LINEAR).set_ease(Tween.EASE_IN_OUT)
+			active_tween.tween_property(fast_sound, "volume_db", DRIVING_VOLUME_DB, TRANSITION_DURATION)
+			active_tween.parallel().tween_property(fast_sound, "pitch_scale", DRIVING_PITCH_SCALE, TRANSITION_DURATION)
+			active_tween.finished.connect(_on_tween_finished, CONNECT_ONE_SHOT)
 	
-	elif not tween.is_active():
+	elif active_tween == null or not active_tween.is_running():
 		if turning:
 			idle_sound.pitch_scale = IDLE_PITCH_SCALE + TURNING_MODIFIER
 			fast_sound.pitch_scale = DRIVING_PITCH_SCALE + TURNING_MODIFIER
