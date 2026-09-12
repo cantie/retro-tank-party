@@ -162,7 +162,7 @@ func game_stop() -> void:
 		game_started = false
 
 		players_alive.clear()
-		watch_camera.current = true
+		watch_camera.make_current()
 
 		for child in players_node.get_children():
 			SyncManager.despawn(child)
@@ -204,8 +204,7 @@ func _setup_watch_camera() -> void:
 
 func _setup_player_camera(camera_position: Vector2) -> void:
 	player_camera.global_position = camera_position
-	watch_camera.current = false
-	player_camera.current = true
+	player_camera.make_current()
 
 	if map.has_method('get_map_rect'):
 		var map_rect = map.get_map_rect()
@@ -244,8 +243,10 @@ func remove_player(player_id) -> void:
 	kill_player(player_id)
 
 func enable_watch_camera(enable: bool = true) -> void:
-	player_camera.current = not enable
-	watch_camera.current = enable
+	if enable:
+		watch_camera.make_current()
+	else:
+		player_camera.make_current()
 
 func _on_player_dead(killer_id, tank) -> void:
 	var peer_id = tank.get_multiplayer_authority()

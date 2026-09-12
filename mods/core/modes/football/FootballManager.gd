@@ -5,6 +5,8 @@ const FootballWeaponType = preload("res://mods/core/weapons/football.tres")
 const FootballScene = preload("res://mods/core/modes/football/Football.tscn")
 const GoalScene = preload("res://mods/core/modes/football/Goal.tscn")
 
+signal dropped_football(position: SGFixedVector2, vector: SGFixedVector2)
+
 const TANK_DIMENSION = 128 * SGFixed.ONE
 
 const THIRTY_TWO = 32 * SGFixed.ONE

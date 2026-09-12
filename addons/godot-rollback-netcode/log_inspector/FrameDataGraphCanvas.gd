@@ -74,8 +74,7 @@ func set_cursor_time(_cursor_time: int) -> void:
 			set_start_time(cursor_time - CURSOR_SCROLL_GAP)
 
 func _ready() -> void:
-	_font = FontFile.new()
-	_font.font_data = load("res://addons/godot-rollback-netcode/log_inspector/monogram_extended.ttf")
+	_font = load("res://addons/godot-rollback-netcode/log_inspector/monogram_extended.ttf")
 
 func _gui_input(event: InputEvent) -> void:
 	if event is InputEventMouseButton:

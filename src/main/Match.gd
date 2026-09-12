@@ -61,7 +61,7 @@ func scene_setup(operation: RemoteOperations.ClientOperation, info: Dictionary) 
 		if not DirAccess.dir_exists_absolute(LOG_FILE_DIRECTORY):
 			dir.make_dir(LOG_FILE_DIRECTORY)
 
-		var datetime = OS.get_datetime(true)
+		var datetime = Time.get_datetime_dict_from_system(true)
 		var match_id = OnlineMatch.match_id
 		match_id.erase(match_id.length() - 1, 1)
 
