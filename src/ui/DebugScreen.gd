@@ -59,7 +59,7 @@ func _show_screen(info: Dictionary = {}) -> void:
 	ability_field.update_value(tank.held_ability_type.resource_path if tank.held_ability_type != null else "None", false)
 
 func _network_process(data: Dictionary) -> void:
-	emit_signal('network_process')
+	network_process.emit()
 
 func _on_HealthSlider_value_changed(value: float) -> void:
 	if _is_ready:
