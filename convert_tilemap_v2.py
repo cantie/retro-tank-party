@@ -129,7 +129,13 @@ def tile_id_to_atlas_coords(tile_id):
         return (tile_id % 10, tile_id // 10)
 
 def encode_godot4_tile_data(tiles, source_id=0):
-    """Encode tiles into Godot 4 PackedInt32Array format with transform support."""
+    """Encode tiles into Godot 4 PackedInt32Array format with transform support.
+    
+    Godot 4 TileMap layer_0/tile_data format (3 ints = 12 bytes per tile):
+    - Int 0: x | (y << 16)  -- position (both signed 16-bit)
+    - Int 1: source_id | (atlas_x << 16)  -- source and atlas X coordinate
+    - Int 2: atlas_y | (alternative << 16)  -- atlas Y coordinate and alternative tile
+    """
     values = []
     
     for tile in tiles:
@@ -139,28 +145,28 @@ def encode_godot4_tile_data(tiles, source_id=0):
         flip_v = tile['flip_v']
         transpose = tile['transpose']
         
-        # Position encoding (same as Godot 3)
+        # Int 0: Position encoding (x and y as signed 16-bit values)
         if x < 0:
             x = x & 0xFFFF
         if y < 0:
             y = y & 0xFFFF
         pos = x | (y << 16)
         
-        # Convert to signed 32-bit
+        # Convert to signed 32-bit for Python
         if pos >= 0x80000000:
             pos = pos - 0x100000000
         
         # Atlas coordinates using the lookup table
         atlas_x, atlas_y = tile_id_to_atlas_coords(tile_id)
         
-        # Source and atlas encoding for Godot 4
-        # source_id | (atlas_x << 16) | (atlas_y << 24)
-        source_atlas = source_id | (atlas_x << 16) | (atlas_y << 24)
+        # Int 1: source_id | (atlas_x << 16)
+        source_atlas_x = source_id | (atlas_x << 16)
         
-        # Alternative tile ID for transforms (simple index, not bitmask)
+        # Int 2: atlas_y | (alternative << 16)
         alternative = get_alternative_tile_id(flip_h, flip_v, transpose)
+        atlas_y_alt = atlas_y | (alternative << 16)
         
-        values.extend([pos, source_atlas, alternative])
+        values.extend([pos, source_atlas_x, atlas_y_alt])
     
     return values
 
